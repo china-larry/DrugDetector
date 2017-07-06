@@ -5,7 +5,7 @@ CLoginInWidget::CLoginInWidget(QWidget *parent) : QWidget(parent)
 {
     //
     this->setFixedSize(600, 400);
-    this->setWindowFlags(this->windowFlags()&~Qt::WindowMaximizeButtonHint);
+    this->setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
 
     //
     InitWidget();

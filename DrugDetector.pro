@@ -26,11 +26,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    CLoginInWidget.cpp
+    CLoginInWidget.cpp \
+    DataPage/CDataPage.cpp \
+    DetectorPage/CDetectorPage.cpp \
+    DetectorPage/CDetectorPageTitleWidget.cpp
 
 HEADERS += \
         mainwindow.h \
-    CLoginInWidget.h
+    CLoginInWidget.h \
+    DataPage/CDataPage.h \
+    DetectorPage/CDetectorPage.h \
+    DetectorPage/CDetectorPageTitleWidget.h
 
 FORMS += \
         mainwindow.ui
