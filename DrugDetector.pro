@@ -27,16 +27,18 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     CLoginInWidget.cpp \
-    DataPage/CDataPage.cpp \
     DetectorPage/CDetectorPage.cpp \
-    DetectorPage/CDetectorPageTitleWidget.cpp
+    DetectorPage/CDetectorPageTitleWidget.cpp \
+    SettingPage/CSettingPage.cpp \
+    HistoryPage/CHistoryPage.cpp
 
 HEADERS += \
         mainwindow.h \
     CLoginInWidget.h \
-    DataPage/CDataPage.h \
     DetectorPage/CDetectorPage.h \
-    DetectorPage/CDetectorPageTitleWidget.h
+    DetectorPage/CDetectorPageTitleWidget.h \
+    SettingPage/CSettingPage.h \
+    HistoryPage/CHistoryPage.h
 
 FORMS += \
         mainwindow.ui

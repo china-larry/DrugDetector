@@ -10,8 +10,10 @@ class CDetectorPageTitleWidget : public QWidget
 public:
     explicit CDetectorPageTitleWidget(QWidget *parent = nullptr);
 
-signals:
-    void SigGoDataPage();
+signals:    
+    void SigGoDetectorPage();
+    void SigGoHistoryPage();
+    void SigGoSettingPage();
     void SigMinWindow();
     void SigCloseWindow();
 
@@ -25,7 +27,11 @@ private:
 
 private:
     QLabel *m_pUserInfoLabel;
-    QPushButton *m_pGoDataPageButton;
+    //
+    QPushButton *m_pSettingPageButton;
+    QPushButton *m_pHistoryPageButton;
+    QPushButton *m_pDetectorPageButton;
+    //
     QPushButton *m_pMinWindowButton;
     QPushButton *m_pCloseWindowButton;
 };

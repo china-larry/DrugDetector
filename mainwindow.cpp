@@ -11,10 +11,17 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+    this->setWindowOpacity(1); //窗口整体透明度，0-1 从全透明到不透明
+    this->setAttribute(Qt::WA_TranslucentBackground); //设置背景透明，允许鼠标穿透
+    //切换背景1
+    //ui->centralWidget->setStyleSheet("#centralWidget{background-image: url(:/img/bg.png);}"); //图片放到资源文件里面
     this->setFixedSize(1000, 600);
 
+
     InitWidget();
-    //InitLayout();
+    InitLayout();
+    //
+    m_ciTitleHeight = 50;
 }
 
 MainWindow::~MainWindow()
@@ -25,7 +32,7 @@ MainWindow::~MainWindow()
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QRect rect = this->rect();
-    m_pDetectorPageTitleWidget->setGeometry(0, 0, rect.width(), 50);
+    m_pDetectorPageTitleWidget->setGeometry(0, 0, rect.width(), m_ciTitleHeight);
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -64,9 +71,22 @@ void MainWindow::SlotReceiveLogin()
     this->show();
 }
 
-void MainWindow::SlotGoDataPage()
+void MainWindow::SlotGoSettingPage()
 {
-    qDebug() << "go data page";
+    qDebug() << "go setting page";
+    m_pStackedWidget->setCurrentIndex(2);
+}
+
+void MainWindow::SlotGoHistoryPage()
+{
+    qDebug() << "go history page";
+    m_pStackedWidget->setCurrentIndex(1);
+}
+
+void MainWindow::SlotGoDetectorPage()
+{
+    qDebug() << "go detector page";
+    m_pStackedWidget->setCurrentIndex(0);
 }
 
 void MainWindow::SlotMinWindow()
@@ -81,11 +101,26 @@ void MainWindow::SlotCloseWindow()
 
 void MainWindow::InitWidget()
 {
+    // 标题栏
     m_pDetectorPageTitleWidget = new CDetectorPageTitleWidget(this);
-    connect(m_pDetectorPageTitleWidget, SIGNAL(SigGoDataPage()), this, SLOT(SlotGoDataPage()));
+    QRect rect = this->rect();
+    m_pDetectorPageTitleWidget->setGeometry(0, 0, rect.width(), m_ciTitleHeight);
+    connect(m_pDetectorPageTitleWidget, SIGNAL(SigGoDetectorPage()), this, SLOT(SlotGoDetectorPage()));
+    connect(m_pDetectorPageTitleWidget, SIGNAL(SigGoHistoryPage()), this, SLOT(SlotGoHistoryPage()));
+    connect(m_pDetectorPageTitleWidget, SIGNAL(SigGoSettingPage()), this, SLOT(SlotGoSettingPage()));
     connect(m_pDetectorPageTitleWidget, SIGNAL(SigMinWindow()), this, SLOT(SlotMinWindow()));
     connect(m_pDetectorPageTitleWidget, SIGNAL(SigCloseWindow()), this, SLOT(SlotCloseWindow()));
-
+    // 多标签
+    m_pStackedWidget = new QStackedWidget(this);
+    m_pDetectorPage = new CDetectorPage(this);
+    m_pDataPage = new CHistoryPage(this);
+    m_pSettingPage = new CSettingPage(this);
+    //
+    m_pStackedWidget->addWidget(m_pDetectorPage);
+    m_pStackedWidget->addWidget(m_pDataPage);
+    m_pStackedWidget->addWidget(m_pSettingPage);
+    //
+    m_pStackedWidget->setCurrentIndex(0);
 
 }
 
@@ -94,6 +129,8 @@ void MainWindow::InitLayout()
     // 主窗口
      QVBoxLayout *pMainLayout = new QVBoxLayout;
      pMainLayout->addWidget(m_pDetectorPageTitleWidget);
+     //pMainLayout->addStretch(200);
+     pMainLayout->addWidget(m_pStackedWidget);
         // 布局
      QWidget *widget = new QWidget();
      setCentralWidget(widget);

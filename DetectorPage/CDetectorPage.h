@@ -2,7 +2,7 @@
 #define CDETECTORPAGE_H
 
 #include <QWidget>
-
+#include <QLabel>
 class CDetectorPage : public QWidget
 {
     Q_OBJECT
@@ -12,6 +12,9 @@ public:
 signals:
 
 public slots:
+
+private:
+    QLabel *m_pLabel;
 };
 
 #endif // CDETECTORPAGE_H

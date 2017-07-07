@@ -17,8 +17,14 @@ CDetectorPageTitleWidget::CDetectorPageTitleWidget(QWidget *parent) : QWidget(pa
 void CDetectorPageTitleWidget::InitWidget()
 {
     m_pUserInfoLabel = new QLabel("admin", this);
-    m_pGoDataPageButton = new QPushButton("Function", this);
-    connect(m_pGoDataPageButton, SIGNAL(clicked(bool)), this, SIGNAL(SigGoDataPage()));
+    //
+    m_pSettingPageButton = new QPushButton("Setting", this);
+    connect(m_pSettingPageButton, SIGNAL(clicked(bool)), this, SIGNAL(SigGoSettingPage()));
+    m_pHistoryPageButton = new QPushButton("History", this);
+    connect(m_pHistoryPageButton, SIGNAL(clicked(bool)), this, SIGNAL(SigGoHistoryPage()));
+    m_pDetectorPageButton = new QPushButton("Function", this);
+    connect(m_pDetectorPageButton, SIGNAL(clicked(bool)), this, SIGNAL(SigGoDetectorPage()));
+    //
     m_pMinWindowButton = new QPushButton("Min", this);
     connect(m_pMinWindowButton, SIGNAL(clicked(bool)), this, SIGNAL(SigMinWindow()));
     m_pCloseWindowButton = new QPushButton("Close", this);
@@ -30,8 +36,12 @@ void CDetectorPageTitleWidget::InitLayout()
     QHBoxLayout *pLayout = new QHBoxLayout;
     pLayout->addSpacing(100);
     pLayout->addWidget(m_pUserInfoLabel);
-    pLayout->addStretch(200);
-    pLayout->addWidget(m_pGoDataPageButton);
+    pLayout->addStretch(100);
+    pLayout->addWidget(m_pSettingPageButton);
+    pLayout->addSpacing(50);
+    pLayout->addWidget(m_pHistoryPageButton);
+    pLayout->addSpacing(50);
+    pLayout->addWidget(m_pDetectorPageButton);
     pLayout->addSpacing(50);
     pLayout->addWidget(m_pMinWindowButton);
     pLayout->addSpacing(50);
