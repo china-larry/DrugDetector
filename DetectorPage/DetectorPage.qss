@@ -16,3 +16,7 @@ QGroupBox::title
     padding: 2 2px;
     color: white;
 }
+QPushButton {
+      color : rgb(255, 255, 255);
+      background-color: rgb(230, 139, 49);
+  }

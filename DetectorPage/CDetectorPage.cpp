@@ -2,6 +2,8 @@
 #include <QGridLayout>
 #include <QFile>
 #include <QTextStream>
+#include <QHeaderView>
+#include <QScrollBar>
 #include <QDebug>
 CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
 {
@@ -10,10 +12,10 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
        _LoadQss();
 
     QGridLayout *grid = new QGridLayout;
-        grid->addWidget(_CreateDonorDetailsGroup(), 0, 0);
-        grid->addWidget(_CreateProductDetailsGroup(), 1, 0);
-        grid->addWidget(_CreateResultsGroup(), 0, 1);
-        grid->addWidget(createPushButtonGroup(), 1, 1);
+        grid->addWidget(_CreateDonorDetailsGroup(), 0, 0, 1, 1);
+        grid->addWidget(_CreateProductDetailsGroup(), 1, 0, 1, 1);
+        grid->addWidget(_CreateResultsGroup(), 0, 1, 2, 1);
+        grid->addWidget(_CreatePushButtonGroup(), 2, 0, 1, 2);
         setLayout(grid);
 
 }
@@ -30,7 +32,7 @@ void CDetectorPage::_LoadQss()
     this->setStyleSheet(stylesheet);
    file.close();
 }
-
+// Donor Details
 QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 {
     const int kiLineEditWidth = 80;
@@ -109,27 +111,37 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 
             return groupBox;
 }
-
+// product details
 QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
 {
-    QGroupBox *groupBox = new QGroupBox(tr("E&xclusive Radio Buttons"));
-        groupBox->setCheckable(true);
-        groupBox->setChecked(false);
+    QGroupBox *groupBox = new QGroupBox(tr("Product Details"));
+    groupBox->setMaximumSize(500, 200);
         //
-        QRadioButton *radio1 = new QRadioButton(tr("Rad&io button 1"));
-            QRadioButton *radio2 = new QRadioButton(tr("Radi&o button 2"));
-            QRadioButton *radio3 = new QRadioButton(tr("Radio &button 3"));
-            radio1->setChecked(true);
-            QCheckBox *checkBox = new QCheckBox(tr("Ind&ependent checkbox"));
-            checkBox->setChecked(true);
+        m_pProductDefinitionLabel = new QLabel(tr("Product Definition"), this);
+        m_pProductLotLabel = new QLabel(tr("Product Lot"), this);
+        m_pProductDefinitionLinedit = new QComboBox(this);
+        m_pProductLotLineEdit = new QLineEdit(this);
+        //
+        m_pExpirationDateLabel = new QLabel(tr("Expiration Date"), this);
+        m_pProductIDLabel = new QLabel(tr("Product ID"), this);
+        m_pExpirationDateEdit = new QDateEdit(this);
+        m_pProductIDLineEdit = new QLineEdit(this);
             //
-            QVBoxLayout *vbox = new QVBoxLayout;
-                vbox->addWidget(radio1);
-                vbox->addWidget(radio2);
-                vbox->addWidget(radio3);
-                vbox->addWidget(checkBox);
-                vbox->addStretch(1);
-                groupBox->setLayout(vbox);
+        QGridLayout *pGridLayout = new QGridLayout;
+        // Product Details
+        pGridLayout->addWidget(m_pProductDefinitionLabel, 0, 0, 1, 1);
+        pGridLayout->addWidget(m_pProductLotLabel , 0, 1, 1, 1);
+        //
+        pGridLayout->addWidget(m_pProductDefinitionLinedit, 1, 0, 1, 1);
+        pGridLayout->addWidget(m_pProductLotLineEdit , 1, 1, 1, 1);
+        // expiration date
+        pGridLayout->addWidget(m_pExpirationDateLabel, 2, 0, 1, 1);
+        pGridLayout->addWidget(m_pProductIDLabel, 2, 1, 1, 1);
+        //
+        pGridLayout->addWidget(m_pExpirationDateEdit, 3, 0, 1, 1);
+        pGridLayout->addWidget(m_pProductIDLineEdit, 3, 1, 1, 1);
+
+                groupBox->setLayout(pGridLayout);
 
                 return groupBox;
 }
@@ -139,50 +151,76 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
     QGroupBox *groupBox = new QGroupBox(tr("Non-Exclusive Checkboxes"));
         groupBox->setFlat(true);
 
-        QCheckBox *checkBox1 = new QCheckBox(tr("&Checkbox 1"));
-            QCheckBox *checkBox2 = new QCheckBox(tr("C&heckbox 2"));
-            checkBox2->setChecked(true);
-            QCheckBox *tristateBox = new QCheckBox(tr("Tri-&state button"));
-            tristateBox->setTristate(true);
+    m_pCamaraLabel = new QLabel("temp", this);
+    m_pCamaraLabel->setMinimumSize(400, 400);
+    m_pCamaraLabel->setStyleSheet("QLabel { background-color : rgb(128, 128, 128); color : blue; }");
+
+    m_pResultsTableWidget = new QTableWidget(this);
+    m_pResultsTableWidget->resize(400, 300);
+    // 表单样式
+    m_pResultsTableWidget->setColumnCount(3);
+    QHeaderView *pHeaderView = m_pResultsTableWidget->horizontalHeader();
+    pHeaderView->setDefaultSectionSize(120);
+    pHeaderView->setDisabled(true);
+    // 表头字体
+    QFont font = pHeaderView->font();
+    font.setBold(true);
+    pHeaderView->setFont(font);
+    // 充满表格
+    pHeaderView->setStretchLastSection(true);
+     // 表头背景色
+    pHeaderView->setStyleSheet("QHeaderView::section{background:skyblue;}");
+    // 多选
+    m_pResultsTableWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    // 每次选择一行
+    m_pResultsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    // 设置表头内容
+    QStringList qstrlistHeader;
+    qstrlistHeader << tr("Program") << tr("Result") << tr("Cutoff Value");
+    m_pResultsTableWidget->setHorizontalHeaderLabels(qstrlistHeader);
+    // 显示格子线
+    m_pResultsTableWidget->setShowGrid(true);
+    //设置水平、垂直滚动条样式
+    m_pResultsTableWidget->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
+      "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
+      "QScrollBar::handle:hover{background:gray;}"
+      "QScrollBar::sub-line{background:transparent;}"
+      "QScrollBar::add-line{background:transparent;}");
+     m_pResultsTableWidget->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
+      "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
+      "QScrollBar::handle:hover{background:gray;}"
+      "QScrollBar::sub-line{background:transparent;}"
+      "QScrollBar::add-line{background:transparent;}");
 
             QVBoxLayout *vbox = new QVBoxLayout;
-                vbox->addWidget(checkBox1);
-                vbox->addWidget(checkBox2);
-                vbox->addWidget(tristateBox);
-                vbox->addStretch(1);
+                vbox->addWidget(m_pCamaraLabel);
+                vbox->addWidget(m_pResultsTableWidget);
+
                 groupBox->setLayout(vbox);
 
                 return groupBox;
 }
 
-QGroupBox *CDetectorPage::createPushButtonGroup()
+QGroupBox *CDetectorPage::_CreatePushButtonGroup()
 {
-    QGroupBox *groupBox = new QGroupBox(tr("&Push Buttons"));
-        groupBox->setCheckable(true);
-        groupBox->setChecked(true);
+    QGroupBox *groupBox = new QGroupBox(this);
 
-        QPushButton *pushButton = new QPushButton(tr("&Normal Button"));
-            QPushButton *toggleButton = new QPushButton(tr("&Toggle Button"));
-            toggleButton->setCheckable(true);
-            toggleButton->setChecked(true);
-            QPushButton *flatButton = new QPushButton(tr("&Flat Button"));
-            flatButton->setFlat(true);
 
-            QPushButton *popupButton = new QPushButton(tr("Pop&up Button"));
-                QMenu *menu = new QMenu(this);
-                menu->addAction(tr("&First Item"));
-                menu->addAction(tr("&Second Item"));
-                menu->addAction(tr("&Third Item"));
-                menu->addAction(tr("F&ourth Item"));
-                popupButton->setMenu(menu);
+        QPushButton *m_pReadTestDeviceButton = new QPushButton(tr("Read Test Device"));
+        QPushButton *m_pStopTestButton = new QPushButton(tr("Stop Test"));
+        QPushButton *m_pPrintPriviewButton = new QPushButton(tr("Print Priview"));
 
-                QVBoxLayout *vbox = new QVBoxLayout;
-                    vbox->addWidget(pushButton);
-                    vbox->addWidget(toggleButton);
-                    vbox->addWidget(flatButton);
-                    vbox->addWidget(popupButton);
-                    vbox->addStretch(1);
-                    groupBox->setLayout(vbox);
+
+                QHBoxLayout *hbox = new QHBoxLayout;
+                hbox->addSpacing(50);
+                    hbox->addWidget(m_pReadTestDeviceButton);
+                    hbox->addSpacing(30);
+                    hbox->addWidget(m_pStopTestButton);
+                    hbox->addStretch(1);
+                    hbox->addWidget(m_pPrintPriviewButton);
+                    hbox->addSpacing(50);
+
+                    groupBox->setLayout(hbox);
 
                     return groupBox;
 }

@@ -11,6 +11,8 @@
 #include <QLineEdit>
 #include <QDateEdit>
 #include <QDateTimeEdit>
+#include <QComboBox>
+#include <QTableWidget>
 class CDetectorPage : public QWidget
 {
     Q_OBJECT
@@ -27,7 +29,7 @@ private:
     QGroupBox *_CreateDonorDetailsGroup();
     QGroupBox *_CreateProductDetailsGroup();
     QGroupBox *_CreateResultsGroup();
-    QGroupBox *createPushButtonGroup();
+    QGroupBox *_CreatePushButtonGroup();
 
 private:
     // donor details 1line
@@ -63,7 +65,27 @@ private:
     QCheckBox *m_pFollowUpCBox;
     QCheckBox *m_pOtherCBox;
     QLineEdit *m_pOtherLineEdit;
+    //////////////////////////////////////
     // Product Details
+    QLabel *m_pProductDefinitionLabel;
+    QLabel *m_pProductLotLabel;
+    QComboBox *m_pProductDefinitionLinedit;
+    QLineEdit *m_pProductLotLineEdit;
+    // expiration date
+    QLabel *m_pExpirationDateLabel;
+    QLabel *m_pProductIDLabel;
+    QDateEdit *m_pExpirationDateEdit;
+    QLineEdit *m_pProductIDLineEdit;
+    //////////////////////////////////////
+    // push button
+    QPushButton *m_pReadTestDeviceButton;
+    QPushButton *m_pStopTestButton;
+    QPushButton *m_pPrintPriviewButton;
+    //////////////////////////////////////
+    // results
+    QLabel *m_pCamaraLabel;// 摄像头
+    QTableWidget *m_pResultsTableWidget;// 表格数据
+
 };
 
 #endif // CDETECTORPAGE_H
