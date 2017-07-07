@@ -33,6 +33,7 @@ void CDetectorPage::_LoadQss()
 
 QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 {
+    const int kiLineEditWidth = 80;
     QGroupBox *groupBox = new QGroupBox(tr("Donor Details"));
     groupBox->setMaximumWidth(500);
     // donor name
@@ -44,7 +45,9 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     m_pDoorIDLabel = new QLabel(tr("Donor ID#"), this);
     //
     m_pLastNameLineEdit = new QLineEdit(this);
+    m_pLastNameLineEdit->setMaximumWidth(kiLineEditWidth);
     m_pFirstNameLineEdit = new QLineEdit(this);
+    m_pFirstNameLineEdit->setMaximumWidth(kiLineEditWidth);
     m_pDonorNameLineEdit = new QLineEdit(this);
     // date of birth email
     m_pDateofBirthLabel = new QLabel(tr("Date of Birth"), this);
