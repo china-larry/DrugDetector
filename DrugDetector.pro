@@ -42,3 +42,8 @@ HEADERS += \
 
 FORMS += \
         mainwindow.ui
+
+DISTFILES +=
+
+RESOURCES += \
+    qssresourcefile.qrc

@@ -11,15 +11,15 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
-    this->setWindowOpacity(1); //窗口整体透明度，0-1 从全透明到不透明
-    this->setAttribute(Qt::WA_TranslucentBackground); //设置背景透明，允许鼠标穿透
+    //this->setWindowOpacity(1); //窗口整体透明度，0-1 从全透明到不透明
+    //this->setAttribute(Qt::WA_TranslucentBackground); //设置背景透明，允许鼠标穿透
     //切换背景1
     //ui->centralWidget->setStyleSheet("#centralWidget{background-image: url(:/img/bg.png);}"); //图片放到资源文件里面
-    this->setFixedSize(1000, 600);
+    this->setFixedSize(1000, 750);
 
 
     InitWidget();
-    InitLayout();
+    //InitLayout();
     //
     m_ciTitleHeight = 50;
 }
@@ -31,8 +31,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
+    // 固定两者位置
     QRect rect = this->rect();
     m_pDetectorPageTitleWidget->setGeometry(0, 0, rect.width(), m_ciTitleHeight);
+    m_pStackedWidget->setGeometry(0, m_ciTitleHeight, rect.width(), rect.height() - m_ciTitleHeight);
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -40,7 +42,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     if( event->button() == Qt::LeftButton &&
                 m_pDetectorPageTitleWidget->rect().contains(event->globalPos() - this->frameGeometry().topLeft()))
     {
-        m_pointPress = event->globalPos();
+        m_PressPoint = event->globalPos();
         m_bLeftButtonCheck = true;
     }
     event->ignore();//表示继续向下传递事件，其他的控件还可以去获取
@@ -59,9 +61,9 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     if( m_bLeftButtonCheck )
     {
-        m_pointMove = event->globalPos();
-        this->move( this->pos() + m_pointMove - m_pointPress );
-        m_pointPress = m_pointMove;
+        m_MovePoint = event->globalPos();
+        this->move( this->pos() + m_MovePoint - m_PressPoint );
+        m_PressPoint = m_MovePoint;
     }
     event->ignore();
 }
@@ -112,6 +114,7 @@ void MainWindow::InitWidget()
     connect(m_pDetectorPageTitleWidget, SIGNAL(SigCloseWindow()), this, SLOT(SlotCloseWindow()));
     // 多标签
     m_pStackedWidget = new QStackedWidget(this);
+
     m_pDetectorPage = new CDetectorPage(this);
     m_pDataPage = new CHistoryPage(this);
     m_pSettingPage = new CSettingPage(this);

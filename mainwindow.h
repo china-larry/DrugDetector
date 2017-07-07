@@ -51,8 +51,8 @@ private:
 
     // m_Move标题栏移动变量
     bool m_bLeftButtonCheck;
-    QPoint m_pointPress;
-    QPoint m_pointMove;
+    QPoint m_PressPoint;
+    QPoint m_MovePoint;
 
     //
     int m_ciTitleHeight;// 标题栏高度

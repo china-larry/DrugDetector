@@ -3,6 +3,11 @@
 
 #include <QWidget>
 #include <QLabel>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QCheckBox>
+#include <QRadioButton>
+#include <QMenu>
 class CDetectorPage : public QWidget
 {
     Q_OBJECT
@@ -12,6 +17,14 @@ public:
 signals:
 
 public slots:
+
+private:
+    void _LoadQss();
+private:
+    QGroupBox *createFirstExclusiveGroup();
+    QGroupBox *createSecondExclusiveGroup();
+    QGroupBox *createNonExclusiveGroup();
+    QGroupBox *createPushButtonGroup();
 
 private:
     QLabel *m_pLabel;

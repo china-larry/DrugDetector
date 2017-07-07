@@ -1,0 +1,18 @@
+QGroupBox
+{
+    border-width:1px;
+    border-color:rgb(255, 0, 0);
+}
+QGroupBox::title
+{
+    subcontrol-origin: margin;
+    background:url(:/assets/subWindowBackground);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border: 1px solid #0b477b;
+    border-bottom: none;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #005192, stop: 1 #002f60);
+    padding: 2 2px;
+    color: white;
+}
