@@ -16,7 +16,7 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
         grid->addWidget(_CreateProductDetailsGroup(), 1, 0, 1, 1);
         grid->addWidget(_CreateResultsGroup(), 0, 1, 2, 1);
         grid->addWidget(_CreatePushButtonGroup(), 2, 0, 1, 2);
-        setLayout(grid);
+        this->setLayout(grid);
 
 }
 

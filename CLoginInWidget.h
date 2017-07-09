@@ -20,8 +20,8 @@ public slots:
 
 
 private:
-    void InitWidget();
-    void InitLayout();
+    void _InitWidget();
+    void _InitLayout();
 private:
     //
     QLabel *m_pLoginLabel;

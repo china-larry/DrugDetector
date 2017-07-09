@@ -3,15 +3,15 @@
 CDetectorPageStatusBar::CDetectorPageStatusBar(QWidget *parent) : QWidget(parent)
 {
     this->setFixedSize(1000, 30);
-    InitWidget();
-    InitLayout();
+    _InitWidget();
+    _InitLayout();
 //    this->setAutoFillBackground(true);  //自动填充背景
 //    QPalette palette;
 //    palette.setColor(QPalette::Background, QColor("#212121"));
 //    this->setPalette(palette);
 }
 
-void CDetectorPageStatusBar::InitWidget()
+void CDetectorPageStatusBar::_InitWidget()
 {
     m_pTestStatusLabel = new QLabel("Stop", this);
     m_pTestStatusLabel->setMinimumWidth(580);
@@ -19,7 +19,7 @@ void CDetectorPageStatusBar::InitWidget()
     m_pProgressStatusLabel->setMinimumWidth(380);
 }
 
-void CDetectorPageStatusBar::InitLayout()
+void CDetectorPageStatusBar::_InitLayout()
 {
     QHBoxLayout *pLayout = new QHBoxLayout;
     pLayout->addWidget(m_pTestStatusLabel);

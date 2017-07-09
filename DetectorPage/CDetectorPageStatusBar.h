@@ -14,8 +14,8 @@ signals:
 public slots:
 
 private:
-    void InitWidget();
-    void InitLayout();
+    void _InitWidget();
+    void _InitLayout();
 
 private:
     QLabel *m_pTestStatusLabel;// 测试状态

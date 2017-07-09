@@ -57,17 +57,9 @@ private:
     QLineEdit *m_pOtherLineEdit;
     //////////////////////////////////////
     // Product Details
-//    QLabel *m_pProductDefinitionLabel;
-//    QLabel *m_pProductLotLabel;
-//    QComboBox *m_pProductDefinitionLinedit;
-//    QLineEdit *m_pProductLotLineEdit;
     CLabelCommoBoxWidget *m_pProductDefinitionWidget;
     CLabelLineEditWidget *m_pProductLotWidget;
     // expiration date
-//    QLabel *m_pExpirationDateLabel;
-//    QLabel *m_pProductIDLabel;
-//    QDateEdit *m_pExpirationDateEdit;
-//    QLineEdit *m_pProductIDLineEdit;
     CLabelDateWidget *m_pExpirationDateWidget;
     CLabelLineEditWidget *m_pProductIDWidget;
     //////////////////////////////////////

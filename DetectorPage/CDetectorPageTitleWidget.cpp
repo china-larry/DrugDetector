@@ -4,8 +4,8 @@
 CDetectorPageTitleWidget::CDetectorPageTitleWidget(QWidget *parent) : QWidget(parent)
 {
     this->setFixedSize(1000, 50);
-    InitWidget();
-    InitLayout();
+    _InitWidget();
+    _InitLayout();
     //
     this->setAutoFillBackground(true);  //自动填充背景
     QPalette palette;
@@ -14,7 +14,7 @@ CDetectorPageTitleWidget::CDetectorPageTitleWidget(QWidget *parent) : QWidget(pa
 }
 
 
-void CDetectorPageTitleWidget::InitWidget()
+void CDetectorPageTitleWidget::_InitWidget()
 {
     m_pUserInfoLabel = new QLabel("admin", this);
     //
@@ -31,7 +31,7 @@ void CDetectorPageTitleWidget::InitWidget()
     connect(m_pCloseWindowButton, SIGNAL(clicked(bool)), this, SIGNAL(SigCloseWindow()));
 }
 
-void CDetectorPageTitleWidget::InitLayout()
+void CDetectorPageTitleWidget::_InitLayout()
 {
     QHBoxLayout *pLayout = new QHBoxLayout;
     pLayout->addSpacing(100);

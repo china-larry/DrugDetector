@@ -8,8 +8,8 @@ CLoginInWidget::CLoginInWidget(QWidget *parent) : QWidget(parent)
     this->setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
 
     //
-    InitWidget();
-    InitLayout();
+    _InitWidget();
+    _InitLayout();
 }
 
 void CLoginInWidget::SlotCheckLoginButton()
@@ -18,7 +18,7 @@ void CLoginInWidget::SlotCheckLoginButton()
     emit SigShowMainWindow();
 }
 
-void CLoginInWidget::InitWidget()
+void CLoginInWidget::_InitWidget()
 {
     //
     m_pLoginLabel = new QLabel("Login", this);
@@ -41,7 +41,7 @@ void CLoginInWidget::InitWidget()
     connect(m_pLoginButton, SIGNAL(clicked(bool)), this, SLOT(SlotCheckLoginButton()));
 }
 
-void CLoginInWidget::InitLayout()
+void CLoginInWidget::_InitLayout()
 {
     //
     QHBoxLayout *pFirstLineHLayout = new QHBoxLayout;

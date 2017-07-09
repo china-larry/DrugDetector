@@ -35,8 +35,8 @@ public slots:
     void SlotCloseWindow();
 
 private:
-    void InitWidget();
-    void InitLayout();
+    void _InitWidget();
+    void _InitLayout();
 private:
     Ui::MainWindow *ui;
     // Title

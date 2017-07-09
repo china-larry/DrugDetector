@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setFixedSize(1000, 750);
 
 
-    InitWidget();
+    _InitWidget();
     //InitLayout();
     //
     m_kiTitleHeight = 50;
@@ -109,7 +109,7 @@ void MainWindow::SlotCloseWindow()
     this->close();
 }
 
-void MainWindow::InitWidget()
+void MainWindow::_InitWidget()
 {
     // 标题栏
     m_pDetectorPageTitleWidget = new CDetectorPageTitleWidget(this);
@@ -136,7 +136,7 @@ void MainWindow::InitWidget()
     m_pDetectorPageStatusBar = new CDetectorPageStatusBar(this);
 }
 
-void MainWindow::InitLayout()
+void MainWindow::_InitLayout()
 {
     // 主窗口
      QVBoxLayout *pMainLayout = new QVBoxLayout;
