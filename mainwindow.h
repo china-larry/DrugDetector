@@ -5,6 +5,7 @@
 #include <QPoint>
 #include <QStackedWidget>
 #include "DetectorPage/CDetectorPageTitleWidget.h"
+#include "DetectorPage/CDetectorPageStatusBar.h"
 #include "DetectorPage/CDetectorPage.h"
 #include "HistoryPage/CHistoryPage.h"
 #include "SettingPage/CSettingPage.h"
@@ -38,16 +39,18 @@ private:
     void InitLayout();
 private:
     Ui::MainWindow *ui;
-    // 控件变量
+    // Title
     CDetectorPageTitleWidget *m_pDetectorPageTitleWidget;
     // 多标签 切换控件
     QStackedWidget *m_pStackedWidget;
     // 检测页面
     CDetectorPage *m_pDetectorPage;
-    CHistoryPage *m_pDataPage;
-    CSettingPage *m_pSettingPage;
     // 历史数据页面
-    // 设置页面
+    CHistoryPage *m_pHistoryPage;
+     // 设置页面
+    CSettingPage *m_pSettingPage;
+    // 状态栏
+    CDetectorPageStatusBar *m_pDetectorPageStatusBar;
 
     // m_Move标题栏移动变量
     bool m_bLeftButtonCheck;
@@ -55,7 +58,9 @@ private:
     QPoint m_MovePoint;
 
     //
-    int m_ciTitleHeight;// 标题栏高度
+    int m_kiTitleHeight;// 标题栏高度
+    int m_kiStatusBarHeight;
+    QRect m_iWidgetRect;
 };
 
 #endif // MAINWINDOW_H

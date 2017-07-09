@@ -21,7 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
     InitWidget();
     //InitLayout();
     //
-    m_ciTitleHeight = 50;
+    m_kiTitleHeight = 50;
+    m_kiStatusBarHeight = 30;
 }
 
 MainWindow::~MainWindow()
@@ -31,10 +32,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    // 固定两者位置
-    QRect rect = this->rect();
-    m_pDetectorPageTitleWidget->setGeometry(0, 0, rect.width(), m_ciTitleHeight);
-    m_pStackedWidget->setGeometry(0, m_ciTitleHeight, rect.width(), rect.height() - m_ciTitleHeight);
+    // 固定位置
+    m_iWidgetRect = this->rect();
+    // 标题栏
+    m_pDetectorPageTitleWidget->setGeometry(0, 0, m_iWidgetRect.width(), m_kiTitleHeight);
+    // 多标签
+    m_pStackedWidget->setGeometry(0, m_kiTitleHeight, m_iWidgetRect.width(), m_iWidgetRect.height() - m_kiTitleHeight - m_kiStatusBarHeight);
+    // 状态栏
+    m_pDetectorPageStatusBar->setGeometry(0, m_iWidgetRect.height() - m_kiStatusBarHeight, m_iWidgetRect.width(), m_kiStatusBarHeight);
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -77,18 +82,21 @@ void MainWindow::SlotGoSettingPage()
 {
     qDebug() << "go setting page";
     m_pStackedWidget->setCurrentIndex(2);
+    m_pDetectorPageStatusBar->hide();
 }
 
 void MainWindow::SlotGoHistoryPage()
 {
     qDebug() << "go history page";
     m_pStackedWidget->setCurrentIndex(1);
+    m_pDetectorPageStatusBar->hide();
 }
 
 void MainWindow::SlotGoDetectorPage()
 {
     qDebug() << "go detector page";
     m_pStackedWidget->setCurrentIndex(0);
+    m_pDetectorPageStatusBar->show();
 }
 
 void MainWindow::SlotMinWindow()
@@ -105,8 +113,8 @@ void MainWindow::InitWidget()
 {
     // 标题栏
     m_pDetectorPageTitleWidget = new CDetectorPageTitleWidget(this);
-    QRect rect = this->rect();
-    m_pDetectorPageTitleWidget->setGeometry(0, 0, rect.width(), m_ciTitleHeight);
+//    QRect rect = this->rect();
+//    m_pDetectorPageTitleWidget->setGeometry(0, 0, rect.width(), m_ciTitleHeight);
     connect(m_pDetectorPageTitleWidget, SIGNAL(SigGoDetectorPage()), this, SLOT(SlotGoDetectorPage()));
     connect(m_pDetectorPageTitleWidget, SIGNAL(SigGoHistoryPage()), this, SLOT(SlotGoHistoryPage()));
     connect(m_pDetectorPageTitleWidget, SIGNAL(SigGoSettingPage()), this, SLOT(SlotGoSettingPage()));
@@ -116,15 +124,16 @@ void MainWindow::InitWidget()
     m_pStackedWidget = new QStackedWidget(this);
 
     m_pDetectorPage = new CDetectorPage(this);
-    m_pDataPage = new CHistoryPage(this);
+    m_pHistoryPage = new CHistoryPage(this);
     m_pSettingPage = new CSettingPage(this);
     //
     m_pStackedWidget->addWidget(m_pDetectorPage);
-    m_pStackedWidget->addWidget(m_pDataPage);
+    m_pStackedWidget->addWidget(m_pHistoryPage);
     m_pStackedWidget->addWidget(m_pSettingPage);
     //
     m_pStackedWidget->setCurrentIndex(0);
-
+    // 状态栏
+    m_pDetectorPageStatusBar = new CDetectorPageStatusBar(this);
 }
 
 void MainWindow::InitLayout()

@@ -30,7 +30,11 @@ SOURCES += \
     DetectorPage/CDetectorPage.cpp \
     DetectorPage/CDetectorPageTitleWidget.cpp \
     SettingPage/CSettingPage.cpp \
-    HistoryPage/CHistoryPage.cpp
+    HistoryPage/CHistoryPage.cpp \
+    DetectorPage/CDetectorPageStatusBar.cpp \
+    CommonDataWidget/CLabelLineEditWidget.cpp \
+    CommonDataWidget/CLabelDateWidget.cpp \
+    CommonDataWidget/CLabelDateTimeWidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -38,7 +42,11 @@ HEADERS += \
     DetectorPage/CDetectorPage.h \
     DetectorPage/CDetectorPageTitleWidget.h \
     SettingPage/CSettingPage.h \
-    HistoryPage/CHistoryPage.h
+    HistoryPage/CHistoryPage.h \
+    DetectorPage/CDetectorPageStatusBar.h \
+    CommonDataWidget/CLabelLineEditWidget.h \
+    CommonDataWidget/CLabelDateWidget.h \
+    CommonDataWidget/CLabelDateTimeWidget.h
 
 FORMS += \
         mainwindow.ui
