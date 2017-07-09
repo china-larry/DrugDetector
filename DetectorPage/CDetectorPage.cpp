@@ -128,7 +128,7 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
         groupBox->setFlat(true);
 
     m_pCamaraLabel = new QLabel("temp", this);
-    m_pCamaraLabel->setMinimumSize(400, 400);
+    m_pCamaraLabel->setMinimumSize(400, 300);
     m_pCamaraLabel->setStyleSheet("QLabel { background-color : rgb(128, 128, 128); color : blue; }");
 
     m_pResultsTableWidget = new QTableWidget(this);

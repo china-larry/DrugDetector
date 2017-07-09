@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QLabel>
+#include <QGroupBox>
 class CSettingPage : public QWidget
 {
     Q_OBJECT
@@ -13,9 +14,12 @@ signals:
 
 public slots:
 
-
 private:
-    QLabel *m_pLabel;
+    void _LoadQss();
+    QGroupBox *_CreateVersionGroup();
+private:
+    QLabel *m_pSoftwareLabel;
+    QLabel *m_pFirmewareLabel;
 };
 
 #endif // CSETTINGPAGE_H

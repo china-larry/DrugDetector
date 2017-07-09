@@ -25,7 +25,6 @@ public slots:
 
 private:
     void _LoadQss();
-private:
     QGroupBox *_CreateDonorDetailsGroup();
     QGroupBox *_CreateProductDetailsGroup();
     QGroupBox *_CreateResultsGroup();

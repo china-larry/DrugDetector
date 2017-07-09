@@ -73,7 +73,7 @@ void CHistoryPage::_InitTableWidget()
 {
     // table
     m_pHistoryDataTableWidget = new QTableWidget(this);
-    m_pHistoryDataTableWidget->setMinimumHeight(400);
+    m_pHistoryDataTableWidget->setMinimumHeight(350);
     // 表单样式
     m_pHistoryDataTableWidget->setColumnCount(10);
     QHeaderView *pHeaderView = m_pHistoryDataTableWidget->horizontalHeader();
