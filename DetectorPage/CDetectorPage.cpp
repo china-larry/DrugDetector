@@ -42,25 +42,15 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     m_pDonorNameLabel = new QLabel(tr("Donor Name"), this);
     m_pTemperatureCBox = new QCheckBox(tr("Temperature normal#"), this);
     // last first donor
-    m_pLastNameLabel = new QLabel(tr("Last"), this);
-    m_pFirstNameLabel = new QLabel(tr("First"), this);
-    m_pDoorIDLabel = new QLabel(tr("Donor ID#"), this);
-    //
-    m_pLastNameLineEdit = new QLineEdit(this);
-    m_pLastNameLineEdit->setMaximumWidth(kiLineEditWidth);
-    m_pFirstNameLineEdit = new QLineEdit(this);
-    m_pFirstNameLineEdit->setMaximumWidth(kiLineEditWidth);
-    m_pDonorNameLineEdit = new QLineEdit(this);
+    m_pLastNameWidget = new CLabelLineEditWidget(tr("Last"), "", this);
+    m_pFirstNameWidget = new CLabelLineEditWidget(tr("First"), "", this);
+    m_pDonorNameWidget = new CLabelLineEditWidget(tr("Donor ID#"), "", this);
     // date of birth email
-    m_pDateofBirthLabel = new QLabel(tr("Date of Birth"), this);
-    m_pEmailAddressLabel = new QLabel(tr("Email Address"), this);
-    m_pBirthDateEdit = new QDateEdit(this);
-    m_pEmailAddressLineEdit = new QLineEdit(this);
+    m_pDateofBirthWidget = new CLabelDateWidget(tr("Date of Birth"), QDate::currentDate(), this);
+    m_pEmailAddressWidget = new CLabelLineEditWidget(tr("Email Address"), "", this);
     // test time
-    m_pTestTimeLabel = new QLabel(tr("Test Time"), this);
-    m_pTestingSiteLabel = new QLabel(tr("Testing Site"), this);
-    m_pTestTimeEdit = new QDateTimeEdit(this);
-    m_pTestingSiteLineEdit = new QLineEdit(this);
+    m_pTestTimeWidget = new CLabelDateTimeWidget(tr("Test Time"), QDateTime::currentDateTime(), this);
+    m_pTestingSiteWidget = new CLabelLineEditWidget(tr("Testing Site"), "", this);
     // reason of test
     m_pReasonfoTestLabel = new QLabel(tr("Reason for Test"), this);
     m_pPreEmploymentCBox = new QCheckBox(tr("Pre Employment"), this);
@@ -78,33 +68,25 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     pGridLayout->addWidget(m_pDonorNameLabel, 0, 0, 1, 2);
     pGridLayout->addWidget(m_pTemperatureCBox , 0, 2, 1, 2);
     // last fire name
-    pGridLayout->addWidget(m_pLastNameLabel, 1, 0, 1, 1);
-    pGridLayout->addWidget(m_pFirstNameLabel, 1, 1, 1, 1);
-    pGridLayout->addWidget(m_pDoorIDLabel, 1, 2, 1, 2);
-
-    pGridLayout->addWidget(m_pLastNameLineEdit, 2, 0, 1, 1);
-    pGridLayout->addWidget(m_pFirstNameLineEdit, 2, 1, 1, 1);
-    pGridLayout->addWidget(m_pDonorNameLineEdit, 2, 2, 1, 2);
+    pGridLayout->addWidget(m_pLastNameWidget, 1, 0, 1, 1);
+    pGridLayout->addWidget(m_pFirstNameWidget, 1, 1, 1, 1);
+    pGridLayout->addWidget(m_pDonorNameWidget, 1, 2, 1, 2);
     // date of birth email
-    pGridLayout->addWidget(m_pDateofBirthLabel, 3, 0, 1, 2);
-    pGridLayout->addWidget(m_pEmailAddressLabel, 3, 2, 1, 2);
-    pGridLayout->addWidget(m_pBirthDateEdit, 4, 0, 1, 2);
-    pGridLayout->addWidget(m_pEmailAddressLineEdit, 4, 2, 1, 2);
+    pGridLayout->addWidget(m_pDateofBirthWidget, 2, 0, 1, 2);
+    pGridLayout->addWidget(m_pEmailAddressWidget, 2, 2, 1, 2);
     // test time
-    pGridLayout->addWidget(m_pTestTimeLabel, 5, 0, 1, 2);
-    pGridLayout->addWidget(m_pTestingSiteLabel, 5, 2, 1, 2);
-    pGridLayout->addWidget(m_pTestTimeEdit, 6, 0, 1, 2);
-    pGridLayout->addWidget(m_pTestingSiteLineEdit, 6, 2, 1, 2);
+    pGridLayout->addWidget(m_pTestTimeWidget, 3, 0, 1, 2);
+    pGridLayout->addWidget(m_pTestingSiteWidget, 3, 2, 1, 2);
     // reson of test
-    pGridLayout->addWidget(m_pReasonfoTestLabel, 7, 0, 1, 4);
-    pGridLayout->addWidget(m_pPreEmploymentCBox, 8, 0, 1, 2);
-    pGridLayout->addWidget(m_pRandomCBox, 8, 2, 1, 2);
-    pGridLayout->addWidget(m_pReasonableCBox, 9, 0, 1, 2);
-    pGridLayout->addWidget(m_pPostAccidentCBox, 9, 2, 1, 2);
-    pGridLayout->addWidget(m_pReturntoDutyCBox, 10, 0, 1, 2);
-    pGridLayout->addWidget(m_pFollowUpCBox, 10, 2, 1, 2);
-    pGridLayout->addWidget(m_pOtherCBox, 11, 0, 1, 1);
-    pGridLayout->addWidget(m_pOtherLineEdit, 11, 1, 1, 3);
+    pGridLayout->addWidget(m_pReasonfoTestLabel, 4, 0, 1, 4);
+    pGridLayout->addWidget(m_pPreEmploymentCBox, 7, 0, 1, 2);
+    pGridLayout->addWidget(m_pRandomCBox, 7, 2, 1, 2);
+    pGridLayout->addWidget(m_pReasonableCBox, 8, 0, 1, 2);
+    pGridLayout->addWidget(m_pPostAccidentCBox, 8, 2, 1, 2);
+    pGridLayout->addWidget(m_pReturntoDutyCBox, 9, 0, 1, 2);
+    pGridLayout->addWidget(m_pFollowUpCBox, 9, 2, 1, 2);
+    pGridLayout->addWidget(m_pOtherCBox, 10, 0, 1, 1);
+    pGridLayout->addWidget(m_pOtherLineEdit, 10, 1, 1, 3);
 
 
             groupBox->setLayout(pGridLayout);
@@ -117,29 +99,23 @@ QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
     QGroupBox *groupBox = new QGroupBox(tr("Product Details"));
     groupBox->setMaximumSize(500, 200);
         //
-        m_pProductDefinitionLabel = new QLabel(tr("Product Definition"), this);
-        m_pProductLotLabel = new QLabel(tr("Product Lot"), this);
-        m_pProductDefinitionLinedit = new QComboBox(this);
-        m_pProductLotLineEdit = new QLineEdit(this);
+
+        QStringList strProductDifinitionList;
+        strProductDifinitionList << tr("T Cup") << tr("T Cupa");
+        m_pProductDefinitionWidget = new CLabelCommoBoxWidget(tr("Product Definition"), strProductDifinitionList, this);
+        m_pProductLotWidget = new CLabelLineEditWidget(tr("Product Lot"), "", this);
         //
-        m_pExpirationDateLabel = new QLabel(tr("Expiration Date"), this);
-        m_pProductIDLabel = new QLabel(tr("Product ID"), this);
-        m_pExpirationDateEdit = new QDateEdit(this);
-        m_pProductIDLineEdit = new QLineEdit(this);
+
+        m_pExpirationDateWidget = new CLabelDateWidget(tr("Expiration Date"), QDate::currentDate(), this);
+        m_pProductIDWidget = new CLabelLineEditWidget(tr("Product ID"), "", this);
             //
         QGridLayout *pGridLayout = new QGridLayout;
         // Product Details
-        pGridLayout->addWidget(m_pProductDefinitionLabel, 0, 0, 1, 1);
-        pGridLayout->addWidget(m_pProductLotLabel , 0, 1, 1, 1);
-        //
-        pGridLayout->addWidget(m_pProductDefinitionLinedit, 1, 0, 1, 1);
-        pGridLayout->addWidget(m_pProductLotLineEdit , 1, 1, 1, 1);
+        pGridLayout->addWidget(m_pProductDefinitionWidget, 0, 0, 1, 1);
+        pGridLayout->addWidget(m_pProductLotWidget , 0, 1, 1, 1);
         // expiration date
-        pGridLayout->addWidget(m_pExpirationDateLabel, 2, 0, 1, 1);
-        pGridLayout->addWidget(m_pProductIDLabel, 2, 1, 1, 1);
-        //
-        pGridLayout->addWidget(m_pExpirationDateEdit, 3, 0, 1, 1);
-        pGridLayout->addWidget(m_pProductIDLineEdit, 3, 1, 1, 1);
+        pGridLayout->addWidget(m_pExpirationDateWidget, 1, 0, 1, 1);
+        pGridLayout->addWidget(m_pProductIDWidget, 1, 1, 1, 1);
 
                 groupBox->setLayout(pGridLayout);
 

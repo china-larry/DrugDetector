@@ -2,7 +2,7 @@
 #include <QBoxLayout>
 CLabelDateWidget::CLabelDateWidget(QWidget *parent)
     : QWidget(parent),
-      m_qDate(QDate(2017, 1, 1))
+      m_qDate(QDate::currentDate())
 {
     m_pLabel = new QLabel(this);
     m_pDateEdit = new QDateEdit(this);

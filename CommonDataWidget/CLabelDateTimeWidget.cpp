@@ -2,7 +2,7 @@
 #include <QBoxLayout>
 CLabelDateTimeWidget::CLabelDateTimeWidget(QWidget *parent)
     : QWidget(parent),
-      m_qDateTime(QDateTime(QDate(2017, 1, 1), QTime(0, 0, 0)))
+      m_qDateTime(QDateTime(QDate::currentDate(), QTime::currentTime()))
 {
     m_pLabel = new QLabel(this);
     m_pDateTimeEdit = new QDateTimeEdit(this);

@@ -34,7 +34,8 @@ SOURCES += \
     DetectorPage/CDetectorPageStatusBar.cpp \
     CommonDataWidget/CLabelLineEditWidget.cpp \
     CommonDataWidget/CLabelDateWidget.cpp \
-    CommonDataWidget/CLabelDateTimeWidget.cpp
+    CommonDataWidget/CLabelDateTimeWidget.cpp \
+    CommonDataWidget/CLabelCommoBoxWidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -46,7 +47,8 @@ HEADERS += \
     DetectorPage/CDetectorPageStatusBar.h \
     CommonDataWidget/CLabelLineEditWidget.h \
     CommonDataWidget/CLabelDateWidget.h \
-    CommonDataWidget/CLabelDateTimeWidget.h
+    CommonDataWidget/CLabelDateTimeWidget.h \
+    CommonDataWidget/CLabelCommoBoxWidget.h
 
 FORMS += \
         mainwindow.ui

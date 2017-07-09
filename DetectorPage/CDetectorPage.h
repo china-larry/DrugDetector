@@ -2,17 +2,17 @@
 #define CDETECTORPAGE_H
 
 #include <QWidget>
-#include <QLabel>
 #include <QGroupBox>
 #include <QPushButton>
 #include <QCheckBox>
 #include <QRadioButton>
 #include <QMenu>
-#include <QLineEdit>
-#include <QDateEdit>
-#include <QDateTimeEdit>
 #include <QComboBox>
 #include <QTableWidget>
+#include "CommonDataWidget/CLabelLineEditWidget.h"
+#include "CommonDataWidget/CLabelDateWidget.h"
+#include "CommonDataWidget/CLabelDateTimeWidget.h"
+#include "CommonDataWidget/CLabelCommoBoxWidget.h"
 class CDetectorPage : public QWidget
 {
     Q_OBJECT
@@ -36,25 +36,15 @@ private:
     QLabel *m_pDonorNameLabel;
     QCheckBox *m_pTemperatureCBox;
     // last first donor id
-    QLabel *m_pLastNameLabel;
-    QLabel *m_pFirstNameLabel;
-    QLabel *m_pDoorIDLabel;
-    //
-    QLineEdit *m_pLastNameLineEdit;
-    QLineEdit *m_pFirstNameLineEdit;
-    QLineEdit *m_pDonorNameLineEdit;
+    CLabelLineEditWidget *m_pLastNameWidget;
+    CLabelLineEditWidget *m_pFirstNameWidget;
+    CLabelLineEditWidget *m_pDonorNameWidget;
     // data of birth email
-    QLabel *m_pDateofBirthLabel;
-    QLabel *m_pEmailAddressLabel;
-    //
-    QDateEdit *m_pBirthDateEdit;
-    QLineEdit *m_pEmailAddressLineEdit;
+    CLabelDateWidget *m_pDateofBirthWidget;
+    CLabelLineEditWidget *m_pEmailAddressWidget;
     // test time
-    QLabel *m_pTestTimeLabel;
-    QLabel *m_pTestingSiteLabel;
-    //
-    QDateTimeEdit *m_pTestTimeEdit;
-    QLineEdit *m_pTestingSiteLineEdit;
+    CLabelDateTimeWidget *m_pTestTimeWidget;
+    CLabelLineEditWidget *m_pTestingSiteWidget;
     // reason of test
     QLabel *m_pReasonfoTestLabel;
     QCheckBox *m_pPreEmploymentCBox;
@@ -67,15 +57,19 @@ private:
     QLineEdit *m_pOtherLineEdit;
     //////////////////////////////////////
     // Product Details
-    QLabel *m_pProductDefinitionLabel;
-    QLabel *m_pProductLotLabel;
-    QComboBox *m_pProductDefinitionLinedit;
-    QLineEdit *m_pProductLotLineEdit;
+//    QLabel *m_pProductDefinitionLabel;
+//    QLabel *m_pProductLotLabel;
+//    QComboBox *m_pProductDefinitionLinedit;
+//    QLineEdit *m_pProductLotLineEdit;
+    CLabelCommoBoxWidget *m_pProductDefinitionWidget;
+    CLabelLineEditWidget *m_pProductLotWidget;
     // expiration date
-    QLabel *m_pExpirationDateLabel;
-    QLabel *m_pProductIDLabel;
-    QDateEdit *m_pExpirationDateEdit;
-    QLineEdit *m_pProductIDLineEdit;
+//    QLabel *m_pExpirationDateLabel;
+//    QLabel *m_pProductIDLabel;
+//    QDateEdit *m_pExpirationDateEdit;
+//    QLineEdit *m_pProductIDLineEdit;
+    CLabelDateWidget *m_pExpirationDateWidget;
+    CLabelLineEditWidget *m_pProductIDWidget;
     //////////////////////////////////////
     // push button
     QPushButton *m_pReadTestDeviceButton;
