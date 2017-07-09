@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/qss">
         <file>DetectorPage/DetectorPage.qss</file>
+        <file>HistoryPage/HistoryPage.qss</file>
     </qresource>
 </RCC>

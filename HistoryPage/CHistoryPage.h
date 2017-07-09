@@ -28,8 +28,10 @@ signals:
 public slots:
 
 private:
+    void _LoadQss();
     QGroupBox *_CreateQueryConditionGroup();
-    void _InitWidget();
+    void _InitTableWidget();
+    void _InitButtonWidget();
     void _InitLayout();
 
 private:
@@ -43,10 +45,7 @@ private:
     //
     CLabelLineEditWidget *m_pLotNumberWidget;
     CLabelCommoBoxWidget *m_pProductDefinitionWidget;
-//    QLabel *m_pQueryAllLabel;// hide 布局
-//    QCheckBox *m_pQueryAllCheckBox;
     CLabelCheckBoxWidget *m_pQueryAllWidget;
-    QLabel *m_pNullLabel;// hide 布局
     // button
     QPushButton *m_pQueryButton;
     QPushButton *m_pSelectAllButton;
