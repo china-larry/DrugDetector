@@ -13,6 +13,7 @@ CLabelCommoBoxWidget::CLabelCommoBoxWidget(QString strLabel, QStringList strComb
 {
     m_pLabel = new QLabel(strLabel, this);
     m_pComboBox = new QComboBox(this);
+    m_pComboBox->setMaximumWidth(150);
     if(strComboList.count())
     {
         m_pComboBox->addItems(strComboList);

@@ -35,7 +35,8 @@ SOURCES += \
     CommonDataWidget/CLabelLineEditWidget.cpp \
     CommonDataWidget/CLabelDateWidget.cpp \
     CommonDataWidget/CLabelDateTimeWidget.cpp \
-    CommonDataWidget/CLabelCommoBoxWidget.cpp
+    CommonDataWidget/CLabelCommoBoxWidget.cpp \
+    CommonDataWidget/CLabelCheckBoxWidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -48,7 +49,8 @@ HEADERS += \
     CommonDataWidget/CLabelLineEditWidget.h \
     CommonDataWidget/CLabelDateWidget.h \
     CommonDataWidget/CLabelDateTimeWidget.h \
-    CommonDataWidget/CLabelCommoBoxWidget.h
+    CommonDataWidget/CLabelCommoBoxWidget.h \
+    CommonDataWidget/CLabelCheckBoxWidget.h
 
 FORMS += \
         mainwindow.ui

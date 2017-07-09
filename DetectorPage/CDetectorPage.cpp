@@ -36,7 +36,7 @@ void CDetectorPage::_LoadQss()
 QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 {
     const int kiLineEditWidth = 80;
-    QGroupBox *groupBox = new QGroupBox(tr("Donor Details"));
+    QGroupBox *groupBox = new QGroupBox(tr("Donor Details"), this);
     groupBox->setMaximumWidth(500);
     // donor name
     m_pDonorNameLabel = new QLabel(tr("Donor Name"), this);
@@ -96,7 +96,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 // product details
 QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
 {
-    QGroupBox *groupBox = new QGroupBox(tr("Product Details"));
+    QGroupBox *groupBox = new QGroupBox(tr("Product Details"), this);
     groupBox->setMaximumSize(500, 200);
         //
 
@@ -124,7 +124,7 @@ QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
 
 QGroupBox *CDetectorPage::_CreateResultsGroup()
 {
-    QGroupBox *groupBox = new QGroupBox(tr("Non-Exclusive Checkboxes"));
+    QGroupBox *groupBox = new QGroupBox(tr("Non-Exclusive Checkboxes"), this);
         groupBox->setFlat(true);
 
     m_pCamaraLabel = new QLabel("temp", this);

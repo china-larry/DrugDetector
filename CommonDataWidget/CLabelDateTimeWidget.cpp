@@ -5,7 +5,7 @@ CLabelDateTimeWidget::CLabelDateTimeWidget(QWidget *parent)
       m_qDateTime(QDateTime(QDate::currentDate(), QTime::currentTime()))
 {
     m_pLabel = new QLabel(this);
-    m_pDateTimeEdit = new QDateTimeEdit(this);
+    m_pDateTimeEdit = new QDateTimeEdit(this);    
     _InitLayout();
 }
 
@@ -15,6 +15,7 @@ CLabelDateTimeWidget::CLabelDateTimeWidget(QString strLabel, QDateTime qDateTime
 {
     m_pLabel = new QLabel(strLabel, this);
     m_pDateTimeEdit = new QDateTimeEdit(qDateTime, this);
+    m_pDateTimeEdit->setMaximumWidth(300);
     _InitLayout();
 }
 

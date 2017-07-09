@@ -16,6 +16,7 @@
 #include "CommonDataWidget/CLabelLineEditWidget.h"
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
+#include "CommonDataWidget/CLabelCheckBoxWidget.h"
 class CHistoryPage : public QWidget
 {
     Q_OBJECT
@@ -42,7 +43,16 @@ private:
     //
     CLabelLineEditWidget *m_pLotNumberWidget;
     CLabelCommoBoxWidget *m_pProductDefinitionWidget;
-    QCheckBox *m_pQueryAllCheckBox;
+//    QLabel *m_pQueryAllLabel;// hide 布局
+//    QCheckBox *m_pQueryAllCheckBox;
+    CLabelCheckBoxWidget *m_pQueryAllWidget;
+    QLabel *m_pNullLabel;// hide 布局
+    // button
+    QPushButton *m_pQueryButton;
+    QPushButton *m_pSelectAllButton;
+    QPushButton *m_pDeselectAllButton;
+    QPushButton *m_pDeleteButton;
+    QPushButton *m_pExportButton;
 
 };
 
