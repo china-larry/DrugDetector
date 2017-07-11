@@ -12,6 +12,8 @@ CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
     _InitButtonWidget();
     _LoadQss();
     _InitLayout();
+    // 初始化数据库
+    _InitDataBase();
 }
 
 void CHistoryPage::_LoadQss()
@@ -139,4 +141,21 @@ void CHistoryPage::_InitLayout()
     //
     pLayout->addLayout(pButtonLayout);
     this->setLayout(pLayout);
+}
+
+void CHistoryPage::_InitDataBase()
+{
+
+    //添加数据库驱动、设置数据库名称、数据库登录用户名、密码
+    QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE");
+    database.setDatabaseName("database.db");
+
+    if (!database.open())
+    {
+        qDebug() << "open database error" << database.lastError().text();
+    }
+    else
+    {
+        qDebug() << "open it";
+    }
 }

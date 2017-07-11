@@ -4,6 +4,7 @@
 #include <QTextStream>
 #include <QHeaderView>
 #include <QScrollBar>
+#include <QPixmap>
 #include <QDebug>
 CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
 {
@@ -20,6 +21,16 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
         grid->addWidget(_CreatePushButtonGroup(), 2, 0, 1, 2);
         this->setLayout(grid);
 
+}
+
+CDetectorPage::~CDetectorPage()
+{
+    // DataList清空，控件数据清空
+    if(!m_pTestResultDataList.empty())
+    {
+        qDeleteAll(m_pTestResultDataList);
+        m_pTestResultDataList.clear();
+    }
 }
 // 接收二维码数据
 void CDetectorPage::SlotReceiveQRCodeInfo(QVariant sQRCodeInfo)
@@ -57,16 +68,24 @@ void CDetectorPage::SlotReceiveTestResultData(QVariant sTestResultData)
 void CDetectorPage::SlotEndTest()
 {
     qDebug() << "end test";
-    // 数据传送给main，
+    // 数据传送给main
 
 
-    // DataList清空，控件数据清空
-    m_pTestResultDataList.clear();
+
 }
 // 开始测试
 void CDetectorPage::_SlotCheckReadTestDevice()
 {
   m_pLibDrugDetector->UIBeginTest();
+  // 清空数据区
+  // DataList清空，控件数据清空
+  if(!m_pTestResultDataList.empty())
+  {
+      qDeleteAll(m_pTestResultDataList);
+      m_pTestResultDataList.clear();
+  }
+
+  m_pResultsTableWidget->clear();
 }
 
 void CDetectorPage::_LoadQss()
@@ -177,8 +196,9 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
         groupBox->setFlat(true);
 
     m_pCamaraLabel = new QLabel("temp", this);
-    m_pCamaraLabel->setMinimumSize(400, 300);
+    m_pCamaraLabel->setFixedSize(400, 300);
     m_pCamaraLabel->setStyleSheet("QLabel { background-color : rgb(128, 128, 128); color : blue; }");
+    m_pCamaraLabel->setPixmap(QPixmap("E:\\picture\\daiyu.jpg"));
 
     m_pResultsTableWidget = new QTableWidget(this);
     m_pResultsTableWidget->resize(400, 300);

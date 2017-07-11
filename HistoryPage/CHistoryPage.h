@@ -13,6 +13,8 @@
 #include <QDateTimeEdit>
 #include <QComboBox>
 #include <QTableWidget>
+#include <QtSql>
+#include <QSqlDatabase>
 #include "CommonDataWidget/CLabelLineEditWidget.h"
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
@@ -33,6 +35,8 @@ private:
     void _InitTableWidget();
     void _InitButtonWidget();
     void _InitLayout();
+    // 数据库
+    void _InitDataBase();// 初始化数据库
 
 private:
     QTableWidget* m_pHistoryDataTableWidget;
