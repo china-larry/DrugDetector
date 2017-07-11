@@ -10,7 +10,9 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
 
     //应用样式 apply the qss style
        _LoadQss();
-
+       // 初始化接收lib库
+      _InitLibDrug();
+      // 布局
     QGridLayout *grid = new QGridLayout;
         grid->addWidget(_CreateDonorDetailsGroup(), 0, 0, 1, 1);
         grid->addWidget(_CreateProductDetailsGroup(), 1, 0, 1, 1);
@@ -18,6 +20,42 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
         grid->addWidget(_CreatePushButtonGroup(), 2, 0, 1, 2);
         this->setLayout(grid);
 
+}
+// 接收二维码数据
+void CDetectorPage::SlotReceiveQRCodeInfo(QVariant sQRCodeInfo)
+{
+
+    m_sQRCodeInfo = sQRCodeInfo.value<QRCodeInfo>();
+    qDebug() << "code info" << m_sQRCodeInfo.iProductID;
+    // 更新控件
+    m_pProductLotWidget->SetLineText(QString::number(m_sQRCodeInfo.iProductLot));
+    m_pExpirationDateWidget->SetDate(m_sQRCodeInfo.qExprationDate);
+    m_pProductIDWidget->SetLineText(QString::number(m_sQRCodeInfo.iProductID));
+}
+// 接收每次测试结果
+void CDetectorPage::SlotReceiveTestResultData(QVariant sTestResultData)
+{
+    TestResultData sTestResultDataTemp = sTestResultData.value<TestResultData>();
+    TestResultData *pTestRsultData = new TestResultData(sTestResultDataTemp);
+    m_pTestResultDataList.push_back(pTestRsultData);
+    qDebug() << "test " << sTestResultDataTemp.strProgramName;
+    // 插入表格
+
+}
+// 结束测试
+void CDetectorPage::SlotEndTest()
+{
+    qDebug() << "end test";
+    // 数据传送给main，
+
+
+    // DataList清空
+    m_pTestResultDataList.clear();
+}
+// 开始测试
+void CDetectorPage::_SlotCheckReadTestDevice()
+{
+  m_pLibDrugDetector->UIBeginTest();
 }
 
 void CDetectorPage::_LoadQss()
@@ -35,7 +73,7 @@ void CDetectorPage::_LoadQss()
 // Donor Details
 QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 {
-    const int kiLineEditWidth = 80;
+    //const int kiLineEditWidth = 80;
     QGroupBox *groupBox = new QGroupBox(tr("Donor Details"), this);
     groupBox->setMaximumWidth(500);
     // donor name
@@ -121,7 +159,7 @@ QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
 
                 return groupBox;
 }
-
+// result
 QGroupBox *CDetectorPage::_CreateResultsGroup()
 {
     QGroupBox *groupBox = new QGroupBox(tr("Non-Exclusive Checkboxes"), this);
@@ -135,6 +173,7 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
     m_pResultsTableWidget->resize(400, 300);
     // 表单样式
     m_pResultsTableWidget->setColumnCount(3);
+    m_pResultsTableWidget->setRowCount(16);// 最大16个项目
     QHeaderView *pHeaderView = m_pResultsTableWidget->horizontalHeader();
     pHeaderView->setDefaultSectionSize(120);
     pHeaderView->setDisabled(true);
@@ -176,13 +215,14 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
 
                 return groupBox;
 }
-
+// button
 QGroupBox *CDetectorPage::_CreatePushButtonGroup()
 {
     QGroupBox *groupBox = new QGroupBox(this);
 
 
         QPushButton *m_pReadTestDeviceButton = new QPushButton(tr("Read Test Device"));
+        connect(m_pReadTestDeviceButton,SIGNAL(clicked(bool)), this, SLOT(_SlotCheckReadTestDevice()));
         QPushButton *m_pStopTestButton = new QPushButton(tr("Stop Test"));
         QPushButton *m_pPrintPriviewButton = new QPushButton(tr("Print Priview"));
 
@@ -199,4 +239,13 @@ QGroupBox *CDetectorPage::_CreatePushButtonGroup()
                     groupBox->setLayout(hbox);
 
                     return groupBox;
+}
+
+void CDetectorPage::_InitLibDrug()
+{
+    m_pLibDrugDetector = new LibDrugDetector();
+    connect(m_pLibDrugDetector, SIGNAL(SignalSendQRCodeInfo(QVariant)), this, SLOT(SlotReceiveQRCodeInfo(QVariant)));
+    connect(m_pLibDrugDetector, SIGNAL(SignalSendTestResultData(QVariant)), this, SLOT(SlotReceiveTestResultData(QVariant)));
+    connect(m_pLibDrugDetector, SIGNAL(SignalEndTest()), this, SLOT(SlotEndTest()));
+
 }

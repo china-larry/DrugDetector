@@ -59,3 +59,9 @@ DISTFILES +=
 
 RESOURCES += \
     qssresourcefile.qrc
+
+INCLUDEPATH  += \
+    E:/Qt_Project/libDrugDetector
+
+LIBS += \
+    E:/build/DrugDetector/debug/liblibDrugDetector.a

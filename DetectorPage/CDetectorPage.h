@@ -9,10 +9,13 @@
 #include <QMenu>
 #include <QComboBox>
 #include <QTableWidget>
+#include <QList>
 #include "CommonDataWidget/CLabelLineEditWidget.h"
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelDateTimeWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
+#include "LibDrugDetector.h"
+
 class CDetectorPage : public QWidget
 {
     Q_OBJECT
@@ -22,6 +25,13 @@ public:
 signals:
 
 public slots:
+    // 测试
+    void SlotReceiveQRCodeInfo(QVariant sQRCodeInfo);
+    void SlotReceiveTestResultData(QVariant sTestResultData);
+    void SlotEndTest();
+private slots:
+    // 控件
+    void _SlotCheckReadTestDevice();
 
 private:
     void _LoadQss();
@@ -29,6 +39,7 @@ private:
     QGroupBox *_CreateProductDetailsGroup();
     QGroupBox *_CreateResultsGroup();
     QGroupBox *_CreatePushButtonGroup();
+    void _InitLibDrug();// 初始化第三方库
 
 private:
     // donor details 1line
@@ -70,6 +81,10 @@ private:
     // results
     QLabel *m_pCamaraLabel;// 摄像头
     QTableWidget *m_pResultsTableWidget;// 表格数据
+    // 获取数据
+    LibDrugDetector *m_pLibDrugDetector;
+    QRCodeInfo m_sQRCodeInfo;
+    QList<TestResultData*> m_pTestResultDataList;
 
 };
 
