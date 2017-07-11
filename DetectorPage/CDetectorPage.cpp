@@ -40,7 +40,18 @@ void CDetectorPage::SlotReceiveTestResultData(QVariant sTestResultData)
     m_pTestResultDataList.push_back(pTestRsultData);
     qDebug() << "test " << sTestResultDataTemp.strProgramName;
     // 插入表格
-
+    // program
+    QTableWidgetItem *pProgramItem = new QTableWidgetItem();
+    pProgramItem->setText(sTestResultDataTemp.strProgramName);
+    m_pResultsTableWidget->setItem(m_pTestResultDataList.count() - 1, 0, pProgramItem);
+    // result
+    QTableWidgetItem *pResultItem = new QTableWidgetItem();
+    pResultItem->setText(sTestResultDataTemp.strResult);
+    m_pResultsTableWidget->setItem(m_pTestResultDataList.count() - 1, 1, pResultItem);
+    // cutoff value
+    QTableWidgetItem *pCutoffItem = new QTableWidgetItem();
+    pCutoffItem->setText(QString::number(sTestResultDataTemp.iCutoffValue));
+    m_pResultsTableWidget->setItem(m_pTestResultDataList.count() - 1, 2, pCutoffItem);
 }
 // 结束测试
 void CDetectorPage::SlotEndTest()
@@ -49,7 +60,7 @@ void CDetectorPage::SlotEndTest()
     // 数据传送给main，
 
 
-    // DataList清空
+    // DataList清空，控件数据清空
     m_pTestResultDataList.clear();
 }
 // 开始测试
