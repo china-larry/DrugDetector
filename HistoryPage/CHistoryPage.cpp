@@ -16,6 +16,23 @@ CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
     _InitDataBase();
 }
 
+void CHistoryPage::SetTestResultDataList(QList<TestResultData *> pTestResultDataList)
+{
+    m_pTestResultDataList = pTestResultDataList;
+    qDebug() << "get history  test size: " << m_pTestResultDataList.count();
+}
+
+void CHistoryPage::SetTestUserData(DetectorPageUserData sDetectorPageUserData)
+{
+    m_sDetectorPageUserData = sDetectorPageUserData;
+    qDebug() << "user histroyt  data: " << m_sDetectorPageUserData.strOtherReasonComments;
+}
+
+void CHistoryPage::InsertToDatabase()
+{
+    qDebug() << "insert to database";
+}
+
 void CHistoryPage::_LoadQss()
 {
     QFile file(":/qss/HistoryPage/HistoryPage.qss");

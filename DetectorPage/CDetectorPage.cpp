@@ -68,10 +68,8 @@ void CDetectorPage::SlotReceiveTestResultData(QVariant sTestResultData)
 void CDetectorPage::SlotEndTest()
 {
     qDebug() << "end test";
-    // 数据传送给main
-
-
-
+    // 告知main，传送数据
+    emit SignalEndTest();
 }
 // 开始测试
 void CDetectorPage::_SlotCheckReadTestDevice()
@@ -83,9 +81,42 @@ void CDetectorPage::_SlotCheckReadTestDevice()
   {
       qDeleteAll(m_pTestResultDataList);
       m_pTestResultDataList.clear();
+      qDebug() << "clear test result data list";
   }
 
   m_pResultsTableWidget->clear();
+}
+
+QList<TestResultData *> CDetectorPage::GetTestResultData()
+{
+    return m_pTestResultDataList;
+}
+
+DetectorPageUserData CDetectorPage::GetUserData()
+{
+    // 获取用户表格数据
+    m_sDetectorPageUserData.strDonorFirstName = m_pFirstNameWidget->GetLineText();
+    m_sDetectorPageUserData.strDonorLastName = m_pLastNameWidget->GetLineText();
+    m_sDetectorPageUserData.qTestDateTime = m_pTestTimeWidget->GetDateTime();
+    m_sDetectorPageUserData.qBirthDate = m_pBirthDateWidget->GetDate();
+    m_sDetectorPageUserData.strDonorID = m_pDonorIDWidget->GetLineText();
+    m_sDetectorPageUserData.strTestSite = m_pTestingSiteWidget->GetLineText();
+    m_sDetectorPageUserData.bPreEmployment = m_pPreEmploymentCBox->isChecked();
+    m_sDetectorPageUserData.bRandom = m_pRandomCBox->isChecked();
+    m_sDetectorPageUserData.bReasonableSuspicionCause = m_pReasonableSuspicionCauseCBox->isChecked();
+    m_sDetectorPageUserData.bPostAccident = m_pPostAccidentCBox->isChecked();
+    m_sDetectorPageUserData.bReturnToDuty = m_pReturnToDutyCBox->isChecked();
+    m_sDetectorPageUserData.bFollowUp = m_pFollowUpCBox->isChecked();
+    m_sDetectorPageUserData.bOtherReason = m_pOtherReasonForTestCBox->isChecked();
+    m_sDetectorPageUserData.strOtherReasonComments = m_pOtherReasonCommentsLineEdit->text();
+    // product details
+    m_sDetectorPageUserData.bTemperatureNormal = m_pTemperatureNormalCBox->isChecked();
+    m_sDetectorPageUserData.strProductDefinition = m_pProductDefinitionWidget->GetCurrentSelectText();
+    m_sDetectorPageUserData.strProductLot = m_pProductLotWidget->GetLineText();
+    m_sDetectorPageUserData.qExpriationDate = m_pExpirationDateWidget->GetDate();
+    m_sDetectorPageUserData.strProductID = m_pProductIDWidget->GetLineText();
+    //
+    return m_sDetectorPageUserData;
 }
 
 void CDetectorPage::_LoadQss()
@@ -108,13 +139,13 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     groupBox->setMaximumWidth(500);
     // donor name
     m_pDonorNameLabel = new QLabel(tr("Donor Name"), this);
-    m_pTemperatureCBox = new QCheckBox(tr("Temperature normal#"), this);
+    m_pTemperatureNormalCBox = new QCheckBox(tr("Temperature normal#"), this);
     // last first donor
     m_pLastNameWidget = new CLabelLineEditWidget(tr("Last"), "", this);
     m_pFirstNameWidget = new CLabelLineEditWidget(tr("First"), "", this);
-    m_pDonorNameWidget = new CLabelLineEditWidget(tr("Donor ID#"), "", this);
+    m_pDonorIDWidget = new CLabelLineEditWidget(tr("Donor ID#"), "", this);
     // date of birth email
-    m_pDateofBirthWidget = new CLabelDateWidget(tr("Date of Birth"), QDate::currentDate(), this);
+    m_pBirthDateWidget = new CLabelDateWidget(tr("Date of Birth"), QDate::currentDate(), this);
     m_pEmailAddressWidget = new CLabelLineEditWidget(tr("Email Address"), "", this);
     // test time
     m_pTestTimeWidget = new CLabelDateTimeWidget(tr("Test Time"), QDateTime::currentDateTime(), this);
@@ -123,24 +154,24 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     m_pReasonfoTestLabel = new QLabel(tr("Reason for Test"), this);
     m_pPreEmploymentCBox = new QCheckBox(tr("Pre Employment"), this);
     m_pRandomCBox = new QCheckBox(tr("Random"), this);
-    m_pReasonableCBox = new QCheckBox(tr("Reasonable suspicion cause"), this);
+    m_pReasonableSuspicionCauseCBox = new QCheckBox(tr("Reasonable suspicion cause"), this);
     m_pPostAccidentCBox = new QCheckBox(tr("PostAccident"), this);
-    m_pReturntoDutyCBox = new QCheckBox(tr("Return to Duty"), this);
+    m_pReturnToDutyCBox = new QCheckBox(tr("Return to Duty"), this);
     m_pFollowUpCBox = new QCheckBox(tr("Follow Up"), this);
-    m_pOtherCBox = new QCheckBox(tr("Other: "), this);
-    m_pOtherLineEdit = new QLineEdit(this);
+    m_pOtherReasonForTestCBox = new QCheckBox(tr("Other: "), this);
+    m_pOtherReasonCommentsLineEdit = new QLineEdit(this);
 
 
     QGridLayout *pGridLayout = new QGridLayout;
     // donor name
     pGridLayout->addWidget(m_pDonorNameLabel, 0, 0, 1, 2);
-    pGridLayout->addWidget(m_pTemperatureCBox , 0, 2, 1, 2);
+    pGridLayout->addWidget(m_pTemperatureNormalCBox , 0, 2, 1, 2);
     // last fire name
     pGridLayout->addWidget(m_pLastNameWidget, 1, 0, 1, 1);
     pGridLayout->addWidget(m_pFirstNameWidget, 1, 1, 1, 1);
-    pGridLayout->addWidget(m_pDonorNameWidget, 1, 2, 1, 2);
+    pGridLayout->addWidget(m_pDonorIDWidget, 1, 2, 1, 2);
     // date of birth email
-    pGridLayout->addWidget(m_pDateofBirthWidget, 2, 0, 1, 2);
+    pGridLayout->addWidget(m_pBirthDateWidget, 2, 0, 1, 2);
     pGridLayout->addWidget(m_pEmailAddressWidget, 2, 2, 1, 2);
     // test time
     pGridLayout->addWidget(m_pTestTimeWidget, 3, 0, 1, 2);
@@ -149,12 +180,12 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     pGridLayout->addWidget(m_pReasonfoTestLabel, 4, 0, 1, 4);
     pGridLayout->addWidget(m_pPreEmploymentCBox, 7, 0, 1, 2);
     pGridLayout->addWidget(m_pRandomCBox, 7, 2, 1, 2);
-    pGridLayout->addWidget(m_pReasonableCBox, 8, 0, 1, 2);
+    pGridLayout->addWidget(m_pReasonableSuspicionCauseCBox, 8, 0, 1, 2);
     pGridLayout->addWidget(m_pPostAccidentCBox, 8, 2, 1, 2);
-    pGridLayout->addWidget(m_pReturntoDutyCBox, 9, 0, 1, 2);
+    pGridLayout->addWidget(m_pReturnToDutyCBox, 9, 0, 1, 2);
     pGridLayout->addWidget(m_pFollowUpCBox, 9, 2, 1, 2);
-    pGridLayout->addWidget(m_pOtherCBox, 10, 0, 1, 1);
-    pGridLayout->addWidget(m_pOtherLineEdit, 10, 1, 1, 3);
+    pGridLayout->addWidget(m_pOtherReasonForTestCBox, 10, 0, 1, 1);
+    pGridLayout->addWidget(m_pOtherReasonCommentsLineEdit, 10, 1, 1, 3);
 
 
             groupBox->setLayout(pGridLayout);

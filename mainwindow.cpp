@@ -77,36 +77,48 @@ void MainWindow::SlotReceiveLogin()
 {
     this->show();
 }
-
+// 前往设置页
 void MainWindow::SlotGoSettingPage()
 {
     qDebug() << "go setting page";
     m_pStackedWidget->setCurrentIndex(2);
     m_pDetectorPageStatusBar->hide();
 }
-
+// 前往历史数据页
 void MainWindow::SlotGoHistoryPage()
 {
     qDebug() << "go history page";
     m_pStackedWidget->setCurrentIndex(1);
     m_pDetectorPageStatusBar->hide();
 }
-
+// 前往测试页
 void MainWindow::SlotGoDetectorPage()
 {
     qDebug() << "go detector page";
     m_pStackedWidget->setCurrentIndex(0);
     m_pDetectorPageStatusBar->show();
 }
-
+// 最小化
 void MainWindow::SlotMinWindow()
 {
     this->showMinimized();
 }
-
+// 关闭
 void MainWindow::SlotCloseWindow()
 {
     this->close();
+}
+// 测试页测试结束
+void MainWindow::SlotDetectorPageEndTest()
+{
+    m_pTestResultDataList = m_pDetectorPage->GetTestResultData();
+    m_sDetectorPageUserData = m_pDetectorPage->GetUserData();
+    qDebug() << "get test size: " << m_pTestResultDataList.count();
+    qDebug() << "user data: " << m_sDetectorPageUserData.strOtherReasonComments;
+    //
+    m_pHistoryPage->SetTestResultDataList(m_pTestResultDataList);
+    m_pHistoryPage->SetTestUserData(m_sDetectorPageUserData);
+    m_pHistoryPage->InsertToDatabase();
 }
 
 void MainWindow::_InitWidget()
@@ -122,11 +134,14 @@ void MainWindow::_InitWidget()
     connect(m_pDetectorPageTitleWidget, SIGNAL(SigCloseWindow()), this, SLOT(SlotCloseWindow()));
     // 多标签
     m_pStackedWidget = new QStackedWidget(this);
-
+    // 测试页
     m_pDetectorPage = new CDetectorPage(this);
+    connect(m_pDetectorPage, SIGNAL(SignalEndTest()), this, SLOT(SlotDetectorPageEndTest()));
+    // 历史数据页
     m_pHistoryPage = new CHistoryPage(this);
+    // 设置页
     m_pSettingPage = new CSettingPage(this);
-    //
+    // 布局
     m_pStackedWidget->addWidget(m_pDetectorPage);
     m_pStackedWidget->addWidget(m_pHistoryPage);
     m_pStackedWidget->addWidget(m_pSettingPage);

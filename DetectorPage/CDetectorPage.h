@@ -15,15 +15,18 @@
 #include "CommonDataWidget/CLabelDateTimeWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
 #include "LibDrugDetector.h"
+#include "PublicFunction.h"
 
+//
 class CDetectorPage : public QWidget
 {
     Q_OBJECT
 public:
     explicit CDetectorPage(QWidget *parent = nullptr);
+    ~CDetectorPage();
 
 signals:
-
+    void SignalEndTest();
 public slots:
     // 测试
     void SlotReceiveQRCodeInfo(QVariant sQRCodeInfo);
@@ -32,6 +35,9 @@ public slots:
 private slots:
     // 控件
     void _SlotCheckReadTestDevice();
+public:
+    QList<TestResultData*> GetTestResultData();
+    DetectorPageUserData GetUserData();
 
 private:
     void _LoadQss();
@@ -44,13 +50,13 @@ private:
 private:
     // donor details 1line
     QLabel *m_pDonorNameLabel;
-    QCheckBox *m_pTemperatureCBox;
+    QCheckBox *m_pTemperatureNormalCBox;
     // last first donor id
     CLabelLineEditWidget *m_pLastNameWidget;
     CLabelLineEditWidget *m_pFirstNameWidget;
-    CLabelLineEditWidget *m_pDonorNameWidget;
+    CLabelLineEditWidget *m_pDonorIDWidget;
     // data of birth email
-    CLabelDateWidget *m_pDateofBirthWidget;
+    CLabelDateWidget *m_pBirthDateWidget;
     CLabelLineEditWidget *m_pEmailAddressWidget;
     // test time
     CLabelDateTimeWidget *m_pTestTimeWidget;
@@ -59,12 +65,12 @@ private:
     QLabel *m_pReasonfoTestLabel;
     QCheckBox *m_pPreEmploymentCBox;
     QCheckBox *m_pRandomCBox;
-    QCheckBox *m_pReasonableCBox;
+    QCheckBox *m_pReasonableSuspicionCauseCBox;
     QCheckBox *m_pPostAccidentCBox;
-    QCheckBox *m_pReturntoDutyCBox;
+    QCheckBox *m_pReturnToDutyCBox;
     QCheckBox *m_pFollowUpCBox;
-    QCheckBox *m_pOtherCBox;
-    QLineEdit *m_pOtherLineEdit;
+    QCheckBox *m_pOtherReasonForTestCBox;
+    QLineEdit *m_pOtherReasonCommentsLineEdit;
     //////////////////////////////////////
     // Product Details
     CLabelCommoBoxWidget *m_pProductDefinitionWidget;
@@ -82,10 +88,10 @@ private:
     QLabel *m_pCamaraLabel;// 摄像头
     QTableWidget *m_pResultsTableWidget;// 表格数据
     // 获取数据
-    LibDrugDetector *m_pLibDrugDetector;
-    QRCodeInfo m_sQRCodeInfo;
-    QList<TestResultData*> m_pTestResultDataList;
-
+    LibDrugDetector *m_pLibDrugDetector;// 获取下位机测试结果外部库
+    QRCodeInfo m_sQRCodeInfo;       // 二维码数据，项目总数
+    QList<TestResultData*> m_pTestResultDataList;// 下位机的测试结果列表
+    DetectorPageUserData m_sDetectorPageUserData;// 用户列表数据
 };
 
 #endif // CDETECTORPAGE_H

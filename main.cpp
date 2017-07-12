@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
-#include "CLoginInWidget.h"
+#include "LoginPage/CLoginInWidget.h"
 
 int main(int argc, char *argv[])
 {

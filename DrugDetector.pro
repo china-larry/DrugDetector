@@ -26,7 +26,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    CLoginInWidget.cpp \
     DetectorPage/CDetectorPage.cpp \
     DetectorPage/CDetectorPageTitleWidget.cpp \
     SettingPage/CSettingPage.cpp \
@@ -36,11 +35,12 @@ SOURCES += \
     CommonDataWidget/CLabelDateWidget.cpp \
     CommonDataWidget/CLabelDateTimeWidget.cpp \
     CommonDataWidget/CLabelCommoBoxWidget.cpp \
-    CommonDataWidget/CLabelCheckBoxWidget.cpp
+    CommonDataWidget/CLabelCheckBoxWidget.cpp \
+    PublicFunction.cpp \
+    LoginPage/CLoginInWidget.cpp
 
 HEADERS += \
         mainwindow.h \
-    CLoginInWidget.h \
     DetectorPage/CDetectorPage.h \
     DetectorPage/CDetectorPageTitleWidget.h \
     SettingPage/CSettingPage.h \
@@ -50,7 +50,9 @@ HEADERS += \
     CommonDataWidget/CLabelDateWidget.h \
     CommonDataWidget/CLabelDateTimeWidget.h \
     CommonDataWidget/CLabelCommoBoxWidget.h \
-    CommonDataWidget/CLabelCheckBoxWidget.h
+    CommonDataWidget/CLabelCheckBoxWidget.h \
+    PublicFunction.h \
+    LoginPage/CLoginInWidget.h
 
 FORMS += \
         mainwindow.ui

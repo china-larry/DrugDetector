@@ -26,18 +26,21 @@ public:
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
 public slots:
+    // 标题栏
     void SlotReceiveLogin();// 登陆界面跳转
     void SlotGoDetectorPage();// 标题栏发送来的跳转Data界面
     void SlotGoHistoryPage();
     void SlotGoSettingPage();
-    //
     void SlotMinWindow();
     void SlotCloseWindow();
+    //
+    void SlotDetectorPageEndTest();
 
 private:
     void _InitWidget();
     void _InitLayout();
 private:
+    // UI
     Ui::MainWindow *ui;
     // Title
     CDetectorPageTitleWidget *m_pDetectorPageTitleWidget;
@@ -61,6 +64,10 @@ private:
     int m_kiTitleHeight;// 标题栏高度
     int m_kiStatusBarHeight;
     QRect m_iWidgetRect;
+
+    // 数据区
+    QList<TestResultData*> m_pTestResultDataList;
+    DetectorPageUserData m_sDetectorPageUserData;
 };
 
 #endif // MAINWINDOW_H

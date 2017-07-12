@@ -19,6 +19,8 @@
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
 #include "CommonDataWidget/CLabelCheckBoxWidget.h"
+#include "PublicFunction.h"
+#include "LibDrugDetector.h"
 class CHistoryPage : public QWidget
 {
     Q_OBJECT
@@ -28,6 +30,13 @@ public:
 signals:
 
 public slots:
+
+public:
+    // 获得测试结果
+    void SetTestResultDataList(QList<TestResultData*> pTestResultDataList);
+    void SetTestUserData(DetectorPageUserData sDetectorPageUserData);
+    // 将上方获取的数据插入数据库
+    void InsertToDatabase();
 
 private:
     void _LoadQss();
@@ -56,6 +65,10 @@ private:
     QPushButton *m_pDeselectAllButton;
     QPushButton *m_pDeleteButton;
     QPushButton *m_pExportButton;
+
+    // 单次测试数据区
+    QList<TestResultData*> m_pTestResultDataList;
+    DetectorPageUserData m_sDetectorPageUserData;
 
 };
 
