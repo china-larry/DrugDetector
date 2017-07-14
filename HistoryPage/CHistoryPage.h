@@ -15,6 +15,7 @@
 #include <QTableWidget>
 #include <QtSql>
 #include <QSqlDatabase>
+#include <QSqlQuery>
 #include "CommonDataWidget/CLabelLineEditWidget.h"
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
@@ -70,8 +71,8 @@ private:
     QList<TestResultData*> m_pTestResultDataList;
     DetectorPageUserData m_sDetectorPageUserData;
     // 数据库操作
+    QSqlQuery m_qSqlQuery;
     uint64_t m_uiKeyID;// 主键迭代ID
-    QString m_strCreateSql;
 
 };
 
