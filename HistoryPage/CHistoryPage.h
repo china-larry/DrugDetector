@@ -69,6 +69,9 @@ private:
     // 单次测试数据区
     QList<TestResultData*> m_pTestResultDataList;
     DetectorPageUserData m_sDetectorPageUserData;
+    // 数据库操作
+    uint64_t m_uiKeyID;// 主键迭代ID
+    QString m_strCreateSql;
 
 };
 

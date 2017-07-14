@@ -204,7 +204,27 @@ void CHistoryPage::_InitDataBase()
               + "Comments varchar(32), TemperatureNormal bool, "
               + "ProductDefinition varchar(16), ExpirationDate varchar(16), "
               + "ProductLot varchar(16), ProductID varchar(16), "
-              + "NumberofPrograms int";
+              + "NumberofPrograms int, ";
+    for(int i = 0; i < 17; ++i)
+    {
+        strCreateHistorySql += "ProgramName" + QString::number(i) + " varchar(16), ";
+    }
+    //
+    for(int i = 0; i < 17; ++i)
+    {
+        strCreateHistorySql += "Result" + QString::number(i) + " varchar(16), ";
+    }
+    //
+    for(int i = 0; i < 17; ++i)
+    {
+        strCreateHistorySql += "Cutoff" + QString::number(i) + " varchar(16), ";
+    }
+    //
+    strCreateHistorySql += "Nu"
+    for(int i = 0; i < 17; ++i)
+    {
+        strCreateHistorySql += "Cutoff" + QString::number(i) + " varchar(16), ";
+    }
 
     QSqlQuery sql_query;
     QString create_sql = "create table student (id int primary key, name varchar(30), age int)";
