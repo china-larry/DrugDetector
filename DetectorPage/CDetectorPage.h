@@ -35,6 +35,7 @@ public slots:
 private slots:
     // 控件
     void _SlotCheckReadTestDevice();
+    void _SlotStopTest();// 主动停止测试
 public:
     QList<TestResultData*> GetTestResultData();
     DetectorPageUserData GetUserData();

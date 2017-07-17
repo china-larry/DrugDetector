@@ -70,6 +70,8 @@ void CDetectorPage::SlotEndTest()
     qDebug() << "end test";
     // 告知main，传送数据
     emit SignalEndTest();
+    //
+
 }
 // 开始测试
 void CDetectorPage::_SlotCheckReadTestDevice()
@@ -85,6 +87,13 @@ void CDetectorPage::_SlotCheckReadTestDevice()
   }
 
   m_pResultsTableWidget->clear();
+}
+
+void CDetectorPage::_SlotStopTest()
+{
+    qDebug() << "stop test";
+    //删除数据库
+    QFile::remove(QCoreApplication::applicationDirPath() + "demo.db");
 }
 
 QList<TestResultData *> CDetectorPage::GetTestResultData()
@@ -116,6 +125,9 @@ DetectorPageUserData CDetectorPage::GetUserData()
     m_sDetectorPageUserData.qExpriationDate = m_pExpirationDateWidget->GetDate();
     m_sDetectorPageUserData.strProductID = m_pProductIDWidget->GetLineText();
     //
+    m_sDetectorPageUserData.iProgramsNumber = m_sQRCodeInfo.iProgramCount;
+    // admin
+    m_sDetectorPageUserData.strOperator = "admin";
     return m_sDetectorPageUserData;
 }
 
@@ -286,6 +298,7 @@ QGroupBox *CDetectorPage::_CreatePushButtonGroup()
         QPushButton *m_pReadTestDeviceButton = new QPushButton(tr("Read Test Device"));
         connect(m_pReadTestDeviceButton,SIGNAL(clicked(bool)), this, SLOT(_SlotCheckReadTestDevice()));
         QPushButton *m_pStopTestButton = new QPushButton(tr("Stop Test"));
+        connect(m_pStopTestButton, SIGNAL(clicked(bool)), this, SLOT(_SlotStopTest()));
         QPushButton *m_pPrintPriviewButton = new QPushButton(tr("Print Priview"));
 
 

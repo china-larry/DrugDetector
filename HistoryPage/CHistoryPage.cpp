@@ -6,6 +6,7 @@
 #include <QHeaderView>
 #include <QScrollBar>
 #include <QDebug>
+#include <QMessageBox>
 CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
 {
     _InitTableWidget();
@@ -30,9 +31,138 @@ void CHistoryPage::SetTestUserData(DetectorPageUserData sDetectorPageUserData)
 // 插入数据库
 void CHistoryPage::InsertToDatabase()
 {
-    qDebug() << "insert to database";
-    QString insert_sql = "insert into student values (?, ?, ?)";
+//    if (connect("demo.db")) {
+//        QSqlQuery query;
+//        query.prepare("INSERT INTO student (name, age) VALUES (?, ?)");
+//        QVariantList names;
+//        names << "Tom" << "Jack" << "Jane" << "Jerry";
+//        query.addBindValue(names);
+//        QVariantList ages;
+//        ages << 20 << 23 << 22 << 25;
+//        query.addBindValue(ages);
+//        if (!query.execBatch()) {
+//            QMessageBox::critical(0, QObject::tr("Database Error"),
+//                                  query.lastError().text());
+//        }
+//        query.finish();
+//        query.exec("SELECT name, age FROM student");
+//        while (query.next()) {
+//            QString name = query.value(0).toString();
+//            int age = query.value(1).toInt();
+//            qDebug() << name << ": " << age;
+//        }
+//    }
 
+    if (connect(QCoreApplication::applicationDirPath() + "demo.db"))
+    {
+        QSqlQuery qSqlQuery;
+
+//        qSqlQuery.prepare("INSERT INTO student (name, age1) VALUES (?, ?)");
+//        QVariantList names;
+//        names << "Tom" << "Jack" << "Jane" << "Jerry";
+//        qSqlQuery.addBindValue(names);
+//        QVariantList ages;
+//       ages << 20 << 23 << 22 << 25;
+//        qSqlQuery.addBindValue(ages);
+
+        qSqlQuery.prepare("INSERT INTO student (DonorFirstName, DonorLastName) VALUES (:DonorFirstName, :DonorLastName)");
+
+        qSqlQuery.bindValue(":DonorFirstName", "names");
+        qSqlQuery.bindValue(":DonorLastName", "ages");
+//            qSqlQuery.prepare("INSERT INTO student "
+//                          "(DonorFirstName, DonorLastName, TestTime, BirthDate, DonorID, TestSite, Operator, "
+//                          "PreEmployment, Random, ReasonSuspicionCause, PostAccident, ReturnToDuty, FollowUp, Comments, "
+//                          "TemperatureNormal, ProductDefinition, ExpirationDate, ProductLot, ProductID, ProgramsNumber)"
+//                          " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+//                //插入数据
+////                qSqlQuery.addBindValue(max_id+1);
+//                qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorFirstName);
+//                qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorLastName);
+//                qSqlQuery.addBindValue(m_sDetectorPageUserData.qTestDateTime);
+//                qSqlQuery.addBindValue(m_sDetectorPageUserData.qBirthDate.toString());
+//                qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorID);
+//                qSqlQuery.addBindValue(m_sDetectorPageUserData.strTestSite);
+//                qSqlQuery.addBindValue(m_sDetectorPageUserData.strOperator);// 获得用户身份
+//                if(m_sDetectorPageUserData.bPreEmployment)
+//                {
+//                    qSqlQuery.addBindValue("true");
+//                }
+//                else
+//                {
+//                    qSqlQuery.addBindValue("false");
+//                }
+//                if(m_sDetectorPageUserData.bRandom)
+//                {
+//                    qSqlQuery.addBindValue("true");
+//                }
+//                else
+//                {
+//                    qSqlQuery.addBindValue("false");
+//                }
+//                if(m_sDetectorPageUserData.bReasonableSuspicionCause)
+//                {
+//                    qSqlQuery.addBindValue("true");
+//                }
+//                else
+//                {
+//                    qSqlQuery.addBindValue("false");
+//                }
+//                if(m_sDetectorPageUserData.bPostAccident)
+//                {
+//                    qSqlQuery.addBindValue("true");
+//                }
+//                else
+//                {
+//                    qSqlQuery.addBindValue("false");
+//                }
+//                if(m_sDetectorPageUserData.bReturnToDuty)
+//                {
+//                    qSqlQuery.addBindValue("true");
+//                }
+//                else
+//                {
+//                    qSqlQuery.addBindValue("false");
+//                }
+//                if(m_sDetectorPageUserData.bFollowUp)
+//                {
+//                    qSqlQuery.addBindValue("true");
+//                }
+//                else
+//                {
+//                    qSqlQuery.addBindValue("false");
+//                }
+//                // commets
+//                qSqlQuery.addBindValue(m_sDetectorPageUserData.strOtherReasonComments);
+//                //
+//                if(m_sDetectorPageUserData.bTemperatureNormal)
+//                {
+//                    qSqlQuery.addBindValue("true");
+//                }
+//                else
+//                {
+//                    qSqlQuery.addBindValue("false");
+//                }
+//                // product details
+//                qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductDefinition);
+//                qSqlQuery.addBindValue(m_sDetectorPageUserData.qExpriationDate.toString());
+//                qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductLot);
+//                qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductID);
+//                // program and picture
+//                qSqlQuery.addBindValue(m_sDetectorPageUserData.iProgramsNumber);
+//                //
+        if (!qSqlQuery.execBatch())
+        {
+            QMessageBox::critical(0, QObject::tr("Database Error"),
+                                  qSqlQuery.lastError().text());
+        }
+        qSqlQuery.finish();
+        qSqlQuery.exec("SELECT DonorFirstName, ProgramsNumber FROM student");
+        while (qSqlQuery.next()) {
+            QString name = qSqlQuery.value(0).toString();
+            int age = qSqlQuery.value(1).toInt();
+            qDebug() << name << ": " << age;
+        }
+    }
 }
 
 void CHistoryPage::_LoadQss()
@@ -96,7 +226,7 @@ void CHistoryPage::_InitTableWidget()
     m_pHistoryDataTableWidget = new QTableWidget(this);
     m_pHistoryDataTableWidget->setMinimumHeight(350);
     // 表单样式
-    m_pHistoryDataTableWidget->setColumnCount(86);
+    m_pHistoryDataTableWidget->setColumnCount(90);
     QHeaderView *pHeaderView = m_pHistoryDataTableWidget->horizontalHeader();
     pHeaderView->setDefaultSectionSize(120);
     pHeaderView->setDisabled(true);
@@ -123,15 +253,7 @@ void CHistoryPage::_InitTableWidget()
     for(int i = 0; i < 17; ++i)
     {
         qstrlistHeader << "Program Name " + QString::number(i);
-    }
-    //
-    for(int i = 0; i < 17; ++i)
-    {
         qstrlistHeader << "Result " + QString::number(i);
-    }
-    //
-    for(int i = 0; i < 17; ++i)
-    {
         qstrlistHeader << "Cutoff " + QString::number(i);
     }
     //
@@ -185,189 +307,274 @@ void CHistoryPage::_InitLayout()
     this->setLayout(pLayout);
 }
 
+
+bool CHistoryPage::connect(const QString &dbName)
+{
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+//    db.setHostName("host");
+//    db.setDatabaseName("dbname");
+//    db.setUserName("username");
+//    db.setPassword("password");
+    db.setDatabaseName(dbName);
+    if (!db.open()) {
+        QMessageBox::critical(0, QObject::tr("Database Error"),
+                              db.lastError().text());
+        return false;
+    }
+    return true;
+}
+
 void CHistoryPage::_InitDataBase()
 {
 
+//    if (connect("demo.db")) {
+//            QSqlQuery query;
+//            if (!query.exec("CREATE TABLE student ("
+//                            "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+//                            "name VARCHAR,"
+//                            "age INT)")) {
+//                QMessageBox::critical(0, QObject::tr("Database Error"),
+//                                      query.lastError().text());
+//            }
+//        }
+
+    if (connect(QCoreApplication::applicationDirPath() + "demo.db")) {
+           QSqlQuery query;
+           if (!query.exec("CREATE TABLE student ("
+                           "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                           "DonorFirstName VARCHAR,"
+                           "DonorLastName VARCHAR,"
+                           "TestTime VARCHAR,"
+                           "BirthDate VARCHAR,"
+                           "DonorID VARCHAR,"
+                           "TestSite VARCHAR,"
+                           "Operator VARCHAR,"
+                           "PreEmployment VARCHAR,"
+                           "Random VARCHAR,"
+                           "ReasonSuspicionCause VARCHAR,"
+                           "PostAccident VARCHAR,"
+                           "ReturnToDuty VARCHAR,"
+                           "FollowUp VARCHAR,"
+                           "Comments VARCHAR,"
+                           "TemperatureNormal VARCHAR,"
+                           "ProductDefinition VARCHAR,"
+                           "ExpirationDate VARCHAR,"
+                           "ProductLot VARCHAR,"
+                           "ProductID VARCHAR,"
+                           "ProgramsNumber INT)"))
+           {
+               QMessageBox::critical(0, QObject::tr("Database Error"),
+                                     query.lastError().text());
+           }
+       }
+
+
     //添加数据库驱动、设置数据库名称、数据库登录用户名、密码
 
-    QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE");
-    qDebug() << database.lastError();
-    database.setDatabaseName("database.db");
+//    QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE");
+//    qDebug() << database.lastError();
+//    database.setDatabaseName(QCoreApplication::applicationDirPath() + "database.db");
 
-    if (!database.open())
-    {
-        qDebug() << "open database error" << database.lastError().text();
-    }
-    else
-    {
-        qDebug() << "open it";
-    }
-//    QSqlQuery sql_query;
-//        QString create_sql = "create table student (id int primary key, name varchar(30), age int)";
-//        QString select_max_sql = "select max(id) from student";
-//        QString insert_sql = "insert into student values (?, ?, ?)";
-//        QString update_sql = "update student set name = :name where id = :id";
-//        QString select_sql = "select id, name from student";
-//        QString select_all_sql = "select * from student";
-//        QString delete_sql = "delete from student where id = ?";
-//        QString clear_sql = "delete from student";
 
-//        sql_query.prepare(create_sql);
-//        if(!sql_query.exec())
+//        // 创建数据表
+//       QString strCreateHistorySql = QString("create table TestHistoryData (id int primary key, DonorFirstName varchar(16), DonorLastName varchar(16)");
+////                  + "(id int primary key, DonorFirstName varchar(16), DonorLastName varchar(16), "
+////                  + "TestTime varchar(32), BirthDate varchar(16), DonorID varchar(16), "
+////                  + "TestSite varchar(32), Operator vachar(16), PreEmployment bool, "
+////                  + "Random bool, ReasonSuspicionCause bool, PostAccident bool, "
+////                  + "ReturnToDuty bool, FollowUp bool, OtherReason bool, "
+////                  + "Comments varchar(32), TemperatureNormal bool, "
+////                  + "ProductDefinition varchar(16), ExpirationDate varchar(16), "
+////                  + "ProductLot varchar(16), ProductID varchar(16), "
+////                  + "ProgramsNumber int";
+//                  //+ "ProgramsNumber int, ";
+////        for(int i = 0; i < 17; ++i)
+////        {
+////            strCreateHistorySql += "ProgramName" + QString::number(i) + " varchar(16), ";
+////             strCreateHistorySql += "Result" + QString::number(i) + " varchar(16), ";
+////             strCreateHistorySql += "Cutoff" + QString::number(i) + " int, ";
+////        }
+////        //
+////        strCreateHistorySql += "PictureNumber int, ";
+////        for(int i = 0; i < 16; ++i)
+////        {
+////            strCreateHistorySql += "PicturePath" + QString::number(i) + " varchar(16), ";
+////        }
+////        strCreateHistorySql += QString("PicturePath16") + " varchar(16)";
+//        qDebug() << "create " << strCreateHistorySql;
+//       QSqlQuery qSqlQuery;
+//        qSqlQuery.prepare(strCreateHistorySql);
+//        if(!qSqlQuery.exec())
 //        {
-//            qDebug()<<sql_query.lastError();
+//            qDebug() << "creat error" << qSqlQuery.lastError();
 //        }
 //        else
 //        {
-//            qDebug()<<"table created!";
+//            qDebug() << "table createdd!";
 //        }
-
-        // 创建数据表
-        QString strCreateHistorySql = QString("create table TestHistoryData ")
-                  + "(id int primary key, DonorFirstName varchar(16), DonorLastName varchar(16), "
-                  + "TestTime varchar(32), BirthDate varchar(16), DonorID varchar(16), "
-                  + "TestSite varchar(32), Operator vachar(16), PreEmployment bool, "
-                  + "Random bool, ReasonSuspicionCause bool, PostAccident bool, "
-                  + "ReturnToDuty bool, FollowUp bool, OtherReason bool, "
-                  + "Comments varchar(32), TemperatureNormal bool, "
-                  + "ProductDefinition varchar(16), ExpirationDate varchar(16), "
-                  + "ProductLot varchar(16), ProductID varchar(16), "
-                  + "ProgramsNumber int, ";
-        for(int i = 0; i < 17; ++i)
-        {
-            strCreateHistorySql += "ProgramName" + QString::number(i) + " varchar(16), ";
-        }
-        //
-        for(int i = 0; i < 17; ++i)
-        {
-            strCreateHistorySql += "Result" + QString::number(i) + " varchar(16), ";
-        }
-        //
-        for(int i = 0; i < 17; ++i)
-        {
-            strCreateHistorySql += "Cutoff" + QString::number(i) + " varchar(16), ";
-        }
-        //
-        strCreateHistorySql += "PictureNumber int, ";
-        for(int i = 0; i < 16; ++i)
-        {
-            strCreateHistorySql += "PicturePath" + QString::number(i) + " varchar(16), ";
-        }
-        strCreateHistorySql += QString("PicturePath16") + " varchar(16)";
-        qDebug() << "create " << strCreateHistorySql;
-        QSqlQuery sql_query;
-        sql_query.prepare(strCreateHistorySql);
-        if(!sql_query.exec())
-        {
-            qDebug() << "creat error" << sql_query.lastError();
-        }
-        else
-        {
-            qDebug() << "table createdd!";
-        }
-
-//         //查询最大id
+//        //查询最大id
 //        int max_id = 0;
-//        sql_query.prepare(select_max_sql);
-//        if(!sql_query.exec())
+//        QString select_max_sql = "select max(id) from TestHistoryData";
+//        qSqlQuery.prepare(select_max_sql);
+//        if(!qSqlQuery.exec())
 //        {
-//            qDebug()<<sql_query.lastError();
+//            qDebug()<<qSqlQuery.lastError();
 //        }
 //        else
 //        {
-//            while(sql_query.next())
+//            while(qSqlQuery.next())
 //            {
-//               max_id = sql_query.value(0).toInt();
+//               max_id = qSqlQuery.value(0).toInt();
 //              qDebug()<<QString("max id:%1").arg(max_id);
 //            }
 //        }
-//        //插入数据
-//        sql_query.prepare(insert_sql);
-//        sql_query.addBindValue(max_id+1);
-//        sql_query.addBindValue("name");
-//        sql_query.addBindValue(25);
-//        if(!sql_query.exec())
-//        {
-//            qDebug()<<sql_query.lastError();
-//        }
-//        else
-//        {
-//            qDebug()<<"inserted!";
-//        }
+////        //插入数据
+////        QString strInsertSql = QString("insert into student values (");
+////        for(int i = 0; i < 89; ++i)
+////        {
+////            strInsertSql += "?, ";
+////        }
+////        strInsertSql += "?)";
+////        qSqlQuery.prepare(strInsertSql);
+////        qSqlQuery.addBindValue(max_id+1);
+////        qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorFirstName);
+////        qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorLastName);
+////        qSqlQuery.addBindValue(m_sDetectorPageUserData.qTestDateTime);
+////        qSqlQuery.addBindValue(m_sDetectorPageUserData.qBirthDate.toString());
+////        qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorID);
+////        qSqlQuery.addBindValue(m_sDetectorPageUserData.strTestSite);
+////        qSqlQuery.addBindValue(m_sDetectorPageUserData.strOperator);// 获得用户身份
+////        if(m_sDetectorPageUserData.bPreEmployment)
+////        {
+////            qSqlQuery.addBindValue("true");
+////        }
+////        else
+////        {
+////            qSqlQuery.addBindValue("false");
+////        }
+////        if(m_sDetectorPageUserData.bRandom)
+////        {
+////            qSqlQuery.addBindValue("true");
+////        }
+////        else
+////        {
+////            qSqlQuery.addBindValue("false");
+////        }
+////        if(m_sDetectorPageUserData.bReasonableSuspicionCause)
+////        {
+////            qSqlQuery.addBindValue("true");
+////        }
+////        else
+////        {
+////            qSqlQuery.addBindValue("false");
+////        }
+////        if(m_sDetectorPageUserData.bPostAccident)
+////        {
+////            qSqlQuery.addBindValue("true");
+////        }
+////        else
+////        {
+////            qSqlQuery.addBindValue("false");
+////        }
+////        if(m_sDetectorPageUserData.bReturnToDuty)
+////        {
+////            qSqlQuery.addBindValue("true");
+////        }
+////        else
+////        {
+////            qSqlQuery.addBindValue("false");
+////        }
+////        if(m_sDetectorPageUserData.bFollowUp)
+////        {
+////            qSqlQuery.addBindValue("true");
+////        }
+////        else
+////        {
+////            qSqlQuery.addBindValue("false");
+////        }
+////        if(m_sDetectorPageUserData.bOtherReason)
+////        {
+////            qSqlQuery.addBindValue("true");
+////        }
+////        else
+////        {
+////            qSqlQuery.addBindValue("false");
+////        }
+////        // commets
+////        qSqlQuery.addBindValue(m_sDetectorPageUserData.strOtherReasonComments);
+////        //
+////        if(m_sDetectorPageUserData.bTemperatureNormal)
+////        {
+////            qSqlQuery.addBindValue("true");
+////        }
+////        else
+////        {
+////            qSqlQuery.addBindValue("false");
+////        }
+////        // product details
+////        qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductDefinition);
+////        qSqlQuery.addBindValue(m_sDetectorPageUserData.qExpriationDate.toString());
+////        qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductLot);
+////        qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductID);
+////        // program and picture
+////        qSqlQuery.addBindValue(m_sDetectorPageUserData.iProgramsNumber);
+////        int iTestResultDataList = m_pTestResultDataList.count();
+////        // programe
+////        for(int i = 0; i < iTestResultDataList; ++i)
+////        {
+////            qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->strProgramName);// programename
+////            qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->iCutoffValue);
+////            qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->strResult);
+////        }
+////        for(int i = iTestResultDataList; i < 16; ++i)
+////        {
+////            for(int j = 0; j < 4; ++j)
+////            {
+////                qSqlQuery.addBindValue("null");
+////            }
+////        }
+////        // picture path
+////        qSqlQuery.addBindValue(m_sDetectorPageUserData.iProgramsNumber);
+////        for(int i = 0; i < iTestResultDataList; ++i)
+////        {
+////            qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->strPicturePath);
+////        }
+////        for(int i = iTestResultDataList; i < 16; ++i)
+////        {
+////            qSqlQuery.addBindValue("null");
+////        }
+////        //////////////////////////////////////////////
+////        if(!qSqlQuery.exec())
+////        {
+////            qDebug()<<qSqlQuery.lastError();
+////        }
+////        else
+////        {
+////            qDebug()<<"inserted!";
+////        }
 
-//        //更新数据
-//        sql_query.prepare(update_sql);
-//        sql_query.bindValue(":name", "Qt1");
-//        sql_query.bindValue(":id", 1);
-//        if(!sql_query.exec())
-//        {
-//            qDebug()<<sql_query.lastError();
-//        }
-//        else
-//        {
-//            qDebug()<<"updated!";
-//        }
+////        //查询所有数据
+////        QString select_all_sql = "select * from TestHistoryData";
+////        qSqlQuery.prepare(select_all_sql);
+////        if(!qSqlQuery.exec())
+////        {
+////                qDebug()<<qSqlQuery.lastError();
+////        }
+////        else
+////        {
+////            while(qSqlQuery.next())
+////            {
+////                int id = qSqlQuery.value(0).toInt();
+////                QString name = qSqlQuery.value(1).toString();
+////                QString age = qSqlQuery.value(3).toString();
 
-//        //查询部分数据
-//        if(!sql_query.exec(select_sql))
-//        {
-//            qDebug()<<sql_query.lastError();
-//        }
-//        else
-//        {
-//            while(sql_query.next())
-//            {
-//                int id = sql_query.value("id").toInt();
-//                QString name = sql_query.value("name").toString();
-
-//                qDebug()<<QString("id:%1    name:%2").arg(id).arg(name);
-//            }
-//        }
-
-//        //查询所有数据
-//        sql_query.prepare(select_all_sql);
-//        if(!sql_query.exec())
-//        {
-//                qDebug()<<sql_query.lastError();
-//        }
-//        else
-//        {
-//            while(sql_query.next())
-//            {
-//                int id = sql_query.value(0).toInt();
-//                QString name = sql_query.value(1).toString();
-//                int age = sql_query.value(2).toInt();
-
-//                qDebug()<<QString("id:%1    name:%2    age:%3").arg(id).arg(name).arg(age);
-//            }
-//        }
-
-//        //删除数据
-//        sql_query.prepare(delete_sql);
-//        sql_query.addBindValue(max_id);
-//        if(!sql_query.exec())
-//        {
-//            qDebug()<<sql_query.lastError();
-//        }
-//        else
-//        {
-//            qDebug()<<"deleted!";
-//        }
-
-//        //清空表
-//        sql_query.prepare(clear_sql);
-//        if(!sql_query.exec())
-//        {
-//            qDebug()<<sql_query.lastError();
-//        }
-//        else
-//        {
-//            qDebug()<<"cleared";
-//        }
+////                qDebug()<<QString("id:%1    name:%2    age:%3").arg(id).arg(name).arg(age);
+////            }
+////        }
 
 
-        //关闭数据库
-        database.close();
+//        //关闭数据库
+//        database.close();
 
 
 }

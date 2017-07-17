@@ -13,6 +13,9 @@ struct DetectorPageUserData
     QDate qBirthDate;
     QString strDonorID;
     QString strTestSite;
+    //
+    // operator
+    QString strOperator;// 操作者身份
     // reason
     bool bPreEmployment;
     bool bRandom;
@@ -28,6 +31,7 @@ struct DetectorPageUserData
     QDate qExpriationDate;
     QString strProductLot;
     QString strProductID;
+    int iProgramsNumber;//
 };
 
 
