@@ -141,8 +141,8 @@ void CHistoryPage::_LoadQss()
 // query condition group
 QGroupBox *CHistoryPage::_CreateQueryConditionGroup()
 {
-    QGroupBox *groupBox = new QGroupBox(tr("Query Condition"), this);
-    groupBox->setMaximumHeight(200);
+    QGroupBox *pGroupBox = new QGroupBox(tr("Query Condition"), this);
+    pGroupBox->setMaximumHeight(200);
     //
     m_pSubjectLastNameWidget = new CLabelLineEditWidget(tr("Subject Last Name"), "", this);
     m_pDonorIDWidget = new CLabelLineEditWidget(tr("Donor ID#"), "", this);
@@ -176,9 +176,9 @@ QGroupBox *CHistoryPage::_CreateQueryConditionGroup()
     pLayout->addWidget(m_pProductDefinitionWidget, 1, 1, 1, 1);
     pLayout->addWidget(m_pQueryAllWidget, 1, 2, 1, 1);
     //
-    groupBox->setLayout(pLayout);
+    pGroupBox->setLayout(pLayout);
 
-    return groupBox;
+    return pGroupBox;
 }
 
 void CHistoryPage::_InitTableWidget()
@@ -204,8 +204,8 @@ void CHistoryPage::_InitTableWidget()
     // 每次选择一行
     m_pHistoryDataTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     // 设置表头内容
-    QStringList qstrlistHeader;
-    qstrlistHeader << tr("Donor \r\nFirst Name") << tr("Donor \r\nLast Name")
+    QStringList qstrHeaderList;
+    qstrHeaderList << tr("Donor \r\nFirst Name") << tr("Donor \r\nLast Name")
                    << tr("Test Time") << tr("Birth Date") << tr("Donor ID") << tr("Test Site")
                    << tr("Operator") << tr("Pre-Employment") << tr("Random") << tr("Reason \r\nSuspicion Cause")
                    << tr("Post Accident") << tr("Return to Duty") << tr("Follow Up") << tr("Other Reason")
@@ -213,17 +213,17 @@ void CHistoryPage::_InitTableWidget()
                    << tr("Product Lot") << tr("Product ID") << tr("Number of Programs");
     for(int i = 0; i < 17; ++i)
     {
-        qstrlistHeader << "Program Name " + QString::number(i);
-        qstrlistHeader << "Result " + QString::number(i);
-        qstrlistHeader << "Cutoff " + QString::number(i);
+        qstrHeaderList << "Program Name " + QString::number(i);
+        qstrHeaderList << "Result " + QString::number(i);
+        qstrHeaderList << "Cutoff " + QString::number(i);
     }
     //
-    qstrlistHeader << tr("Number of Picture");
+    qstrHeaderList << tr("Number of Picture");
     for(int i = 0; i < 17; ++i)
     {
-        qstrlistHeader << "Picture Path  " + QString::number(i);
+        qstrHeaderList << "Picture Path  " + QString::number(i);
     }
-    m_pHistoryDataTableWidget->setHorizontalHeaderLabels(qstrlistHeader);
+    m_pHistoryDataTableWidget->setHorizontalHeaderLabels(qstrHeaderList);
     // 显示格子线
     m_pHistoryDataTableWidget->setShowGrid(true);
     //设置水平、垂直滚动条样式
@@ -268,7 +268,7 @@ void CHistoryPage::_InitLayout()
     this->setLayout(pLayout);
 }
 
-
+//添加数据库驱动、设置数据库名称、数据库登录用户名、密码
 bool CHistoryPage::_ConnectDataBase(const QString &strDBName)
 {
     QSqlDatabase qSqlDataBase = QSqlDatabase::addDatabase("QSQLITE");
@@ -288,10 +288,9 @@ bool CHistoryPage::_ConnectDataBase(const QString &strDBName)
         return true;
     }
 }
-
+// 创建数据库
 void CHistoryPage::_InitDataBase()
 {
-    //添加数据库驱动、设置数据库名称、数据库登录用户名、密码
     if (_ConnectDataBase(QCoreApplication::applicationDirPath() + "drug.db"))
     {
         QString strCreateTable  = "CREATE TABLE student ("

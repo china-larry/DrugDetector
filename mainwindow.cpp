@@ -127,11 +127,11 @@ void MainWindow::_InitWidget()
     m_pDetectorPageTitleWidget = new CDetectorPageTitleWidget(this);
 //    QRect rect = this->rect();
 //    m_pDetectorPageTitleWidget->setGeometry(0, 0, rect.width(), m_ciTitleHeight);
-    connect(m_pDetectorPageTitleWidget, SIGNAL(SigGoDetectorPage()), this, SLOT(SlotGoDetectorPage()));
-    connect(m_pDetectorPageTitleWidget, SIGNAL(SigGoHistoryPage()), this, SLOT(SlotGoHistoryPage()));
-    connect(m_pDetectorPageTitleWidget, SIGNAL(SigGoSettingPage()), this, SLOT(SlotGoSettingPage()));
-    connect(m_pDetectorPageTitleWidget, SIGNAL(SigMinWindow()), this, SLOT(SlotMinWindow()));
-    connect(m_pDetectorPageTitleWidget, SIGNAL(SigCloseWindow()), this, SLOT(SlotCloseWindow()));
+    connect(m_pDetectorPageTitleWidget, SIGNAL(SignalGoDetectorPage()), this, SLOT(SlotGoDetectorPage()));
+    connect(m_pDetectorPageTitleWidget, SIGNAL(SignalGoHistoryPage()), this, SLOT(SlotGoHistoryPage()));
+    connect(m_pDetectorPageTitleWidget, SIGNAL(SignalGoSettingPage()), this, SLOT(SlotGoSettingPage()));
+    connect(m_pDetectorPageTitleWidget, SIGNAL(SignalMinWindow()), this, SLOT(SlotMinWindow()));
+    connect(m_pDetectorPageTitleWidget, SIGNAL(SignalCloseWindow()), this, SLOT(SlotCloseWindow()));
     // 多标签
     m_pStackedWidget = new QStackedWidget(this);
     // 测试页
@@ -159,7 +159,7 @@ void MainWindow::_InitLayout()
      //pMainLayout->addStretch(200);
      pMainLayout->addWidget(m_pStackedWidget);
         // 布局
-     QWidget *widget = new QWidget();
-     setCentralWidget(widget);
-     widget->setLayout(pMainLayout);
+     QWidget *pWidget = new QWidget();
+     setCentralWidget(pWidget);
+     pWidget->setLayout(pMainLayout);
 }

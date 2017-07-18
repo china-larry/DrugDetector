@@ -8,9 +8,9 @@ CDetectorPageTitleWidget::CDetectorPageTitleWidget(QWidget *parent) : QWidget(pa
     _InitLayout();
     //
     this->setAutoFillBackground(true);  //自动填充背景
-    QPalette palette;
-    palette.setColor(QPalette::Background, QColor("#2162a9"));
-    this->setPalette(palette);
+    QPalette qPalette;
+    qPalette.setColor(QPalette::Background, QColor("#2162a9"));
+    this->setPalette(qPalette);
 }
 
 
@@ -19,16 +19,16 @@ void CDetectorPageTitleWidget::_InitWidget()
     m_pUserInfoLabel = new QLabel("admin", this);
     //
     m_pSettingPageButton = new QPushButton("Setting", this);
-    connect(m_pSettingPageButton, SIGNAL(clicked(bool)), this, SIGNAL(SigGoSettingPage()));
+    connect(m_pSettingPageButton, SIGNAL(clicked(bool)), this, SIGNAL(SignalGoSettingPage()));
     m_pHistoryPageButton = new QPushButton("History", this);
-    connect(m_pHistoryPageButton, SIGNAL(clicked(bool)), this, SIGNAL(SigGoHistoryPage()));
+    connect(m_pHistoryPageButton, SIGNAL(clicked(bool)), this, SIGNAL(SignalGoHistoryPage()));
     m_pDetectorPageButton = new QPushButton("Function", this);
-    connect(m_pDetectorPageButton, SIGNAL(clicked(bool)), this, SIGNAL(SigGoDetectorPage()));
+    connect(m_pDetectorPageButton, SIGNAL(clicked(bool)), this, SIGNAL(SignalGoDetectorPage()));
     //
     m_pMinWindowButton = new QPushButton("Min", this);
-    connect(m_pMinWindowButton, SIGNAL(clicked(bool)), this, SIGNAL(SigMinWindow()));
+    connect(m_pMinWindowButton, SIGNAL(clicked(bool)), this, SIGNAL(SignalMinWindow()));
     m_pCloseWindowButton = new QPushButton("Close", this);
-    connect(m_pCloseWindowButton, SIGNAL(clicked(bool)), this, SIGNAL(SigCloseWindow()));
+    connect(m_pCloseWindowButton, SIGNAL(clicked(bool)), this, SIGNAL(SignalCloseWindow()));
 }
 
 void CDetectorPageTitleWidget::_InitLayout()

@@ -10,16 +10,16 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
 {
 
     //应用样式 apply the qss style
-       _LoadQss();
+    _LoadQss();
        // 初始化接收lib库
-      _InitLibDrug();
+    _InitLibDrug();
       // 布局
-    QGridLayout *grid = new QGridLayout;
-        grid->addWidget(_CreateDonorDetailsGroup(), 0, 0, 1, 1);
-        grid->addWidget(_CreateProductDetailsGroup(), 1, 0, 1, 1);
-        grid->addWidget(_CreateResultsGroup(), 0, 1, 2, 1);
-        grid->addWidget(_CreatePushButtonGroup(), 2, 0, 1, 2);
-        this->setLayout(grid);
+    QGridLayout *pGridLayout = new QGridLayout;
+    pGridLayout->addWidget(_CreateDonorDetailsGroup(), 0, 0, 1, 1);
+    pGridLayout->addWidget(_CreateProductDetailsGroup(), 1, 0, 1, 1);
+    pGridLayout->addWidget(_CreateResultsGroup(), 0, 1, 2, 1);
+    pGridLayout->addWidget(_CreatePushButtonGroup(), 2, 0, 1, 2);
+    this->setLayout(pGridLayout);
 
 }
 
@@ -133,22 +133,22 @@ DetectorPageUserData CDetectorPage::GetUserData()
 
 void CDetectorPage::_LoadQss()
 {
-    QFile file(":/qss/DetectorPage/DetectorPage.qss");
-    if(!file.open(QFile::ReadOnly))
+    QFile qFile(":/qss/DetectorPage/DetectorPage.qss");
+    if(!qFile.open(QFile::ReadOnly))
     {
         qDebug() << "open false";
     }
-    QTextStream filetext(&file);
-    QString stylesheet = filetext.readAll();
-    this->setStyleSheet(stylesheet);
-   file.close();
+    QTextStream qTextStream(&qFile);
+    QString strStylesheet = qTextStream.readAll();
+    this->setStyleSheet(strStylesheet);
+   qFile.close();
 }
 // Donor Details
 QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 {
     //const int kiLineEditWidth = 80;
-    QGroupBox *groupBox = new QGroupBox(tr("Donor Details"), this);
-    groupBox->setMaximumWidth(500);
+    QGroupBox *pGroupBox = new QGroupBox(tr("Donor Details"), this);
+    pGroupBox->setMaximumWidth(500);
     // donor name
     m_pDonorNameLabel = new QLabel(tr("Donor Name"), this);
     m_pTemperatureNormalCBox = new QCheckBox(tr("Temperature normal#"), this);
@@ -199,44 +199,41 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     pGridLayout->addWidget(m_pOtherReasonForTestCBox, 10, 0, 1, 1);
     pGridLayout->addWidget(m_pOtherReasonCommentsLineEdit, 10, 1, 1, 3);
 
-
-            groupBox->setLayout(pGridLayout);
-
-            return groupBox;
+    pGroupBox->setLayout(pGridLayout);
+    return pGroupBox;
 }
 // product details
 QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
 {
-    QGroupBox *groupBox = new QGroupBox(tr("Product Details"), this);
-    groupBox->setMaximumSize(500, 200);
-        //
+    QGroupBox *pGroupBox = new QGroupBox(tr("Product Details"), this);
+    pGroupBox->setMaximumSize(500, 200);
 
-        QStringList strProductDifinitionList;
-        strProductDifinitionList << tr("T Cup") << tr("T Cupa");
-        m_pProductDefinitionWidget = new CLabelCommoBoxWidget(tr("Product Definition"), strProductDifinitionList, this);
-        m_pProductLotWidget = new CLabelLineEditWidget(tr("Product Lot"), "", this);
-        //
+    QStringList strProductDifinitionList;
+    strProductDifinitionList << tr("T Cup") << tr("T Cupa");
+    m_pProductDefinitionWidget = new CLabelCommoBoxWidget(tr("Product Definition"), strProductDifinitionList, this);
+    m_pProductLotWidget = new CLabelLineEditWidget(tr("Product Lot"), "", this);
+    //
 
-        m_pExpirationDateWidget = new CLabelDateWidget(tr("Expiration Date"), QDate::currentDate(), this);
-        m_pProductIDWidget = new CLabelLineEditWidget(tr("Product ID"), "", this);
-            //
-        QGridLayout *pGridLayout = new QGridLayout;
-        // Product Details
-        pGridLayout->addWidget(m_pProductDefinitionWidget, 0, 0, 1, 1);
-        pGridLayout->addWidget(m_pProductLotWidget , 0, 1, 1, 1);
-        // expiration date
-        pGridLayout->addWidget(m_pExpirationDateWidget, 1, 0, 1, 1);
-        pGridLayout->addWidget(m_pProductIDWidget, 1, 1, 1, 1);
+    m_pExpirationDateWidget = new CLabelDateWidget(tr("Expiration Date"), QDate::currentDate(), this);
+    m_pProductIDWidget = new CLabelLineEditWidget(tr("Product ID"), "", this);
+    //
+    QGridLayout *pGridLayout = new QGridLayout;
+    // Product Details
+    pGridLayout->addWidget(m_pProductDefinitionWidget, 0, 0, 1, 1);
+    pGridLayout->addWidget(m_pProductLotWidget , 0, 1, 1, 1);
+    // expiration date
+    pGridLayout->addWidget(m_pExpirationDateWidget, 1, 0, 1, 1);
+    pGridLayout->addWidget(m_pProductIDWidget, 1, 1, 1, 1);
 
-                groupBox->setLayout(pGridLayout);
+    pGroupBox->setLayout(pGridLayout);
 
-                return groupBox;
+    return pGroupBox;
 }
 // result
 QGroupBox *CDetectorPage::_CreateResultsGroup()
 {
-    QGroupBox *groupBox = new QGroupBox(tr("Non-Exclusive Checkboxes"), this);
-        groupBox->setFlat(true);
+    QGroupBox *pGroupBox = new QGroupBox(tr("Non-Exclusive Checkboxes"), this);
+        pGroupBox->setFlat(true);
 
     m_pCamaraLabel = new QLabel("temp", this);
     m_pCamaraLabel->setFixedSize(400, 300);
@@ -252,9 +249,9 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
     pHeaderView->setDefaultSectionSize(120);
     pHeaderView->setDisabled(true);
     // 表头字体
-    QFont font = pHeaderView->font();
-    font.setBold(true);
-    pHeaderView->setFont(font);
+    QFont qFont = pHeaderView->font();
+    qFont.setBold(true);
+    pHeaderView->setFont(qFont);
     // 充满表格
     pHeaderView->setStretchLastSection(true);
      // 表头背景色
@@ -264,9 +261,9 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
     // 每次选择一行
     m_pResultsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     // 设置表头内容
-    QStringList qstrlistHeader;
-    qstrlistHeader << tr("Program") << tr("Result") << tr("Cutoff Value");
-    m_pResultsTableWidget->setHorizontalHeaderLabels(qstrlistHeader);
+    QStringList qstrHeaderList;
+    qstrHeaderList << tr("Program") << tr("Result") << tr("Cutoff Value");
+    m_pResultsTableWidget->setHorizontalHeaderLabels(qstrHeaderList);
     // 显示格子线
     m_pResultsTableWidget->setShowGrid(true);
     //设置水平、垂直滚动条样式
@@ -275,45 +272,40 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
       "QScrollBar::handle:hover{background:gray;}"
       "QScrollBar::sub-line{background:transparent;}"
       "QScrollBar::add-line{background:transparent;}");
-     m_pResultsTableWidget->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
+    m_pResultsTableWidget->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
       "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
       "QScrollBar::handle:hover{background:gray;}"
       "QScrollBar::sub-line{background:transparent;}"
       "QScrollBar::add-line{background:transparent;}");
 
-            QVBoxLayout *vbox = new QVBoxLayout;
-                vbox->addWidget(m_pCamaraLabel);
-                vbox->addWidget(m_pResultsTableWidget);
+    QVBoxLayout *pVLayout = new QVBoxLayout;
+    pVLayout->addWidget(m_pCamaraLabel);
+    pVLayout->addWidget(m_pResultsTableWidget);
 
-                groupBox->setLayout(vbox);
-
-                return groupBox;
+    pGroupBox->setLayout(pVLayout);
+    return pGroupBox;
 }
 // button
 QGroupBox *CDetectorPage::_CreatePushButtonGroup()
 {
-    QGroupBox *groupBox = new QGroupBox(this);
-
-
-        QPushButton *m_pReadTestDeviceButton = new QPushButton(tr("Read Test Device"));
-        connect(m_pReadTestDeviceButton,SIGNAL(clicked(bool)), this, SLOT(_SlotCheckReadTestDevice()));
-        QPushButton *m_pStopTestButton = new QPushButton(tr("Stop Test"));
-        connect(m_pStopTestButton, SIGNAL(clicked(bool)), this, SLOT(_SlotStopTest()));
-        QPushButton *m_pPrintPriviewButton = new QPushButton(tr("Print Priview"));
-
-
-                QHBoxLayout *hbox = new QHBoxLayout;
-                hbox->addSpacing(50);
-                    hbox->addWidget(m_pReadTestDeviceButton);
-                    hbox->addSpacing(30);
-                    hbox->addWidget(m_pStopTestButton);
-                    hbox->addStretch(1);
-                    hbox->addWidget(m_pPrintPriviewButton);
-                    hbox->addSpacing(50);
-
-                    groupBox->setLayout(hbox);
-
-                    return groupBox;
+    QGroupBox *pGroupBox = new QGroupBox(this);
+    QPushButton *m_pReadTestDeviceButton = new QPushButton(tr("Read Test Device"));
+    connect(m_pReadTestDeviceButton,SIGNAL(clicked(bool)), this, SLOT(_SlotCheckReadTestDevice()));
+    QPushButton *m_pStopTestButton = new QPushButton(tr("Stop Test"));
+    connect(m_pStopTestButton, SIGNAL(clicked(bool)), this, SLOT(_SlotStopTest()));
+    QPushButton *m_pPrintPriviewButton = new QPushButton(tr("Print Priview"));
+    //
+    QHBoxLayout *pHLayout = new QHBoxLayout;
+    pHLayout->addSpacing(50);
+    pHLayout->addWidget(m_pReadTestDeviceButton);
+    pHLayout->addSpacing(30);
+    pHLayout->addWidget(m_pStopTestButton);
+    pHLayout->addStretch(1);
+    pHLayout->addWidget(m_pPrintPriviewButton);
+    pHLayout->addSpacing(50);
+    //
+    pGroupBox->setLayout(pHLayout);
+    return pGroupBox;
 }
 
 void CDetectorPage::_InitLibDrug()
@@ -322,5 +314,4 @@ void CDetectorPage::_InitLibDrug()
     connect(m_pLibDrugDetector, SIGNAL(SignalSendQRCodeInfo(QVariant)), this, SLOT(SlotReceiveQRCodeInfo(QVariant)));
     connect(m_pLibDrugDetector, SIGNAL(SignalSendTestResultData(QVariant)), this, SLOT(SlotReceiveTestResultData(QVariant)));
     connect(m_pLibDrugDetector, SIGNAL(SignalEndTest()), this, SLOT(SlotEndTest()));
-
 }

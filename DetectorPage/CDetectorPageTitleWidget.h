@@ -11,11 +11,11 @@ public:
     explicit CDetectorPageTitleWidget(QWidget *parent = nullptr);
 
 signals:    
-    void SigGoDetectorPage();
-    void SigGoHistoryPage();
-    void SigGoSettingPage();
-    void SigMinWindow();
-    void SigCloseWindow();
+    void SignalGoDetectorPage();
+    void SignalGoHistoryPage();
+    void SignalGoSettingPage();
+    void SignalMinWindow();
+    void SignalCloseWindow();
 
 
 public slots:
