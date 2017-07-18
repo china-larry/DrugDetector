@@ -47,7 +47,7 @@ private:
     void _InitLayout();
     // 数据库
     void _InitDataBase();// 初始化数据库
-    bool connect(const QString &dbName);
+    bool _ConnectDataBase(const QString &dbName);
 
 private:
     QTableWidget* m_pHistoryDataTableWidget;

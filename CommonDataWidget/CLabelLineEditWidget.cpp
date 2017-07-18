@@ -21,6 +21,7 @@ CLabelLineEditWidget::CLabelLineEditWidget(QString strLabel, QString strLineText
 
 QString CLabelLineEditWidget::GetLineText()
 {
+    m_strLineText = m_pLineEdit->text();
     return m_strLineText;
 }
 
