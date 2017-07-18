@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui sql printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -63,7 +63,8 @@ RESOURCES += \
     qssresourcefile.qrc
 
 INCLUDEPATH  += \
-    E:/Qt_Project/libDrugDetector
+    E:/Qt_Project/libDrugDetector \
+    E:/build/DrugDetector
 
 LIBS += \
     E:/build/DrugDetector/debug/liblibDrugDetector.a

@@ -171,13 +171,13 @@ QGroupBox *CHistoryPage::_CreateQueryConditionGroup()
     QGroupBox *pGroupBox = new QGroupBox(tr("Query Condition"), this);
     pGroupBox->setMaximumHeight(200);
     //
-    m_pSubjectLastNameWidget = new CLabelLineEditWidget(tr("Subject Last Name"), "", this);
+    m_pSubjectLastNameWidget = new CLabelLineEditWidget(tr("Program Name"), "", this);
     m_pDonorIDWidget = new CLabelLineEditWidget(tr("Donor ID#"), "", this);
-    m_pDateCollectedWidget = new CLabelDateWidget(tr("Date Collected"), QDate::currentDate(), this);
+    m_pDateCollectedWidget = new CLabelDateWidget(tr("Test Time"), QDate::currentDate(), this);
     m_pSinceRadioButton = new QRadioButton(tr("since"), this);
     m_pExactDateQRadioButton = new QRadioButton(tr("exact date"), this);
     //
-    m_pLotNumberWidget = new CLabelLineEditWidget(tr("Lot Number"), "", this);
+    m_pLotNumberWidget = new CLabelLineEditWidget(tr("Product Lot"), "", this);
     QStringList strProductDefinitionList;
     strProductDefinitionList << tr("test1") << tr("test2");
     m_pProductDefinitionWidget = new CLabelCommoBoxWidget(tr("Product Definition"), strProductDefinitionList, this);

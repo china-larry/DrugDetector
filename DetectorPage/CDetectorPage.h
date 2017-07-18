@@ -36,6 +36,8 @@ private slots:
     // 控件
     void _SlotCheckReadTestDevice();
     void _SlotStopTest();// 主动停止测试
+    // 打印PDF
+    void _SlotSaveHtmlToPDF();
 public:
     QList<TestResultData*> GetTestResultData();
     DetectorPageUserData GetUserData();
@@ -47,6 +49,7 @@ private:
     QGroupBox *_CreateResultsGroup();
     QGroupBox *_CreatePushButtonGroup();
     void _InitLibDrug();// 初始化第三方库
+
 
 private:
     // donor details 1line

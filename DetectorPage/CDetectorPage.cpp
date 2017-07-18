@@ -6,6 +6,9 @@
 #include <QScrollBar>
 #include <QPixmap>
 #include <QDebug>
+#include <QtPrintSupport/QPrinter>
+#include <QTextDocument>
+#include <QTextBlock>
 CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
 {
 
@@ -94,6 +97,29 @@ void CDetectorPage::_SlotStopTest()
     qDebug() << "stop test";
     //删除数据库
     QFile::remove(QCoreApplication::applicationDirPath() + "demo.db");
+}
+// 生成PDF文件
+void CDetectorPage::_SlotSaveHtmlToPDF()
+{
+    QStringList title;
+    title.push_back(QStringLiteral("名称"));
+    title.push_back(QStringLiteral("修改日期"));
+    title.push_back(QStringLiteral("类型"));
+    title.push_back(QStringLiteral("大小"));
+    QString html;
+    html += "<h2 align=\"center\">" + QStringLiteral("HTML导出PDF示例") + "</h2>";
+    html += "<h4 align=\"center\">" + QDate::currentDate().toString() + "<h4>";
+
+
+    QPrinter printer_html;
+    printer_html.setPageSize(QPrinter::A4);
+    printer_html.setOutputFormat(QPrinter::PdfFormat);
+    printer_html.setOutputFileName(QCoreApplication::applicationDirPath() + "test_html.pdf");
+    QTextDocument text_document;
+    text_document.setHtml(html);
+    text_document.print(&printer_html);
+    text_document.end();
+
 }
 
 QList<TestResultData *> CDetectorPage::GetTestResultData()
@@ -294,6 +320,7 @@ QGroupBox *CDetectorPage::_CreatePushButtonGroup()
     QPushButton *m_pStopTestButton = new QPushButton(tr("Stop Test"));
     connect(m_pStopTestButton, SIGNAL(clicked(bool)), this, SLOT(_SlotStopTest()));
     QPushButton *m_pPrintPriviewButton = new QPushButton(tr("Print Priview"));
+    connect(m_pPrintPriviewButton, SIGNAL(clicked(bool)), this, SLOT(_SlotSaveHtmlToPDF()));
     //
     QHBoxLayout *pHLayout = new QHBoxLayout;
     pHLayout->addSpacing(50);
