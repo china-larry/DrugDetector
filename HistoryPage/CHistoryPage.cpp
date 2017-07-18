@@ -33,70 +33,97 @@ void CHistoryPage::InsertToDatabase()
 {
 
     if (_ConnectDataBase(QCoreApplication::applicationDirPath() + "drug.db"))
+    {
+        QString strInsert = "INSERT INTO student (DonorFirstName, DonorLastName, TestTime, BirthDate, DonorID, TestSite, Operator, "
+                            "PreEmployment, Random, ReasonSuspicionCause, PostAccident, ReturnToDuty, FollowUp, Comments, "
+                            "TemperatureNormal, ProductDefinition, ExpirationDate, ProductLot, ProductID, ProgramsNumber";
+        for(int i = 0; i < 16; ++i)
         {
-            QSqlQuery qSqlQuery;
-
-            qSqlQuery.prepare("INSERT INTO student (DonorFirstName, DonorLastName, TestTime, BirthDate, DonorID, TestSite, Operator, "
-                              "PreEmployment, Random, ReasonSuspicionCause, PostAccident, ReturnToDuty, FollowUp, Comments, "
-                              "TemperatureNormal, ProductDefinition, ExpirationDate, ProductLot, ProductID, ProgramsNumber) "
-                              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-            qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorFirstName.toLocal8Bit());
-            qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorLastName.toLocal8Bit());
-            qSqlQuery.addBindValue(m_sDetectorPageUserData.qTestDateTime);
-            qSqlQuery.addBindValue(m_sDetectorPageUserData.qBirthDate);
-            qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorID);
-            qSqlQuery.addBindValue(m_sDetectorPageUserData.strTestSite.toLocal8Bit());
-            qSqlQuery.addBindValue(m_sDetectorPageUserData.strOperator);// 获得用户身份
-            //
-            QString strFlag = "false";
-            //
-            strFlag = m_sDetectorPageUserData.bPreEmployment ? "true" : "false";
-            qSqlQuery.addBindValue(strFlag);
-            //
-            strFlag = m_sDetectorPageUserData.bRandom ? "true" : "false";
-            qSqlQuery.addBindValue(strFlag);
-            //
-            strFlag = m_sDetectorPageUserData.bReasonableSuspicionCause ? "true" : "false";
-            qSqlQuery.addBindValue(strFlag);
-            //
-            strFlag = m_sDetectorPageUserData.bPostAccident ? "true" : "false";
-            qSqlQuery.addBindValue(strFlag);
-            //
-            strFlag = m_sDetectorPageUserData.bReturnToDuty ? "true" : "false";
-            qSqlQuery.addBindValue(strFlag);
-            //
-            strFlag = m_sDetectorPageUserData.bFollowUp ? "true" : "false";
-            qSqlQuery.addBindValue(strFlag);
-            // commets
-            qSqlQuery.addBindValue(m_sDetectorPageUserData.strOtherReasonComments);
-            //
-            strFlag = m_sDetectorPageUserData.bTemperatureNormal ? "true" : "false";
-            qSqlQuery.addBindValue(strFlag);
-            // product details
-            qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductDefinition);
-            qSqlQuery.addBindValue(m_sDetectorPageUserData.qExpriationDate);
-            qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductLot);
-            qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductID);
-            // program and picture
-            qSqlQuery.addBindValue(m_sDetectorPageUserData.iProgramsNumber);
-
-
-            if (!qSqlQuery.exec())
-            {
-                qDebug() << qSqlQuery.lastError();
-                QMessageBox::critical(0, QObject::tr("Database Error"),
-                                      qSqlQuery.lastError().text());
-            }
-            qSqlQuery.finish();
-            qSqlQuery.exec("SELECT id, DonorFirstName FROM student");
-            while (qSqlQuery.next()) {
-                int name = qSqlQuery.value(0).toInt();
-                QString age = qSqlQuery.value(1).toString();
-                qDebug() << name << ": " << age;
-            }
-
+            strInsert += QString(", ") + QString("ProgramName") + QString::number(i);
+            strInsert += QString(", ") + QString("Result") + QString::number(i);
+            strInsert += QString(", ") + QString("Cutoff") + QString::number(i);
         }
+        // 共计68列
+        strInsert += QString(") VALUES (?");
+        for(int i = 0; i < 67; ++i)
+        {
+            strInsert += QString(", ?");
+        }
+        strInsert += QString(")");
+
+        QSqlQuery qSqlQuery;
+        qSqlQuery.prepare(strInsert);
+
+        qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorFirstName.toLocal8Bit());
+        qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorLastName.toLocal8Bit());
+        qSqlQuery.addBindValue(m_sDetectorPageUserData.qTestDateTime);
+        qSqlQuery.addBindValue(m_sDetectorPageUserData.qBirthDate);
+        qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorID);
+        qSqlQuery.addBindValue(m_sDetectorPageUserData.strTestSite.toLocal8Bit());
+        qSqlQuery.addBindValue(m_sDetectorPageUserData.strOperator);// 获得用户身份
+        //
+        QString strFlag = "false";
+        //
+        strFlag = m_sDetectorPageUserData.bPreEmployment ? "true" : "false";
+        qSqlQuery.addBindValue(strFlag);
+        //
+        strFlag = m_sDetectorPageUserData.bRandom ? "true" : "false";
+        qSqlQuery.addBindValue(strFlag);
+        //
+        strFlag = m_sDetectorPageUserData.bReasonableSuspicionCause ? "true" : "false";
+        qSqlQuery.addBindValue(strFlag);
+        //
+        strFlag = m_sDetectorPageUserData.bPostAccident ? "true" : "false";
+        qSqlQuery.addBindValue(strFlag);
+        //
+        strFlag = m_sDetectorPageUserData.bReturnToDuty ? "true" : "false";
+        qSqlQuery.addBindValue(strFlag);
+        //
+        strFlag = m_sDetectorPageUserData.bFollowUp ? "true" : "false";
+        qSqlQuery.addBindValue(strFlag);
+        // commets
+        qSqlQuery.addBindValue(m_sDetectorPageUserData.strOtherReasonComments);
+        //
+        strFlag = m_sDetectorPageUserData.bTemperatureNormal ? "true" : "false";
+        qSqlQuery.addBindValue(strFlag);
+        // product details
+        qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductDefinition);
+        qSqlQuery.addBindValue(m_sDetectorPageUserData.qExpriationDate);
+        qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductLot);
+        qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductID);
+        // program and picture
+        qSqlQuery.addBindValue(m_sDetectorPageUserData.iProgramsNumber);
+        // 插入结果数据
+        int iTestResultDataCount = m_pTestResultDataList.count();
+        for(int i = 0; i < iTestResultDataCount; ++i)
+        {
+            qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->strProgramName.toLocal8Bit());
+            qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->strResult.toLocal8Bit());
+            qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->iCutoffValue);
+        }
+        for(int i = iTestResultDataCount; i < 16; ++i)
+        {
+            qSqlQuery.addBindValue("");
+            qSqlQuery.addBindValue("");
+            qSqlQuery.addBindValue(0);
+        }
+
+        if (!qSqlQuery.exec())
+        {
+            qDebug() << qSqlQuery.lastError();
+            QMessageBox::critical(0, QObject::tr("Database Error"),
+                                  qSqlQuery.lastError().text());
+        }
+        qSqlQuery.finish();
+        // 测试查询
+        qSqlQuery.exec("SELECT id, DonorFirstName FROM student");
+        while (qSqlQuery.next()) {
+            int name = qSqlQuery.value(0).toInt();
+            QString age = qSqlQuery.value(1).toString();
+            qDebug() << name << ": " << age;
+        }
+
+    }
 }
 
 void CHistoryPage::_LoadQss()
@@ -267,33 +294,42 @@ void CHistoryPage::_InitDataBase()
     //添加数据库驱动、设置数据库名称、数据库登录用户名、密码
     if (_ConnectDataBase(QCoreApplication::applicationDirPath() + "drug.db"))
     {
-               QSqlQuery query;
-               if (!query.exec("CREATE TABLE student ("
-                               "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                               "DonorFirstName VARCHAR,"
-                               "DonorLastName VARCHAR,"
-                               "TestTime VARCHAR,"
-                               "BirthDate VARCHAR,"
-                               "DonorID VARCHAR,"
-                               "TestSite VARCHAR,"
-                               "Operator VARCHAR,"
-                              "PreEmployment VARCHAR,"
-                               "Random VARCHAR,"
-                               "ReasonSuspicionCause VARCHAR,"
-                               "PostAccident VARCHAR,"
-                               "ReturnToDuty VARCHAR,"
-                               "FollowUp VARCHAR,"
-                               "Comments VARCHAR,"
-                               "TemperatureNormal VARCHAR,"
-                               "ProductDefinition VARCHAR,"
-                               "ExpirationDate VARCHAR,"
-                               "ProductLot VARCHAR,"
-                               "ProductID VARCHAR,"
-                               "ProgramsNumber INT)"))
-               {
-                   QMessageBox::critical(0, QObject::tr("Database Error"),
-                                         query.lastError().text());
-               }
-           }
+        QString strCreateTable  = "CREATE TABLE student ("
+                                  "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                  "DonorFirstName VARCHAR,"
+                                  "DonorLastName VARCHAR,"
+                                  "TestTime VARCHAR,"
+                                  "BirthDate VARCHAR,"
+                                  "DonorID VARCHAR,"
+                                  "TestSite VARCHAR,"
+                                  "Operator VARCHAR,"
+                                 "PreEmployment VARCHAR,"
+                                  "Random VARCHAR,"
+                                  "ReasonSuspicionCause VARCHAR,"
+                                  "PostAccident VARCHAR,"
+                                  "ReturnToDuty VARCHAR,"
+                                  "FollowUp VARCHAR,"
+                                  "Comments VARCHAR,"
+                                  "TemperatureNormal VARCHAR,"
+                                  "ProductDefinition VARCHAR,"
+                                  "ExpirationDate VARCHAR,"
+                                  "ProductLot VARCHAR,"
+                                  "ProductID VARCHAR,"
+                                  "ProgramsNumber INT,";
+        for(int i = 0; i < 16; ++i)
+        {
+            strCreateTable += QString("ProgramName") + QString::number(i) + QString(" VARCHAR,");
+            strCreateTable += QString("Result") + QString::number(i) + QString(" VARCHAR,");
+            strCreateTable += QString("Cutoff") + QString::number(i) + QString(" INT,");
+        }
+        strCreateTable.replace(strCreateTable.count()-1, 1, ")");// 替换最后“,”为“)”
+        // 创建
+        QSqlQuery qSqlQuery;
+        if (!qSqlQuery.exec(strCreateTable))
+        {
+            QMessageBox::critical(0, QObject::tr("Database Error"),
+                                  qSqlQuery.lastError().text());
+        }
+    }
 
 }
