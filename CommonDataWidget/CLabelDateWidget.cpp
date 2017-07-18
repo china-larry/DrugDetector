@@ -21,6 +21,7 @@ CLabelDateWidget::CLabelDateWidget(QString strLabel, QDate qDate, QWidget *paren
 
 QDate CLabelDateWidget::GetDate()
 {
+    m_qDate = m_pDateEdit->date();
     return m_qDate;
 }
 

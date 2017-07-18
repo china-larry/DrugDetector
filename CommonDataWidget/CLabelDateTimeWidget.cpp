@@ -21,6 +21,7 @@ CLabelDateTimeWidget::CLabelDateTimeWidget(QString strLabel, QDateTime qDateTime
 
 QDateTime CLabelDateTimeWidget::GetDateTime()
 {
+    m_qDateTime = m_pDateTimeEdit->dateTime();
     return m_qDateTime;
 }
 

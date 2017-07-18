@@ -89,6 +89,7 @@ void MainWindow::SlotGoHistoryPage()
 {
     qDebug() << "go history page";
     m_pStackedWidget->setCurrentIndex(1);
+    m_pHistoryPage->ShowCurrentDateTest();// 显示当天测试结果数据
     m_pDetectorPageStatusBar->hide();
 }
 // 前往测试页

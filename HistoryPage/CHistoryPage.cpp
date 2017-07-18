@@ -28,13 +28,40 @@ void CHistoryPage::SetTestUserData(DetectorPageUserData sDetectorPageUserData)
     m_sDetectorPageUserData = sDetectorPageUserData;
     qDebug() << "user histroyt  data: " << m_sDetectorPageUserData.strOtherReasonComments;
 }
+
+void CHistoryPage::ShowCurrentDateTest()
+{
+    // 查询数据库
+    QDate qCurrentDate = QDate::currentDate();// 当前时间结果
+    QString strSelect = QString("SELECT * FROM drugdata WHERE TestTime like '");
+    strSelect += QString::number(qCurrentDate.year()) + "%";
+    strSelect += QString::number(qCurrentDate.month()) + "%";
+    strSelect += QString::number(qCurrentDate.day()) + "%\'";
+    qDebug() << "slel " << strSelect;
+    QSqlQuery qSqlQuery(strSelect);// 69列
+    while(qSqlQuery.next())
+    {
+        QStringList strLineDataList;
+        for(int i = 0; i != 68; ++i)
+        {
+            strLineDataList.push_back(qSqlQuery.value(i+1).toString());
+        }
+        // 数据
+        qDebug() << "list " << strLineDataList;
+        m_strTableLineDataList.push_back(strLineDataList);
+        // 表格
+        _InsertOneLine(strLineDataList);
+    }
+    // 显示到控件
+    m_pHistoryDataTableWidget->update();
+}
 // 插入数据库
 void CHistoryPage::InsertToDatabase()
 {
 
     if (_ConnectDataBase(QCoreApplication::applicationDirPath() + "drug.db"))
     {
-        QString strInsert = "INSERT INTO student (DonorFirstName, DonorLastName, TestTime, BirthDate, DonorID, TestSite, Operator, "
+        QString strInsert = "INSERT INTO drugdata (DonorFirstName, DonorLastName, TestTime, BirthDate, DonorID, TestSite, Operator, "
                             "PreEmployment, Random, ReasonSuspicionCause, PostAccident, ReturnToDuty, FollowUp, Comments, "
                             "TemperatureNormal, ProductDefinition, ExpirationDate, ProductLot, ProductID, ProgramsNumber";
         for(int i = 0; i < 16; ++i)
@@ -116,7 +143,7 @@ void CHistoryPage::InsertToDatabase()
         }
         qSqlQuery.finish();
         // 测试查询
-        qSqlQuery.exec("SELECT id, DonorFirstName FROM student");
+        qSqlQuery.exec("SELECT id, DonorFirstName FROM drugdata");
         while (qSqlQuery.next()) {
             int name = qSqlQuery.value(0).toInt();
             QString age = qSqlQuery.value(1).toString();
@@ -187,7 +214,7 @@ void CHistoryPage::_InitTableWidget()
     m_pHistoryDataTableWidget = new QTableWidget(this);
     m_pHistoryDataTableWidget->setMinimumHeight(350);
     // 表单样式
-    m_pHistoryDataTableWidget->setColumnCount(90);
+    m_pHistoryDataTableWidget->setColumnCount(68);
     QHeaderView *pHeaderView = m_pHistoryDataTableWidget->horizontalHeader();
     pHeaderView->setDefaultSectionSize(120);
     pHeaderView->setDisabled(true);
@@ -210,19 +237,14 @@ void CHistoryPage::_InitTableWidget()
                    << tr("Operator") << tr("Pre-Employment") << tr("Random") << tr("Reason \r\nSuspicion Cause")
                    << tr("Post Accident") << tr("Return to Duty") << tr("Follow Up") << tr("Other Reason")
                    << tr("Comments") << tr("Temperature \r\nNormal#") << tr("Product Definition") << tr("Expiration Date")
-                   << tr("Product Lot") << tr("Product ID") << tr("Number of Programs");
-    for(int i = 0; i < 17; ++i)
+                   << tr("Product Lot") << tr("Product ID") << tr("Number \r\nof Programs");
+    for(int i = 0; i < 16; ++i)
     {
         qstrHeaderList << "Program Name " + QString::number(i);
         qstrHeaderList << "Result " + QString::number(i);
         qstrHeaderList << "Cutoff " + QString::number(i);
     }
     //
-    qstrHeaderList << tr("Number of Picture");
-    for(int i = 0; i < 17; ++i)
-    {
-        qstrHeaderList << "Picture Path  " + QString::number(i);
-    }
     m_pHistoryDataTableWidget->setHorizontalHeaderLabels(qstrHeaderList);
     // 显示格子线
     m_pHistoryDataTableWidget->setShowGrid(true);
@@ -288,12 +310,51 @@ bool CHistoryPage::_ConnectDataBase(const QString &strDBName)
         return true;
     }
 }
+
+bool CHistoryPage::_InsertOneLine(QStringList strContentList)
+{
+    int iColumnCount = m_pHistoryDataTableWidget->columnCount();
+    int iContentListCount = strContentList.count();
+    if(iContentListCount < 1 || iContentListCount != iColumnCount)
+    {// 插入数据不正确，不进行插入操作
+        return false;
+    }
+    // 创建行
+    int iRow = m_pHistoryDataTableWidget->rowCount();
+    m_pHistoryDataTableWidget->insertRow(iRow);
+    //
+    for(int i = 0; i != iColumnCount; ++i)
+    {
+        if(!_InsertOneItem(iRow, i, strContentList.at(i)))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool CHistoryPage::_InsertOneItem(int iRow, int iColumn, QString strContent)
+{
+    int iColumnCount = m_pHistoryDataTableWidget->columnCount();
+    int iRowCount = m_pHistoryDataTableWidget->rowCount();
+    if(iColumn < iColumnCount && iRow < iRowCount)
+    {
+        QTableWidgetItem *pItem = new QTableWidgetItem;
+        pItem->setText(strContent);
+        m_pHistoryDataTableWidget->setItem(iRow, iColumn, pItem);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 // 创建数据库
 void CHistoryPage::_InitDataBase()
 {
     if (_ConnectDataBase(QCoreApplication::applicationDirPath() + "drug.db"))
     {
-        QString strCreateTable  = "CREATE TABLE student ("
+        QString strCreateTable  = "CREATE TABLE drugdata ("
                                   "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                                   "DonorFirstName VARCHAR,"
                                   "DonorLastName VARCHAR,"
@@ -326,8 +387,8 @@ void CHistoryPage::_InitDataBase()
         QSqlQuery qSqlQuery;
         if (!qSqlQuery.exec(strCreateTable))
         {
-            QMessageBox::critical(0, QObject::tr("Database Error"),
-                                  qSqlQuery.lastError().text());
+            //QMessageBox::critical(0, QObject::tr("Database Error"), qSqlQuery.lastError().text());
+            qDebug() << " database error: " << qSqlQuery.lastError().text();
         }
     }
 

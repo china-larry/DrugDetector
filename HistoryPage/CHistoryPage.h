@@ -36,6 +36,8 @@ public:
     // 获得测试结果
     void SetTestResultDataList(QList<TestResultData*> pTestResultDataList);
     void SetTestUserData(DetectorPageUserData sDetectorPageUserData);
+    // 切换到历史数据，显示当天测试数据
+    void ShowCurrentDateTest();
     // 将上方获取的数据插入数据库
     void InsertToDatabase();
 
@@ -48,6 +50,9 @@ private:
     // 数据库
     void _InitDataBase();// 初始化数据库
     bool _ConnectDataBase(const QString &dbName);
+    // Table操作
+    bool _InsertOneLine(QStringList strContentList);// 行插入
+    bool _InsertOneItem(int iRow, int iColumn, QString strContent);// 单元格插入
 
 private:
     QTableWidget* m_pHistoryDataTableWidget;
@@ -71,9 +76,8 @@ private:
     // 单次测试数据区
     QList<TestResultData*> m_pTestResultDataList;
     DetectorPageUserData m_sDetectorPageUserData;
-    // 数据库操作
-    //QSqlQuery m_qSqlQuery;
-    uint64_t m_uiKeyID;// 主键迭代ID
+    // table数据
+    QList<QStringList> m_strTableLineDataList;// 每行数据
 
 };
 
