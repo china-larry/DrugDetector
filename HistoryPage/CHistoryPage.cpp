@@ -24,7 +24,7 @@ void CHistoryPage::_SlotCheckQuery()
 
 void CHistoryPage::_SlotCheckSelectAll()
 {
-
+    m_pHistoryDataTableWidget->selectAll();
 }
 
 void CHistoryPage::_SlotCheckDeselectAll()
@@ -105,10 +105,10 @@ void CHistoryPage::InsertToDatabase()
             strInsert += QString(", ") + QString("Cutoff") + QString::number(i);
         }
         // 共计m_iTableColumnCount列,ID不需要插入，自动生成（叠加）
-        int iInsertNumberTmp = m_iTableColumnCount - 1;
+        int iInsertNumberTmp = m_iTableColumnCount - 2;
         strInsert += QString(") VALUES (?");
         for(int i = 0; i < iInsertNumberTmp; ++i)
-        {
+        {// 67个
             strInsert += QString(", ?");
         }
         strInsert += QString(")");
@@ -260,7 +260,7 @@ void CHistoryPage::_InitTableWidget()
     m_iTableColumnCount = 69;
     // 设置列数量
     m_pHistoryDataTableWidget->setColumnCount(m_iTableColumnCount);
-    m_pHistoryDataTableWidget->setColumnHidden(0, true);// 首列为ID数据，隐藏不显示
+    //m_pHistoryDataTableWidget->setColumnHidden(0, true);// 首列为ID数据，隐藏不显示
     // 不显示行号
     QHeaderView *pVerticalHeader = m_pHistoryDataTableWidget->verticalHeader();
     pVerticalHeader->setHidden(true);
