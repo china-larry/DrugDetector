@@ -15,7 +15,7 @@ CLabelLineEditWidget::CLabelLineEditWidget(QString strLabel, QString strLineText
 {
     m_pLabel = new QLabel(strLabel, this);
     m_pLineEdit = new QLineEdit(strLineText, this);
-    m_pLineEdit->setMaximumWidth(150);
+    m_pLineEdit->setFixedWidth(200);
     _InitLayout();
 }
 

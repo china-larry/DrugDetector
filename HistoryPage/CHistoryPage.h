@@ -27,6 +27,7 @@
 #include <QtSql>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QTextEdit>
 #include "CommonDataWidget/CLabelLineEditWidget.h"
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
@@ -62,7 +63,8 @@ public:
 private:
     void _LoadQss();
     QGroupBox *_CreateQueryConditionGroup();
-    void _InitTableWidget();
+    void _InitHistoryTableWidget();
+    void _InitTestDataWidget();// 测试明细数据
     void _InitButtonWidget();
     void _InitLayout();
     // 数据库
@@ -75,18 +77,17 @@ private:
 
 
 private:
-    QTableWidget* m_pHistoryDataTableWidget;
+    QTableWidget *m_pHistoryDataTableWidget;
     int m_iTableColumnCount;// 列数量
+    // 数据分表
+    QTextEdit *m_pTestDataTextEdit;
+    QTableWidget *m_pTestDataTableWidget;
     // query condition
-    CLabelLineEditWidget *m_pSubjectLastNameWidget;
     CLabelLineEditWidget *m_pDonorIDWidget;
-    CLabelDateWidget *m_pDateCollectedWidget;
-    QRadioButton *m_pSinceRadioButton;
-    QRadioButton *m_pExactDateQRadioButton;
-    //
     CLabelLineEditWidget *m_pLotNumberWidget;
+    CLabelDateWidget *m_pStartDataWidget;
+    CLabelDateWidget *m_pEndDataWidget;
     CLabelCommoBoxWidget *m_pProductDefinitionWidget;
-    CLabelCheckBoxWidget *m_pQueryAllWidget;
     // button
     QPushButton *m_pQueryButton;
     QPushButton *m_pSelectAllButton;

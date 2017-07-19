@@ -303,10 +303,6 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
     pHeaderView->setStretchLastSection(true);
      // 表头背景色
     pHeaderView->setStyleSheet("QHeaderView::section{background:skyblue;}");
-    // 多选
-    m_pResultsTableWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    // 每次选择一行
-    m_pResultsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     // 设置表头内容
     QStringList qstrHeaderList;
     qstrHeaderList << tr("Program") << tr("Result") << tr("Cutoff Value");

@@ -15,7 +15,7 @@ CLabelDateTimeWidget::CLabelDateTimeWidget(QString strLabel, QDateTime qDateTime
 {
     m_pLabel = new QLabel(strLabel, this);
     m_pDateTimeEdit = new QDateTimeEdit(qDateTime, this);
-    m_pDateTimeEdit->setMaximumWidth(300);
+    m_pDateTimeEdit->setFixedWidth(200);
     _InitLayout();
 }
 

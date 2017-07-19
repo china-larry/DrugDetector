@@ -9,7 +9,8 @@
 #include <QMessageBox>
 CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
 {
-    _InitTableWidget();
+    _InitHistoryTableWidget();
+    _InitTestDataWidget();
     _InitButtonWidget();
     _LoadQss();
     _InitLayout();
@@ -91,10 +92,18 @@ void CHistoryPage::ShowCurrentDateTest()
     while(qSqlQuery.next())
     {
         QStringList strLineDataList;
-        for(int i = 0; i != m_iTableColumnCount; ++i)
-        {
-            strLineDataList.push_back(qSqlQuery.value(i).toString());
-        }
+        // id
+        strLineDataList.push_back(qSqlQuery.value(0).toString());
+        // Name
+        strLineDataList.push_back(qSqlQuery.value(1).toString() + qSqlQuery.value(2).toString());
+        // DonorID
+        strLineDataList.push_back(qSqlQuery.value(3).toString());
+        // TestTime
+        strLineDataList.push_back(qSqlQuery.value(5).toString());
+        // Product Lot
+        strLineDataList.push_back(qSqlQuery.value(18).toString());
+        // Product Difinition
+        strLineDataList.push_back(qSqlQuery.value(16).toString());
         // 数据
         qDebug() << "list " << strLineDataList;
         m_strTableLineDataList.push_back(strLineDataList);
@@ -124,10 +133,9 @@ void CHistoryPage::InsertToDatabase()
             strInsert += QString(", ") + QString("Result") + QString::number(i);
             strInsert += QString(", ") + QString("Cutoff") + QString::number(i);
         }
-        // 共计m_iTableColumnCount列,ID不需要插入，自动生成（叠加）
-        int iInsertNumberTmp = m_iTableColumnCount - 2;
+        //
         strInsert += QString(") VALUES (?");
-        for(int i = 0; i < iInsertNumberTmp; ++i)
+        for(int i = 0; i < 67; ++i)// 共计68列
         {// 67个
             strInsert += QString(", ?");
         }
@@ -234,38 +242,31 @@ QGroupBox *CHistoryPage::_CreateQueryConditionGroup()
     QGroupBox *pGroupBox = new QGroupBox(tr("Query Condition"), this);
     pGroupBox->setMaximumHeight(200);
     //
-    m_pSubjectLastNameWidget = new CLabelLineEditWidget(tr("Program Name"), "", this);
-    m_pDonorIDWidget = new CLabelLineEditWidget(tr("Donor ID#"), "", this);
-    m_pDateCollectedWidget = new CLabelDateWidget(tr("Test Time"), QDate::currentDate(), this);
-    m_pSinceRadioButton = new QRadioButton(tr("since"), this);
-    m_pExactDateQRadioButton = new QRadioButton(tr("exact date"), this);
-    //
+    m_pDonorIDWidget = new CLabelLineEditWidget(tr("Donor ID"), "", this);
     m_pLotNumberWidget = new CLabelLineEditWidget(tr("Product Lot"), "", this);
+    //
+    m_pStartDataWidget = new CLabelDateWidget(tr("Start Time"), QDate::currentDate(), this);
+    m_pEndDataWidget = new CLabelDateWidget(tr("End Time"), QDate::currentDate(), this);
+    //
     QStringList strProductDefinitionList;
     strProductDefinitionList << tr("test1") << tr("test2");
     m_pProductDefinitionWidget = new CLabelCommoBoxWidget(tr("Product Definition"), strProductDefinitionList, this);
     //
-    m_pQueryAllWidget = new CLabelCheckBoxWidget(tr("Query All"), true, this);
     // subject
-    QHBoxLayout *pSubjectLayout = new QHBoxLayout;
-    pSubjectLayout->addWidget(m_pDateCollectedWidget);
+    QHBoxLayout *pDonorLayout = new QHBoxLayout;
+    pDonorLayout->addWidget(m_pDonorIDWidget);
+    pDonorLayout->addWidget(m_pLotNumberWidget);
+    pDonorLayout->addWidget(m_pStartDataWidget);
+    pDonorLayout->addWidget(m_pEndDataWidget);
     //
-    QVBoxLayout *pVSinceLayout = new QVBoxLayout;
-    pVSinceLayout->addWidget(m_pSinceRadioButton);
-    pVSinceLayout->addWidget(m_pExactDateQRadioButton);
-    // 第一行
-    pSubjectLayout->addLayout(pVSinceLayout);
-    // lot number
+    QHBoxLayout *pDefinitionLayout = new QHBoxLayout;
+    pDefinitionLayout->addWidget(m_pProductDefinitionWidget);
+    pDefinitionLayout->addStretch(100);
     //
-    QGridLayout *pLayout = new QGridLayout;
-    pLayout->addWidget(m_pSubjectLastNameWidget, 0, 0, 1, 1);
-    pLayout->addWidget(m_pDonorIDWidget, 0, 1, 1, 1);
-    pLayout->addLayout(pSubjectLayout, 0, 2, 1, 1);
-    //
-    pLayout->addWidget(m_pLotNumberWidget, 1, 0, 1, 1);
-    pLayout->addWidget(m_pProductDefinitionWidget, 1, 1, 1, 1);
-    pLayout->addWidget(m_pQueryAllWidget, 1, 2, 1, 1);
-    //
+    QVBoxLayout *pLayout = new QVBoxLayout;
+    pLayout->addLayout(pDonorLayout);
+    pLayout->addLayout(pDefinitionLayout);
+
     pGroupBox->setLayout(pLayout);
 
     return pGroupBox;
@@ -275,21 +276,21 @@ QGroupBox *CHistoryPage::_CreateQueryConditionGroup()
   * @param
   * @return
   */
-void CHistoryPage::_InitTableWidget()
+void CHistoryPage::_InitHistoryTableWidget()
 {
     // table
     m_pHistoryDataTableWidget = new QTableWidget(this);
     m_pHistoryDataTableWidget->setMinimumHeight(350);
-    m_iTableColumnCount = 69;
+    m_iTableColumnCount = 6;
     // 设置列数量
     m_pHistoryDataTableWidget->setColumnCount(m_iTableColumnCount);
-    //m_pHistoryDataTableWidget->setColumnHidden(0, true);// 首列为ID数据，隐藏不显示
+    m_pHistoryDataTableWidget->setColumnHidden(0, true);// 首列为ID数据，隐藏不显示
     // 不显示行号
     QHeaderView *pVerticalHeader = m_pHistoryDataTableWidget->verticalHeader();
     pVerticalHeader->setHidden(true);
     // 表单样式    
     QHeaderView *pHeaderView = m_pHistoryDataTableWidget->horizontalHeader();
-    pHeaderView->setDefaultSectionSize(120);
+    pHeaderView->setDefaultSectionSize(110);
     pHeaderView->setDisabled(true);
     // 表头字体
     QFont qFont = pHeaderView->font();
@@ -305,18 +306,8 @@ void CHistoryPage::_InitTableWidget()
     m_pHistoryDataTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     // 设置表头内容
     QStringList qstrHeaderList;
-    qstrHeaderList << tr("id") << tr("Donor \r\nFirst Name") << tr("Donor \r\nLast Name")
-                   << tr("Test Time") << tr("Birth Date") << tr("Donor ID") << tr("Test Site")
-                   << tr("Operator") << tr("Pre-Employment") << tr("Random") << tr("Reason \r\nSuspicion Cause")
-                   << tr("Post Accident") << tr("Return to Duty") << tr("Follow Up")
-                   << tr("Comments") << tr("Temperature \r\nNormal#") << tr("Product Definition") << tr("Expiration Date")
-                   << tr("Product Lot") << tr("Product ID") << tr("Number \r\nof Programs");
-    for(int i = 0; i < 16; ++i)
-    {
-        qstrHeaderList << "Program Name " + QString::number(i);
-        qstrHeaderList << "Result " + QString::number(i);
-        qstrHeaderList << "Cutoff " + QString::number(i);
-    }
+    qstrHeaderList << tr("id") << tr("Donor Name") << tr("Test Time") << tr("Donor ID")
+                          << tr("Product Lot") << tr("Product Definition");
     //
     m_pHistoryDataTableWidget->setHorizontalHeaderLabels(qstrHeaderList);
     // 显示格子线
@@ -331,7 +322,50 @@ void CHistoryPage::_InitTableWidget()
       "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
       "QScrollBar::handle:hover{background:gray;}"
       "QScrollBar::sub-line{background:transparent;}"
+                                                                   "QScrollBar::add-line{background:transparent;}");
+}
+
+void CHistoryPage::_InitTestDataWidget()
+{
+    m_pTestDataTextEdit = new QTextEdit(this);
+    m_pTestDataTextEdit->setFixedSize(380, 100);
+
+    m_pTestDataTableWidget = new QTableWidget(this);
+    m_pTestDataTableWidget->setFixedWidth(380);
+    m_pTestDataTableWidget->setColumnCount(3);
+    m_pTestDataTableWidget->setRowCount(16);// 最大16个项目
+    // 不显示行号
+    QHeaderView *pVerticalHeader = m_pTestDataTableWidget->verticalHeader();
+    pVerticalHeader->setHidden(true);
+    QHeaderView *pHeaderView = m_pTestDataTableWidget->horizontalHeader();
+    pHeaderView->setDefaultSectionSize(120);
+    pHeaderView->setDisabled(true);
+    // 表头字体
+    QFont qFont = pHeaderView->font();
+    qFont.setBold(true);
+    pHeaderView->setFont(qFont);
+    // 充满表格
+    pHeaderView->setStretchLastSection(true);
+     // 表头背景色
+    pHeaderView->setStyleSheet("QHeaderView::section{background:skyblue;}");
+    // 设置表头内容
+    QStringList qstrHeaderList;
+    qstrHeaderList << tr("Program") << tr("Result") << tr("Cutoff Value");
+    m_pTestDataTableWidget->setHorizontalHeaderLabels(qstrHeaderList);
+    // 显示格子线
+    m_pTestDataTableWidget->setShowGrid(true);
+    //设置水平、垂直滚动条样式
+    m_pTestDataTableWidget->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
+      "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
+      "QScrollBar::handle:hover{background:gray;}"
+      "QScrollBar::sub-line{background:transparent;}"
       "QScrollBar::add-line{background:transparent;}");
+    m_pTestDataTableWidget->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
+      "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
+      "QScrollBar::handle:hover{background:gray;}"
+      "QScrollBar::sub-line{background:transparent;}"
+      "QScrollBar::add-line{background:transparent;}");
+
 }
 
 void CHistoryPage::_InitButtonWidget()
@@ -352,7 +386,15 @@ void CHistoryPage::_InitButtonWidget()
 void CHistoryPage::_InitLayout()
 {
     QVBoxLayout *pLayout = new QVBoxLayout;
-    pLayout->addWidget(m_pHistoryDataTableWidget);
+
+    QHBoxLayout *pDataLayout = new QHBoxLayout;
+    QVBoxLayout *pTestDataLayout = new QVBoxLayout;
+    pTestDataLayout->addWidget(m_pTestDataTextEdit);
+    pTestDataLayout->addWidget(m_pTestDataTableWidget);
+    pDataLayout->addWidget(m_pHistoryDataTableWidget);
+    pDataLayout->addLayout(pTestDataLayout);
+    //
+    pLayout->addLayout(pDataLayout);
     pLayout->addWidget(_CreateQueryConditionGroup());
     //
     QHBoxLayout *pButtonLayout = new QHBoxLayout;
