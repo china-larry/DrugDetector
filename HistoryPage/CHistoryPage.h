@@ -68,9 +68,11 @@ private:
     // 数据库
     void _InitDataBase();// 初始化数据库
     bool _ConnectDataBase(const QString &dbName);
+    bool _DeleteDatabase(QString strID);// 删除指定ID的数据
     // Table操作
     bool _InsertOneLine(QStringList strContentList);// 行插入
     bool _InsertOneItem(int iRow, int iColumn, QString strContent);// 单元格插入
+
 
 private:
     QTableWidget* m_pHistoryDataTableWidget;
@@ -97,6 +99,8 @@ private:
     DetectorPageUserData m_sDetectorPageUserData;
     // table数据
     QList<QStringList> m_strTableLineDataList;// 每行数据
+    // 数据库
+    QString m_strDatabaseName;
 
 };
 

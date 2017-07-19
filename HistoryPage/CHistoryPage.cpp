@@ -24,17 +24,37 @@ void CHistoryPage::_SlotCheckQuery()
 
 void CHistoryPage::_SlotCheckSelectAll()
 {
-    m_pHistoryDataTableWidget->selectAll();
+    //m_pHistoryDataTableWidget->selectAll();
 }
 
 void CHistoryPage::_SlotCheckDeselectAll()
 {
-
+//    QList<QTableWidgetItem*> pSelectItemsList = m_pHistoryDataTableWidget->selectedItems();
+//    int iSelectItemCount = pSelectItemsList.count();
+//    int iRow = 0;
+//    int iColumn = 0;
+//    for(int i = 0; i < iSelectItemCount; ++i)
+//    {
+//        iRow = m_pHistoryDataTableWidget->row(pSelectItemsList.at(i));
+//        iColumn = m_pHistoryDataTableWidget->column(pSelectItemsList.at(i));
+//        m_pHistoryDataTableWidget->removeCellWidget(iRow, iColumn);
+//    }
 }
 
 void CHistoryPage::_SlotCheckDelete()
 {
-
+    int iRow = m_pHistoryDataTableWidget->currentRow();
+    if(iRow < 0)
+    {
+        return;
+    }
+    QTableWidgetItem *pIDItem = m_pHistoryDataTableWidget->item(iRow, 0);
+    QString strDatabaseID = pIDItem->text();
+    qDebug()<<"str DatabaseID: " << strDatabaseID;
+    // 数据库删除
+    _DeleteDatabase(strDatabaseID);
+    // 控件删除
+    m_pHistoryDataTableWidget->removeRow(iRow);
 }
 
 void CHistoryPage::_SlotCheckExport()
@@ -93,7 +113,7 @@ void CHistoryPage::ShowCurrentDateTest()
 void CHistoryPage::InsertToDatabase()
 {
 
-    if (_ConnectDataBase(QCoreApplication::applicationDirPath() + "drug.db"))
+    if (_ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
     {
         QString strInsert = "INSERT INTO drugdata (DonorFirstName, DonorLastName, TestTime, BirthDate, DonorID, TestSite, Operator, "
                             "PreEmployment, Random, ReasonSuspicionCause, PostAccident, ReturnToDuty, FollowUp, Comments, "
@@ -184,7 +204,10 @@ void CHistoryPage::InsertToDatabase()
             QString age = qSqlQuery.value(1).toString();
             qDebug() << name << ": " << age;
         }
-
+    }
+    else
+    {
+        qDebug() <<"打开数据库失败";
     }
 }
 
@@ -369,6 +392,37 @@ bool CHistoryPage::_ConnectDataBase(const QString &strDBName)
         return true;
     }
 }
+
+bool CHistoryPage::_DeleteDatabase(QString strID)
+{
+    if(strID == "")
+    {
+        return false;
+    }
+    // 判定是否为数字
+    bool bOK = false;
+    int iID = strID.toInt(&bOK, 10);
+    if(!bOK || iID < 0)
+    {
+        return false;
+    }
+    if (_ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
+    {
+        QString strDelete = "DELETE FROM drugdata WHERE id = ";
+        strDelete += strID;
+        QSqlQuery qSqlQuery;
+        if (!qSqlQuery.exec(strDelete))
+        {
+            qDebug() << qSqlQuery.lastError();
+            QMessageBox::critical(0, QObject::tr("Delete Database Error"),
+                                  qSqlQuery.lastError().text());
+            qSqlQuery.finish();
+            return false;
+        }
+        qSqlQuery.finish();
+    }
+    return true;
+}
 /**
   * @brief 向TableWidget添加一行
   * @param 添加行数据的字符串数组
@@ -425,7 +479,8 @@ bool CHistoryPage::_InsertOneItem(int iRow, int iColumn, QString strContent)
   */
 void CHistoryPage::_InitDataBase()
 {
-    if (_ConnectDataBase(QCoreApplication::applicationDirPath() + "drug.db"))
+    m_strDatabaseName = "drug.db";
+    if (_ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
     {
         QString strCreateTable  = "CREATE TABLE drugdata ("
                                   "id INTEGER PRIMARY KEY AUTOINCREMENT,"
