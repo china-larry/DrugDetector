@@ -121,7 +121,11 @@ void MainWindow::SlotDetectorPageEndTest()
     m_pHistoryPage->SetTestUserData(m_sDetectorPageUserData);
     m_pHistoryPage->InsertToDatabase();
 }
-
+/**
+  * @brief 初始化控件
+  * @param
+  * @return
+  */
 void MainWindow::_InitWidget()
 {
     // 标题栏

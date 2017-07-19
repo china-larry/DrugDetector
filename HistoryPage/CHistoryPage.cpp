@@ -17,6 +17,31 @@ CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
     _InitDataBase();
 }
 
+void CHistoryPage::_SlotCheckQuery()
+{
+
+}
+
+void CHistoryPage::_SlotCheckSelectAll()
+{
+
+}
+
+void CHistoryPage::_SlotCheckDeselectAll()
+{
+
+}
+
+void CHistoryPage::_SlotCheckDelete()
+{
+
+}
+
+void CHistoryPage::_SlotCheckExport()
+{
+
+}
+
 void CHistoryPage::SetTestResultDataList(QList<TestResultData *> pTestResultDataList)
 {
     m_pTestResultDataList = pTestResultDataList;
@@ -28,7 +53,11 @@ void CHistoryPage::SetTestUserData(DetectorPageUserData sDetectorPageUserData)
     m_sDetectorPageUserData = sDetectorPageUserData;
     qDebug() << "user histroyt  data: " << m_sDetectorPageUserData.strOtherReasonComments;
 }
-
+/**
+  * @brief 显示当天测试结果数据至Table控件
+  * @param
+  * @return
+  */
 void CHistoryPage::ShowCurrentDateTest()
 {
     // 查询数据库
@@ -56,6 +85,11 @@ void CHistoryPage::ShowCurrentDateTest()
     m_pHistoryDataTableWidget->update();
 }
 // 插入数据库
+/**
+  * @brief 插入测试页测试结果至数据库
+  * @param
+  * @return
+  */
 void CHistoryPage::InsertToDatabase()
 {
 
@@ -166,6 +200,11 @@ void CHistoryPage::_LoadQss()
    qFile.close();
 }
 // query condition group
+/**
+  * @brief 创建数据库操作组合控件
+  * @param
+  * @return
+  */
 QGroupBox *CHistoryPage::_CreateQueryConditionGroup()
 {
     QGroupBox *pGroupBox = new QGroupBox(tr("Query Condition"), this);
@@ -207,7 +246,11 @@ QGroupBox *CHistoryPage::_CreateQueryConditionGroup()
 
     return pGroupBox;
 }
-
+/**
+  * @brief 初始化Table控件
+  * @param
+  * @return
+  */
 void CHistoryPage::_InitTableWidget()
 {
     // table
@@ -265,10 +308,15 @@ void CHistoryPage::_InitButtonWidget()
 {
     // button
     m_pQueryButton = new QPushButton(tr("Query"), this);
+    connect(m_pQueryButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckQuery()));
     m_pSelectAllButton = new QPushButton(tr("Selet All"), this);
+    connect(m_pSelectAllButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckSelectAll()));
     m_pDeselectAllButton = new QPushButton(tr("Deselect All"), this);
+    connect(m_pDeselectAllButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckDeselectAll()));
     m_pDeleteButton = new QPushButton(tr("Delete"), this);
+    connect(m_pDeleteButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckDelete()));
     m_pExportButton = new QPushButton(tr("Export"), this);
+    connect(m_pExportButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckExport()));
 }
 
 void CHistoryPage::_InitLayout()
@@ -290,7 +338,11 @@ void CHistoryPage::_InitLayout()
     this->setLayout(pLayout);
 }
 
-//添加数据库驱动、设置数据库名称、数据库登录用户名、密码
+/**
+  * @brief 添加数据库、设置数据库名称
+  * @param
+  * @return
+  */
 bool CHistoryPage::_ConnectDataBase(const QString &strDBName)
 {
     QSqlDatabase qSqlDataBase = QSqlDatabase::addDatabase("QSQLITE");
@@ -310,7 +362,11 @@ bool CHistoryPage::_ConnectDataBase(const QString &strDBName)
         return true;
     }
 }
-
+/**
+  * @brief 向TableWidget添加一行
+  * @param 添加行数据的字符串数组
+  * @return true：添加成功；false：添加失败
+  */
 bool CHistoryPage::_InsertOneLine(QStringList strContentList)
 {
     int iColumnCount = m_pHistoryDataTableWidget->columnCount();
@@ -332,7 +388,13 @@ bool CHistoryPage::_InsertOneLine(QStringList strContentList)
     }
     return true;
 }
-
+/**
+  * @brief 向TableWidget某行某列添加Item
+  * @param iRow：所在行
+  * @param iColumn：所在列
+  * @param strContent：Item显示的内容
+  * @return true：添加成功；false：添加失败
+  */
 bool CHistoryPage::_InsertOneItem(int iRow, int iColumn, QString strContent)
 {
     int iColumnCount = m_pHistoryDataTableWidget->columnCount();
@@ -349,7 +411,11 @@ bool CHistoryPage::_InsertOneItem(int iRow, int iColumn, QString strContent)
         return false;
     }
 }
-// 创建数据库
+/**
+  * @brief 创建数据库表
+  * @param
+  * @return
+  */
 void CHistoryPage::_InitDataBase()
 {
     if (_ConnectDataBase(QCoreApplication::applicationDirPath() + "drug.db"))

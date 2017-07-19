@@ -1,6 +1,17 @@
+/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 实现对数据库中历史数据的插入、查询、删除等操作
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
 #ifndef CHISTORYPAGE_H
 #define CHISTORYPAGE_H
-
 #include <QWidget>
 #include <QLabel>
 #include <QGroupBox>
@@ -32,13 +43,20 @@ signals:
 
 public slots:
 
+private slots:
+    // 点击数据库操作按钮
+    void _SlotCheckQuery();
+    void _SlotCheckSelectAll();
+    void _SlotCheckDeselectAll();
+    void _SlotCheckDelete();
+    void _SlotCheckExport();
 public:
     // 获得测试结果
     void SetTestResultDataList(QList<TestResultData*> pTestResultDataList);
     void SetTestUserData(DetectorPageUserData sDetectorPageUserData);
     // 切换到历史数据，显示当天测试数据
     void ShowCurrentDateTest();
-    // 将上方获取的数据插入数据库
+    // 将测试页获取的数据插入数据库
     void InsertToDatabase();
 
 private:

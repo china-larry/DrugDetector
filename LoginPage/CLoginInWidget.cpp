@@ -17,7 +17,11 @@ void CLoginInWidget::SlotCheckLoginButton()
     this->hide();
     emit SigShowMainWindow();
 }
-
+/**
+  * @brief 初始化控件
+  * @param
+  * @return
+  */
 void CLoginInWidget::_InitWidget()
 {
     //
@@ -40,7 +44,11 @@ void CLoginInWidget::_InitWidget()
 
     connect(m_pLoginButton, SIGNAL(clicked(bool)), this, SLOT(SlotCheckLoginButton()));
 }
-
+/**
+  * @brief 布局
+  * @param
+  * @return
+  */
 void CLoginInWidget::_InitLayout()
 {
     //

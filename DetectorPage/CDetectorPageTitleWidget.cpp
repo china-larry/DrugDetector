@@ -12,8 +12,11 @@ CDetectorPageTitleWidget::CDetectorPageTitleWidget(QWidget *parent) : QWidget(pa
     qPalette.setColor(QPalette::Background, QColor("#2162a9"));
     this->setPalette(qPalette);
 }
-
-
+/**
+  * @brief 初始化控件
+  * @param
+  * @return
+  */
 void CDetectorPageTitleWidget::_InitWidget()
 {
     m_pUserInfoLabel = new QLabel("admin", this);
@@ -30,7 +33,11 @@ void CDetectorPageTitleWidget::_InitWidget()
     m_pCloseWindowButton = new QPushButton("Close", this);
     connect(m_pCloseWindowButton, SIGNAL(clicked(bool)), this, SIGNAL(SignalCloseWindow()));
 }
-
+/**
+  * @brief 布局
+  * @param
+  * @return
+  */
 void CDetectorPageTitleWidget::_InitLayout()
 {
     QHBoxLayout *pLayout = new QHBoxLayout;

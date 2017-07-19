@@ -38,7 +38,6 @@ CDetectorPage::~CDetectorPage()
 // 接收二维码数据
 void CDetectorPage::SlotReceiveQRCodeInfo(QVariant sQRCodeInfo)
 {
-
     m_sQRCodeInfo = sQRCodeInfo.value<QRCodeInfo>();
     qDebug() << "code info" << m_sQRCodeInfo.iProductID;
     // 更新控件
@@ -46,7 +45,11 @@ void CDetectorPage::SlotReceiveQRCodeInfo(QVariant sQRCodeInfo)
     m_pExpirationDateWidget->SetDate(m_sQRCodeInfo.qExprationDate);
     m_pProductIDWidget->SetLineText(QString::number(m_sQRCodeInfo.iProductID));
 }
-// 接收每次测试结果
+/**
+  * @brief 接收每次测试结果数据
+  * @param sTestResultData:TestResultData结构体数据
+  * @return
+  */
 void CDetectorPage::SlotReceiveTestResultData(QVariant sTestResultData)
 {
     TestResultData sTestResultDataTemp = sTestResultData.value<TestResultData>();
@@ -76,7 +79,7 @@ void CDetectorPage::SlotEndTest()
     //
 
 }
-// 开始测试
+// 用户点击开始测试按钮，开始测试
 void CDetectorPage::_SlotCheckReadTestDevice()
 {
   m_pLibDrugDetector->UIBeginTest();
@@ -88,7 +91,6 @@ void CDetectorPage::_SlotCheckReadTestDevice()
       m_pTestResultDataList.clear();
       qDebug() << "clear test result data list";
   }
-
   m_pResultsTableWidget->clear();
 }
 
@@ -126,7 +128,11 @@ QList<TestResultData *> CDetectorPage::GetTestResultData()
 {
     return m_pTestResultDataList;
 }
-
+/**
+  * @brief 获取页面控件输入数据，保存至DetectorPageUserData结构体中
+  * @param
+  * @return
+  */
 DetectorPageUserData CDetectorPage::GetUserData()
 {
     // 获取用户表格数据
@@ -170,6 +176,11 @@ void CDetectorPage::_LoadQss()
    qFile.close();
 }
 // Donor Details
+/**
+  * @brief 创建DonorDetail组合控件
+  * @param
+  * @return
+  */
 QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 {
     //const int kiLineEditWidth = 80;
@@ -229,6 +240,11 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     return pGroupBox;
 }
 // product details
+/**
+  * @brief 创建ProductDetail组合控件
+  * @param
+  * @return
+  */
 QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
 {
     QGroupBox *pGroupBox = new QGroupBox(tr("Product Details"), this);
@@ -256,6 +272,11 @@ QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
     return pGroupBox;
 }
 // result
+/**
+  * @brief 创建Result组合控件
+  * @param
+  * @return
+  */
 QGroupBox *CDetectorPage::_CreateResultsGroup()
 {
     QGroupBox *pGroupBox = new QGroupBox(tr("Non-Exclusive Checkboxes"), this);
@@ -312,6 +333,11 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
     return pGroupBox;
 }
 // button
+/**
+  * @brief 创建页面按钮button组合控件
+  * @param
+  * @return
+  */
 QGroupBox *CDetectorPage::_CreatePushButtonGroup()
 {
     QGroupBox *pGroupBox = new QGroupBox(this);
