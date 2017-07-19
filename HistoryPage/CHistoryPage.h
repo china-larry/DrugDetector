@@ -74,6 +74,7 @@ private:
 
 private:
     QTableWidget* m_pHistoryDataTableWidget;
+    int m_iTableColumnCount;// 列数量
     // query condition
     CLabelLineEditWidget *m_pSubjectLastNameWidget;
     CLabelLineEditWidget *m_pDonorIDWidget;

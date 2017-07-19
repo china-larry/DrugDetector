@@ -67,13 +67,13 @@ void CHistoryPage::ShowCurrentDateTest()
     strSelect += QString::number(qCurrentDate.month()) + "%";
     strSelect += QString::number(qCurrentDate.day()) + "%\'";
     qDebug() << "slel " << strSelect;
-    QSqlQuery qSqlQuery(strSelect);// 69列
+    QSqlQuery qSqlQuery(strSelect);// 数据库中存放69列(id)
     while(qSqlQuery.next())
     {
         QStringList strLineDataList;
-        for(int i = 0; i != 68; ++i)
+        for(int i = 0; i != m_iTableColumnCount; ++i)
         {
-            strLineDataList.push_back(qSqlQuery.value(i+1).toString());
+            strLineDataList.push_back(qSqlQuery.value(i).toString());
         }
         // 数据
         qDebug() << "list " << strLineDataList;
@@ -104,9 +104,10 @@ void CHistoryPage::InsertToDatabase()
             strInsert += QString(", ") + QString("Result") + QString::number(i);
             strInsert += QString(", ") + QString("Cutoff") + QString::number(i);
         }
-        // 共计68列
+        // 共计m_iTableColumnCount列,ID不需要插入，自动生成（叠加）
+        int iInsertNumberTmp = m_iTableColumnCount - 1;
         strInsert += QString(") VALUES (?");
-        for(int i = 0; i < 67; ++i)
+        for(int i = 0; i < iInsertNumberTmp; ++i)
         {
             strInsert += QString(", ?");
         }
@@ -256,8 +257,14 @@ void CHistoryPage::_InitTableWidget()
     // table
     m_pHistoryDataTableWidget = new QTableWidget(this);
     m_pHistoryDataTableWidget->setMinimumHeight(350);
-    // 表单样式
-    m_pHistoryDataTableWidget->setColumnCount(68);
+    m_iTableColumnCount = 69;
+    // 设置列数量
+    m_pHistoryDataTableWidget->setColumnCount(m_iTableColumnCount);
+    m_pHistoryDataTableWidget->setColumnHidden(0, true);// 首列为ID数据，隐藏不显示
+    // 不显示行号
+    QHeaderView *pVerticalHeader = m_pHistoryDataTableWidget->verticalHeader();
+    pVerticalHeader->setHidden(true);
+    // 表单样式    
     QHeaderView *pHeaderView = m_pHistoryDataTableWidget->horizontalHeader();
     pHeaderView->setDefaultSectionSize(120);
     pHeaderView->setDisabled(true);
@@ -275,10 +282,10 @@ void CHistoryPage::_InitTableWidget()
     m_pHistoryDataTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     // 设置表头内容
     QStringList qstrHeaderList;
-    qstrHeaderList << tr("Donor \r\nFirst Name") << tr("Donor \r\nLast Name")
+    qstrHeaderList << tr("id") << tr("Donor \r\nFirst Name") << tr("Donor \r\nLast Name")
                    << tr("Test Time") << tr("Birth Date") << tr("Donor ID") << tr("Test Site")
                    << tr("Operator") << tr("Pre-Employment") << tr("Random") << tr("Reason \r\nSuspicion Cause")
-                   << tr("Post Accident") << tr("Return to Duty") << tr("Follow Up") << tr("Other Reason")
+                   << tr("Post Accident") << tr("Return to Duty") << tr("Follow Up")
                    << tr("Comments") << tr("Temperature \r\nNormal#") << tr("Product Definition") << tr("Expiration Date")
                    << tr("Product Lot") << tr("Product ID") << tr("Number \r\nof Programs");
     for(int i = 0; i < 16; ++i)
