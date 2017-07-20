@@ -20,7 +20,70 @@ CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
 
 void CHistoryPage::_SlotCheckQuery()
 {
+    // 查询数据库
+    // 时间范围
+    QDate qBeginDate = m_pBeginDataWidget->GetDate();// 当前时间结果
+    QDate qEndDate = m_pEndDataWidget->GetDate();
+    if(qBeginDate > qEndDate)
+    {
+        QMessageBox::about(this, tr("Warning"), tr("Wrong Time"));
+        return;// 时间错误
+    }
+    QString strSelect = QString("SELECT * FROM drugdata WHERE ");
+    if(m_pDonorIDWidget->GetLineText() != "")
+    {
+        strSelect += QString("DonorID = ") + m_pDonorIDWidget->GetLineText();
+    }
+    if(m_pProductDefinitionWidget->GetCurrentSelectText() != "")
+    {
+       // strSelect += QString(" AND ProductDefinition = ") + m_pProductDefinitionWidget->GetCurrentSelectText();
+    }
+    if(m_pProductLotWidget->GetLineText() != "")
+    {
+        strSelect += QString(" AND ProductLot = ") + m_pProductLotWidget->GetLineText();
+    }
+    if(qBeginDate == qEndDate)
+    {// 时间相等
 
+    }
+    else
+    {
+        // 开始时间
+        strSelect += " AND TestTime > datetime('";
+        strSelect += qBeginDate.toString("yyyy-MM-dd") + "')";
+        // 结束时间
+        strSelect += " AND TestTime < datetime('";
+        strSelect += qEndDate.toString("yyyy-MM-dd") + "')";
+    }
+
+    qDebug() << "slel " << strSelect;
+
+    // 查找开始
+    m_pHistoryDataTableWidget->setRowCount(0);
+    QSqlQuery qSqlQuery(strSelect);// 数据库中存放69列(id)
+    while(qSqlQuery.next())
+    {
+        QStringList strLineDataList;
+        // id
+        strLineDataList.push_back(qSqlQuery.value(0).toString());
+        // Name
+        strLineDataList.push_back(qSqlQuery.value(1).toString() + " " + qSqlQuery.value(2).toString());
+        // DonorID
+        strLineDataList.push_back(qSqlQuery.value(3).toString());
+        // TestTime
+        strLineDataList.push_back(qSqlQuery.value(5).toString());
+        // Product Lot
+        strLineDataList.push_back(qSqlQuery.value(18).toString());
+        // Product Difinition
+        strLineDataList.push_back(qSqlQuery.value(16).toString());
+        // 数据
+        qDebug() << "list " << strLineDataList;
+        m_strTableLineDataList.push_back(strLineDataList);
+        // 表格
+        _InsertOneLine(m_pHistoryDataTableWidget, strLineDataList);
+    }
+    // 显示到控件
+    m_pHistoryDataTableWidget->update();
 }
 
 void CHistoryPage::_SlotCheckSelectAll()
@@ -34,16 +97,6 @@ void CHistoryPage::_SlotCheckSelectAll()
 void CHistoryPage::_SlotCheckDeselectAll()
 {
 
-//    QList<QTableWidgetItem*> pSelectItemsList = m_pHistoryDataTableWidget->selectedItems();
-//    int iSelectItemCount = pSelectItemsList.count();
-//    int iRow = 0;
-//    int iColumn = 0;
-//    for(int i = 0; i < iSelectItemCount; ++i)
-//    {
-//        iRow = m_pHistoryDataTableWidget->row(pSelectItemsList.at(i));
-//        iColumn = m_pHistoryDataTableWidget->column(pSelectItemsList.at(i));
-//        m_pHistoryDataTableWidget->removeCellWidget(iRow, iColumn);
-//    }
 }
 
 void CHistoryPage::_SlotCheckDelete()
@@ -171,9 +224,7 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
         m_strCurrentTestInfoList.push_back(QString("No ID!"));
     }
     // 清空控件
-    m_pTestDataTextEdit->clear();
     m_pTestDataTextEdit->setText("");
-    m_pCurrentTestDataTableWidget->clear();
     m_pCurrentTestDataTableWidget->setRowCount(0);
 
     // 更新控件
@@ -373,9 +424,9 @@ QGroupBox *CHistoryPage::_CreateQueryConditionGroup()
     pGroupBox->setMaximumHeight(200);
     //
     m_pDonorIDWidget = new CLabelLineEditWidget(tr("Donor ID"), "", this);
-    m_pLotNumberWidget = new CLabelLineEditWidget(tr("Product Lot"), "", this);
+    m_pProductLotWidget = new CLabelLineEditWidget(tr("Product Lot"), "", this);
     //
-    m_pStartDataWidget = new CLabelDateWidget(tr("Start Time"), QDate::currentDate(), this);
+    m_pBeginDataWidget = new CLabelDateWidget(tr("Begin Time"), QDate::currentDate(), this);
     m_pEndDataWidget = new CLabelDateWidget(tr("End Time"), QDate::currentDate(), this);
     //
     QStringList strProductDefinitionList;
@@ -385,8 +436,8 @@ QGroupBox *CHistoryPage::_CreateQueryConditionGroup()
     // subject
     QHBoxLayout *pDonorLayout = new QHBoxLayout;
     pDonorLayout->addWidget(m_pDonorIDWidget);
-    pDonorLayout->addWidget(m_pLotNumberWidget);
-    pDonorLayout->addWidget(m_pStartDataWidget);
+    pDonorLayout->addWidget(m_pProductLotWidget);
+    pDonorLayout->addWidget(m_pBeginDataWidget);
     pDonorLayout->addWidget(m_pEndDataWidget);
     //
     QHBoxLayout *pDefinitionLayout = new QHBoxLayout;

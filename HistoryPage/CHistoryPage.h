@@ -93,8 +93,8 @@ private:
 //    QStringList m_strCurrentCutoffList;
     // query condition
     CLabelLineEditWidget *m_pDonorIDWidget;
-    CLabelLineEditWidget *m_pLotNumberWidget;
-    CLabelDateWidget *m_pStartDataWidget;
+    CLabelLineEditWidget *m_pProductLotWidget;
+    CLabelDateWidget *m_pBeginDataWidget;
     CLabelDateWidget *m_pEndDataWidget;
     CLabelCommoBoxWidget *m_pProductDefinitionWidget;
     // button
