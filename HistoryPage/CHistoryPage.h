@@ -51,6 +51,9 @@ private slots:
     void _SlotCheckDeselectAll();
     void _SlotCheckDelete();
     void _SlotCheckExport();
+    // Table选择改变
+    void _SlotHistoryDataSelectChange(
+            int iCurrentRow, int iCurrentColumn, int iPreviousRow, int iPreviousColumn);
 public:
     // 获得测试结果
     void SetTestResultDataList(QList<TestResultData*> pTestResultDataList);
@@ -72,16 +75,22 @@ private:
     bool _ConnectDataBase(const QString &dbName);
     bool _DeleteDatabase(QString strID);// 删除指定ID的数据
     // Table操作
-    bool _InsertOneLine(QStringList strContentList);// 行插入
-    bool _InsertOneItem(int iRow, int iColumn, QString strContent);// 单元格插入
-
+    bool _InsertOneLine(QTableWidget *pTableWidget, QStringList strContentList);// 行插入
+    bool _InsertOneItem(QTableWidget *pTableWidget, int iRow, int iColumn, QString strContent);// 单元格插入
 
 private:
     QTableWidget *m_pHistoryDataTableWidget;
     int m_iTableColumnCount;// 列数量
     // 数据分表
     QTextEdit *m_pTestDataTextEdit;
-    QTableWidget *m_pTestDataTableWidget;
+    QTableWidget *m_pCurrentTestDataTableWidget;
+    QStringList m_strCurrentTestInfoList;// 当前选择行测试信息,除去显示主Table的信息数据
+    int m_iCurrentDataProgramNumber;// 当前选择行的测试项目数量
+    // 当前选择行的测试结果
+    QList<QStringList> m_qTestDataList;
+//    QStringList m_strCurrentProgramNameList;
+//    QStringList m_strCurrentResultList;
+//    QStringList m_strCurrentCutoffList;
     // query condition
     CLabelLineEditWidget *m_pDonorIDWidget;
     CLabelLineEditWidget *m_pLotNumberWidget;

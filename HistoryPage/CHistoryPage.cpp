@@ -62,6 +62,132 @@ void CHistoryPage::_SlotCheckExport()
 {
 
 }
+/**
+  * @brief 当前选择cell改变，只处理行改变
+  * @param
+  * @return
+  */
+void CHistoryPage::_SlotHistoryDataSelectChange(
+        int iCurrentRow, int iCurrentColumn, int iPreviousRow, int iPreviousColumn)
+{
+    if(iCurrentRow == iPreviousRow)
+    {
+        return;// 行未更改，不做处理
+    }
+    // 获取ID
+    QTableWidgetItem *pItem = m_pHistoryDataTableWidget->item(iCurrentRow, 0);
+    QString strID = pItem->text();
+    bool bOk;
+    int iCurrentID = strID.toInt(&bOk, 10);
+    if(bOk && iCurrentID >= 0)
+    {
+        QString strSelect = QString("SELECT * FROM drugdata WHERE id = ");
+        strSelect += strID;
+        qDebug() << "slel " << strSelect;
+        QSqlQuery qSqlQuery(strSelect);// 数据库中存放69列(id)
+        while(qSqlQuery.next())
+        {
+            // 清空数据
+            m_strCurrentTestInfoList.clear();
+            m_qTestDataList.clear();
+            // birth data
+            m_strCurrentTestInfoList.push_back(QString("Birth Date: ") + qSqlQuery.value(4).toString());
+            // test site
+            m_strCurrentTestInfoList.push_back(QString("Test Site: ") + qSqlQuery.value(6).toString());
+            // operator
+            m_strCurrentTestInfoList.push_back(QString("Operator: ") + qSqlQuery.value(7).toString());
+            // test reason
+            QString strTestReason = "";
+            if(qSqlQuery.value(8).toString() == "true")
+            {// pro-employment
+                strTestReason += tr("Pre-Employment  ");
+            }
+            if(qSqlQuery.value(9).toString() == "true")
+            {// Random
+                strTestReason += tr("Random  ");
+            }
+            if(qSqlQuery.value(10).toString() == "true")
+            {// Reason suspicion cause
+                strTestReason += tr("Reason suspicion cause  ");
+            }
+            if(qSqlQuery.value(11).toString() == "true")
+            {// Post Accident
+                strTestReason += tr("Post Accident  ");
+            }
+            if(qSqlQuery.value(12).toString() == "true")
+            {// Return to Duty
+                strTestReason += tr("Return to Duty  ");
+            }
+            if(qSqlQuery.value(13).toString() == "true")
+            {// Follow Up
+                strTestReason += tr("Follow Up  ");
+            }
+           // Comment
+            strTestReason += qSqlQuery.value(14).toString();
+            m_strCurrentTestInfoList.push_back(QString("Reason for Test: ") + strTestReason);
+            // Temperature normal#
+            m_strCurrentTestInfoList.push_back(QString("Temperature normal: ")  + qSqlQuery.value(15).toString());
+            // Expiration Date
+            m_strCurrentTestInfoList.push_back(QString("Expiration Date: ") + qSqlQuery.value(17).toString());
+            // Product ID
+            m_strCurrentTestInfoList.push_back(QString("Product ID:") + qSqlQuery.value(19).toString());
+            // Number of Programs
+            bool bProgramNumOk = false;
+            m_iCurrentDataProgramNumber = qSqlQuery.value(20).toInt(&bProgramNumOk);
+            if(m_iCurrentDataProgramNumber > 16)
+            {
+                m_iCurrentDataProgramNumber = 16;// 最大结果数据位16个0-15
+            }
+            if(bProgramNumOk)
+            {
+                m_strCurrentTestInfoList.push_back(QString("Programs Number: ") + qSqlQuery.value(20).toString());
+                // name result cutoff
+                for(int i = 0; i < m_iCurrentDataProgramNumber; ++i)
+                {
+                    QStringList strDataList;
+                    strDataList.push_back(qSqlQuery.value(21 + i * 3).toString());
+                    strDataList.push_back(qSqlQuery.value(22 + i * 3).toString());
+                    strDataList.push_back(qSqlQuery.value(23 + i * 3).toString());
+                    //
+                    m_qTestDataList.push_back(strDataList);
+                }
+            }
+            else
+            {
+                m_strCurrentTestInfoList.push_back(QString("Programs Number: No Number"));
+            }
+        }
+//        else
+//        {// 未查到数据
+//            m_strCurrentTestInfoList.push_back(QString("No Data!"));
+//        }
+    }
+    else
+    {
+        m_strCurrentTestInfoList.push_back(QString("No ID!"));
+    }
+    // 清空控件
+    m_pTestDataTextEdit->clear();
+    m_pTestDataTextEdit->setText("");
+    m_pCurrentTestDataTableWidget->clear();
+    m_pCurrentTestDataTableWidget->setRowCount(0);
+
+    // 更新控件
+    int iTestInfoCount = m_strCurrentTestInfoList.count();
+    for(int i = 0; i < iTestInfoCount; ++i)
+    {
+        m_pTestDataTextEdit->insertPlainText(m_strCurrentTestInfoList.at(i) + QString("\r\n"));
+    }
+    // table
+    for(int i = 0; i < m_iCurrentDataProgramNumber; ++i)
+    {
+        _InsertOneLine(m_pCurrentTestDataTableWidget, m_qTestDataList.at(i));
+    }
+    m_pTestDataTextEdit->update();
+    m_pCurrentTestDataTableWidget->update();
+}
+
+
 
 void CHistoryPage::SetTestResultDataList(QList<TestResultData *> pTestResultDataList)
 {
@@ -95,7 +221,7 @@ void CHistoryPage::ShowCurrentDateTest()
         // id
         strLineDataList.push_back(qSqlQuery.value(0).toString());
         // Name
-        strLineDataList.push_back(qSqlQuery.value(1).toString() + qSqlQuery.value(2).toString());
+        strLineDataList.push_back(qSqlQuery.value(1).toString() + " " + qSqlQuery.value(2).toString());
         // DonorID
         strLineDataList.push_back(qSqlQuery.value(3).toString());
         // TestTime
@@ -108,7 +234,7 @@ void CHistoryPage::ShowCurrentDateTest()
         qDebug() << "list " << strLineDataList;
         m_strTableLineDataList.push_back(strLineDataList);
         // 表格
-        _InsertOneLine(strLineDataList);
+        _InsertOneLine(m_pHistoryDataTableWidget, strLineDataList);
     }
     // 显示到控件
     m_pHistoryDataTableWidget->update();
@@ -323,6 +449,8 @@ void CHistoryPage::_InitHistoryTableWidget()
       "QScrollBar::handle:hover{background:gray;}"
       "QScrollBar::sub-line{background:transparent;}"
                                                                    "QScrollBar::add-line{background:transparent;}");
+     //
+     connect(m_pHistoryDataTableWidget, SIGNAL(currentCellChanged(int,int,int,int)), this, SLOT(_SlotHistoryDataSelectChange(int,int,int,int)));
 }
 
 void CHistoryPage::_InitTestDataWidget()
@@ -330,14 +458,14 @@ void CHistoryPage::_InitTestDataWidget()
     m_pTestDataTextEdit = new QTextEdit(this);
     m_pTestDataTextEdit->setFixedSize(380, 100);
 
-    m_pTestDataTableWidget = new QTableWidget(this);
-    m_pTestDataTableWidget->setFixedWidth(380);
-    m_pTestDataTableWidget->setColumnCount(3);
-    m_pTestDataTableWidget->setRowCount(16);// 最大16个项目
+    m_pCurrentTestDataTableWidget = new QTableWidget(this);
+    m_pCurrentTestDataTableWidget->setFixedWidth(380);
+    m_pCurrentTestDataTableWidget->setColumnCount(3);
+    //m_pCurrentTestDataTableWidget->setRowCount(16);// 最大16个项目
     // 不显示行号
-    QHeaderView *pVerticalHeader = m_pTestDataTableWidget->verticalHeader();
+    QHeaderView *pVerticalHeader = m_pCurrentTestDataTableWidget->verticalHeader();
     pVerticalHeader->setHidden(true);
-    QHeaderView *pHeaderView = m_pTestDataTableWidget->horizontalHeader();
+    QHeaderView *pHeaderView = m_pCurrentTestDataTableWidget->horizontalHeader();
     pHeaderView->setDefaultSectionSize(120);
     pHeaderView->setDisabled(true);
     // 表头字体
@@ -351,16 +479,16 @@ void CHistoryPage::_InitTestDataWidget()
     // 设置表头内容
     QStringList qstrHeaderList;
     qstrHeaderList << tr("Program") << tr("Result") << tr("Cutoff Value");
-    m_pTestDataTableWidget->setHorizontalHeaderLabels(qstrHeaderList);
+    m_pCurrentTestDataTableWidget->setHorizontalHeaderLabels(qstrHeaderList);
     // 显示格子线
-    m_pTestDataTableWidget->setShowGrid(true);
+    m_pCurrentTestDataTableWidget->setShowGrid(true);
     //设置水平、垂直滚动条样式
-    m_pTestDataTableWidget->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
+    m_pCurrentTestDataTableWidget->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
       "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
       "QScrollBar::handle:hover{background:gray;}"
       "QScrollBar::sub-line{background:transparent;}"
       "QScrollBar::add-line{background:transparent;}");
-    m_pTestDataTableWidget->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
+    m_pCurrentTestDataTableWidget->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
       "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
       "QScrollBar::handle:hover{background:gray;}"
       "QScrollBar::sub-line{background:transparent;}"
@@ -389,8 +517,8 @@ void CHistoryPage::_InitLayout()
 
     QHBoxLayout *pDataLayout = new QHBoxLayout;
     QVBoxLayout *pTestDataLayout = new QVBoxLayout;
+    pTestDataLayout->addWidget(m_pCurrentTestDataTableWidget);
     pTestDataLayout->addWidget(m_pTestDataTextEdit);
-    pTestDataLayout->addWidget(m_pTestDataTableWidget);
     pDataLayout->addWidget(m_pHistoryDataTableWidget);
     pDataLayout->addLayout(pTestDataLayout);
     //
@@ -470,21 +598,21 @@ bool CHistoryPage::_DeleteDatabase(QString strID)
   * @param 添加行数据的字符串数组
   * @return true：添加成功；false：添加失败
   */
-bool CHistoryPage::_InsertOneLine(QStringList strContentList)
+bool CHistoryPage::_InsertOneLine(QTableWidget *pTableWidget, QStringList strContentList)
 {
-    int iColumnCount = m_pHistoryDataTableWidget->columnCount();
+    int iColumnCount = pTableWidget->columnCount();
     int iContentListCount = strContentList.count();
     if(iContentListCount < 1 || iContentListCount != iColumnCount)
     {// 插入数据不正确，不进行插入操作
         return false;
     }
     // 创建行
-    int iRow = m_pHistoryDataTableWidget->rowCount();
-    m_pHistoryDataTableWidget->insertRow(iRow);
+    int iRow = pTableWidget->rowCount();
+    pTableWidget->insertRow(iRow);
     //
     for(int i = 0; i != iColumnCount; ++i)
     {
-        if(!_InsertOneItem(iRow, i, strContentList.at(i)))
+        if(!_InsertOneItem(pTableWidget, iRow, i, strContentList.at(i)))
         {
             return false;
         }
@@ -498,15 +626,15 @@ bool CHistoryPage::_InsertOneLine(QStringList strContentList)
   * @param strContent：Item显示的内容
   * @return true：添加成功；false：添加失败
   */
-bool CHistoryPage::_InsertOneItem(int iRow, int iColumn, QString strContent)
+bool CHistoryPage::_InsertOneItem(QTableWidget *pTableWidget, int iRow, int iColumn, QString strContent)
 {
-    int iColumnCount = m_pHistoryDataTableWidget->columnCount();
-    int iRowCount = m_pHistoryDataTableWidget->rowCount();
+    int iColumnCount = pTableWidget->columnCount();
+    int iRowCount = pTableWidget->rowCount();
     if(iColumn < iColumnCount && iRow < iRowCount)
     {
         QTableWidgetItem *pItem = new QTableWidgetItem;
         pItem->setText(strContent);
-        m_pHistoryDataTableWidget->setItem(iRow, iColumn, pItem);
+        pTableWidget->setItem(iRow, iColumn, pItem);
         return true;
     }
     else
