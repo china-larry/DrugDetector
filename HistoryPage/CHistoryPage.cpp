@@ -25,11 +25,15 @@ void CHistoryPage::_SlotCheckQuery()
 
 void CHistoryPage::_SlotCheckSelectAll()
 {
+    qDebug() << "select all";
+    m_pHistoryDataTableWidget->selectAll();
+
     //m_pHistoryDataTableWidget->selectAll();
 }
 
 void CHistoryPage::_SlotCheckDeselectAll()
 {
+
 //    QList<QTableWidgetItem*> pSelectItemsList = m_pHistoryDataTableWidget->selectedItems();
 //    int iSelectItemCount = pSelectItemsList.count();
 //    int iRow = 0;
@@ -375,7 +379,7 @@ QGroupBox *CHistoryPage::_CreateQueryConditionGroup()
     m_pEndDataWidget = new CLabelDateWidget(tr("End Time"), QDate::currentDate(), this);
     //
     QStringList strProductDefinitionList;
-    strProductDefinitionList << tr("test1") << tr("test2");
+    strProductDefinitionList << tr("T Cup") << tr("T Cupa");
     m_pProductDefinitionWidget = new CLabelCommoBoxWidget(tr("Product Definition"), strProductDefinitionList, this);
     //
     // subject
@@ -430,6 +434,8 @@ void CHistoryPage::_InitHistoryTableWidget()
     m_pHistoryDataTableWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     // 每次选择一行
     m_pHistoryDataTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_pHistoryDataTableWidget->setStyleSheet("selection-background-color: blue;selection-color: black");
+    //m_pHistoryDataTableWidget->setStyleSheet("border-radius:5; color:#1b1b1b; font: 18px ;selection-background-color: #d9f4fe;selection-color: black");
     // 设置表头内容
     QStringList qstrHeaderList;
     qstrHeaderList << tr("id") << tr("Donor Name") << tr("Test Time") << tr("Donor ID")
