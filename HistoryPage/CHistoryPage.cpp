@@ -17,7 +17,11 @@ CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
     // 初始化数据库
     _InitDataBase();
 }
-
+/**
+  * @brief 条件数据查找
+  * @param
+  * @return
+  */
 void CHistoryPage::_SlotCheckQuery()
 {
     // 查询数据库
@@ -30,21 +34,11 @@ void CHistoryPage::_SlotCheckQuery()
         return;// 时间错误
     }
     QString strSelect = QString("SELECT * FROM drugdata WHERE ");
-    if(m_pDonorIDWidget->GetLineText() != "")
-    {
-        strSelect += QString("DonorID = ") + m_pDonorIDWidget->GetLineText();
-    }
-    if(m_pProductDefinitionWidget->GetCurrentSelectText() != "")
-    {
-       // strSelect += QString(" AND ProductDefinition = ") + m_pProductDefinitionWidget->GetCurrentSelectText();
-    }
-    if(m_pProductLotWidget->GetLineText() != "")
-    {
-        strSelect += QString(" AND ProductLot = ") + m_pProductLotWidget->GetLineText();
-    }
+
     if(qBeginDate == qEndDate)
     {// 时间相等
-
+        strSelect += " AND TestTime > datetime('";
+        strSelect += qBeginDate.toString("yyyy-MM-dd") + "')";
     }
     else
     {
@@ -54,6 +48,18 @@ void CHistoryPage::_SlotCheckQuery()
         // 结束时间
         strSelect += " AND TestTime < datetime('";
         strSelect += qEndDate.toString("yyyy-MM-dd") + "')";
+    }
+    if(m_pDonorIDWidget->GetLineText() != "")
+    {
+        strSelect += QString(" AND DonorID = ") + m_pDonorIDWidget->GetLineText();
+    }
+    if(m_pProductDefinitionWidget->GetCurrentSelectText() != "")
+    {
+        strSelect += QString(" AND ProductDefinition = '") + m_pProductDefinitionWidget->GetCurrentSelectText() + QString("'");
+    }
+    if(m_pProductLotWidget->GetLineText() != "")
+    {
+        strSelect += QString(" AND ProductLot = ") + m_pProductLotWidget->GetLineText();
     }
 
     qDebug() << "slel " << strSelect;
@@ -485,8 +491,8 @@ void CHistoryPage::_InitHistoryTableWidget()
     m_pHistoryDataTableWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     // 每次选择一行
     m_pHistoryDataTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_pHistoryDataTableWidget->setStyleSheet("selection-background-color: blue;selection-color: black");
-    //m_pHistoryDataTableWidget->setStyleSheet("border-radius:5; color:#1b1b1b; font: 18px ;selection-background-color: #d9f4fe;selection-color: black");
+    m_pHistoryDataTableWidget->setStyleSheet("selection-background-color: #94f3dc;selection-color: black");
+    //m_pHistoryDataTableWidget->setStyleSheet("border-radius:5; color:#94f3dc; font: 18px ;selection-background-color: #d9f4fe;selection-color: black");
     // 设置表头内容
     QStringList qstrHeaderList;
     qstrHeaderList << tr("id") << tr("Donor Name") << tr("Test Time") << tr("Donor ID")
