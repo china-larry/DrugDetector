@@ -34,24 +34,19 @@ void CHistoryPage::_SlotCheckQuery()
         return;// 时间错误
     }
     QString strSelect = QString("SELECT * FROM drugdata WHERE ");
+    qDebug() <<"begin:" << qBeginDate <<"end time " <<qEndDate;
 
-    if(qBeginDate == qEndDate)
-    {// 时间相等
-        strSelect += " AND TestTime > datetime('";
-        strSelect += qBeginDate.toString("yyyy-MM-dd") + "')";
-    }
-    else
-    {
-        // 开始时间
-        strSelect += " AND TestTime > datetime('";
-        strSelect += qBeginDate.toString("yyyy-MM-dd") + "')";
-        // 结束时间
-        strSelect += " AND TestTime < datetime('";
-        strSelect += qEndDate.toString("yyyy-MM-dd") + "')";
-    }
+    qEndDate = qEndDate.addDays(1);
+    strSelect += "TestTime > datetime('";
+    strSelect += qBeginDate.toString("yyyy-MM-dd") + "')";
+    // 结束时间
+    strSelect += " AND TestTime < datetime('";
+    strSelect += qEndDate.toString("yyyy-MM-dd") + "')";
+
+
     if(m_pDonorIDWidget->GetLineText() != "")
     {
-        strSelect += QString(" AND DonorID = ") + m_pDonorIDWidget->GetLineText();
+        strSelect += QString(" AND DonorID = '") + m_pDonorIDWidget->GetLineText() + QString("'");
     }
     if(m_pProductDefinitionWidget->GetCurrentSelectText() != "")
     {
@@ -59,10 +54,10 @@ void CHistoryPage::_SlotCheckQuery()
     }
     if(m_pProductLotWidget->GetLineText() != "")
     {
-        strSelect += QString(" AND ProductLot = ") + m_pProductLotWidget->GetLineText();
+        strSelect += QString(" AND ProductLot = '") + m_pProductLotWidget->GetLineText() + QString("'");
     }
 
-    qDebug() << "slel " << strSelect;
+    qDebug() << "query " << strSelect;
 
     // 查找开始
     m_pHistoryDataTableWidget->setRowCount(0);
@@ -108,11 +103,15 @@ void CHistoryPage::_SlotCheckDeselectAll()
 void CHistoryPage::_SlotCheckDelete()
 {
     int iRow = m_pHistoryDataTableWidget->currentRow();
-    if(iRow < 0)
+    if(iRow < 0 || iRow >= m_pHistoryDataTableWidget->rowCount())
     {
         return;
     }
     QTableWidgetItem *pIDItem = m_pHistoryDataTableWidget->item(iRow, 0);
+    if(pIDItem == NULL)
+    {
+        return;
+    }
     QString strDatabaseID = pIDItem->text();
     qDebug()<<"str DatabaseID: " << strDatabaseID;
     // 数据库删除
@@ -133,12 +132,23 @@ void CHistoryPage::_SlotCheckExport()
 void CHistoryPage::_SlotHistoryDataSelectChange(
         int iCurrentRow, int iCurrentColumn, int iPreviousRow, int iPreviousColumn)
 {
-    if(iCurrentRow == iPreviousRow)
+    qDebug()<< "cru row " << iCurrentRow << "count " <<m_pHistoryDataTableWidget->rowCount();
+    // 清空控件
+    m_pTestDataTextEdit->setText("");
+    m_pCurrentTestDataTableWidget->setRowCount(0);
+    //
+    if(iCurrentRow == iPreviousRow || m_pHistoryDataTableWidget->rowCount() == 0
+            || iCurrentRow >= m_pHistoryDataTableWidget->rowCount()
+            || iCurrentRow < 0)
     {
         return;// 行未更改，不做处理
     }
     // 获取ID
     QTableWidgetItem *pItem = m_pHistoryDataTableWidget->item(iCurrentRow, 0);
+    if(pItem == NULL)
+    {// 无选择行
+        return;
+    }
     QString strID = pItem->text();
     bool bOk;
     int iCurrentID = strID.toInt(&bOk, 10);
@@ -229,9 +239,7 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
     {
         m_strCurrentTestInfoList.push_back(QString("No ID!"));
     }
-    // 清空控件
-    m_pTestDataTextEdit->setText("");
-    m_pCurrentTestDataTableWidget->setRowCount(0);
+
 
     // 更新控件
     int iTestInfoCount = m_strCurrentTestInfoList.count();
@@ -269,12 +277,21 @@ void CHistoryPage::SetTestUserData(DetectorPageUserData sDetectorPageUserData)
 void CHistoryPage::ShowCurrentDateTest()
 {
     // 查询数据库
-    QDate qCurrentDate = QDate::currentDate();// 当前时间结果
-    QString strSelect = QString("SELECT * FROM drugdata WHERE TestTime like '");
-    strSelect += QString::number(qCurrentDate.year()) + "%";
-    strSelect += QString::number(qCurrentDate.month()) + "%";
-    strSelect += QString::number(qCurrentDate.day()) + "%\'";
+    // 时间范围
+    QDate qBeginDate = QDate::currentDate();// 当前时间结果
+    QDate qEndDate = qBeginDate.addDays(1);
+
+    QString strSelect = QString("SELECT * FROM drugdata WHERE ");
+    qDebug() <<"begin:" << qBeginDate <<"end time " <<qEndDate;
+
+    strSelect += "TestTime > datetime('";
+    strSelect += qBeginDate.toString("yyyy-MM-dd") + "')";
+    // 结束时间
+    strSelect += " AND TestTime < datetime('";
+    strSelect += qEndDate.toString("yyyy-MM-dd") + "')";
+
     qDebug() << "slel " << strSelect;
+    m_pHistoryDataTableWidget->setRowCount(0);
     QSqlQuery qSqlQuery(strSelect);// 数据库中存放69列(id)
     while(qSqlQuery.next())
     {
