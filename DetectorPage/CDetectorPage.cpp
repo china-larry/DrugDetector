@@ -9,6 +9,7 @@
 #include <QtPrintSupport/QPrinter>
 #include <QTextDocument>
 #include <QTextBlock>
+#include <QPrinter>
 CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
 {
 
@@ -101,17 +102,38 @@ void CDetectorPage::_SlotStopTest()
     QFile::remove(QCoreApplication::applicationDirPath() + "demo.db");
 }
 // 生成PDF文件
-void CDetectorPage::_SlotSaveHtmlToPDF()
+void CDetectorPage::_SlotPrintToPDF()
 {
+    // 资源文件
+//    QFile qFile(QCoreApplication::applicationDirPath() + "/demo/demo.html");
+//    if(!qFile.open(QFile::ReadOnly | QIODevice::Text))
+//    {
+//        qDebug() << "open false";
+//    }
+//    QTextStream qTextStream(&qFile);
+//    QString html = qTextStream.readAll();
+//    qFile.close();
     QStringList title;
     title.push_back(QStringLiteral("名称"));
     title.push_back(QStringLiteral("修改日期"));
     title.push_back(QStringLiteral("类型"));
     title.push_back(QStringLiteral("大小"));
+    //
     QString html;
-    html += "<h2 align=\"center\">" + QStringLiteral("HTML导出PDF示例") + "</h2>";
-    html += "<h4 align=\"center\">" + QDate::currentDate().toString() + "<h4>";
+    html += "<h2 align=\"center\">" + QStringLiteral("HTML导出PDF示例") +"</h2>";
+    html += QString("<h4 align=\"center\">") + QDate::currentDate().toString() +"<H4>";
+    html += "<table width=\"500\" border=\"1\" align=\"center\" style=\"border-collapse:collapse;\" bordercolor=\"gray\">";
+    html += "<tr style=\"backgroud-color:gray\">";
+    for(int i  = 0; i < title.count(); ++i)
+    {
+        html += QString("<th>%1</th>").arg(title.at(i));
+    }
+    html += "</tr>";
 
+
+    html += "</table>";
+
+    //
 
     QPrinter printer_html;
     printer_html.setPageSize(QPrinter::A4);
@@ -342,7 +364,7 @@ QGroupBox *CDetectorPage::_CreatePushButtonGroup()
     QPushButton *m_pStopTestButton = new QPushButton(tr("Stop Test"));
     connect(m_pStopTestButton, SIGNAL(clicked(bool)), this, SLOT(_SlotStopTest()));
     QPushButton *m_pPrintPriviewButton = new QPushButton(tr("Print Priview"));
-    connect(m_pPrintPriviewButton, SIGNAL(clicked(bool)), this, SLOT(_SlotSaveHtmlToPDF()));
+    connect(m_pPrintPriviewButton, SIGNAL(clicked(bool)), this, SLOT(_SlotPrintToPDF()));
     //
     QHBoxLayout *pHLayout = new QHBoxLayout;
     pHLayout->addSpacing(50);

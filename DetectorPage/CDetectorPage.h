@@ -49,7 +49,7 @@ private slots:
     void _SlotCheckReadTestDevice();
     void _SlotStopTest();// 主动停止测试
     // 打印PDF
-    void _SlotSaveHtmlToPDF();
+    void _SlotPrintToPDF();
 public:
     QList<TestResultData*> GetTestResultData();
     DetectorPageUserData GetUserData();
