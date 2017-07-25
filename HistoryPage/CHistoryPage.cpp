@@ -7,6 +7,7 @@
 #include <QScrollBar>
 #include <QDebug>
 #include <QMessageBox>
+#include "PublicFunction.h"
 CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
 {
     _InitHistoryTableWidget();
@@ -425,15 +426,7 @@ void CHistoryPage::InsertToDatabase()
 
 void CHistoryPage::_LoadQss()
 {
-    QFile qFile(":/qss/HistoryPage/HistoryPage.qss");
-    if(!qFile.open(QFile::ReadOnly))
-    {
-        qDebug() << "open false";
-    }
-    QTextStream qTestStream(&qFile);
-    QString strStylesheet = qTestStream.readAll();
-    this->setStyleSheet(strStylesheet);
-   qFile.close();
+   LoadQss(this, ":/qss/HistoryPage/HistoryPage.qss");
 }
 // query condition group
 /**

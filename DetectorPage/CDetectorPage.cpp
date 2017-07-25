@@ -10,6 +10,7 @@
 #include <QTextDocument>
 #include <QTextBlock>
 #include <QPrinter>
+#include "PublicFunction.h"
 CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
 {
 
@@ -105,33 +106,33 @@ void CDetectorPage::_SlotStopTest()
 void CDetectorPage::_SlotPrintToPDF()
 {
     // 资源文件
-//    QFile qFile(QCoreApplication::applicationDirPath() + "/demo/demo.html");
-//    if(!qFile.open(QFile::ReadOnly | QIODevice::Text))
-//    {
-//        qDebug() << "open false";
-//    }
-//    QTextStream qTextStream(&qFile);
-//    QString html = qTextStream.readAll();
-//    qFile.close();
-    QStringList title;
-    title.push_back(QStringLiteral("名称"));
-    title.push_back(QStringLiteral("修改日期"));
-    title.push_back(QStringLiteral("类型"));
-    title.push_back(QStringLiteral("大小"));
-    //
-    QString html;
-    html += "<h2 align=\"center\">" + QStringLiteral("HTML导出PDF示例") +"</h2>";
-    html += QString("<h4 align=\"center\">") + QDate::currentDate().toString() +"<H4>";
-    html += "<table width=\"500\" border=\"1\" align=\"center\" style=\"border-collapse:collapse;\" bordercolor=\"gray\">";
-    html += "<tr style=\"backgroud-color:gray\">";
-    for(int i  = 0; i < title.count(); ++i)
+    QFile qFile("E:/work_project/DrugDetector/demo/TCube.html");
+    if(!qFile.open(QFile::ReadOnly | QIODevice::Text))
     {
-        html += QString("<th>%1</th>").arg(title.at(i));
+        qDebug() << "open false";
     }
-    html += "</tr>";
+    QTextStream qTextStream(&qFile);
+    QString html = qTextStream.readAll();
+    qFile.close();
+//    QStringList title;
+//    title.push_back(QStringLiteral("名称"));
+//    title.push_back(QStringLiteral("修改日期"));
+//    title.push_back(QStringLiteral("类型"));
+//    title.push_back(QStringLiteral("大小"));
+    //
+//    QString html;
+//    html += "<h2 align=\"center\">" + QStringLiteral("HTML导出PDF示例") +"</h2>";
+//    html += QString("<h4 align=\"center\">") + QDate::currentDate().toString() +"<H4>";
+//    html += "<table width=\"500\" border=\"1\" align=\"center\" style=\"border-collapse:collapse;\" bordercolor=\"gray\">";
+//    html += "<tr style=\"backgroud-color:gray\">";
+//    for(int i  = 0; i < title.count(); ++i)
+//    {
+//        html += QString("<th>%1</th>").arg(title.at(i));
+//    }
+//    html += "</tr>";
 
 
-    html += "</table>";
+//    html += "</table>";
 
     //
 
@@ -187,15 +188,7 @@ DetectorPageUserData CDetectorPage::GetUserData()
 
 void CDetectorPage::_LoadQss()
 {
-    QFile qFile(":/qss/DetectorPage/DetectorPage.qss");
-    if(!qFile.open(QFile::ReadOnly))
-    {
-        qDebug() << "open false";
-    }
-    QTextStream qTextStream(&qFile);
-    QString strStylesheet = qTextStream.readAll();
-    this->setStyleSheet(strStylesheet);
-   qFile.close();
+    LoadQss(this, ":/qss/DetectorPage/DetectorPage.qss");
 }
 // Donor Details
 /**

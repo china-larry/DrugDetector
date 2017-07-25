@@ -23,9 +23,13 @@ class CLoginInWidget : public QWidget
     Q_OBJECT
 public:
     explicit CLoginInWidget(QWidget *parent = nullptr);
-
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
 private slots:
-    void SlotCheckLoginButton();
+    void _SlotCheckMinButton();
+    void _SlotCheckCloseButton();
+    void _SlotCheckLoginButton();
 signals:
     void SigShowMainWindow();
 public slots:
@@ -36,6 +40,9 @@ private:
     void _InitLayout();
 private:
     //
+    QPushButton *m_pMinButton;
+    QPushButton *m_pCloseButton;
+    //
     QLabel *m_pLoginLabel;
     // user
     QLabel *m_pUserNameLabel;
@@ -45,6 +52,11 @@ private:
     QLineEdit *m_pPasswordLineEdit;
     //
     QPushButton *m_pLoginButton;
+
+    // m_Move标题栏移动变量
+    bool m_bLeftButtonCheck;
+    QPoint m_PressPoint;
+    QPoint m_MovePoint;
 };
 
 #endif // CLOGININWIDGET_H

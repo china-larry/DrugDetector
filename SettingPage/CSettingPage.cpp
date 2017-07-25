@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
+#include "PublicFunction.h"
 CSettingPage::CSettingPage(QWidget *parent) : QWidget(parent)
 {
     //应用样式 apply the qss style
@@ -15,15 +16,7 @@ CSettingPage::CSettingPage(QWidget *parent) : QWidget(parent)
 
 void CSettingPage::_LoadQss()
 {
-    QFile qFile(":/qss/DetectorPage/DetectorPage.qss");
-    if(!qFile.open(QFile::ReadOnly))
-    {
-        qDebug() << "open false";
-    }
-    QTextStream qTextStream(&qFile);
-    QString strStylesheet = qTextStream.readAll();
-    this->setStyleSheet(strStylesheet);
-    qFile.close();
+    LoadQss(this, ":/qss/DetectorPage/DetectorPage.qss");
 }
 
 QGroupBox *CSettingPage::_CreateVersionGroup()

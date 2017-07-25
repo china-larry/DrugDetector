@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">	 
+</head>
+
+<body>
+	
+	<table border="5" cellspacing="0" cellpadding="0" width="1240" height="1754" style="border-style:solid; border-color:#008cd6; padding:5px;">
+		<tr>
+		<td> 		
+		<table border="0" cellspacing="0" cellpadding="0" width="1220" height="1730" style="border-style:solid; padding: 0px 20px 0px;margin:0;">
+			<tr>
+			<td align="center">
+				<img src="logo.png"/>
+			</td>
+			</tr>
+			<tr>
+			<td align="left"> 
+				<div style="background-color:#727171;padding:5px;color:#fff;font-size:15px;font-weight:bold;margin-top: 25px;">Test Information</div>
+			</td>
+			</tr>
+			<tr>
+			<td> 
+
+			<table border="1" cellspacing="0" cellpadding="0"  >
+			<tr>
+			<td>
+				<table border="0" cellspacing="0" cellpadding="0" width="1220" height="300" align="left" style="border-style:solid; border-color:#727171;margin-top: 25px;padding: 0px;">				 					
+					<tr>
+					<td>
+					<div style="float: left;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td width="105">
+							Operator ID：
+							</td>
+							<td width="250" style="text-decoration:underline ;">${operatorId}
+							</td>
+							<td width="10">
+							</td>
+							</tr>
+						</table>
+					</div>
+					<div style="float: left;white-space: nowrap;">					
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td width="90">
+							Test Date：
+							</td>
+							<td width="250" style="border-bottom: 1px solid;">${TestDate}
+							</td>
+							<td width="10">
+							</td>
+							</tr>
+						</table>
+					</div>
+					<div style="float: left;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td width="90">
+							Test Time：
+							</td>
+							<td width="250" style="border-bottom: 1px solid;">${TestTime}
+							</td>
+							<td width="10">
+							</td>
+							</tr>
+						</table>
+					</div>
+					</td>
+					</tr> 
+					
+					<tr>
+					<td>
+						<div style="float: left;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td width="90">
+							Donor ID：
+							</td>
+							<td width="400" style="border-bottom: 1px solid;">${DonorID}
+							</td>
+							<td width="10">
+							</td>
+							</tr>
+						</table>
+						</div>
+						<div style="float: left;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td width="120">
+							Email Address：
+							</td>
+							<td width="400" style="border-bottom: 1px solid;"> 
+							</td>
+							<td width="10">
+							</td>
+							</tr>
+						</table>
+						</div>
+					</td>
+					</tr>
+					<tr>
+					<td>
+						<div style="float: left;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td width="120">
+							Testing Site：
+							</td>
+							<td width="1000" style="border-bottom: 1px solid;"> 
+							</td>
+							<td width="10">
+							</td>
+							</tr>
+						</table>
+						</div> 
+					</td>
+					</tr>
+					<tr>
+					<td>
+						<div style="float: left;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td width="180">
+							Specimen Type：
+							</td>
+							<td width="180"> 
+								<input type="checkbox" />&nbsp;Urine&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								<input type="checkbox" checked />&nbsp;Saliva
+							</td>
+							<td width="10">
+							</td>
+							</tr>
+						</table>
+						</div> 
+					</td>
+					</tr>
+					<tr>
+					<td>
+						<div style="float: left;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td width="140">
+							Reason for Test：
+							</td>
+							</tr>
+							<tr>
+							<td >
+								<div>
+									<div style="float: left;white-space: nowrap;"><input type="checkbox" checked/>&nbsp;Pre Employment&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</div>
+									<div style="float: left;white-space: nowrap;"><input type="checkbox"  />&nbsp;Random&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</div>
+									<div style="float: left;white-space: nowrap;"><input type="checkbox"  />&nbsp;Reasonable suspicion/cause</div>
+								</div>
+								<div>
+									<div style="float: left;white-space: nowrap;"><input type="checkbox"  />&nbsp;Post Accident&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</div>
+									<div style="float: left;white-space: nowrap;"><input type="checkbox"  />&nbsp;Return To Duty&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</div>
+									<div style="float: left;white-space: nowrap;"><input type="checkbox"  />&nbsp;Follow Up</div>
+								</div>
+								<div>
+									 <table border="0" cellspacing="0" cellpadding="0" width="100%">
+										<tr>
+										<td width="90">
+										<input type="checkbox"  />&nbsp;Other
+										</td>
+										<td style="border-bottom: 1px solid;"> 
+										</td>
+										<td width="10">
+										</td>
+										</tr>
+									</table>
+								</div>
+							</td> 
+							</tr>
+						</table>
+						</div> 
+					</td>
+					</tr>
+					<tr>
+					<td>
+						<div>
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:90px;">
+							Remarks：
+							</td>
+							<td style="border-bottom: 1px solid;"> 
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div> 
+					</td>
+					</tr>
+				</table>
+				</td>
+				</tr>
+				</table>
+			</td>
+			</tr>
+			<tr>
+			<td> 
+				<div style="text-align:left;background-color:#727171;padding:5px;color:#fff;font-size:15px;font-weight:bold;border-radius: 5px;margin-top: 50px;">Product Information</div>
+			</td>
+			</tr>
+			<tr>
+			<td> 
+				<table border="0" cellspacing="0" cellpadding="0" style="width:100%;height:100%;text-align:left;border:1px solid #727171;border-radius: 5px;margin-top: 25px;padding: 10px;">
+					 					
+					<tr>
+					<td>
+					<div style="float: left;width: 50%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:105px;">
+							Product ID：
+							</td>
+							<td style="border-bottom: 1px solid;"> 
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+					</div>
+					<div style="float: left;width: 50%;white-space: nowrap;">					
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:90px;">
+							Product Lot：
+							</td>
+							<td style="border-bottom: 1px solid;">  
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+					</div> 
+					</td>
+					</tr> 					
+					<tr>
+					<td>
+						<div style="float: left;width: 50%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:130px;">
+							Expiration Date：
+							</td>
+							<td style="border-bottom: 1px solid;"> 
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div>
+						<div style="float: left;width: 50%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:120px;">
+							*Temperature in Range：
+							</td>
+							<td > 
+								<input type="checkbox" checked />&nbsp;Yes
+								<input type="checkbox"  />&nbsp;No
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div>
+					</td>
+					</tr>
+					<tr>
+					<td>
+						<div>
+							*Disclaimer：
+						</div> 
+						<div style="font-size:10px;">
+							Alcohol Saliva Test Strip, Adulteration and Temperature Strips must be read by direct optical observation based on specific instruction in product insert accordingly after specimen is collected.
+						</div> 
+					</td>
+					</tr>   
+				</table>
+			</td>
+			</tr>
+			
+			<tr>
+			<td> 
+				<div style="text-align:left;background-color:#727171;padding:5px;color:#fff;font-size:15px;font-weight:bold;border-radius: 5px;margin-top: 50px;">Test Result</div>
+			</td>
+			</tr>
+			<tr>
+			<td> 
+				<table border="0" cellspacing="0" cellpadding="0"  style="width:100%;height:100%;	border:1px solid #727171;border-radius: 5px;text-align:center;margin-top: 25px;padding: 10px;" >
+					 					
+					<tr >
+					<th style="width:20%;padding:6px;">
+					  Strip
+					</th>
+					<th style="width:20%;padding:6px;">
+					  Drug
+					</th>
+					<th style="width:20%;padding:6px;">
+					  Cutoff(ng/ml)
+					</th>
+					<th style="width:20%;padding:6px;">
+					  Control Line
+					</th>
+					<th style="width:20%;padding:6px;">
+					  Result
+					</th> 
+					</tr> 			
+					<tr >
+					<td >Strip1</td> <td>COC</td> <td>20</td> <td>Valid</td> <td>Negative</td> 
+					</tr> 
+					<tr>
+					<td>Strip1</td> <td>COC</td> <td>20</td> <td>Valid</td> <td>Negative</td> 
+					</tr> 
+					<tr>
+					<td>Strip1</td> <td>COC</td> <td>20</td> <td>Valid</td> <td>Negative</td> 
+					</tr> 
+					<tr>
+					<td>Strip1</td> <td>COC</td> <td>20</td> <td>Valid</td> <td>Negative</td> 
+					</tr> 
+					<tr>
+					<td>Strip1</td> <td>COC</td> <td>20</td> <td>Valid</td> <td>Negative</td> 
+					</tr> 
+					<tr>
+					<td>Strip1</td> <td>COC</td> <td>20</td> <td>Valid</td> <td>Negative</td> 
+					</tr> 
+					<tr>
+					<td>Strip1</td> <td>COC</td> <td>20</td> <td>Valid</td> <td>Negative</td> 
+					</tr> 
+					<tr>
+					<td>Strip1</td> <td>COC</td> <td>20</td> <td>Valid</td> <td>Negative</td> 
+					</tr> 
+					<tr>
+					<td>Strip1</td> <td>COC</td> <td>20</td> <td>Valid</td> <td>Negative</td> 
+					</tr> 
+					<tr>
+					<td>Strip1</td> <td>COC</td> <td>20</td> <td>Valid</td> <td>Negative</td> 
+					</tr> 
+					<tr>
+					<td colspan="5">
+						<div style=";text-align:left;">
+							*Disclaimer：
+						</div> 
+						<div style="font-size:10px;">
+							Alcohol Saliva Test Strip, Adulteration and Temperature Strips must be read by direct optical observation based on specific instruction in product insert accordingly after specimen is collected.
+						</div> 
+					</td>
+					</tr>   
+				</table>
+			</td>
+			</tr>
+			
+			
+		</table> 		
+		</td>
+		</tr>		
+	</table>
+	
+	
+	
+	
+	
+	
+	
+	
+	<table border="0" cellspacing="0" cellpadding="0" style="width:100%;height:100%;border:6px solid #008cd6;padding:5px;">
+		<tr>
+		<td> 		
+		<table border="0" cellspacing="0" cellpadding="0" style="width:100%;height:100%;border:1.5px solid #008cd6;text-align: center; padding: 0px 20px 60px;margin:0;">
+			<tr>
+			<td>
+				<img src="logo.png"/>
+			</td>
+			</tr>
+			
+			<tr>
+			<td> 
+				<div style="text-align:left;background-color:#727171;padding:5px;color:#fff;font-size:15px;font-weight:bold;border-radius: 5px;margin-top: 50px;">Test Image</div>
+			</td>
+			</tr>
+			<tr>
+			<td> 
+				<table border="0" cellspacing="0" cellpadding="0" style="width:100%;height:100%;text-align:left;border:1px solid #727171;border-radius: 5px;margin-top: 25px;padding: 10px;" >	
+					<tr>
+					<td>  
+					<image src="1.png"/> <image src="1.png"/> 
+					</td>
+					</tr>   
+				</table>
+			</td>
+			</tr>
+			
+			<tr>
+			<td> 
+				<div style="text-align:left;background-color:#727171;padding:5px;color:#fff;font-size:15px;font-weight:bold;border-radius: 5px;margin-top: 50px;">Signature</div>
+			</td>
+			</tr>
+			<tr>
+			<td> 
+				<table border="0" cellspacing="0" cellpadding="0" style="width:100%;height:100%;text-align:left;border:1px solid #727171;border-radius: 5px;margin-top: 25px;padding: 10px;" >					  
+					 				
+					<tr>
+					<td>
+						<div style="float: left;width: 50%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:130px;">
+							Donor Signature：
+							</td>
+							<td style="border-bottom: 1px solid;"> 
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div>
+						<div style="float: left;width: 50%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:120px;">
+							Operator Signature：
+							</td>
+							<td style="border-bottom: 1px solid;"> 
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div>
+					</td>
+					</tr> 
+								
+					<tr>
+					<td>
+						<div style="float: left;width: 50%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:60px;">
+							Date：
+							</td>
+							<td style="border-bottom: 1px solid;"> 
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div>
+						<div style="float: left;width: 50%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:60px;">
+							Date：
+							</td>
+							<td style="border-bottom: 1px solid;"> 
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div>
+					</td>
+					</tr> 
+				</table>
+			</td>
+			</tr>
+			
+			
+		</table> 		
+		</td>
+		</tr>		
+	</table>
+	
+</body>
+</html>	
