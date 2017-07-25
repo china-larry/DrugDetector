@@ -2,4 +2,6 @@ QPushButton
 {
       color : rgb(255, 255, 255);
       background-color: rgb(230, 139, 49);
+      font-family:"黑体";
+      font-size: 12px;
 }

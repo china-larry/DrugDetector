@@ -478,6 +478,7 @@ void CHistoryPage::_InitHistoryTableWidget()
     // table
     m_pHistoryDataTableWidget = new QTableWidget(this);
     m_pHistoryDataTableWidget->setMinimumHeight(350);
+    m_pHistoryDataTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_iTableColumnCount = 6;
     // 设置列数量
     m_pHistoryDataTableWidget->setColumnCount(m_iTableColumnCount);
@@ -534,6 +535,9 @@ void CHistoryPage::_InitTestDataWidget()
     m_pCurrentTestDataTableWidget = new QTableWidget(this);
     m_pCurrentTestDataTableWidget->setFixedWidth(380);
     m_pCurrentTestDataTableWidget->setColumnCount(3);
+    m_pCurrentTestDataTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    // 每次选择一行
+    m_pCurrentTestDataTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     //m_pCurrentTestDataTableWidget->setRowCount(16);// 最大16个项目
     // 不显示行号
     QHeaderView *pVerticalHeader = m_pCurrentTestDataTableWidget->verticalHeader();

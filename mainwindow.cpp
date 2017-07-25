@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //this->setAttribute(Qt::WA_TranslucentBackground); //设置背景透明，允许鼠标穿透
     //切换背景1
     //ui->centralWidget->setStyleSheet("#centralWidget{background-image: url(:/img/bg.png);}"); //图片放到资源文件里面
-    this->setFixedSize(1000, 650);
+    this->setFixedSize(1000, 680);
 
 
     _InitWidget();

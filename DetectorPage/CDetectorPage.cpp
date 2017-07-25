@@ -304,9 +304,14 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
 
     m_pResultsTableWidget = new QTableWidget(this);
     m_pResultsTableWidget->resize(400, 300);
+    m_pResultsTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_pResultsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     // 表单样式
     m_pResultsTableWidget->setColumnCount(3);
     m_pResultsTableWidget->setRowCount(16);// 最大16个项目
+    // 不显示行号
+    QHeaderView *pVerticalHeader = m_pResultsTableWidget->verticalHeader();
+    pVerticalHeader->setHidden(true);
     QHeaderView *pHeaderView = m_pResultsTableWidget->horizontalHeader();
     pHeaderView->setDefaultSectionSize(120);
     pHeaderView->setDisabled(true);
