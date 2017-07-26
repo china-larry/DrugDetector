@@ -37,7 +37,8 @@ SOURCES += \
     CommonDataWidget/CLabelCommoBoxWidget.cpp \
     CommonDataWidget/CLabelCheckBoxWidget.cpp \
     PublicFunction.cpp \
-    LoginPage/CLoginInWidget.cpp
+    LoginPage/CLoginInWidget.cpp \
+    CalibrationPage/CCalibrationPage.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -52,7 +53,8 @@ HEADERS += \
     CommonDataWidget/CLabelCommoBoxWidget.h \
     CommonDataWidget/CLabelCheckBoxWidget.h \
     PublicFunction.h \
-    LoginPage/CLoginInWidget.h
+    LoginPage/CLoginInWidget.h \
+    CalibrationPage/CCalibrationPage.h
 
 FORMS += \
         mainwindow.ui

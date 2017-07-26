@@ -100,6 +100,7 @@ void CLoginInWidget::_InitWidget()
     //
     m_pLoginButton = new QPushButton("Login", this);
     m_pLoginButton->setFixedSize(160, 35);
+    m_pLoginButton->setObjectName("m_pLoginButton");
     //m_pLoginButton->setStyleSheet("background:#E88E34");
 
     connect(m_pLoginButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckLoginButton()));

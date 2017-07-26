@@ -81,14 +81,14 @@ void MainWindow::SlotReceiveLogin()
 void MainWindow::SlotGoSettingPage()
 {
     qDebug() << "go setting page";
-    m_pStackedWidget->setCurrentIndex(2);
+    m_pStackedWidget->setCurrentIndex(3);
     m_pDetectorPageStatusBar->hide();
 }
 // 前往历史数据页
 void MainWindow::SlotGoHistoryPage()
 {
     qDebug() << "go history page";
-    m_pStackedWidget->setCurrentIndex(1);
+    m_pStackedWidget->setCurrentIndex(2);
     m_pHistoryPage->ShowCurrentDateTest();// 显示当天测试结果数据
     m_pDetectorPageStatusBar->hide();
 }
@@ -98,6 +98,13 @@ void MainWindow::SlotGoDetectorPage()
     qDebug() << "go detector page";
     m_pStackedWidget->setCurrentIndex(0);
     m_pDetectorPageStatusBar->show();
+}
+
+void MainWindow::SlotGoCalibrationPage()
+{
+    qDebug() << "go cali page";
+    m_pStackedWidget->setCurrentIndex(1);
+    m_pDetectorPageStatusBar->hide();
 }
 // 最小化
 void MainWindow::SlotMinWindow()
@@ -133,6 +140,7 @@ void MainWindow::_InitWidget()
 //    QRect rect = this->rect();
 //    m_pDetectorPageTitleWidget->setGeometry(0, 0, rect.width(), m_ciTitleHeight);
     connect(m_pDetectorPageTitleWidget, SIGNAL(SignalGoDetectorPage()), this, SLOT(SlotGoDetectorPage()));
+    connect(m_pDetectorPageTitleWidget, SIGNAL(SignalGoCalibrationPage()), this, SLOT(SlotGoCalibrationPage()));
     connect(m_pDetectorPageTitleWidget, SIGNAL(SignalGoHistoryPage()), this, SLOT(SlotGoHistoryPage()));
     connect(m_pDetectorPageTitleWidget, SIGNAL(SignalGoSettingPage()), this, SLOT(SlotGoSettingPage()));
     connect(m_pDetectorPageTitleWidget, SIGNAL(SignalMinWindow()), this, SLOT(SlotMinWindow()));
@@ -142,12 +150,15 @@ void MainWindow::_InitWidget()
     // 测试页
     m_pDetectorPage = new CDetectorPage(this);
     connect(m_pDetectorPage, SIGNAL(SignalEndTest()), this, SLOT(SlotDetectorPageEndTest()));
+    // 校正
+    m_pCalibrationPage = new CCalibrationPage(this);
     // 历史数据页
     m_pHistoryPage = new CHistoryPage(this);
     // 设置页
     m_pSettingPage = new CSettingPage(this);
     // 布局
     m_pStackedWidget->addWidget(m_pDetectorPage);
+    m_pStackedWidget->addWidget(m_pCalibrationPage);
     m_pStackedWidget->addWidget(m_pHistoryPage);
     m_pStackedWidget->addWidget(m_pSettingPage);
     //

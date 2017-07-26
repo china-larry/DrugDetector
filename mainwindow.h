@@ -21,6 +21,7 @@
 #include "DetectorPage/CDetectorPage.h"
 #include "HistoryPage/CHistoryPage.h"
 #include "SettingPage/CSettingPage.h"
+#include "CalibrationPage/CCalibrationPage.h"
 
 namespace Ui {
 class MainWindow;
@@ -40,7 +41,8 @@ public:
 public slots:
     // 标题栏
     void SlotReceiveLogin();// 登陆界面跳转
-    void SlotGoDetectorPage();// 标题栏发送来的跳转Data界面
+    void SlotGoDetectorPage();// 标题栏发送来的跳转测试界面
+    void SlotGoCalibrationPage();
     void SlotGoHistoryPage();
     void SlotGoSettingPage();
     void SlotMinWindow();
@@ -60,6 +62,8 @@ private:
     QStackedWidget *m_pStackedWidget;
     // 检测页面
     CDetectorPage *m_pDetectorPage;
+    // 校正
+    CCalibrationPage *m_pCalibrationPage;
     // 历史数据页面
     CHistoryPage *m_pHistoryPage;
      // 设置页面

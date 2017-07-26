@@ -25,6 +25,8 @@ void CDetectorPageTitleWidget::_InitWidget()
     connect(m_pSettingPageButton, SIGNAL(clicked(bool)), this, SIGNAL(SignalGoSettingPage()));
     m_pHistoryPageButton = new QPushButton("History", this);
     connect(m_pHistoryPageButton, SIGNAL(clicked(bool)), this, SIGNAL(SignalGoHistoryPage()));
+    m_pCalibrationPageButton = new QPushButton("Calibration", this);
+    connect(m_pCalibrationPageButton, SIGNAL(clicked(bool)), this, SIGNAL(SignalGoCalibrationPage()));
     m_pDetectorPageButton = new QPushButton("Function", this);
     connect(m_pDetectorPageButton, SIGNAL(clicked(bool)), this, SIGNAL(SignalGoDetectorPage()));
     //
@@ -47,6 +49,8 @@ void CDetectorPageTitleWidget::_InitLayout()
     pLayout->addWidget(m_pSettingPageButton);
     pLayout->addSpacing(50);
     pLayout->addWidget(m_pHistoryPageButton);
+    pLayout->addSpacing(50);
+    pLayout->addWidget(m_pCalibrationPageButton);
     pLayout->addSpacing(50);
     pLayout->addWidget(m_pDetectorPageButton);
     pLayout->addSpacing(50);

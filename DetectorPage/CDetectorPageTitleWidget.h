@@ -24,6 +24,7 @@ public:
 
 signals:    
     void SignalGoDetectorPage();
+    void SignalGoCalibrationPage();
     void SignalGoHistoryPage();
     void SignalGoSettingPage();
     void SignalMinWindow();
@@ -42,6 +43,7 @@ private:
     //
     QPushButton *m_pSettingPageButton;
     QPushButton *m_pHistoryPageButton;
+    QPushButton *m_pCalibrationPageButton;
     QPushButton *m_pDetectorPageButton;
     //
     QPushButton *m_pMinWindowButton;
