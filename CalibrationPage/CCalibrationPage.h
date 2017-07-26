@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QTabWidget>
 #include <QLabel>
+#include "CStandardModelWidget.h"
+#include "COrdinaryModelWidget.h"
 class CCalibrationPage : public QWidget
 {
     Q_OBJECT

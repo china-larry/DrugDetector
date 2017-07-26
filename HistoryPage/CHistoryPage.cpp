@@ -418,10 +418,10 @@ void CHistoryPage::InsertToDatabase()
             qDebug() << name << ": " << age;
         }
     }
-    else
-    {
-        qDebug() <<"打开数据库失败";
-    }
+//    else
+//    {
+//        qDebug() << "打开数据库失败";
+//    }
 }
 
 void CHistoryPage::_LoadQss()

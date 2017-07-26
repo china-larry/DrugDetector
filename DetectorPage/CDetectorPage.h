@@ -22,6 +22,9 @@
 #include <QComboBox>
 #include <QTableWidget>
 #include <QList>
+#include <QWebEnginePage>
+
+
 #include "CommonDataWidget/CLabelLineEditWidget.h"
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelDateTimeWidget.h"
@@ -50,6 +53,7 @@ private slots:
     void _SlotStopTest();// 主动停止测试
     // 打印PDF
     void _SlotPrintToPDF();
+    void _SlotPrintFinished(QString strFilePath, bool bSuccess);
 public:
     QList<TestResultData*> GetTestResultData();
     DetectorPageUserData GetUserData();
@@ -61,6 +65,8 @@ private:
     QGroupBox *_CreateResultsGroup();
     QGroupBox *_CreatePushButtonGroup();
     void _InitLibDrug();// 初始化第三方库
+    // 打印回调
+    void _CallbackPrint();
 
 
 private:
@@ -99,6 +105,7 @@ private:
     QPushButton *m_pReadTestDeviceButton;
     QPushButton *m_pStopTestButton;
     QPushButton *m_pPrintPriviewButton;
+    QWebEnginePage *m_pWebEnginePage;// 打印
     //////////////////////////////////////
     // results
     QLabel *m_pCamaraLabel;// 摄像头

@@ -3,16 +3,16 @@
 #include <QBoxLayout>
 CCalibrationPage::CCalibrationPage(QWidget *parent) : QWidget(parent)
 {
-//    _InitWidget();
-//    _InitLayout();
+    _InitWidget();
+    _InitLayout();
 }
 
 void CCalibrationPage::_InitWidget()
 {
     // 测试代码
-    pLabel = new QLabel("bra1", this);
-    pLabel2 = new QLabel("bra1", this);
-    pLabel3 = new QLabel("bra1", this);
+    pLabel = new QLabel("bra1");
+    pLabel2 = new QLabel("bra1");
+    pLabel3 = new QLabel("bra1");
     m_pBrightnessTabWidget = new QTabWidget(this);
     m_pBrightnessTabWidget->addTab(pLabel, tr("The Standard Model"));
     m_pBrightnessTabWidget->addTab(pLabel2, tr("The Ordinary Model"));

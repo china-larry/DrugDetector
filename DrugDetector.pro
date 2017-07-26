@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql printsupport
+QT       += core gui sql webenginewidgets printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -38,7 +38,9 @@ SOURCES += \
     CommonDataWidget/CLabelCheckBoxWidget.cpp \
     PublicFunction.cpp \
     LoginPage/CLoginInWidget.cpp \
-    CalibrationPage/CCalibrationPage.cpp
+    CalibrationPage/CCalibrationPage.cpp \
+    CalibrationPage/CStandardModelWidget.cpp \
+    CalibrationPage/COrdinaryModelWidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -54,7 +56,9 @@ HEADERS += \
     CommonDataWidget/CLabelCheckBoxWidget.h \
     PublicFunction.h \
     LoginPage/CLoginInWidget.h \
-    CalibrationPage/CCalibrationPage.h
+    CalibrationPage/CCalibrationPage.h \
+    CalibrationPage/CStandardModelWidget.h \
+    CalibrationPage/COrdinaryModelWidget.h
 
 FORMS += \
         mainwindow.ui
@@ -69,4 +73,5 @@ INCLUDEPATH  += \
     E:/build/DrugDetector
 
 LIBS += \
-    E:/build/DrugDetector/debug/liblibDrugDetector.a
+ #   E:/build/DrugDetector/debug/liblibDrugDetector.a
+    E:/build/DrugDetector_2015/debug/libDrugDetector.lib

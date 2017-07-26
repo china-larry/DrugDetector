@@ -26,6 +26,9 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
     pGridLayout->addWidget(_CreatePushButtonGroup(), 2, 0, 1, 2);
     this->setLayout(pGridLayout);
 
+    //
+    m_pWebEnginePage = new QWebEnginePage(this);
+    connect(m_pWebEnginePage, SIGNAL(pdfPrintingFinished(QString,bool)), this, SLOT(_SlotPrintFinished(QString,bool)));
 }
 
 CDetectorPage::~CDetectorPage()
@@ -106,7 +109,7 @@ void CDetectorPage::_SlotStopTest()
 void CDetectorPage::_SlotPrintToPDF()
 {
     // 资源文件
-    QFile qFile("E:/work_project/DrugDetector/demo/TCube.html");
+    QFile qFile("E:/work_project/DrugDetector/demo/TCube2.html");
     if(!qFile.open(QFile::ReadOnly | QIODevice::Text))
     {
         qDebug() << "open false";
@@ -114,37 +117,29 @@ void CDetectorPage::_SlotPrintToPDF()
     QTextStream qTextStream(&qFile);
     QString html = qTextStream.readAll();
     qFile.close();
-//    QStringList title;
-//    title.push_back(QStringLiteral("名称"));
-//    title.push_back(QStringLiteral("修改日期"));
-//    title.push_back(QStringLiteral("类型"));
-//    title.push_back(QStringLiteral("大小"));
-    //
-//    QString html;
-//    html += "<h2 align=\"center\">" + QStringLiteral("HTML导出PDF示例") +"</h2>";
-//    html += QString("<h4 align=\"center\">") + QDate::currentDate().toString() +"<H4>";
-//    html += "<table width=\"500\" border=\"1\" align=\"center\" style=\"border-collapse:collapse;\" bordercolor=\"gray\">";
-//    html += "<tr style=\"backgroud-color:gray\">";
-//    for(int i  = 0; i < title.count(); ++i)
-//    {
-//        html += QString("<th>%1</th>").arg(title.at(i));
-//    }
-//    html += "</tr>";
 
-
-//    html += "</table>";
+    m_pWebEnginePage->setHtml(html);
+    //m_pWebEnginePage->setUrl(QUrl(QString("www.baidu.com")));
+    //m_pWebEnginePage->load(QUrl(QString("www.baidu.com")));
+  //  m_pWebEnginePage->printToPdf(QString("E:/a.pdf"), QPageLayout( QPageSize( QPageSize::A4 ), QPageLayout::Portrait, QMarginsF() ) );
 
     //
-
     QPrinter printer_html;
     printer_html.setPageSize(QPrinter::A4);
     printer_html.setOutputFormat(QPrinter::PdfFormat);
     printer_html.setOutputFileName(QCoreApplication::applicationDirPath() + "test_html.pdf");
-    QTextDocument text_document;
-    text_document.setHtml(html);
-    text_document.print(&printer_html);
-    text_document.end();
+//    QTextDocument text_document;
+//    text_document.setHtml(html);
+//    text_document.print(&printer_html);
+//    text_document.end();
+   // bool bOK = false;//
+    QWebEngineCallback<bool> boos;
+    m_pWebEnginePage->print(&printer_html, boos);
+}
 
+void CDetectorPage::_SlotPrintFinished(QString strFilePath, bool bSuccess)
+{
+    qDebug() <<"finish " << strFilePath << bSuccess;
 }
 
 QList<TestResultData *> CDetectorPage::GetTestResultData()
@@ -383,4 +378,9 @@ void CDetectorPage::_InitLibDrug()
     connect(m_pLibDrugDetector, SIGNAL(SignalSendQRCodeInfo(QVariant)), this, SLOT(SlotReceiveQRCodeInfo(QVariant)));
     connect(m_pLibDrugDetector, SIGNAL(SignalSendTestResultData(QVariant)), this, SLOT(SlotReceiveTestResultData(QVariant)));
     connect(m_pLibDrugDetector, SIGNAL(SignalEndTest()), this, SLOT(SlotEndTest()));
+}
+
+void CDetectorPage::_CallbackPrint()
+{
+
 }
