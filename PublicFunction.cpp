@@ -5,6 +5,7 @@
 #include <QBrush>
 #include <QFile>
 #include <QTextStream>
+#include <QBuffer>
 /**
   * @brief 设置控件背景图片
   * @param pWidget：控件名称
@@ -46,4 +47,17 @@ void LoadQss(QWidget *pWidget, QString strQssFilePath)
     QString strStylesheet = qTextStream.readAll();
     pWidget->setStyleSheet(strStylesheet);
     qFile.close();
+}
+/**
+  * @brief 获取图片的base64值(PNG)
+  * @param
+  * @return
+  */
+QByteArray GetImagePngBase64(QImage *pImage)
+{
+    QByteArray qByteArray;
+    QBuffer qBuffer(&qByteArray);
+    pImage->save(&qBuffer, "PNG");
+
+    return qByteArray;
 }

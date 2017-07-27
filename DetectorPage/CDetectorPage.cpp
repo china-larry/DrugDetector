@@ -360,7 +360,11 @@ void CDetectorPage::_InitLibDrug()
     connect(m_pLibDrugDetector, SIGNAL(SignalSendTestResultData(QVariant)), this, SLOT(SlotReceiveTestResultData(QVariant)));
     connect(m_pLibDrugDetector, SIGNAL(SignalEndTest()), this, SLOT(SlotEndTest()));
 }
-
+/**
+  * @brief 打印
+  * @param
+  * @return
+  */
 bool CDetectorPage::_PrintToPage(QString strHtml)
 {
     QPrinter * qPrinter = new QPrinter();
@@ -406,7 +410,11 @@ bool CDetectorPage::_PrintToPage(QString strHtml)
     });
     return true;
 }
-
+/**
+  * @brief 替换html为控件数据
+  * @param
+  * @return
+  */
 void CDetectorPage::_ReplaceHtmlData(QString &strHtml)
 {
     QString strFindWord = "";
@@ -431,7 +439,16 @@ void CDetectorPage::_ReplaceHtmlData(QString &strHtml)
     strFindWord = "${TestingSite}";
     strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), m_pTestingSiteWidget->GetLineText());
     // Specimen Type
-    strFindWord = "${TestDate}";
+    strFindWord = "${UrineCheck}";
+    if(m_pProductDefinitionWidget->GetCurrentSelectText() == "T Cup")
+    {
+        strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), "checked");
+    }
+    strFindWord = "${SalivaCheck}";
+    if(m_pProductDefinitionWidget->GetCurrentSelectText() == "T Cupa")
+    {
+        strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), "checked");
+    }
     // reason for test
     strFindWord = "${PreEmploymentCheck}";
     strHtml = strHtml.replace(strHtml.indexOf(strFindWord),

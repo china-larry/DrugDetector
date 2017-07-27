@@ -59,5 +59,11 @@ void SetWidgetBackImage(QWidget *pWidget, QString strImagepath);
   * @return
   */
 void LoadQss(QWidget *pWidget, QString strQssFilePath);
+/**
+  * @brief 获取图片的base64值(PNG)
+  * @param
+  * @return
+  */
+QByteArray GetImagePngBase64(QImage *pImage);
 
 #endif // PUBLICFUNCTION_H
