@@ -53,7 +53,8 @@ private slots:
     void _SlotStopTest();// 主动停止测试
     // 打印PDF
     void _SlotPrintToPDF();
-    void _SlotPrintFinished(QString strFilePath, bool bSuccess);
+    void _SlotPrintPDFFinished(QString strFilePath, bool bSuccess);
+    void _SlotPrintFinished(bool bSuccess);
 public:
     QList<TestResultData*> GetTestResultData();
     DetectorPageUserData GetUserData();

@@ -10,6 +10,7 @@
 #include <QTextDocument>
 #include <QTextBlock>
 #include <QPrinter>
+#include <QPrintDialog>
 #include "PublicFunction.h"
 CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
 {
@@ -25,10 +26,6 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
     pGridLayout->addWidget(_CreateResultsGroup(), 0, 1, 2, 1);
     pGridLayout->addWidget(_CreatePushButtonGroup(), 2, 0, 1, 2);
     this->setLayout(pGridLayout);
-
-    //
-    m_pWebEnginePage = new QWebEnginePage(this);
-    connect(m_pWebEnginePage, SIGNAL(pdfPrintingFinished(QString,bool)), this, SLOT(_SlotPrintFinished(QString,bool)));
 }
 
 CDetectorPage::~CDetectorPage()
@@ -109,7 +106,7 @@ void CDetectorPage::_SlotStopTest()
 void CDetectorPage::_SlotPrintToPDF()
 {
     // 资源文件
-    QFile qFile("E:/work_project/DrugDetector/demo/TCube2.html");
+    QFile qFile("E:/work_project/DrugDetector/demo/TCube.html");
     if(!qFile.open(QFile::ReadOnly | QIODevice::Text))
     {
         qDebug() << "open false";
@@ -118,28 +115,62 @@ void CDetectorPage::_SlotPrintToPDF()
     QString html = qTextStream.readAll();
     qFile.close();
 
-    m_pWebEnginePage->setHtml(html);
-    //m_pWebEnginePage->setUrl(QUrl(QString("www.baidu.com")));
-    //m_pWebEnginePage->load(QUrl(QString("www.baidu.com")));
-  //  m_pWebEnginePage->printToPdf(QString("E:/a.pdf"), QPageLayout( QPageSize( QPageSize::A4 ), QPageLayout::Portrait, QMarginsF() ) );
-
     //
     QPrinter printer_html;
     printer_html.setPageSize(QPrinter::A4);
     printer_html.setOutputFormat(QPrinter::PdfFormat);
     printer_html.setOutputFileName(QCoreApplication::applicationDirPath() + "test_html.pdf");
+
+
+
+    QPrinter * printer = new QPrinter();
+
+        QPrintDialog printDialog(printer, this);
+        if (printDialog.exec() != QDialog::Accepted) {
+            return;
+        }
+
+        QWebEnginePage * page = new QWebEnginePage;
+
+       // page->setHtml("<html><body>Привет<body/></html>");
+        page->setHtml(html);
+
+        connect(page, &QWebEnginePage::loadFinished, [page, printer] (bool ok) {
+            if (!ok) {
+                qDebug() << "Зarp pasr."; delete page; delete printer; return; } page->print(printer, [page, printer](bool ok) {
+                if (ok) {
+                    qDebug() << "print ok";
+                }
+                else {
+                    qDebug() << "print error.";
+                }
+
+                delete page;
+                delete printer;
+            });
+        });
+
 //    QTextDocument text_document;
 //    text_document.setHtml(html);
 //    text_document.print(&printer_html);
 //    text_document.end();
    // bool bOK = false;//
-    QWebEngineCallback<bool> boos;
-    m_pWebEnginePage->print(&printer_html, boos);
+ //   QWebEngineCallback<bool> boos;
+    bool boos = false;
+    //m_pWebEnginePage->print(&printer_html, [=, &boos](bool s) {qDebug() << "print ok" << boos << s;});
+   // m_pWebEnginePage->print(&printer_html, CDetectorPage::_SlotPrintFinished(boos));
+
+    int g = 0;
 }
 
-void CDetectorPage::_SlotPrintFinished(QString strFilePath, bool bSuccess)
+void CDetectorPage::_SlotPrintPDFFinished(QString strFilePath, bool bSuccess)
 {
-    qDebug() <<"finish " << strFilePath << bSuccess;
+    qDebug() <<"finish pdf " << strFilePath << bSuccess;
+}
+
+void CDetectorPage::_SlotPrintFinished(bool bSuccess)
+{
+    qDebug() <<"finish " << bSuccess;
 }
 
 QList<TestResultData *> CDetectorPage::GetTestResultData()
