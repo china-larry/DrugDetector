@@ -102,7 +102,11 @@ void CDetectorPage::_SlotStopTest()
     //删除数据库
     QFile::remove(QCoreApplication::applicationDirPath() + "demo.db");
 }
-// 生成PDF文件
+/**
+  * @brief 连接打印机打印
+  * @param
+  * @return
+  */
 void CDetectorPage::_SlotPrintToPDF()
 {
     // 资源文件
@@ -112,65 +116,11 @@ void CDetectorPage::_SlotPrintToPDF()
         qDebug() << "open false";
     }
     QTextStream qTextStream(&qFile);
-    QString html = qTextStream.readAll();
+    QString strHtml = qTextStream.readAll();
     qFile.close();
-
-    //
-    QPrinter printer_html;
-    printer_html.setPageSize(QPrinter::A4);
-    printer_html.setOutputFormat(QPrinter::PdfFormat);
-    printer_html.setOutputFileName(QCoreApplication::applicationDirPath() + "test_html.pdf");
-
-
-
-    QPrinter * printer = new QPrinter();
-
-        QPrintDialog printDialog(printer, this);
-        if (printDialog.exec() != QDialog::Accepted) {
-            return;
-        }
-
-        QWebEnginePage * page = new QWebEnginePage;
-
-       // page->setHtml("<html><body>Привет<body/></html>");
-        page->setHtml(html);
-
-        connect(page, &QWebEnginePage::loadFinished, [page, printer] (bool ok) {
-            if (!ok) {
-                qDebug() << "Зarp pasr."; delete page; delete printer; return; } page->print(printer, [page, printer](bool ok) {
-                if (ok) {
-                    qDebug() << "print ok";
-                }
-                else {
-                    qDebug() << "print error.";
-                }
-
-                delete page;
-                delete printer;
-            });
-        });
-
-//    QTextDocument text_document;
-//    text_document.setHtml(html);
-//    text_document.print(&printer_html);
-//    text_document.end();
-   // bool bOK = false;//
- //   QWebEngineCallback<bool> boos;
-    bool boos = false;
-    //m_pWebEnginePage->print(&printer_html, [=, &boos](bool s) {qDebug() << "print ok" << boos << s;});
-   // m_pWebEnginePage->print(&printer_html, CDetectorPage::_SlotPrintFinished(boos));
-
-    int g = 0;
-}
-
-void CDetectorPage::_SlotPrintPDFFinished(QString strFilePath, bool bSuccess)
-{
-    qDebug() <<"finish pdf " << strFilePath << bSuccess;
-}
-
-void CDetectorPage::_SlotPrintFinished(bool bSuccess)
-{
-    qDebug() <<"finish " << bSuccess;
+    _ReplaceHtmlData(strHtml);
+    // 打印
+    _PrintToPage(strHtml);
 }
 
 QList<TestResultData *> CDetectorPage::GetTestResultData()
@@ -411,7 +361,119 @@ void CDetectorPage::_InitLibDrug()
     connect(m_pLibDrugDetector, SIGNAL(SignalEndTest()), this, SLOT(SlotEndTest()));
 }
 
-void CDetectorPage::_CallbackPrint()
+bool CDetectorPage::_PrintToPage(QString strHtml)
 {
+    QPrinter * qPrinter = new QPrinter();
+    qPrinter->setPageSize(QPrinter::A4);
+    // 输出到PDF
+    qPrinter->setOutputFormat(QPrinter::PdfFormat);
+    qPrinter->setOutputFileName("E:/b.pdf");
+    // 连接打印机
+//    QPrintDialog qPrintDialog(qPrinter, this);
+//    if (qPrintDialog.exec() != QDialog::Accepted) {
+//        return false;
+//    }
+    QWebEnginePage * pWebEnginePage = new QWebEnginePage;
+    pWebEnginePage->setHtml(strHtml);
+
+    connect(pWebEnginePage, &QWebEnginePage::loadFinished, [pWebEnginePage, qPrinter] (bool bOk)
+    {
+        if (!bOk)
+        {
+            qDebug() << "连接失败";
+            delete pWebEnginePage;
+            delete qPrinter;
+            return false;
+        }
+        pWebEnginePage->print(qPrinter, [pWebEnginePage, qPrinter](bool bPrintok)
+        {
+            if (bPrintok)
+            {
+                qDebug() << "print ok";
+                delete pWebEnginePage;// lambda 不可赋值为null
+                delete qPrinter;
+                return true;
+            }
+            else
+            {
+                qDebug() << "print error.";
+                delete pWebEnginePage;
+                delete qPrinter;
+                return false;
+            }
+
+        });
+    });
+    return true;
+}
+
+void CDetectorPage::_ReplaceHtmlData(QString &strHtml)
+{
+    QString strFindWord = "";
+    // operator id
+    strFindWord = "${OperatorID}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), "admin");
+    // test date
+    strFindWord = "${TestDate}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pTestTimeWidget->GetDateTime().date().toString("yyyy-MM-dd"));
+    // test time
+    strFindWord = "${TestTime}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pTestTimeWidget->GetDateTime().time().toString());
+    // donor id
+    strFindWord = "${DonorID}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), m_pDonorIDWidget->GetLineText());
+    // email address
+    strFindWord = "${EmailAddress}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), m_pEmailAddressWidget->GetLineText());
+    // Testing Site
+    strFindWord = "${TestingSite}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), m_pTestingSiteWidget->GetLineText());
+    // Specimen Type
+    strFindWord = "${TestDate}";
+    // reason for test
+    strFindWord = "${PreEmploymentCheck}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pPreEmploymentCBox->isChecked() ? "checked" : "");
+    strFindWord = "${RandomCheck}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pRandomCBox->isChecked() ? "checked" : "");
+    strFindWord = "${ReasonableCheck}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pReasonableSuspicionCauseCBox->isChecked() ? "checked" : "");
+    strFindWord = "${PostAccidentCheck}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pPostAccidentCBox->isChecked() ? "checked" : "");
+    strFindWord = "${ReturnToDutyCheck}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pReturnToDutyCBox->isChecked() ? "checked" : "");
+    strFindWord = "${FollowUpCheck}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pFollowUpCBox->isChecked() ? "checked" : "");
+    strFindWord = "${OtherCheck}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pOtherReasonForTestCBox->isChecked() ? "checked" : "");
+    // other
+    strFindWord = "${Other}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), m_pOtherReasonCommentsLineEdit->text());
+    // ProductID
+    strFindWord = "${ProductID}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), m_pProductIDWidget->GetLineText());
+    // ProductLot
+    strFindWord = "${ProductLot}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), m_pProductLotWidget->GetLineText());
+    // ExpirationDate
+    strFindWord = "${ExpirationDate}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pExpirationDateWidget->GetDate().toString("yyyy-MM-dd"));
+    // temperature in range
+    strFindWord = "${TemperatureinRangeYesCheck}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pTemperatureNormalCBox->isChecked() ? "checked" : "");
+    strFindWord = "${TemperatureinRangeNoCheck}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pTemperatureNormalCBox->isChecked() ? "" : "checked");
 
 }
+

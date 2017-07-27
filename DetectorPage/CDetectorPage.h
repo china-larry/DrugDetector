@@ -53,8 +53,6 @@ private slots:
     void _SlotStopTest();// 主动停止测试
     // 打印PDF
     void _SlotPrintToPDF();
-    void _SlotPrintPDFFinished(QString strFilePath, bool bSuccess);
-    void _SlotPrintFinished(bool bSuccess);
 public:
     QList<TestResultData*> GetTestResultData();
     DetectorPageUserData GetUserData();
@@ -66,8 +64,10 @@ private:
     QGroupBox *_CreateResultsGroup();
     QGroupBox *_CreatePushButtonGroup();
     void _InitLibDrug();// 初始化第三方库
-    // 打印回调
-    void _CallbackPrint();
+    // 打印
+    bool _PrintToPage(QString strHtml);
+    // 打印
+    void _ReplaceHtmlData(QString &strHtml);// 替换html中数据位测试数据
 
 
 private:
@@ -106,7 +106,6 @@ private:
     QPushButton *m_pReadTestDeviceButton;
     QPushButton *m_pStopTestButton;
     QPushButton *m_pPrintPriviewButton;
-    QWebEnginePage *m_pWebEnginePage;// 打印
     //////////////////////////////////////
     // results
     QLabel *m_pCamaraLabel;// 摄像头
