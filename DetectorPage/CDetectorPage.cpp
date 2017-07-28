@@ -369,6 +369,7 @@ bool CDetectorPage::_PrintToPage(QString strHtml)
 {
     QPrinter * qPrinter = new QPrinter();
     qPrinter->setPageSize(QPrinter::A4);
+    qPrinter->setFullPage(true);
     // 输出到PDF
     qPrinter->setOutputFormat(QPrinter::PdfFormat);
     qPrinter->setOutputFileName("E:/b.pdf");
