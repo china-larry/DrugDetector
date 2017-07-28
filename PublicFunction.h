@@ -64,6 +64,6 @@ void LoadQss(QWidget *pWidget, QString strQssFilePath);
   * @param
   * @return
   */
-QByteArray GetImagePngBase64(QImage *pImage);
+QString GetImagePngBase64(QString strImagePath);
 
 #endif // PUBLICFUNCTION_H

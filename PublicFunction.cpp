@@ -53,11 +53,12 @@ void LoadQss(QWidget *pWidget, QString strQssFilePath)
   * @param
   * @return
   */
-QByteArray GetImagePngBase64(QImage *pImage)
+QString GetImagePngBase64(QString strImagePath)
 {
+    QImage qImage(strImagePath);
     QByteArray qByteArray;
     QBuffer qBuffer(&qByteArray);
-    pImage->save(&qBuffer, "PNG");
-
-    return qByteArray;
+    qImage.save(&qBuffer, "PNG");
+    QString strBase64(qByteArray.toBase64());
+    return strBase64;
 }

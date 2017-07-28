@@ -492,6 +492,15 @@ void CDetectorPage::_ReplaceHtmlData(QString &strHtml)
     strFindWord = "${TemperatureinRangeNoCheck}";
     strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
                               strFindWord.count(), m_pTemperatureNormalCBox->isChecked() ? "" : "checked");
+    // 测试结果
+
+    // 图片Image
+    QString strImageByte = GetImagePngBase64("E:/test.png");
+    strFindWord = "${test_image_01}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), strImageByte);
+    //
+    strFindWord = "${test_image_02}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), strImageByte);
 
 }
 
