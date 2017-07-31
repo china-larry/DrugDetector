@@ -31,12 +31,26 @@ public slots:
 public:
     QString GetLineText();
     void SetLineText(QString strLineText);
-private:
+protected:
     void _InitLayout();
-private:
+protected:
     QLabel *m_pLabel;
     QLineEdit *m_pLineEdit;
     QString m_strLineText;
+};
+class CHLabelLineEditWidget : public CLabelLineEditWidget
+{
+    Q_OBJECT
+public:
+    explicit CHLabelLineEditWidget(QWidget *parent = nullptr);
+    explicit CHLabelLineEditWidget(QString strLabel, QString strLineText, QWidget *parent = nullptr);
+
+signals:
+
+public slots:
+
+protected:
+    void _InitLayout();
 };
 
 #endif // CLABELLINEEDITWIDGET_H

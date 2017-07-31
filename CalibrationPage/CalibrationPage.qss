@@ -1,0 +1,7 @@
+QLabel#m_pPhotoShowLabel
+{
+    border-color: blue;
+    border-width: 1px;
+    background-color : rgb(128, 128, 128);
+}
+

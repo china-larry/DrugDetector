@@ -4,9 +4,9 @@ CLabelLineEditWidget::CLabelLineEditWidget(QWidget *parent)
     : QWidget(parent),
       m_strLineText("")
 {
-    m_pLabel = new QLabel(this);
-    m_pLineEdit = new QLineEdit(this);
-    _InitLayout();
+//    m_pLabel = new QLabel(this);
+//    m_pLineEdit = new QLineEdit(this);
+//    _InitLayout();
 }
 
 CLabelLineEditWidget::CLabelLineEditWidget(QString strLabel, QString strLineText, QWidget *parent)
@@ -16,7 +16,7 @@ CLabelLineEditWidget::CLabelLineEditWidget(QString strLabel, QString strLineText
     m_pLabel = new QLabel(strLabel, this);
     m_pLineEdit = new QLineEdit(strLineText, this);
     m_pLineEdit->setFixedWidth(200);
-    _InitLayout();
+    this->_InitLayout();
 }
 
 QString CLabelLineEditWidget::GetLineText()
@@ -34,6 +34,22 @@ void CLabelLineEditWidget::SetLineText(QString strLineText)
 void CLabelLineEditWidget::_InitLayout()
 {
     QVBoxLayout *pLayout = new QVBoxLayout;
+    pLayout->addWidget(m_pLabel);
+    pLayout->addWidget(m_pLineEdit);
+    this->setLayout(pLayout);
+}
+
+CHLabelLineEditWidget::CHLabelLineEditWidget(QString strLabel, QString strLineText, QWidget *parent)
+{
+    m_pLabel = new QLabel(strLabel, this);
+    m_pLineEdit = new QLineEdit(strLineText, this);
+    m_pLineEdit->setFixedWidth(200);
+    this->_InitLayout();
+}
+
+void CHLabelLineEditWidget::_InitLayout()
+{
+    QHBoxLayout *pLayout = new QHBoxLayout;
     pLayout->addWidget(m_pLabel);
     pLayout->addWidget(m_pLineEdit);
     this->setLayout(pLayout);

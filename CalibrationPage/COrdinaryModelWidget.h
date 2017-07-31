@@ -12,6 +12,10 @@ public:
 signals:
 
 public slots:
+
+private:
+    void _InitWidget();
+    void _InitLayout();
 };
 
 #endif // CORDINARYMODELWIDGET_H

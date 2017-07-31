@@ -28,6 +28,10 @@ private:
     QLabel *pLabel3;
     QTabWidget *m_pCalibrationTabWidget;
     QTabWidget *m_pBrightnessTabWidget;
+    //
+    CStandardModelWidget *m_pStandardModelWidget;
+    COrdinaryModelWidget *m_pOrdinaryModelWidget;
+
 };
 
 #endif // CCALIBRATIONPAGE_H
