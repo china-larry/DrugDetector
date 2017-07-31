@@ -40,7 +40,8 @@ SOURCES += \
     LoginPage/CLoginInWidget.cpp \
     CalibrationPage/CCalibrationPage.cpp \
     CalibrationPage/CStandardModelWidget.cpp \
-    CalibrationPage/COrdinaryModelWidget.cpp
+    CalibrationPage/COrdinaryModelWidget.cpp \
+    SettingPage/CSetupWindowWidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -58,7 +59,8 @@ HEADERS += \
     LoginPage/CLoginInWidget.h \
     CalibrationPage/CCalibrationPage.h \
     CalibrationPage/CStandardModelWidget.h \
-    CalibrationPage/COrdinaryModelWidget.h
+    CalibrationPage/COrdinaryModelWidget.h \
+    SettingPage/CSetupWindowWidget.h
 
 FORMS += \
         mainwindow.ui

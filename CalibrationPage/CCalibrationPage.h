@@ -22,7 +22,7 @@ private:
 
 
 private:
-    // test
+    // 测试代码
     QLabel *pLabel;
     QLabel *pLabel2;
     QLabel *pLabel3;

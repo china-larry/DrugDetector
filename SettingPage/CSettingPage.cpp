@@ -6,12 +6,10 @@
 #include "PublicFunction.h"
 CSettingPage::CSettingPage(QWidget *parent) : QWidget(parent)
 {
+    _InitWidget();
+    _InitLayout();
     //应用样式 apply the qss style
-       _LoadQss();
-
-    QGridLayout *pGridLayout = new QGridLayout;
-        pGridLayout->addWidget(_CreateVersionGroup(), 0, 0, 1, 1);
-        this->setLayout(pGridLayout);
+     _LoadQss();
 }
 
 void CSettingPage::_LoadQss()
@@ -19,19 +17,23 @@ void CSettingPage::_LoadQss()
     LoadQss(this, ":/qss/DetectorPage/DetectorPage.qss");
 }
 
-QGroupBox *CSettingPage::_CreateVersionGroup()
+void CSettingPage::_InitWidget()
 {
-    QGroupBox *pGroupBox = new QGroupBox(tr("Version"), this);
-    pGroupBox->setMaximumSize(200, 100);
-    //
-    m_pSoftwareLabel = new QLabel(tr("Software Version:     V1.0.0.1"), this);
-    m_pFirmewareLabel = new QLabel(tr("Firmeware Version:    V1.0.0.1"), this);
+   //m_pSetupWindowWidget = new CSetupWindowWidget;
 
-    QVBoxLayout *pLayout = new QVBoxLayout;
-    pLayout->addWidget(m_pSoftwareLabel);
-    pLayout->addWidget(m_pFirmewareLabel);
-
-    pGroupBox->setLayout(pLayout);
-
-    return pGroupBox;
+    // test
+    m_pLabel = new QLabel("goo on");
+    m_pSetTabWidget = new QTabWidget(this);
+    //m_pSetTabWidget->addTab(pSetupWindowWidget, tr("Setup Window"));
+    m_pSetTabWidget->addTab(m_pLabel, tr("Account Management"));
 }
+
+void CSettingPage::_InitLayout()
+{
+    // layout
+    QVBoxLayout *pLayout = new QVBoxLayout;
+    //pLayout->addWidget(m_pCalibrationTabWidget);
+    this->setLayout(pLayout);
+}
+
+

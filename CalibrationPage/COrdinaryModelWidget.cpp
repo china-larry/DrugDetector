@@ -6,7 +6,7 @@ COrdinaryModelWidget::COrdinaryModelWidget(QWidget *parent) : QWidget(parent)
     _InitLayout();
 }
 /**
-  * @brief 创建standary组
+  * @brief 创建Standary组
   * @param
   * @return
   */

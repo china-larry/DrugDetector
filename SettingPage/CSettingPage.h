@@ -15,7 +15,8 @@
 
 #include <QWidget>
 #include <QLabel>
-#include <QGroupBox>
+#include <QTabWidget>
+#include "SettingPage/CSetupWindowWidget.h"
 class CSettingPage : public QWidget
 {
     Q_OBJECT
@@ -28,10 +29,15 @@ public slots:
 
 private:
     void _LoadQss();
-    QGroupBox *_CreateVersionGroup();
+    void _InitWidget();
+    void _InitLayout();
+
 private:
-    QLabel *m_pSoftwareLabel;
-    QLabel *m_pFirmewareLabel;
+    QTabWidget *m_pSetTabWidget;
+    // test
+    QLabel *m_pLabel;
+    //
+    CSetupWindowWidget *m_pSetupWindowWidget;
 };
 
 #endif // CSETTINGPAGE_H

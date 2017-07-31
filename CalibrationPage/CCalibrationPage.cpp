@@ -24,8 +24,6 @@ void CCalibrationPage::_InitWidget()
     m_pCalibrationTabWidget->setMinimumSize(900, 400);
     m_pCalibrationTabWidget->addTab(m_pBrightnessTabWidget, tr("Brightness Calibration"));
     m_pCalibrationTabWidget->addTab(pLabel3, tr("Location Calibration"));
-
-
 }
 
 void CCalibrationPage::_InitLayout()
