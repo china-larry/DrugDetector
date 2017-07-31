@@ -14,9 +14,10 @@ void CCalibrationPage::_InitWidget()
     pLabel2 = new QLabel("bra1");
     pLabel3 = new QLabel("bra1");
     m_pStandardModelWidget = new CStandardModelWidget;
+    m_pOrdinaryModelWidget = new COrdinaryModelWidget;
     m_pBrightnessTabWidget = new QTabWidget(this);
     m_pBrightnessTabWidget->addTab(m_pStandardModelWidget, tr("The Standard Model"));
-    m_pBrightnessTabWidget->addTab(pLabel2, tr("The Ordinary Model"));
+    m_pBrightnessTabWidget->addTab(m_pOrdinaryModelWidget, tr("The Ordinary Model"));
     m_pBrightnessTabWidget->setObjectName("tabwidget_DevMang");
     //
     m_pCalibrationTabWidget = new QTabWidget(this);
