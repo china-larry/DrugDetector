@@ -35,7 +35,9 @@ QGroupBox *COrdinaryModelWidget::_CreateStandardGroup()
     m_pSNo8LineEditWidget = new QLineEdit(this);
     //
     m_pImportButton = new QPushButton(tr("Import"), this);
+    m_pImportButton->setFixedSize(100, 30);
     m_pCalibration = new QPushButton(tr("Calibration"), this);
+    m_pCalibration->setFixedSize(100, 30);
      //
     QHBoxLayout *pLabelLayout = new QHBoxLayout;
     pLabelLayout->addWidget(m_pStandardBrightnessValueLabel);
@@ -101,7 +103,9 @@ QGroupBox *COrdinaryModelWidget::_CreateOridinaryGroup()
     m_pONo8LineEditWidget = new QLineEdit(this);
     //
     m_pSaveButton = new QPushButton(tr("Import"), this);
+    m_pSaveButton->setFixedSize(100, 30);
     m_pReadButton = new QPushButton(tr("Calibration"), this);
+    m_pReadButton->setFixedSize(100, 30);
      //
     QHBoxLayout *pLabelLayout = new QHBoxLayout;
     pLabelLayout->addWidget(m_pOridinaryBrightnessValueLabel);

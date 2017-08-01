@@ -17,6 +17,7 @@
 #include <QLabel>
 #include <QTabWidget>
 #include "CSettingSetupWindowWidget.h"
+#include "CAccountManagementWidget.h"
 class CSettingPage : public QWidget
 {
     Q_OBJECT
@@ -34,6 +35,7 @@ private:
 
 private:
     CSettingSetupWindowWidget *m_pSetupWindosWidget;
+    CAccountManagementWidget *m_pAccountManagementWidget;
     QTabWidget *m_pSetTabWidget;
     // test
     QLabel *m_pLabel;

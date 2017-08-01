@@ -22,9 +22,10 @@ void CSettingPage::_InitWidget()
     // test
     m_pLabel = new QLabel("goo on");
     m_pSetupWindosWidget = new CSettingSetupWindowWidget;
+    m_pAccountManagementWidget = new CAccountManagementWidget;
     m_pSetTabWidget = new QTabWidget(this);
     m_pSetTabWidget->addTab(m_pSetupWindosWidget, tr("Setup Window"));
-    m_pSetTabWidget->addTab(m_pLabel, tr("Account Management"));
+    m_pSetTabWidget->addTab(m_pAccountManagementWidget, tr("Account Management"));
 }
 
 void CSettingPage::_InitLayout()
