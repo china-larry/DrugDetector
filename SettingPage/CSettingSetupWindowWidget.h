@@ -24,6 +24,9 @@ private:
     QGroupBox *_CreateServerGroup();
     QGroupBox *_CreateLanguageGroup();
     QGroupBox *_CreateAboutGroup();
+    //
+    void _InitWidget();
+    void _InitLayout();
 private:
     // server
     QLabel *m_pPisLabel;
