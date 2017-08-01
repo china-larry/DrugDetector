@@ -20,12 +20,13 @@ void CSettingPage::_LoadQss()
 void CSettingPage::_InitWidget()
 {
     // test
-    m_pLabel = new QLabel("goo on");
     m_pSetupWindosWidget = new CSettingSetupWindowWidget;
     m_pAccountManagementWidget = new CAccountManagementWidget;
+    m_pTestModeWidget = new CTestModeWidget;
     m_pSetTabWidget = new QTabWidget(this);
     m_pSetTabWidget->addTab(m_pSetupWindosWidget, tr("Setup Window"));
     m_pSetTabWidget->addTab(m_pAccountManagementWidget, tr("Account Management"));
+    m_pSetTabWidget->addTab(m_pTestModeWidget, tr("Test Mode"));
 }
 
 void CSettingPage::_InitLayout()

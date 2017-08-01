@@ -42,7 +42,8 @@ SOURCES += \
     CalibrationPage/CStandardModelWidget.cpp \
     CalibrationPage/COrdinaryModelWidget.cpp \
     SettingPage/CSettingSetupWindowWidget.cpp \
-    SettingPage/CAccountManagementWidget.cpp
+    SettingPage/CAccountManagementWidget.cpp \
+    SettingPage/CTestModeWidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -62,7 +63,8 @@ HEADERS += \
     CalibrationPage/CStandardModelWidget.h \
     CalibrationPage/COrdinaryModelWidget.h \
     SettingPage/CSettingSetupWindowWidget.h \
-    SettingPage/CAccountManagementWidget.h
+    SettingPage/CAccountManagementWidget.h \
+    SettingPage/CTestModeWidget.h
 
 FORMS += \
         mainwindow.ui

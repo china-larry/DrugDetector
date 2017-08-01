@@ -10,9 +10,7 @@ CCalibrationPage::CCalibrationPage(QWidget *parent) : QWidget(parent)
 void CCalibrationPage::_InitWidget()
 {
     // 测试代码
-    pLabel = new QLabel("bra1");
-    pLabel2 = new QLabel("bra1");
-    pLabel3 = new QLabel("bra1");
+    pLabel3 = new QLabel("nullptr");
     m_pStandardModelWidget = new CStandardModelWidget;
     m_pOrdinaryModelWidget = new COrdinaryModelWidget;
     m_pBrightnessTabWidget = new QTabWidget(this);

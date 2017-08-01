@@ -23,8 +23,6 @@ private:
 
 private:
     // 测试代码
-    QLabel *pLabel;
-    QLabel *pLabel2;
     QLabel *pLabel3;
     QTabWidget *m_pCalibrationTabWidget;
     QTabWidget *m_pBrightnessTabWidget;

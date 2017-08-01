@@ -31,6 +31,7 @@ public slots:
 public:
     QString GetLineText();
     void SetLineText(QString strLineText);
+    void SetLineEditFixSize(int iWidth, int iHeight);
 protected:
     void _InitLayout();
 protected:
