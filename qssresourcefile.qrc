@@ -4,6 +4,7 @@
         <file>HistoryPage/HistoryPage.qss</file>
         <file>LoginPage/LoginPage.qss</file>
         <file>CalibrationPage/CalibrationPage.qss</file>
+        <file>SettingPage/SettingPage.qss</file>
     </qresource>
     <qresource prefix="/image">
         <file>ico/login/login_close_normal.png</file>

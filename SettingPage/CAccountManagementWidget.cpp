@@ -3,6 +3,7 @@
 #include <QFont>
 #include <QScrollBar>
 #include <QBoxLayout>
+#include "PublicFunction.h"
 CAccountManagementWidget::CAccountManagementWidget(QWidget *parent) : QWidget(parent)
 {
     _InitWidget();
@@ -61,6 +62,9 @@ void CAccountManagementWidget::_InitWidget()
 
 void CAccountManagementWidget::_InitLayout()
 {
+    // qss
+    LoadQss(this, ":/qss/SettingPage/SettingPage.qss");
+    //
     QHBoxLayout *pButtonLayout = new QHBoxLayout;
     pButtonLayout->addStretch(100);
     pButtonLayout->addWidget(m_pAddButton);

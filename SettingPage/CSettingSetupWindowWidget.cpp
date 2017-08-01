@@ -1,5 +1,6 @@
 #include "CSettingSetupWindowWidget.h"
 #include <QBoxLayout>
+#include "PublicFunction.h"
 CSettingSetupWindowWidget::CSettingSetupWindowWidget(QWidget *parent) : QWidget(parent)
 {
     _InitWidget();
@@ -186,6 +187,9 @@ void CSettingSetupWindowWidget::_InitWidget()
 
 void CSettingSetupWindowWidget::_InitLayout()
 {
+    // qss
+    LoadQss(this, ":/qss/SettingPage/SettingPage.qss");
+    //
     QVBoxLayout *pRLayout = new QVBoxLayout;
     pRLayout->addWidget(_CreateLanguageGroup());
     pRLayout->addSpacing(90);

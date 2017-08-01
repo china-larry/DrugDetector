@@ -24,6 +24,15 @@ QGroupBox *CStandardModelWidget::_CreateBrightnessValueGroup()
     m_pNo7LineEditWidget = new CHLabelLineEditWidget(tr("NO.7"), "", this);
     m_pNo8LineEditWidget = new CHLabelLineEditWidget(tr("NO.8"), "", this);
     //
+    m_pNo1LineEditWidget->SetLineEditFixSize(120, 20);
+    m_pNo2LineEditWidget->SetLineEditFixSize(120, 20);
+    m_pNo3LineEditWidget->SetLineEditFixSize(120, 20);
+    m_pNo4LineEditWidget->SetLineEditFixSize(120, 20);
+    m_pNo5LineEditWidget->SetLineEditFixSize(120, 20);
+    m_pNo6LineEditWidget->SetLineEditFixSize(120, 20);
+    m_pNo7LineEditWidget->SetLineEditFixSize(120, 20);
+    m_pNo8LineEditWidget->SetLineEditFixSize(120, 20);
+    //
     m_pConfirmButton = new QPushButton(tr("Confirm"));
     m_pConfirmButton->setFixedSize(100, 30);
     //

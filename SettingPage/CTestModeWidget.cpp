@@ -1,5 +1,6 @@
 #include "CTestModeWidget.h"
 #include <QBoxLayout>
+#include "PublicFunction.h"
 CTestModeWidget::CTestModeWidget(QWidget *parent) : QWidget(parent)
 {
     _InitWiget();
@@ -58,6 +59,9 @@ void CTestModeWidget::_InitWiget()
 
 void CTestModeWidget::_InitLayout()
 {
+    // qss
+    LoadQss(this, ":/qss/SettingPage/SettingPage.qss");
+    //
     QHBoxLayout *pButtonLayout = new QHBoxLayout;
     pButtonLayout->addStretch(100);
     pButtonLayout->addWidget(m_pConfirmButton);
