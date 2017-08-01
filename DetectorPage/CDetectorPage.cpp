@@ -178,7 +178,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     QGroupBox *pGroupBox = new QGroupBox(tr("Donor Details"), this);
     pGroupBox->setMaximumWidth(500);
     // donor name
-    m_pDonorNameLabel = new QLabel(tr("Donor Name"), this);
+    m_pDonorNameLabel = new QLabel(tr("\r\nDonor Name"), this);
     m_pTemperatureNormalCBox = new QCheckBox(tr("Temperature normal#"), this);
     // last first donor
     m_pLastNameWidget = new CLabelLineEditWidget(tr("Last"), "", this);
@@ -191,7 +191,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     m_pTestTimeWidget = new CLabelDateTimeWidget(tr("Test Time"), QDateTime::currentDateTime(), this);
     m_pTestingSiteWidget = new CLabelLineEditWidget(tr("Testing Site"), "", this);
     // reason of test
-    m_pReasonfoTestLabel = new QLabel(tr("Reason for Test"), this);
+    m_pReasonfoTestLabel = new QLabel(tr("Reason for Test:"), this);
     m_pPreEmploymentCBox = new QCheckBox(tr("Pre Employment"), this);
     m_pRandomCBox = new QCheckBox(tr("Random"), this);
     m_pReasonableSuspicionCauseCBox = new QCheckBox(tr("Reasonable suspicion cause"), this);
@@ -202,32 +202,49 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     m_pOtherReasonCommentsLineEdit = new QLineEdit(this);
 
 
-    QGridLayout *pGridLayout = new QGridLayout;
-    // donor name
-    pGridLayout->addWidget(m_pDonorNameLabel, 0, 0, 1, 2);
-    pGridLayout->addWidget(m_pTemperatureNormalCBox , 0, 2, 1, 2);
-    // last fire name
-    pGridLayout->addWidget(m_pLastNameWidget, 1, 0, 1, 1);
-    pGridLayout->addWidget(m_pFirstNameWidget, 1, 1, 1, 1);
-    pGridLayout->addWidget(m_pDonorIDWidget, 1, 2, 1, 2);
-    // date of birth email
-    pGridLayout->addWidget(m_pBirthDateWidget, 2, 0, 1, 2);
-    pGridLayout->addWidget(m_pEmailAddressWidget, 2, 2, 1, 2);
-    // test time
-    pGridLayout->addWidget(m_pTestTimeWidget, 3, 0, 1, 2);
-    pGridLayout->addWidget(m_pTestingSiteWidget, 3, 2, 1, 2);
-    // reson of test
-    pGridLayout->addWidget(m_pReasonfoTestLabel, 4, 0, 1, 4);
-    pGridLayout->addWidget(m_pPreEmploymentCBox, 7, 0, 1, 2);
-    pGridLayout->addWidget(m_pRandomCBox, 7, 2, 1, 2);
-    pGridLayout->addWidget(m_pReasonableSuspicionCauseCBox, 8, 0, 1, 2);
-    pGridLayout->addWidget(m_pPostAccidentCBox, 8, 2, 1, 2);
-    pGridLayout->addWidget(m_pReturnToDutyCBox, 9, 0, 1, 2);
-    pGridLayout->addWidget(m_pFollowUpCBox, 9, 2, 1, 2);
-    pGridLayout->addWidget(m_pOtherReasonForTestCBox, 10, 0, 1, 1);
-    pGridLayout->addWidget(m_pOtherReasonCommentsLineEdit, 10, 1, 1, 3);
+    QHBoxLayout *pDonorLayout = new QHBoxLayout;
+    pDonorLayout->addWidget(m_pDonorNameLabel);
+    pDonorLayout->addWidget(m_pTemperatureNormalCBox);
+    //
+    QHBoxLayout *pLastLayout = new QHBoxLayout;
+    pLastLayout->addWidget(m_pLastNameWidget);
+    pLastLayout->addWidget(m_pFirstNameWidget);
+    pLastLayout->addWidget(m_pDonorIDWidget);
+    //
+    QHBoxLayout *pDateLayout = new QHBoxLayout;
+    pDateLayout->addWidget(m_pBirthDateWidget);
+    pDateLayout->addWidget(m_pEmailAddressWidget);
+    //
+    QHBoxLayout *pTestLayout = new QHBoxLayout;
+    pTestLayout->addWidget(m_pTestTimeWidget);
+    pTestLayout->addWidget(m_pTestingSiteWidget);
+    //
+    QHBoxLayout *pReasonLayout = new QHBoxLayout;
+    pReasonLayout->addWidget(m_pReasonfoTestLabel);
+    pReasonLayout->addStretch(100);
+    //
+    QGridLayout *pPreLayout = new QGridLayout;
+    pPreLayout->addWidget(m_pPreEmploymentCBox, 0, 0, 1, 1);
+    pPreLayout->addWidget(m_pRandomCBox, 0, 1, 1, 1);
+    pPreLayout->addWidget(m_pReasonableSuspicionCauseCBox, 1, 0, 1, 1);
+    pPreLayout->addWidget(m_pPostAccidentCBox, 1, 1, 1, 1);
+    pPreLayout->addWidget(m_pReturnToDutyCBox, 2, 0, 1, 1);
+    pPreLayout->addWidget(m_pFollowUpCBox, 2, 1, 1, 1);
+    //
+    QHBoxLayout *pOtherLayout = new QHBoxLayout;
+    pOtherLayout->addWidget(m_pOtherReasonForTestCBox);
+    pOtherLayout->addWidget(m_pOtherReasonCommentsLineEdit);
+    //
+    QVBoxLayout *pLayout = new QVBoxLayout;
+    pLayout->addLayout(pDonorLayout);
+    pLayout->addLayout(pLastLayout);
+    pLayout->addLayout(pDateLayout);
+    pLayout->addLayout(pTestLayout);
+    pLayout->addLayout(pReasonLayout);
+    pLayout->addLayout(pPreLayout);
+    pLayout->addLayout(pOtherLayout);
 
-    pGroupBox->setLayout(pGridLayout);
+    pGroupBox->setLayout(pLayout);
     return pGroupBox;
 }
 // product details

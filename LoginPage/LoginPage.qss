@@ -20,6 +20,7 @@ QLabel#m_pUserNameLabel
 }
 QLineEdit
 {
-    border-color : rgb(0, 0, 0);
+    border: 1px solid #c9c9c9;
+    border-radius: 5px;
 }
 
