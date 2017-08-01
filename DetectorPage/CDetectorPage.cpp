@@ -493,7 +493,8 @@ void CDetectorPage::_ReplaceHtmlData(QString &strHtml)
     strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
                               strFindWord.count(), m_pTemperatureNormalCBox->isChecked() ? "" : "checked");
     // 测试结果
-
+    strFindWord = "${ResultData}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), _GetResultsDataHtml());
     // 图片Image
     QString strImageByte = GetImagePngBase64("E:/test.png");
     strFindWord = "${test_image_01}";
@@ -502,5 +503,42 @@ void CDetectorPage::_ReplaceHtmlData(QString &strHtml)
     strFindWord = "${test_image_02}";
     strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), strImageByte);
 
+}
+/**
+  * @brief 获取打印格式
+  * @param
+  * @return
+  * 输出格式如下
+  * <tr style="text-align:center">
+  * <th>&nbsp;</th><td style="padding: 2px 0px;">Strip1</td> <td>COC</td> <td>20</td>
+  * <td>Valid</td> <td>Negative</td> <th>&nbsp;</th>
+  * </tr>
+  */
+QString CDetectorPage::_GetResultsDataHtml()
+{
+    QString strResultDataHtml = "";
+    int iTestResultDataListCount = m_pTestResultDataList.count();
+    if(iTestResultDataListCount <= 0)
+    {
+        return strResultDataHtml;
+    }
+    //
+    for(int i = 0; i < iTestResultDataListCount; ++i)
+    {
+        strResultDataHtml += QString(" <tr style=\"text-align:center\"> <th>&nbsp;</th><td style=\"padding: 2px 0px;\">");
+        strResultDataHtml += QString("Strip") +QString::number(i);// strip的数值
+        strResultDataHtml += QString("</td> <td>");
+        strResultDataHtml += QString("Drug") + QString::number(i);// drug的数值
+        strResultDataHtml += QString("</td> <td>");
+        strResultDataHtml += QString::number(m_pTestResultDataList.at(i)->iCutoffValue);// cutoff的数值
+        strResultDataHtml += QString("</td> <td>");
+        strResultDataHtml += m_pTestResultDataList.at(i)->strControlLine;// control Line的数值
+        strResultDataHtml += QString("</td> <td>");
+        strResultDataHtml += m_pTestResultDataList.at(i)->strResult;// result的数值
+        strResultDataHtml += QString("</td> <th>&nbsp;</th> </tr> ");
+    }
+
+    qDebug() << "reslut data " << strResultDataHtml;
+    return strResultDataHtml;
 }
 
