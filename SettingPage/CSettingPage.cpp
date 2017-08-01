@@ -19,12 +19,11 @@ void CSettingPage::_LoadQss()
 
 void CSettingPage::_InitWidget()
 {
-   //m_pSetupWindowWidget = new CSetupWindowWidget;
-
     // test
     m_pLabel = new QLabel("goo on");
+    m_pSetupWindosWidget = new CSettingSetupWindowWidget;
     m_pSetTabWidget = new QTabWidget(this);
-    //m_pSetTabWidget->addTab(pSetupWindowWidget, tr("Setup Window"));
+    m_pSetTabWidget->addTab(m_pSetupWindosWidget, tr("Setup Window"));
     m_pSetTabWidget->addTab(m_pLabel, tr("Account Management"));
 }
 
@@ -32,7 +31,7 @@ void CSettingPage::_InitLayout()
 {
     // layout
     QVBoxLayout *pLayout = new QVBoxLayout;
-    //pLayout->addWidget(m_pCalibrationTabWidget);
+    pLayout->addWidget(m_pSetTabWidget);
     this->setLayout(pLayout);
 }
 

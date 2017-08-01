@@ -16,7 +16,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QTabWidget>
-#include "SettingPage/CSetupWindowWidget.h"
+#include "CSettingSetupWindowWidget.h"
 class CSettingPage : public QWidget
 {
     Q_OBJECT
@@ -33,11 +33,11 @@ private:
     void _InitLayout();
 
 private:
+    CSettingSetupWindowWidget *m_pSetupWindosWidget;
     QTabWidget *m_pSetTabWidget;
     // test
     QLabel *m_pLabel;
-    //
-    CSetupWindowWidget *m_pSetupWindowWidget;
+
 };
 
 #endif // CSETTINGPAGE_H

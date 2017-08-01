@@ -1,5 +1,5 @@
-#ifndef CSETUPWINDOWWIDGET_H
-#define CSETUPWINDOWWIDGET_H
+#ifndef CSETTINGSETUPWINDOWWIDGET_H
+#define CSETTINGSETUPWINDOWWIDGET_H
 
 #include <QWidget>
 #include <QLabel>
@@ -8,11 +8,13 @@
 #include <QRadioButton>
 #include <QLineEdit>
 #include <QGroupBox>
-class CSetupWindowWidget : public QWidget
+#include "CommonDataWidget/CLabelLineEditWidget.h"
+
+class CSettingSetupWindowWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit CSetupWindowWidget(QWidget *parent = nullptr);
+    explicit CSettingSetupWindowWidget(QWidget *parent = nullptr);
 
 signals:
 
@@ -22,10 +24,6 @@ private:
     QGroupBox *_CreateServerGroup();
     QGroupBox *_CreateLanguageGroup();
     QGroupBox *_CreateAboutGroup();
-    //
-    void _InitWidget();
-    void _InitLayout();
-
 private:
     // server
     QLabel *m_pPisLabel;
@@ -35,7 +33,7 @@ private:
     QLineEdit *m_pPisIP02LineEdit;
     QLineEdit *m_pPisIP03LineEdit;
     QLineEdit *m_pPisIP04LineEdit;
-    QLineEdit *m_pPisPortLineEdit;
+    QLineEdit *m_pPisServerPortLineEdit;
     QCheckBox *m_pPisAutoConnectCBox;
     //
     QLabel *m_pPoctLabel;
@@ -45,7 +43,7 @@ private:
     QLineEdit *m_pPoctIP02LineEdit;
     QLineEdit *m_pPoctIP03LineEdit;
     QLineEdit *m_pPoctIP04LineEdit;
-    QLineEdit *m_pPoctPortLineEdit;
+    QLineEdit *m_pPoctServerPortLineEdit;
     QCheckBox *m_pPoctAutoConnectCBox;
     // language
     QRadioButton *m_pEnglishRButton;
@@ -60,4 +58,4 @@ private:
     QPushButton *m_pCancleButton;
 };
 
-#endif // CSETUPWINDOWWIDGET_H
+#endif // CSETTINGSETUPWINDOWWIDGET_H

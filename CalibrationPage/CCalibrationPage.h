@@ -31,7 +31,6 @@ private:
     //
     CStandardModelWidget *m_pStandardModelWidget;
     COrdinaryModelWidget *m_pOrdinaryModelWidget;
-
 };
 
 #endif // CCALIBRATIONPAGE_H

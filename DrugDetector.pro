@@ -41,7 +41,7 @@ SOURCES += \
     CalibrationPage/CCalibrationPage.cpp \
     CalibrationPage/CStandardModelWidget.cpp \
     CalibrationPage/COrdinaryModelWidget.cpp \
-    SettingPage/CSetupWindowWidget.cpp
+    SettingPage/CSettingSetupWindowWidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -60,7 +60,7 @@ HEADERS += \
     CalibrationPage/CCalibrationPage.h \
     CalibrationPage/CStandardModelWidget.h \
     CalibrationPage/COrdinaryModelWidget.h \
-    SettingPage/CSetupWindowWidget.h
+    SettingPage/CSettingSetupWindowWidget.h
 
 FORMS += \
         mainwindow.ui
