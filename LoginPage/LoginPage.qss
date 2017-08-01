@@ -1,9 +1,25 @@
 QPushButton#m_pLoginButton
 {
-      color : rgb(255, 255, 255);
-      background-color: rgb(230, 139, 49);
-      font-family:"黑体";
-      font-size: 20px;
-      font-weight: bold;
-      border-radius: 3px;
+    color : rgb(255, 255, 255);
+    background-color: rgb(232, 142, 52);
+    font-family:"Arial";
+    font-size: 16px;
+    border-radius: 3px;
 }
+QLabel#m_pLoginLabel
+{
+    font-family:"Arial";
+    font-size: 32px;
+    color : rgb(20, 20, 20);
+}
+QLabel#m_pUserNameLabel
+{
+    font-family:"Arial";
+    font-size: 18px;
+    color : rgb(20, 20, 20);
+}
+QLineEdit
+{
+    border-color : rgb(0, 0, 0);
+}
+
