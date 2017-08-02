@@ -48,27 +48,45 @@ QLabel#m_pDonorNameLabel
         font-size: 14px;
         margin-top: 7px;
 }
+
+QLineEdit#LastFirstName
+{
+    min-height: 19px;
+    min-width: 82px;
+    max-width:  180px;
+    color: #333; /* text color */
+    font-family: "Arial";
+    border: 1px solid #a0a0a0;
+    padding: 0 0px;
+}
+QLineEdit#m_pOtherReasonCommentsLineEdit
+{
+    min-height: 21px;
+    min-width: 341px;
+    color: #333; /* text color */
+    font-family: "Arial";
+    border: 1px solid #a0a0a0;
+    padding: 0 0px;
+}
 QLineEdit
 {
     min-height: 21px;
     min-width: 175px;
+    max-width:  180px;
     color: #333; /* text color */
     font-family: "Arial";
-/*    border: 1px solid #ff0000;*/
+    font-size: 14px;
+    border: 1px solid #a0a0a0;
+    padding: 0 0px;
 }
-CLabelLineEditWidget#LastFirstName
-{
-    min-height: 21px;
-    min-width: 82px;
-    color: #333; /* text color */
-    font-family: "Arial";
-}
+
 QDateEdit
 {
     min-height: 22px;
     min-width: 177px;
     color: #333; /* text color */
     font-family: "Arial";
+    font-size: 14px;
 }
 QDateTimeEdit
 {
@@ -76,6 +94,7 @@ QDateTimeEdit
     min-width: 177px;
     color: #333; /* text color */
     font-family: "Arial";
+    font-size: 14px;
 }
 QCheckBox
 {
@@ -94,6 +113,14 @@ QCheckBox::indicator::unchecked {
 /*选中*/
 QCheckBox::indicator::checked {
     image: url(:/image/ico/test/checked.png);
+}
+QComboBox
+{
+    min-height: 21px;
+    min-width: 177px;
+    color: #333; /* text color */
+    font-family: "Arial";
+    font-size: 14px;
 }
 QPushButton
 {

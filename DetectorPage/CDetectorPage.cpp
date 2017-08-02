@@ -181,9 +181,10 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     m_pTemperatureNormalCBox = new QCheckBox(tr("Temperature normal#"), this);
     // last first donor
     m_pLastNameWidget = new CLabelLineEditWidget(tr("Last"), "", this);
-    m_pLastNameWidget->setObjectName("LastFirstName");
+    m_pLastNameWidget->SetLineEditFixSize(50, 20);
+    m_pLastNameWidget->SetLineEditObjectName("LastFirstName");
     m_pFirstNameWidget = new CLabelLineEditWidget(tr("First"), "", this);
-    m_pFirstNameWidget->setObjectName("LastFirstName");
+    m_pFirstNameWidget->SetLineEditObjectName("LastFirstName");
 
     m_pDonorIDWidget = new CLabelLineEditWidget(tr("Donor ID#"), "", this);
     // date of birth email
@@ -203,6 +204,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     m_pFollowUpCBox = new QCheckBox(tr("Follow Up"), this);
     m_pOtherReasonForTestCBox = new QCheckBox(tr("Other: "), this);
     m_pOtherReasonCommentsLineEdit = new QLineEdit(this);
+    m_pOtherReasonCommentsLineEdit->setObjectName("m_pOtherReasonCommentsLineEdit");
 
     // 布局
     QHBoxLayout *pDonorLayout = new QHBoxLayout;
@@ -216,7 +218,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     pLastLayout->addWidget(m_pLastNameWidget);
     pLastLayout->addSpacing(4);
     pLastLayout->addWidget(m_pFirstNameWidget);
-    pLastLayout->addSpacing(56);
+    pLastLayout->addSpacing(54);
     pLastLayout->addWidget(m_pDonorIDWidget);
     //
     QHBoxLayout *pDateLayout = new QHBoxLayout;
@@ -284,15 +286,24 @@ QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
     m_pExpirationDateWidget = new CLabelDateWidget(tr("Expiration Date"), QDate::currentDate(), this);
     m_pProductIDWidget = new CLabelLineEditWidget(tr("Product ID"), "", this);
     //
-    QGridLayout *pGridLayout = new QGridLayout;
-    // Product Details
-    pGridLayout->addWidget(m_pProductDefinitionWidget, 0, 0, 1, 1);
-    pGridLayout->addWidget(m_pProductLotWidget , 0, 1, 1, 1);
-    // expiration date
-    pGridLayout->addWidget(m_pExpirationDateWidget, 1, 0, 1, 1);
-    pGridLayout->addWidget(m_pProductIDWidget, 1, 1, 1, 1);
-
-    pGroupBox->setLayout(pGridLayout);
+    QVBoxLayout *pLayout = new QVBoxLayout;
+    //
+    QHBoxLayout *pProductLayout = new QHBoxLayout;
+    pProductLayout->addSpacing(9);
+    pProductLayout->addWidget(m_pProductDefinitionWidget);
+    pProductLayout->addSpacing(54);
+    pProductLayout->addWidget(m_pProductLotWidget);
+    //
+    QHBoxLayout *pExpirationLayout = new QHBoxLayout;
+    pExpirationLayout->addSpacing(9);
+    pExpirationLayout->addWidget(m_pExpirationDateWidget);
+    pExpirationLayout->addSpacing(56);
+    pExpirationLayout->addWidget(m_pProductIDWidget);
+    //
+    pLayout->addSpacing(5);
+    pLayout->addLayout(pProductLayout);
+    pLayout->addLayout(pExpirationLayout);
+    pGroupBox->setLayout(pLayout);
 
     return pGroupBox;
 }

@@ -32,6 +32,7 @@ public:
     QString GetLineText();
     void SetLineText(QString strLineText);
     void SetLineEditFixSize(int iWidth, int iHeight);
+    void SetLineEditObjectName(QString strObjectName);
 protected:
     void _InitLayout();
 protected:

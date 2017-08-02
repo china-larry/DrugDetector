@@ -35,6 +35,12 @@ void CLabelLineEditWidget::SetLineEditFixSize(int iWidth, int iHeight)
     m_pLineEdit->setFixedSize(iWidth, iHeight);
 }
 
+void CLabelLineEditWidget::SetLineEditObjectName(QString strObjectName)
+{
+    m_pLineEdit->setObjectName(strObjectName);
+}
+
+
 void CLabelLineEditWidget::_InitLayout()
 {
     QVBoxLayout *pLayout = new QVBoxLayout;
