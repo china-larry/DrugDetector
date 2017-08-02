@@ -3,16 +3,14 @@ QGroupBox
     border: 1px solid #0068b7;
     border-radius: 5px;
     margin-top: 16px;
-
+    font-size: 18px;
+    font-family:"Arial";
 }
 QGroupBox::title
 {
     subcontrol-origin: margin;
-    background:url(:/assets/subWindowBackground);
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-    border: 1px solid #0b477b;
-    border-bottom: none;
+    border: 0px solid #ffffff;
+    border-radius: 3px;
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
         stop: 0 #0069b9, stop: 1 #1b8ee6);
     padding: 2 2px;
@@ -22,7 +20,80 @@ QGroupBox::title
     subcontrol-origin:  margin;
     subcontrol-position: top left;
     left: 19px;
-    padding: 0 2px 0 2px;
+}
+QGroupBox::title#ResultGroupBox
+{
+    subcontrol-origin: margin;
+    border: 0px solid #ffffff;
+    border-radius: 3px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+        stop: 0 #0069b9, stop: 1 #1b8ee6);
+    color: white;
+    min-height: 32px;
+    min-width: 139px;
+    subcontrol-origin:  margin;
+    subcontrol-position: top left;
+    left: 19px;
+}
+QLabel
+{
+        color: #333; /* text color */
+        font-family: "Arial";
+        font-size: 14px;
+}
+QLabel#m_pDonorNameLabel
+{
+        color: #333; /* text color */
+        font-family: "Arial";
+        font-size: 14px;
+        margin-top: 7px;
+}
+QLineEdit
+{
+    min-height: 21px;
+    min-width: 175px;
+    color: #333; /* text color */
+    font-family: "Arial";
+/*    border: 1px solid #ff0000;*/
+}
+CLabelLineEditWidget#LastFirstName
+{
+    min-height: 21px;
+    min-width: 82px;
+    color: #333; /* text color */
+    font-family: "Arial";
+}
+QDateEdit
+{
+    min-height: 22px;
+    min-width: 177px;
+    color: #333; /* text color */
+    font-family: "Arial";
+}
+QDateTimeEdit
+{
+    min-height: 22px;
+    min-width: 177px;
+    color: #333; /* text color */
+    font-family: "Arial";
+}
+QCheckBox
+{
+    color: #333; /* text color */
+    font-family: "Arial";
+    font-size: 14px;
+}
+QCheckBox::indicator {
+    width: 21px;
+    height: 21px;
+}
+/*未选中*/
+QCheckBox::indicator::unchecked {
+    image: url(:/image/ico/test/unchecked.png);
+}
+/*选中*/
+QCheckBox::indicator::checked {
+    image: url(:/image/ico/test/checked.png);
 }
 QPushButton
 {

@@ -11,5 +11,8 @@
         <file>ico/login/login_zoomout_normal.png</file>
         <file>ico/login/wondfo_login_bgr.png</file>
         <file>ico/login/login_btn_normal.png</file>
+        <file>ico/test/checked.png</file>
+        <file>ico/test/history_37.png</file>
+        <file>ico/test/unchecked.png</file>
     </qresource>
 </RCC>

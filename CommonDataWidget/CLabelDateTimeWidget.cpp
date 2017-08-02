@@ -15,7 +15,6 @@ CLabelDateTimeWidget::CLabelDateTimeWidget(QString strLabel, QDateTime qDateTime
 {
     m_pLabel = new QLabel(strLabel, this);
     m_pDateTimeEdit = new QDateTimeEdit(qDateTime, this);
-    m_pDateTimeEdit->setFixedWidth(200);
     _InitLayout();
 }
 
@@ -34,6 +33,7 @@ void CLabelDateTimeWidget::SetDateTime(QDateTime qDateTime)
 void CLabelDateTimeWidget::_InitLayout()
 {
     QVBoxLayout *pLayout = new QVBoxLayout;
+    pLayout->setMargin(0);
     pLayout->addWidget(m_pLabel);
     pLayout->addWidget(m_pDateTimeEdit);
     this->setLayout(pLayout);

@@ -62,7 +62,8 @@ private:
     QGroupBox *_CreateDonorDetailsGroup();
     QGroupBox *_CreateProductDetailsGroup();
     QGroupBox *_CreateResultsGroup();
-    QGroupBox *_CreatePushButtonGroup();
+    void _InitPushButtonWidget();
+    void _InitLayout();
     void _InitLibDrug();// 初始化第三方库
     // 打印
     bool _PrintToPage(QString strHtml);

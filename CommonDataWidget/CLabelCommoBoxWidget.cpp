@@ -13,7 +13,6 @@ CLabelCommoBoxWidget::CLabelCommoBoxWidget(QString strLabel, QStringList strComb
 {
     m_pLabel = new QLabel(strLabel, this);
     m_pComboBox = new QComboBox(this);
-    m_pComboBox->setFixedWidth(200);
     if(strComboList.count())
     {
         m_pComboBox->addItems(strComboList);
@@ -31,6 +30,7 @@ QString CLabelCommoBoxWidget::GetCurrentSelectText()
 void CLabelCommoBoxWidget::_InitLayout()
 {
     QVBoxLayout *pLayout = new QVBoxLayout;
+    pLayout->setMargin(0);
     pLayout->addWidget(m_pLabel);
     pLayout->addWidget(m_pComboBox);
     this->setLayout(pLayout);

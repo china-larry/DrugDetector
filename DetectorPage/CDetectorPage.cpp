@@ -19,18 +19,10 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
     _LoadQss();
        // 初始化接收lib库
     _InitLibDrug();
-      // 布局
-    QVBoxLayout *pLeftLayout = new QVBoxLayout;
-    //pLeftLayout->addSpacing(30);
-    pLeftLayout->addWidget(_CreateDonorDetailsGroup());
-    pLeftLayout->addWidget(_CreateProductDetailsGroup());
-    pLeftLayout->addWidget(_CreatePushButtonGroup());
     //
-    QHBoxLayout *pLayout = new QHBoxLayout;
-    pLayout->addLayout(pLeftLayout);
-    pLayout->addWidget(_CreateResultsGroup());
-
-    this->setLayout(pLayout);
+    _InitPushButtonWidget();
+      // 布局
+    _InitLayout();
 }
 
 CDetectorPage::~CDetectorPage()
@@ -181,13 +173,18 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 {
     //const int kiLineEditWidth = 80;
     QGroupBox *pGroupBox = new QGroupBox(tr("Donor Details"), this);
-    pGroupBox->setFixedSize(445, 361);
+    pGroupBox->setFixedSize(445, 377);
     // donor name
-    m_pDonorNameLabel = new QLabel(tr("\r\n\r\nDonor Name"), this);
+    m_pDonorNameLabel = new QLabel(tr("Donor Name"), this);
+    m_pDonorNameLabel->setMargin(0);
+    m_pDonorNameLabel->setObjectName("m_pDonorNameLabel");
     m_pTemperatureNormalCBox = new QCheckBox(tr("Temperature normal#"), this);
     // last first donor
     m_pLastNameWidget = new CLabelLineEditWidget(tr("Last"), "", this);
+    m_pLastNameWidget->setObjectName("LastFirstName");
     m_pFirstNameWidget = new CLabelLineEditWidget(tr("First"), "", this);
+    m_pFirstNameWidget->setObjectName("LastFirstName");
+
     m_pDonorIDWidget = new CLabelLineEditWidget(tr("Donor ID#"), "", this);
     // date of birth email
     m_pBirthDateWidget = new CLabelDateWidget(tr("Date of Birth"), QDate::currentDate(), this);
@@ -197,6 +194,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     m_pTestingSiteWidget = new CLabelLineEditWidget(tr("Testing Site"), "", this);
     // reason of test
     m_pReasonfoTestLabel = new QLabel(tr("Reason for Test:"), this);
+    m_pReasonfoTestLabel->setMargin(0);
     m_pPreEmploymentCBox = new QCheckBox(tr("Pre Employment"), this);
     m_pRandomCBox = new QCheckBox(tr("Random"), this);
     m_pReasonableSuspicionCauseCBox = new QCheckBox(tr("Reasonable suspicion cause"), this);
@@ -208,27 +206,39 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 
     // 布局
     QHBoxLayout *pDonorLayout = new QHBoxLayout;
+    pDonorLayout->addSpacing(4);
     pDonorLayout->addWidget(m_pDonorNameLabel);
+    pDonorLayout->addSpacing(55);
     pDonorLayout->addWidget(m_pTemperatureNormalCBox);
     //
     QHBoxLayout *pLastLayout = new QHBoxLayout;
+    pLastLayout->addSpacing(9);
     pLastLayout->addWidget(m_pLastNameWidget);
+    pLastLayout->addSpacing(4);
     pLastLayout->addWidget(m_pFirstNameWidget);
+    pLastLayout->addSpacing(56);
     pLastLayout->addWidget(m_pDonorIDWidget);
     //
     QHBoxLayout *pDateLayout = new QHBoxLayout;
+    pDateLayout->addSpacing(9);
     pDateLayout->addWidget(m_pBirthDateWidget);
+    pDateLayout->addSpacing(55);
     pDateLayout->addWidget(m_pEmailAddressWidget);
     //
     QHBoxLayout *pTestLayout = new QHBoxLayout;
+    pTestLayout->addSpacing(9);
     pTestLayout->addWidget(m_pTestTimeWidget);
+    pTestLayout->addSpacing(55);
     pTestLayout->addWidget(m_pTestingSiteWidget);
     //
     QHBoxLayout *pReasonLayout = new QHBoxLayout;
+    pReasonLayout->addSpacing(9);
     pReasonLayout->addWidget(m_pReasonfoTestLabel);
     pReasonLayout->addStretch(100);
     //
     QGridLayout *pPreLayout = new QGridLayout;
+    pPreLayout->setContentsMargins(9, 0, 0, 0);
+    pPreLayout->setHorizontalSpacing(56);
     pPreLayout->addWidget(m_pPreEmploymentCBox, 0, 0, 1, 1);
     pPreLayout->addWidget(m_pRandomCBox, 0, 1, 1, 1);
     pPreLayout->addWidget(m_pReasonableSuspicionCauseCBox, 1, 0, 1, 1);
@@ -237,6 +247,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     pPreLayout->addWidget(m_pFollowUpCBox, 2, 1, 1, 1);
     //
     QHBoxLayout *pOtherLayout = new QHBoxLayout;
+    pOtherLayout->addSpacing(9);
     pOtherLayout->addWidget(m_pOtherReasonForTestCBox);
     pOtherLayout->addWidget(m_pOtherReasonCommentsLineEdit);
     //
@@ -245,6 +256,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     pLayout->addLayout(pLastLayout);
     pLayout->addLayout(pDateLayout);
     pLayout->addLayout(pTestLayout);
+    pLayout->addSpacing(30);
     pLayout->addLayout(pReasonLayout);
     pLayout->addLayout(pPreLayout);
     pLayout->addLayout(pOtherLayout);
@@ -261,7 +273,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
 {
     QGroupBox *pGroupBox = new QGroupBox(tr("Product Details"), this);
-    pGroupBox->setFixedSize(445, 136);
+    pGroupBox->setFixedSize(445, 152);
 
     QStringList strProductDifinitionList;
     strProductDifinitionList << tr("T Cup") << tr("T Cupa");
@@ -292,9 +304,10 @@ QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
   */
 QGroupBox *CDetectorPage::_CreateResultsGroup()
 {
-    QGroupBox *pGroupBox = new QGroupBox(tr("Non-Exclusive Checkboxes"), this);
-    pGroupBox->setFixedSize(495, 590);
+    QGroupBox *pGroupBox = new QGroupBox(tr("Results"), this);
+    pGroupBox->setFixedSize(495, 584);
     pGroupBox->setFlat(true);
+    pGroupBox->setObjectName("ResultGroupBox");
 
     m_pCamaraLabel = new QLabel("temp", this);
     m_pCamaraLabel->setFixedSize(438, 283);
@@ -357,23 +370,34 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
   * @param
   * @return
   */
-QGroupBox *CDetectorPage::_CreatePushButtonGroup()
+void CDetectorPage::_InitPushButtonWidget()
 {
-    QGroupBox *pGroupBox = new QGroupBox(this);
-    QPushButton *m_pReadTestDeviceButton = new QPushButton(tr("Read Test Device"));
-    connect(m_pReadTestDeviceButton,SIGNAL(clicked(bool)), this, SLOT(_SlotCheckReadTestDevice()));
-    QPushButton *m_pStopTestButton = new QPushButton(tr("Stop Test"));
-    connect(m_pStopTestButton, SIGNAL(clicked(bool)), this, SLOT(_SlotStopTest()));
 
+    m_pReadTestDeviceButton = new QPushButton(tr("Read Test Device"));
+    connect(m_pReadTestDeviceButton,SIGNAL(clicked(bool)), this, SLOT(_SlotCheckReadTestDevice()));
+    m_pStopTestButton = new QPushButton(tr("Stop Test"));
+    connect(m_pStopTestButton, SIGNAL(clicked(bool)), this, SLOT(_SlotStopTest()));
+}
+
+void CDetectorPage::_InitLayout()
+{
+    QVBoxLayout *pLeftLayout = new QVBoxLayout;
+    pLeftLayout->addWidget(_CreateDonorDetailsGroup());
+    pLeftLayout->addWidget(_CreateProductDetailsGroup());
+    pLeftLayout->addSpacing(1);
     //
     QHBoxLayout *pHLayout = new QHBoxLayout;
     pHLayout->addSpacing(50);
     pHLayout->addWidget(m_pReadTestDeviceButton);
     pHLayout->addSpacing(30);
     pHLayout->addWidget(m_pStopTestButton);
+    pLeftLayout->addLayout(pHLayout);
     //
-    pGroupBox->setLayout(pHLayout);
-    return pGroupBox;
+    QHBoxLayout *pLayout = new QHBoxLayout;
+    pLayout->addLayout(pLeftLayout);
+    pLayout->addWidget(_CreateResultsGroup());
+
+    this->setLayout(pLayout);
 }
 
 void CDetectorPage::_InitLibDrug()

@@ -30,6 +30,7 @@ bool CLabelCheckBoxWidget::GetCheckFlag()
 void CLabelCheckBoxWidget::_InitLayout()
 {
     QVBoxLayout *pLayout = new QVBoxLayout;
+    pLayout->setMargin(0);
     pLayout->addWidget(m_pLabel);
     pLayout->addWidget(m_pCheckBox);
     this->setLayout(pLayout);
