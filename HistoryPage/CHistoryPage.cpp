@@ -327,7 +327,7 @@ void CHistoryPage::ShowCurrentDateTest()
 void CHistoryPage::InsertToDatabase()
 {
 
-    if (_ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
+    if (ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
     {
         QString strInsert = "INSERT INTO drugdata (DonorFirstName, DonorLastName, TestTime, BirthDate, DonorID, TestSite, Operator, "
                             "PreEmployment, Random, ReasonSuspicionCause, PostAccident, ReturnToDuty, FollowUp, Comments, "
@@ -526,7 +526,11 @@ void CHistoryPage::_InitHistoryTableWidget()
      //
      connect(m_pHistoryDataTableWidget, SIGNAL(currentCellChanged(int,int,int,int)), this, SLOT(_SlotHistoryDataSelectChange(int,int,int,int)));
 }
-
+/**
+  * @brief 初始化测试数据显示控件，每行详细数据
+  * @param
+  * @return
+  */
 void CHistoryPage::_InitTestDataWidget()
 {
     m_pTestDataTextEdit = new QTextEdit(this);
@@ -615,30 +619,6 @@ void CHistoryPage::_InitLayout()
     this->setLayout(pLayout);
 }
 
-/**
-  * @brief 添加数据库、设置数据库名称
-  * @param
-  * @return
-  */
-bool CHistoryPage::_ConnectDataBase(const QString &strDBName)
-{
-    QSqlDatabase qSqlDataBase = QSqlDatabase::addDatabase("QSQLITE");
-//    db.setHostName("host");
-//    db.setDatabaseName("dbname");
-//    db.setUserName("username");
-//    db.setPassword("password");
-    qSqlDataBase.setDatabaseName(strDBName);
-    if (!qSqlDataBase.open())
-    {
-        QMessageBox::critical(0, QObject::tr("Database Error"),
-                              qSqlDataBase.lastError().text());
-        return false;
-    }
-    else
-    {
-        return true;
-    }
-}
 
 bool CHistoryPage::_DeleteDatabase(QString strID)
 {
@@ -653,7 +633,7 @@ bool CHistoryPage::_DeleteDatabase(QString strID)
     {
         return false;
     }
-    if (_ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
+    if (ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
     {
         QString strDelete = "DELETE FROM drugdata WHERE id = ";
         strDelete += strID;
@@ -726,8 +706,8 @@ bool CHistoryPage::_InsertOneItem(QTableWidget *pTableWidget, int iRow, int iCol
   */
 void CHistoryPage::_InitDataBase()
 {
-    m_strDatabaseName = "drug.db";
-    if (_ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
+    m_strDatabaseName = "\\drug.db";
+    if (ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
     {
         QString strCreateTable  = "CREATE TABLE drugdata ("
                                   "id INTEGER PRIMARY KEY AUTOINCREMENT,"

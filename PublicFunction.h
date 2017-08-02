@@ -65,5 +65,11 @@ void LoadQss(QWidget *pWidget, QString strQssFilePath);
   * @return
   */
 QString GetImagePngBase64(QString strImagePath);
+/**
+  * @brief 连接数据库
+  * @param
+  * @return
+  */
+bool ConnectDataBase(const QString &strDBName);
 
 #endif // PUBLICFUNCTION_H

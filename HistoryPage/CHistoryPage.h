@@ -72,7 +72,6 @@ private:
     void _InitLayout();
     // 数据库
     void _InitDataBase();// 初始化数据库
-    bool _ConnectDataBase(const QString &dbName);
     bool _DeleteDatabase(QString strID);// 删除指定ID的数据
     // Table操作
     bool _InsertOneLine(QTableWidget *pTableWidget, QStringList strContentList);// 行插入

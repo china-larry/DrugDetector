@@ -20,12 +20,17 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
        // 初始化接收lib库
     _InitLibDrug();
       // 布局
-    QGridLayout *pGridLayout = new QGridLayout;
-    pGridLayout->addWidget(_CreateDonorDetailsGroup(), 0, 0, 1, 1);
-    pGridLayout->addWidget(_CreateProductDetailsGroup(), 1, 0, 1, 1);
-    pGridLayout->addWidget(_CreateResultsGroup(), 0, 1, 2, 1);
-    pGridLayout->addWidget(_CreatePushButtonGroup(), 2, 0, 1, 2);
-    this->setLayout(pGridLayout);
+    QVBoxLayout *pLeftLayout = new QVBoxLayout;
+    //pLeftLayout->addSpacing(30);
+    pLeftLayout->addWidget(_CreateDonorDetailsGroup());
+    pLeftLayout->addWidget(_CreateProductDetailsGroup());
+    pLeftLayout->addWidget(_CreatePushButtonGroup());
+    //
+    QHBoxLayout *pLayout = new QHBoxLayout;
+    pLayout->addLayout(pLeftLayout);
+    pLayout->addWidget(_CreateResultsGroup());
+
+    this->setLayout(pLayout);
 }
 
 CDetectorPage::~CDetectorPage()
@@ -176,9 +181,9 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 {
     //const int kiLineEditWidth = 80;
     QGroupBox *pGroupBox = new QGroupBox(tr("Donor Details"), this);
-    pGroupBox->setMaximumWidth(500);
+    pGroupBox->setFixedSize(445, 361);
     // donor name
-    m_pDonorNameLabel = new QLabel(tr("\r\nDonor Name"), this);
+    m_pDonorNameLabel = new QLabel(tr("\r\n\r\nDonor Name"), this);
     m_pTemperatureNormalCBox = new QCheckBox(tr("Temperature normal#"), this);
     // last first donor
     m_pLastNameWidget = new CLabelLineEditWidget(tr("Last"), "", this);
@@ -201,7 +206,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     m_pOtherReasonForTestCBox = new QCheckBox(tr("Other: "), this);
     m_pOtherReasonCommentsLineEdit = new QLineEdit(this);
 
-
+    // 布局
     QHBoxLayout *pDonorLayout = new QHBoxLayout;
     pDonorLayout->addWidget(m_pDonorNameLabel);
     pDonorLayout->addWidget(m_pTemperatureNormalCBox);
@@ -256,7 +261,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
 {
     QGroupBox *pGroupBox = new QGroupBox(tr("Product Details"), this);
-    pGroupBox->setMaximumSize(500, 200);
+    pGroupBox->setFixedSize(445, 136);
 
     QStringList strProductDifinitionList;
     strProductDifinitionList << tr("T Cup") << tr("T Cupa");
@@ -288,15 +293,16 @@ QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
 QGroupBox *CDetectorPage::_CreateResultsGroup()
 {
     QGroupBox *pGroupBox = new QGroupBox(tr("Non-Exclusive Checkboxes"), this);
-        pGroupBox->setFlat(true);
+    pGroupBox->setFixedSize(495, 590);
+    pGroupBox->setFlat(true);
 
     m_pCamaraLabel = new QLabel("temp", this);
-    m_pCamaraLabel->setFixedSize(400, 300);
+    m_pCamaraLabel->setFixedSize(438, 283);
     m_pCamaraLabel->setStyleSheet("QLabel { background-color : rgb(128, 128, 128); color : blue; }");
     m_pCamaraLabel->setPixmap(QPixmap("E:\\picture\\daiyu.jpg"));
 
     m_pResultsTableWidget = new QTableWidget(this);
-    m_pResultsTableWidget->resize(400, 300);
+    m_pResultsTableWidget->setFixedSize(445, 195);
     m_pResultsTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_pResultsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     // 表单样式
@@ -333,10 +339,14 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
       "QScrollBar::handle:hover{background:gray;}"
       "QScrollBar::sub-line{background:transparent;}"
       "QScrollBar::add-line{background:transparent;}");
+    // 打印按钮
+    QPushButton *m_pPrintPriviewButton = new QPushButton(tr("Print Priview"));
+    connect(m_pPrintPriviewButton, SIGNAL(clicked(bool)), this, SLOT(_SlotPrintToPDF()));
 
     QVBoxLayout *pVLayout = new QVBoxLayout;
     pVLayout->addWidget(m_pCamaraLabel);
     pVLayout->addWidget(m_pResultsTableWidget);
+    pVLayout->addWidget(m_pPrintPriviewButton);
 
     pGroupBox->setLayout(pVLayout);
     return pGroupBox;
@@ -354,17 +364,13 @@ QGroupBox *CDetectorPage::_CreatePushButtonGroup()
     connect(m_pReadTestDeviceButton,SIGNAL(clicked(bool)), this, SLOT(_SlotCheckReadTestDevice()));
     QPushButton *m_pStopTestButton = new QPushButton(tr("Stop Test"));
     connect(m_pStopTestButton, SIGNAL(clicked(bool)), this, SLOT(_SlotStopTest()));
-    QPushButton *m_pPrintPriviewButton = new QPushButton(tr("Print Priview"));
-    connect(m_pPrintPriviewButton, SIGNAL(clicked(bool)), this, SLOT(_SlotPrintToPDF()));
+
     //
     QHBoxLayout *pHLayout = new QHBoxLayout;
     pHLayout->addSpacing(50);
     pHLayout->addWidget(m_pReadTestDeviceButton);
     pHLayout->addSpacing(30);
     pHLayout->addWidget(m_pStopTestButton);
-    pHLayout->addStretch(1);
-    pHLayout->addWidget(m_pPrintPriviewButton);
-    pHLayout->addSpacing(50);
     //
     pGroupBox->setLayout(pHLayout);
     return pGroupBox;

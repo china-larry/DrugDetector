@@ -1,7 +1,9 @@
 QGroupBox
 {
-    border-width:1px;
-    border-color:rgb(255, 0, 0);
+    border: 1px solid #0068b7;
+    border-radius: 5px;
+    margin-top: 16px;
+
 }
 QGroupBox::title
 {
@@ -11,11 +13,16 @@ QGroupBox::title
     border-top-right-radius: 3px;
     border: 1px solid #0b477b;
     border-bottom: none;
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-        stop: 0 #005192, stop: 1 #002f60);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+        stop: 0 #0069b9, stop: 1 #1b8ee6);
     padding: 2 2px;
     color: white;
-    min-height:33px;
+    min-height: 32px;
+    min-width: 179px;
+    subcontrol-origin:  margin;
+    subcontrol-position: top left;
+    left: 19px;
+    padding: 0 2px 0 2px;
 }
 QPushButton
 {

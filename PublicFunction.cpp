@@ -6,6 +6,9 @@
 #include <QFile>
 #include <QTextStream>
 #include <QBuffer>
+#include <QSqlDatabase>
+#include <QMessageBox>
+#include <QSqlError>
 /**
   * @brief 设置控件背景图片
   * @param pWidget：控件名称
@@ -61,4 +64,23 @@ QString GetImagePngBase64(QString strImagePath)
     qImage.save(&qBuffer, "PNG");
     QString strBase64(qByteArray.toBase64());
     return strBase64;
+}
+bool ConnectDataBase(const QString &strDBName)
+{
+    QSqlDatabase qSqlDataBase = QSqlDatabase::addDatabase("QSQLITE");
+//    db.setHostName("host");
+//    db.setDatabaseName("dbname");
+//    db.setUserName("username");
+//    db.setPassword("password");
+    qSqlDataBase.setDatabaseName(strDBName);
+    if (!qSqlDataBase.open())
+    {
+        QMessageBox::critical(0, QObject::tr("Database Error"),
+                              qSqlDataBase.lastError().text());
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
