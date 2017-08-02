@@ -322,7 +322,7 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
 
     m_pCamaraLabel = new QLabel("temp", this);
     m_pCamaraLabel->setFixedSize(438, 283);
-    m_pCamaraLabel->setStyleSheet("QLabel { background-color : rgb(128, 128, 128); color : blue; }");
+    m_pCamaraLabel->setObjectName("m_pCamaraLabel");
     m_pCamaraLabel->setPixmap(QPixmap("E:\\picture\\daiyu.jpg"));
 
     m_pResultsTableWidget = new QTableWidget(this);
@@ -336,41 +336,28 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
     QHeaderView *pVerticalHeader = m_pResultsTableWidget->verticalHeader();
     pVerticalHeader->setHidden(true);
     QHeaderView *pHeaderView = m_pResultsTableWidget->horizontalHeader();
-    pHeaderView->setDefaultSectionSize(120);
+//    pHeaderView->setDefaultSectionSize(120);
+    pHeaderView->resizeSection(0, 120);
+    pHeaderView->resizeSection(1, 190);
+  //  pHeaderView->resizeSection(0, 120);
     pHeaderView->setDisabled(true);
-    // 表头字体
-    QFont qFont = pHeaderView->font();
-    qFont.setBold(true);
-    pHeaderView->setFont(qFont);
     // 充满表格
     pHeaderView->setStretchLastSection(true);
-     // 表头背景色
-    pHeaderView->setStyleSheet("QHeaderView::section{background:skyblue;}");
     // 设置表头内容
     QStringList qstrHeaderList;
     qstrHeaderList << tr("Program") << tr("Result") << tr("Cutoff Value");
     m_pResultsTableWidget->setHorizontalHeaderLabels(qstrHeaderList);
     // 显示格子线
     m_pResultsTableWidget->setShowGrid(true);
-    //设置水平、垂直滚动条样式
-    m_pResultsTableWidget->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
-      "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-      "QScrollBar::handle:hover{background:gray;}"
-      "QScrollBar::sub-line{background:transparent;}"
-      "QScrollBar::add-line{background:transparent;}");
-    m_pResultsTableWidget->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
-      "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-      "QScrollBar::handle:hover{background:gray;}"
-      "QScrollBar::sub-line{background:transparent;}"
-      "QScrollBar::add-line{background:transparent;}");
     // 打印按钮
     QPushButton *m_pPrintPriviewButton = new QPushButton(tr("Print Priview"));
     connect(m_pPrintPriviewButton, SIGNAL(clicked(bool)), this, SLOT(_SlotPrintToPDF()));
 
     QVBoxLayout *pVLayout = new QVBoxLayout;
-    pVLayout->addWidget(m_pCamaraLabel);
-    pVLayout->addWidget(m_pResultsTableWidget);
-    pVLayout->addWidget(m_pPrintPriviewButton);
+    pVLayout->addSpacing(7);
+    pVLayout->addWidget(m_pCamaraLabel, 0, Qt::AlignHCenter);
+    pVLayout->addWidget(m_pResultsTableWidget, 0, Qt::AlignHCenter);
+    pVLayout->addWidget(m_pPrintPriviewButton, 0, Qt::AlignHCenter);
 
     pGroupBox->setLayout(pVLayout);
     return pGroupBox;

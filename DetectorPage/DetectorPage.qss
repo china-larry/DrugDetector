@@ -48,6 +48,11 @@ QLabel#m_pDonorNameLabel
         font-size: 14px;
         margin-top: 7px;
 }
+QLabel#m_pCamaraLabel
+{
+    background-color : rgb(128, 128, 128);
+    border-radius: 5px;
+}
 
 QLineEdit#LastFirstName
 {
@@ -121,6 +126,21 @@ QComboBox
     color: #333; /* text color */
     font-family: "Arial";
     font-size: 14px;
+}
+QTableWidget
+{
+    border: 1px solid #0068b7;
+    border-radius: 5px;
+
+}
+QHeaderView::section
+{
+    background-color: #1484d9;
+    height:37px;
+    color: white;
+    font-size: 14px;
+    font-family:"Arial";
+    font-weight:bold;
 }
 QPushButton
 {
