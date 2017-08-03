@@ -1,7 +1,7 @@
 QGroupBox
 {
     border: 1px solid #0068b7;
-    border-radius: 5px;
+    border-radius: 4px;
     margin-top: 16px;
     font-size: 18px;
     font-family:"Arial";
@@ -130,13 +130,13 @@ QComboBox
 QTableWidget
 {
     border: 1px solid #0068b7;
-    border-radius: 5px;
+    border-radius: 3px;
 
 }
 QHeaderView::section
 {
     background-color: #1484d9;
-    height:37px;
+    height:35px;
     color: white;
     font-size: 14px;
     font-family:"Arial";
@@ -146,7 +146,7 @@ QPushButton
 {
     font-size: 16px;
     font-family:"Arial";
-    /*font-weight:bold;*/
+    font-weight:bold;
     border: 0px solid #0068b7;
     border-radius: 5px;
     color: white;

@@ -68,7 +68,7 @@ struct QRCodeInfo
     QList<InfoProject> listProject; //项目信息
     qint32 iQRCodePosition;         //二维码位置（距离复位需要顺时针转的步数）
 };
-
+Q_DECLARE_METATYPE(QRCodeInfo)
 class QRCodeDetector : public QObject
 {
     Q_OBJECT

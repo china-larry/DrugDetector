@@ -115,18 +115,11 @@ DISTFILES +=
 RESOURCES += \
     qssresourcefile.qrc
 
-INCLUDEPATH  += \
-    E:/Qt_Project/libDrugDetector \
-    E:/build/DrugDetector
-
-LIBS += \
- #   E:/build/DrugDetector/debug/liblibDrugDetector.a
-    E:/build/DrugDetector_2015/debug/libDrugDetector.lib
-
 
 INCLUDEPATH   += $$PWD/AdjustLight/opencv/include
                  $$PWD/AdjustLight/opencv/include/opencv
                  $$PWD/AdjustLight/opencv/include/opencv2
+
 
 #LIBS          += $$PWD/opencv/lib/libopencv_*.a
 #LIBS          += $$PWD/PC_HID

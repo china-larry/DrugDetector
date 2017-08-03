@@ -80,6 +80,17 @@ void QRCodeDetector::SlotGetQRcode()
 //初始化设备位置和灯光
 bool QRCodeDetector::InitDevice()
 {
+    //打开设备
+    if(CHidCmdThread::GetInstance()->GetStopped())
+        CHidCmdThread::GetInstance()->start();
+    else
+    {
+        CHidCmdThread::GetInstance()->SetStopped(true);
+        while(CHidCmdThread::GetInstance()->isRunning())
+            continue;
+        CHidCmdThread::GetInstance()->start();
+    }
+
     //关所有灯
     CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
@@ -218,12 +229,17 @@ bool QRCodeDetector::GetQRCodeImageInfo(const QString strImagePath,QString &strQ
     {
         if((img.width() > 400) && (img.height() > 400) && (img.width() < 800) && (img.height() < 800))
         {
-            strQRCodeInfo = GetZxingDecoder()->decodeImage(img);
-            if(strQRCodeInfo.isEmpty() == false)
+            QZXing *pZXing = GetZxingDecoder();
+            if(pZXing != NULL)
             {
-                qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
-                return true;
+                strQRCodeInfo = pZXing->decodeImage(img);
+                if(strQRCodeInfo.isEmpty() == false)
+                {
+                    qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
+                    return true;
+                }
             }
+
         }
     }
     return false;

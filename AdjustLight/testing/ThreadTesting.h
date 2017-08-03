@@ -1,6 +1,10 @@
 #include <QObject>
-#include "AdjustLight/qrcodedetector.h"
-
+#define PRO_DRUG_DETECTOR
+#ifdef PRO_DRUG_DETECTOR
+    #include "AdjustLight/qrcodedetector.h"
+#else
+    #include "qrcodedetector.h"
+#endif
 #ifndef THREADTESTING_H
 #define THREADTESTING_H
 
@@ -12,18 +16,24 @@ struct intClass
 
 enum ENUM_STATUS_TEST
 {
-    STATUS_NONE    = 0,
-    STATUS_READY,
-    MOVE_THE_MORTOR,
-    TAKE_PHOTO,
+    STATUS_NONE    = 0,     //状态-空
+    STATUS_READY,           //状态-待机
+    MOVE_THE_MORTOR,        //状态-转动电机
+    TAKE_PHOTO,             //状态-拍照
 };
+Q_DECLARE_METATYPE(ENUM_STATUS_TEST);
+
 enum ENUM_ERR
 {
-    ERR_VIDEO_CAPTURE = 0,
-    ERR_STEP_MOTOR,
-    ERR_LIGHT,
-    ERR_DATA,
+    ERR_VIDEO_CAPTURE = 0,  //获取照片失败
+    ERR_STEP_MOTOR,         //转动电机失败
+    ERR_LIGHT,              //开关灯失败
+    ERR_DATA,               //参数错误
+    Err_NoFound,            //未找到二维码
+    Err_Decode              //二维码解码失败
 };
+Q_DECLARE_METATYPE(ENUM_ERR);
+
 struct TestResultData
 {
     int iIndexProject;          //项目序号
@@ -36,6 +46,8 @@ struct TestResultData
     QString strControlLine;   // if control line valid 待确认
     QString strPicturePath;  // 待确认
 };
+
+Q_DECLARE_METATYPE(TestResultData);
 
 class ThreadTesting : public QObject
 {
@@ -56,6 +68,7 @@ private slots:
     void _SlotTakePhoto();
     void _SlotMoveStepperMotor();
     void _SLotReceiveQRCode(QRCodeInfo info);
+    void _SlotReceiveQRCodeErr(EnumTypeErr err);
 private:
     int         m_iIndexProject;
     int         m_iStepsMoveMotor;

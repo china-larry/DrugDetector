@@ -41,6 +41,8 @@ HIDOpertaionUtility::HIDOpertaionUtility()
     mWorkThread.start();
     mDevVersion = "";
     mDevConfigParamsByte = new quint8[sizeof(DevConfigParams)];
+
+
 }
 
 HIDOpertaionUtility::~HIDOpertaionUtility()

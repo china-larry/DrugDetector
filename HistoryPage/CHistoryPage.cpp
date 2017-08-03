@@ -7,6 +7,8 @@
 #include <QScrollBar>
 #include <QDebug>
 #include <QMessageBox>
+#include <QPixmap>
+#include <QPainter>
 #include "PublicFunction.h"
 CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
 {
@@ -437,13 +439,25 @@ void CHistoryPage::_LoadQss()
 QGroupBox *CHistoryPage::_CreateQueryConditionGroup()
 {
     QGroupBox *pGroupBox = new QGroupBox(tr("Query Condition"), this);
-    pGroupBox->setMaximumHeight(200);
+    pGroupBox->setFixedHeight(146);
     //
     m_pDonorIDWidget = new CLabelLineEditWidget(tr("Donor ID"), "", this);
+    m_pDonorIDWidget->SetLabelObjectName("m_pDonorIDWidget");
     m_pProductLotWidget = new CLabelLineEditWidget(tr("Product Lot"), "", this);
     //
     m_pBeginDataWidget = new CLabelDateWidget(tr("Begin Time"), QDate::currentDate(), this);
     m_pEndDataWidget = new CLabelDateWidget(tr("End Time"), QDate::currentDate(), this);
+    // 中划线
+    m_pBeginToEndLabel = new QLabel(this);
+    m_pBeginToEndLabel->setFixedSize(32, 41);
+    //画 pixmap
+    QPixmap qPixmap(32, 41);
+    qPixmap.fill(Qt::transparent);
+    QPainter qPainter(&qPixmap);
+    qPainter.setPen(QColor(159, 159, 159));
+    qPainter.drawLine(0, 35, qPixmap.width(), 35);
+    // 设置label
+    m_pBeginToEndLabel->setPixmap(qPixmap);
     //
     QStringList strProductDefinitionList;
     strProductDefinitionList << tr("T Cup") << tr("T Cupa");
@@ -451,12 +465,16 @@ QGroupBox *CHistoryPage::_CreateQueryConditionGroup()
     //
     // subject
     QHBoxLayout *pDonorLayout = new QHBoxLayout;
+    pDonorLayout->addSpacing(19);
     pDonorLayout->addWidget(m_pDonorIDWidget);
     pDonorLayout->addWidget(m_pProductLotWidget);
     pDonorLayout->addWidget(m_pBeginDataWidget);
+    pDonorLayout->addWidget(m_pBeginToEndLabel);
     pDonorLayout->addWidget(m_pEndDataWidget);
+    pDonorLayout->addSpacing(19);
     //
     QHBoxLayout *pDefinitionLayout = new QHBoxLayout;
+    pDefinitionLayout->addSpacing(19);
     pDefinitionLayout->addWidget(m_pProductDefinitionWidget);
     pDefinitionLayout->addStretch(100);
     //
@@ -477,7 +495,7 @@ void CHistoryPage::_InitHistoryTableWidget()
 {
     // table
     m_pHistoryDataTableWidget = new QTableWidget(this);
-    m_pHistoryDataTableWidget->setMinimumHeight(350);
+    m_pHistoryDataTableWidget->setMinimumSize(550, 350);
     m_pHistoryDataTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_iTableColumnCount = 6;
     // 设置列数量
@@ -516,10 +534,10 @@ void CHistoryPage::_InitHistoryTableWidget()
 void CHistoryPage::_InitTestDataWidget()
 {
     m_pTestDataTextEdit = new QTextEdit(this);
-    m_pTestDataTextEdit->setFixedSize(380, 100);
+    m_pTestDataTextEdit->setFixedSize(407, 100);
 
     m_pCurrentTestDataTableWidget = new QTableWidget(this);
-    m_pCurrentTestDataTableWidget->setFixedWidth(380);
+    m_pCurrentTestDataTableWidget->setFixedWidth(409);
     m_pCurrentTestDataTableWidget->setColumnCount(3);
     m_pCurrentTestDataTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     // 每次选择一行
@@ -564,18 +582,30 @@ void CHistoryPage::_InitLayout()
     QVBoxLayout *pTestDataLayout = new QVBoxLayout;
     pTestDataLayout->addWidget(m_pCurrentTestDataTableWidget);
     pTestDataLayout->addWidget(m_pTestDataTextEdit);
+    // 第一行
+    pDataLayout->addSpacing(18);
     pDataLayout->addWidget(m_pHistoryDataTableWidget);
     pDataLayout->addLayout(pTestDataLayout);
+    pDataLayout->addSpacing(18);
     //
     pLayout->addLayout(pDataLayout);
-    pLayout->addWidget(_CreateQueryConditionGroup());
+    // group
+    QHBoxLayout *pQueryLayout = new QHBoxLayout;
+    pQueryLayout->addSpacing(18);
+    pQueryLayout->addWidget(_CreateQueryConditionGroup());
+    pQueryLayout->addSpacing(18);
+    pLayout->addLayout(pQueryLayout);
     //
     QHBoxLayout *pButtonLayout = new QHBoxLayout;
     pButtonLayout->addStretch(10);
     pButtonLayout->addWidget(m_pQueryButton);
+    pButtonLayout->addSpacing(30);
     pButtonLayout->addWidget(m_pSelectAllButton);
+    pButtonLayout->addSpacing(30);
     pButtonLayout->addWidget(m_pDeselectAllButton);
+    pButtonLayout->addSpacing(30);
     pButtonLayout->addWidget(m_pDeleteButton);
+    pButtonLayout->addSpacing(30);
     pButtonLayout->addWidget(m_pExportButton);
     pButtonLayout->addStretch(10);
     //

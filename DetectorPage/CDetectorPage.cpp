@@ -12,6 +12,7 @@
 #include <QPrinter>
 #include <QPrintDialog>
 #include <QStringList>
+#include <QMessageBox>
 #include "PublicFunction.h"
 CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
 {
@@ -35,13 +36,44 @@ CDetectorPage::~CDetectorPage()
         m_pTestResultDataList.clear();
     }
 }
-// 接收二维码数据
-void CDetectorPage::SlotReceiveQRCodeInfo(QVariant sQRCodeInfo)
+//// 接收二维码数据
+//void CDetectorPage::SlotReceiveQRCodeInfoEx(QVariant sQRCodeInfo)
+//{
+//    m_sQRCodeInfo = sQRCodeInfo.value<QRCodeInfo>();
+//    qDebug() << "code info" << m_sQRCodeInfo.iProductID;
+//    // 更新控件
+//    m_pProductLotWidget->SetLineText(m_sQRCodeInfo.iProductLot);
+//    m_pExpirationDateWidget->SetDate(m_sQRCodeInfo.qExprationDate);
+//    m_pProductIDWidget->SetLineText(QString::number(m_sQRCodeInfo.iProductID));
+//}
+///**
+//  * @brief 接收每次测试结果数据
+//  * @param sTestResultData:TestResultData结构体数据
+//  * @return
+//  */
+//void CDetectorPage::SlotReceiveTestResultDataEx(QVariant sTestResultData)
+//{
+//    TestResultData sTestResultDataTemp = sTestResultData.value<TestResultData>();
+//    TestResultData *pTestRsultData = new TestResultData(sTestResultDataTemp);
+//    m_pTestResultDataList.push_back(pTestRsultData);
+//    qDebug() << "test " << sTestResultDataTemp.strProgramName;
+//    // 插入表格
+//    QStringList strItemList;
+//    strItemList << sTestResultDataTemp.strProgramName << sTestResultDataTemp.strResult
+//                << QString::number(sTestResultDataTemp.iCutoffValue);
+//    InsertOneLine(m_pResultsTableWidget, strItemList);
+//}
+/**
+  * @brief 接收二维码数据
+  * @param
+  * @return
+  */
+void CDetectorPage::SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfo)
 {
-    m_sQRCodeInfo = sQRCodeInfo.value<QRCodeInfo>();
+    m_sQRCodeInfo = sQRCodeInfo;
     qDebug() << "code info" << m_sQRCodeInfo.iProductID;
     // 更新控件
-    m_pProductLotWidget->SetLineText(QString::number(m_sQRCodeInfo.iProductLot));
+    m_pProductLotWidget->SetLineText(m_sQRCodeInfo.iProductLot);
     m_pExpirationDateWidget->SetDate(m_sQRCodeInfo.qExprationDate);
     m_pProductIDWidget->SetLineText(QString::number(m_sQRCodeInfo.iProductID));
 }
@@ -50,9 +82,9 @@ void CDetectorPage::SlotReceiveQRCodeInfo(QVariant sQRCodeInfo)
   * @param sTestResultData:TestResultData结构体数据
   * @return
   */
-void CDetectorPage::SlotReceiveTestResultData(QVariant sTestResultData)
+void CDetectorPage::SlotReceiveTestResultData(TestResultData sTestResultData)
 {
-    TestResultData sTestResultDataTemp = sTestResultData.value<TestResultData>();
+    TestResultData sTestResultDataTemp = sTestResultData;
     TestResultData *pTestRsultData = new TestResultData(sTestResultDataTemp);
     m_pTestResultDataList.push_back(pTestRsultData);
     qDebug() << "test " << sTestResultDataTemp.strProgramName;
@@ -71,10 +103,43 @@ void CDetectorPage::SlotEndTest()
     //
 
 }
+
+void CDetectorPage::SlotReceiveTestError(ENUM_ERR eTestError)
+{
+    switch (eTestError)
+    {
+    case ERR_VIDEO_CAPTURE:
+    {
+        QMessageBox::critical(NULL, "Error", "Get Video Capture Failure", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ERR_STEP_MOTOR:
+    {
+        QMessageBox::critical(NULL, "Error", "Step Motor Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ERR_LIGHT:
+    {
+        QMessageBox::critical(NULL, "Error", "Open Light Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ERR_DATA:
+    {
+        QMessageBox::critical(NULL, "Error", "Get Data Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    default:
+    {
+        QMessageBox::critical(NULL, "Error", "Get UnKnow Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    }
+}
 // 用户点击开始测试按钮，开始测试
 void CDetectorPage::_SlotCheckReadTestDevice()
 {
-  m_pLibDrugDetector->UIBeginTest();
+ // m_pLibDrugDetector->UIBeginTest();
+  m_pThreadTesting->StartTest();
   // 清空数据区
   // DataList清空，控件数据清空
   if(!m_pTestResultDataList.empty())
@@ -396,10 +461,17 @@ void CDetectorPage::_InitLayout()
 
 void CDetectorPage::_InitLibDrug()
 {
-    m_pLibDrugDetector = new LibDrugDetector();
-    connect(m_pLibDrugDetector, SIGNAL(SignalSendQRCodeInfo(QVariant)), this, SLOT(SlotReceiveQRCodeInfo(QVariant)));
-    connect(m_pLibDrugDetector, SIGNAL(SignalSendTestResultData(QVariant)), this, SLOT(SlotReceiveTestResultData(QVariant)));
-    connect(m_pLibDrugDetector, SIGNAL(SignalEndTest()), this, SLOT(SlotEndTest()));
+//    m_pLibDrugDetector = new LibDrugDetector();
+//    connect(m_pLibDrugDetector, SIGNAL(SignalSendQRCodeInfo(QVariant)), this, SLOT(SlotReceiveQRCodeInfo(QVariant)));
+//    connect(m_pLibDrugDetector, SIGNAL(SignalSendTestResultData(QVariant)), this, SLOT(SlotReceiveTestResultData(QVariant)));
+//    connect(m_pLibDrugDetector, SIGNAL(SignalEndTest()), this, SLOT(SlotEndTest()));
+    //
+    m_pThreadTesting = new ThreadTesting();
+    connect(m_pThreadTesting, SIGNAL(SignalSendCodeInfo(QRCodeInfo)), this, SLOT(SlotReceiveQRCodeInfo(QRCodeInfo)));
+    connect(m_pThreadTesting, SIGNAL(SignalTestResult(TestResultData)), this, SLOT(SlotReceiveTestResultData(TestResultData)));
+    connect(m_pThreadTesting, SIGNAL(SignalTestComplete()), this, SLOT(SlotEndTest()));
+    connect(m_pThreadTesting, SIGNAL(SignalErr(ENUM_ERR)), this, SLOT(SlotReceiveTestError(ENUM_ERR)));
+
 }
 /**
   * @brief 打印

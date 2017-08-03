@@ -35,6 +35,11 @@ void CLabelLineEditWidget::SetLineEditFixSize(int iWidth, int iHeight)
     m_pLineEdit->setFixedSize(iWidth, iHeight);
 }
 
+void CLabelLineEditWidget::SetLabelObjectName(QString strObjectName)
+{
+    m_pLabel->setObjectName(strObjectName);
+}
+
 void CLabelLineEditWidget::SetLineEditObjectName(QString strObjectName)
 {
     m_pLineEdit->setObjectName(strObjectName);

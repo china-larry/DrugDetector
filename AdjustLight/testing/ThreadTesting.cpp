@@ -1,9 +1,15 @@
 #include "ThreadTesting.h"
-#include "AdjustLight/CHidCmdThread.h"
-#include "AdjustLight/hidopertaionutility.h"
-#include "AdjustLight/protocolutility.h"
-#include "AdjustLight/opencvutility.h"
-
+#ifdef  PRO_DRUG_DETECTOR
+    #include "AdjustLight/CHidCmdThread.h"
+    #include "AdjustLight/hidopertaionutility.h"
+    #include "AdjustLight/protocolutility.h"
+    #include "AdjustLight/opencvutility.h"
+#else
+    #include "CHidCmdThread.h"
+    #include "hidopertaionutility.h"
+    #include "protocolutility.h"
+    #include "opencvutility.h"
+#endif
 #define MOVE_FORWARD    0
 #define MOVE_REVERSE    1
 #define SPEED_MOTOR     20
@@ -56,7 +62,7 @@ ThreadTesting::ThreadTesting()
     connect(this,SIGNAL(SignalStartMotor()),this,SLOT(_SlotMoveStepperMotor()));
 
     connect(&m_CodeDetoector,SIGNAL(SignalQRCodeInfo(QRCodeInfo)),this, SLOT(_SLotReceiveQRCode(QRCodeInfo)));
-
+    connect(&m_CodeDetoector,SIGNAL(SignalErrInfo(EnumTypeErr)),this,SLOT(_SlotReceiveQRCodeErr(EnumTypeErr)));
 
 
 
@@ -78,7 +84,7 @@ ThreadTesting::~ThreadTesting()
 void ThreadTesting::StartTest()
 {
     qDebug() << __FUNCTION__ << "--------------";
-#if 0
+#if 1
     m_CodeDetoector.TestGetQRCode();
 #else
     QRCodeInfo info;
@@ -281,7 +287,7 @@ void ThreadTesting::_InitStatus()
 {
     if(m_QRCodeInfo.iProgramCount > MAX_PROJECT_COUNT)
     {
-        emit SignalErr(ENUM_ERR::ERR_STEP_MOTOR);
+        emit SignalErr(ENUM_ERR::ERR_DATA);
         return;
     }
     m_eCurrentStatus = ENUM_STATUS_TEST::STATUS_READY;
@@ -1049,4 +1055,18 @@ int ThreadTesting::_ImageAnalysisProcess(int * A1, int Orglinecenterx,int PicW)
     if(linesum<0)   linesum = 1;
 
     return linesum;
+}
+
+void ThreadTesting::_SlotReceiveQRCodeErr(EnumTypeErr err)
+{
+    switch (err) {
+    case ErrNoFound:
+        emit SignalErr(Err_NoFound);
+        break;
+    case ErrDecode:
+        emit SignalErr(Err_Decode);
+        break;
+    default:
+        break;
+    }
 }

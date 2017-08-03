@@ -1,7 +1,7 @@
 QGroupBox
 {
     border: 1px solid #0068b7;
-    border-radius: 5px;
+    border-radius: 4px;
     margin-top: 16px;
     font-size: 18px;
     font-family:"Arial";
@@ -16,10 +16,23 @@ QGroupBox::title
     padding: 2 2px;
     color: white;
     min-height: 32px;
-    min-width: 179px;
+    min-width: 219px;
     subcontrol-origin:  margin;
     subcontrol-position: top left;
     left: 19px;
+}
+QLabel
+{
+        color: #333; /* text color */
+        font-family: "Arial";
+        font-size: 14px;
+}
+QLabel#m_pDonorIDWidget
+{
+        color: #333; /* text color */
+        font-family: "Arial";
+        font-size: 14px;
+        margin-top: 7px;
 }
 QLineEdit
 {
@@ -45,6 +58,7 @@ QComboBox
 {
     min-height: 21px;
     min-width: 177px;
+    max-width: 180px;
     color: #333; /* text color */
     font-family: "Arial";
     font-size: 14px;
@@ -52,20 +66,32 @@ QComboBox
 QTableWidget
 {
     border: 1px solid #0068b7;
-    border-radius: 5px;
+    border-radius: 3px;
+    color:#94f3dc;
+    font: 18px ;
+    selection-background-color: #eeeeee;
+    selection-color: black
 
 }
 QHeaderView::section
 {
     background-color: #1484d9;
-    height:37px;
+    height:35px;
     color: white;
     font-size: 14px;
     font-family:"Arial";
 /*    font-weight:bold;*/
 }
+QTextEdit
+{
+    color: #3c3c3c;
+    font-size: 16px;
+    font-family:"Arial";
+}
 QPushButton
 {
+    min-width: 135px;
+    min-height: 35px;
     font-size: 16px;
     font-family:"Arial";
     font-weight:bold;

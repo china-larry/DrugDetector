@@ -33,7 +33,7 @@
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
 #include "CommonDataWidget/CLabelCheckBoxWidget.h"
 #include "PublicFunction.h"
-#include "LibDrugDetector.h"
+#include "AdjustLight/testing/ThreadTesting.h"
 class CHistoryPage : public QWidget
 {
     Q_OBJECT
@@ -91,6 +91,7 @@ private:
     CLabelLineEditWidget *m_pDonorIDWidget;
     CLabelLineEditWidget *m_pProductLotWidget;
     CLabelDateWidget *m_pBeginDataWidget;
+    QLabel *m_pBeginToEndLabel;// 中划线
     CLabelDateWidget *m_pEndDataWidget;
     CLabelCommoBoxWidget *m_pProductDefinitionWidget;
     // button

@@ -29,7 +29,8 @@
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelDateTimeWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
-#include "LibDrugDetector.h"
+//#include "LibDrugDetector.h"
+#include "AdjustLight/testing/ThreadTesting.h"
 #include "PublicFunction.h"
 
 //
@@ -44,9 +45,12 @@ signals:
     void SignalEndTest();
 public slots:
     // 测试
-    void SlotReceiveQRCodeInfo(QVariant sQRCodeInfo);
-    void SlotReceiveTestResultData(QVariant sTestResultData);
+//    void SlotReceiveQRCodeInfoEx(QVariant sQRCodeInfo);
+//    void SlotReceiveTestResultDataEx(QVariant sTestResultData);
+    void SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfo);
+    void SlotReceiveTestResultData(TestResultData sTestResultData);
     void SlotEndTest();
+    void SlotReceiveTestError(ENUM_ERR eTestError);
 private slots:
     // 控件
     void _SlotCheckReadTestDevice();
@@ -114,7 +118,8 @@ private:
     QLabel *m_pCamaraLabel;// 摄像头
     QTableWidget *m_pResultsTableWidget;// 表格数据
     // 获取数据
-    LibDrugDetector *m_pLibDrugDetector;// 获取下位机测试结果外部库
+   // LibDrugDetector *m_pLibDrugDetector;// 获取下位机测试结果外部库
+    ThreadTesting *m_pThreadTesting;
     QRCodeInfo m_sQRCodeInfo;       // 二维码数据，项目总数
     QList<TestResultData*> m_pTestResultDataList;// 下位机的测试结果列表
     DetectorPageUserData m_sDetectorPageUserData;// 用户列表数据
