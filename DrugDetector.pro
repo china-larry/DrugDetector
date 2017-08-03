@@ -43,7 +43,25 @@ SOURCES += \
     CalibrationPage/COrdinaryModelWidget.cpp \
     SettingPage/CSettingSetupWindowWidget.cpp \
     SettingPage/CAccountManagementWidget.cpp \
-    SettingPage/CTestModeWidget.cpp
+    SettingPage/CTestModeWidget.cpp \
+    AdjustLight/testing/ThreadTesting.cpp \
+    AdjustLight/calculategrayscale.cpp \
+    AdjustLight/CalibrationAlogrithm.cpp \
+    AdjustLight/CHidCmdThread.cpp \
+    AdjustLight/hidopertaionutility.cpp \
+    AdjustLight/linefinder.cpp \
+    AdjustLight/opencvutility.cpp \
+    AdjustLight/ordinarybrightmess.cpp \
+    AdjustLight/ParamsConfiguration.cpp \
+    AdjustLight/protocolutility.cpp \
+    AdjustLight/qrcodedetector.cpp \
+    AdjustLight/StandardBrightness.cpp \
+    AdjustLight/StandardMachineCalibrateDialog.cpp \
+    AdjustLight/upgradefile.cpp \
+    AdjustLight/upgradeprogress.cpp \
+    AdjustLight/crc16/crc16.cpp \
+    AdjustLight/messagebox/messagebox.cpp \
+    AdjustLight/messagebox/messagebox2.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -64,10 +82,33 @@ HEADERS += \
     CalibrationPage/COrdinaryModelWidget.h \
     SettingPage/CSettingSetupWindowWidget.h \
     SettingPage/CAccountManagementWidget.h \
-    SettingPage/CTestModeWidget.h
+    SettingPage/CTestModeWidget.h \
+    AdjustLight/testing/ThreadTesting.h \
+    AdjustLight/calculategrayscale.h \
+    AdjustLight/CalibrationAlogrithm.h \
+    AdjustLight/CHidCmdThread.h \
+    AdjustLight/common.h \
+    AdjustLight/hidopertaionutility.h \
+    AdjustLight/linefinder.h \
+    AdjustLight/opencvutility.h \
+    AdjustLight/ordinarybrightmess.h \
+    AdjustLight/ParamsConfiguration.h \
+    AdjustLight/protocolutility.h \
+    AdjustLight/qrcodedetector.h \
+    AdjustLight/StandardBrightness.h \
+    AdjustLight/StandardMachineCalibrateDialog.h \
+    AdjustLight/upgradefile.h \
+    AdjustLight/upgradeprogress.h \
+    AdjustLight/crc16/crc16.h \
+    AdjustLight/messagebox/messagebox.h \
+    AdjustLight/messagebox/messagebox2.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    AdjustLight/StandardMachineCalibrateDialog.ui \
+    AdjustLight/upgradeprogress.ui \
+    AdjustLight/messagebox/messagebox.ui \
+    AdjustLight/messagebox/messagebox2.ui
 
 DISTFILES +=
 
@@ -81,3 +122,22 @@ INCLUDEPATH  += \
 LIBS += \
  #   E:/build/DrugDetector/debug/liblibDrugDetector.a
     E:/build/DrugDetector_2015/debug/libDrugDetector.lib
+
+
+INCLUDEPATH   += $$PWD/AdjustLight/opencv/include
+                 $$PWD/AdjustLight/opencv/include/opencv
+                 $$PWD/AdjustLight/opencv/include/opencv2
+
+#LIBS          += $$PWD/opencv/lib/libopencv_*.a
+#LIBS          += $$PWD/PC_HID
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/AdjustLight/opencv/x86/vc14/lib/ -lopencv_world320
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/AdjustLight/opencv/x86/vc14/lib/ -lopencv_world320d
+
+INCLUDEPATH += $$PWD/AdjustLight/opencv/x86/vc14
+DEPENDPATH += $$PWD/AdjustLight/opencv/x86/vc14
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/AdjustLight/QZXingDLL/ -lQZXing2
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/AdjustLight/QZXingDLL/ -lQZXing2d
+
+INCLUDEPATH += $$PWD/AdjustLight/QZXingDLL
+DEPENDPATH += $$PWD/AdjustLight/QZXingDLL

@@ -490,19 +490,12 @@ void CHistoryPage::_InitHistoryTableWidget()
     QHeaderView *pHeaderView = m_pHistoryDataTableWidget->horizontalHeader();
     pHeaderView->setDefaultSectionSize(110);
     pHeaderView->setDisabled(true);
-    // 表头字体
-    QFont qFont = pHeaderView->font();
-    qFont.setBold(true);
-    pHeaderView->setFont(qFont);
     // 充满表格
     pHeaderView->setStretchLastSection(true);
-     // 表头背景色
-    pHeaderView->setStyleSheet("QHeaderView::section{background:skyblue;}");
     // 多选
     m_pHistoryDataTableWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     // 每次选择一行
     m_pHistoryDataTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_pHistoryDataTableWidget->setStyleSheet("selection-background-color: #94f3dc;selection-color: black");
     //m_pHistoryDataTableWidget->setStyleSheet("border-radius:5; color:#94f3dc; font: 18px ;selection-background-color: #d9f4fe;selection-color: black");
     // 设置表头内容
     QStringList qstrHeaderList;
@@ -512,17 +505,6 @@ void CHistoryPage::_InitHistoryTableWidget()
     m_pHistoryDataTableWidget->setHorizontalHeaderLabels(qstrHeaderList);
     // 显示格子线
     m_pHistoryDataTableWidget->setShowGrid(true);
-    //设置水平、垂直滚动条样式
-    m_pHistoryDataTableWidget->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
-      "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-      "QScrollBar::handle:hover{background:gray;}"
-      "QScrollBar::sub-line{background:transparent;}"
-      "QScrollBar::add-line{background:transparent;}");
-     m_pHistoryDataTableWidget->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
-      "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-      "QScrollBar::handle:hover{background:gray;}"
-      "QScrollBar::sub-line{background:transparent;}"
-                                                                   "QScrollBar::add-line{background:transparent;}");
      //
      connect(m_pHistoryDataTableWidget, SIGNAL(currentCellChanged(int,int,int,int)), this, SLOT(_SlotHistoryDataSelectChange(int,int,int,int)));
 }
@@ -549,32 +531,14 @@ void CHistoryPage::_InitTestDataWidget()
     QHeaderView *pHeaderView = m_pCurrentTestDataTableWidget->horizontalHeader();
     pHeaderView->setDefaultSectionSize(120);
     pHeaderView->setDisabled(true);
-    // 表头字体
-    QFont qFont = pHeaderView->font();
-    qFont.setBold(true);
-    pHeaderView->setFont(qFont);
     // 充满表格
     pHeaderView->setStretchLastSection(true);
-     // 表头背景色
-    pHeaderView->setStyleSheet("QHeaderView::section{background:skyblue;}");
     // 设置表头内容
     QStringList qstrHeaderList;
     qstrHeaderList << tr("Program") << tr("Result") << tr("Cutoff Value");
     m_pCurrentTestDataTableWidget->setHorizontalHeaderLabels(qstrHeaderList);
     // 显示格子线
     m_pCurrentTestDataTableWidget->setShowGrid(true);
-    //设置水平、垂直滚动条样式
-    m_pCurrentTestDataTableWidget->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
-      "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-      "QScrollBar::handle:hover{background:gray;}"
-      "QScrollBar::sub-line{background:transparent;}"
-      "QScrollBar::add-line{background:transparent;}");
-    m_pCurrentTestDataTableWidget->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
-      "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-      "QScrollBar::handle:hover{background:gray;}"
-      "QScrollBar::sub-line{background:transparent;}"
-      "QScrollBar::add-line{background:transparent;}");
-
 }
 
 void CHistoryPage::_InitButtonWidget()
