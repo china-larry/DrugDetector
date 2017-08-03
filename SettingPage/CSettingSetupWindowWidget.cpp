@@ -14,22 +14,22 @@ CSettingSetupWindowWidget::CSettingSetupWindowWidget(QWidget *parent) : QWidget(
 QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
 {
     QGroupBox *pGroupBox = new QGroupBox(tr("Server Configuration"), this);
-    pGroupBox->setFixedSize(500, 400);
+    pGroupBox->setFixedSize(515, 357);
     // PIS
     m_pPisLabel = new QLabel(tr("PIS"), this);
     m_pPisServerIPLabel = new QLabel(tr("PIS Server IP"), this);
     m_pPisServerPortLabel = new QLabel(tr("PIS Server Port"), this);
     //
     m_pPisIP01LineEdit = new QLineEdit(this);
-    m_pPisIP01LineEdit->setFixedSize(70, 20);
+    m_pPisIP01LineEdit->setMaximumSize(60, 20);
     m_pPisIP02LineEdit = new QLineEdit(this);
-    m_pPisIP02LineEdit->setFixedSize(70, 20);
+    m_pPisIP02LineEdit->setMaximumSize(60, 20);
     m_pPisIP03LineEdit = new QLineEdit(this);
-    m_pPisIP03LineEdit->setFixedSize(70, 20);
+    m_pPisIP03LineEdit->setMaximumSize(60, 20);
     m_pPisIP04LineEdit = new QLineEdit(this);
-    m_pPisIP04LineEdit->setFixedSize(70, 20);
+    m_pPisIP04LineEdit->setMaximumSize(60, 20);
     m_pPisServerPortLineEdit = new QLineEdit(this);
-    m_pPisServerPortLineEdit->setFixedSize(120, 20);
+    m_pPisServerPortLineEdit->setFixedSize(20, 20);
     m_pPisAutoConnectCBox = new QCheckBox(tr("PIS Auto Connected"), this);
     //
     // POCT
@@ -38,13 +38,13 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     m_pPoctServerPortLabel = new QLabel(tr("POCT Server Port"), this);
     //
     m_pPoctIP01LineEdit = new QLineEdit(this);
-    m_pPoctIP01LineEdit->setFixedSize(70, 20);
+    m_pPoctIP01LineEdit->setFixedSize(60, 20);
     m_pPoctIP02LineEdit = new QLineEdit(this);
-    m_pPoctIP02LineEdit->setFixedSize(70, 20);
+    m_pPoctIP02LineEdit->setFixedSize(60, 20);
     m_pPoctIP03LineEdit = new QLineEdit(this);
-    m_pPoctIP03LineEdit->setFixedSize(70, 20);
+    m_pPoctIP03LineEdit->setFixedSize(60, 20);
     m_pPoctIP04LineEdit = new QLineEdit(this);
-    m_pPoctIP04LineEdit->setFixedSize(70, 20);
+    m_pPoctIP04LineEdit->setFixedSize(60, 20);
     m_pPoctServerPortLineEdit = new QLineEdit(this);
     m_pPoctServerPortLineEdit->setFixedSize(120, 20);
     m_pPoctAutoConnectCBox = new QCheckBox(tr("POCT Auto Connected"), this);
@@ -64,12 +64,12 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     // ip edit
     QHBoxLayout *pPisServerEditLayout = new QHBoxLayout;
     pPisServerEditLayout->addWidget(m_pPisIP01LineEdit);
-    pPisServerEditLayout->addSpacing(10);
-    pPisServerEditLayout->addWidget(m_pPisIP02LineEdit);
-    pPisServerEditLayout->addSpacing(10);
-    pPisServerEditLayout->addWidget(m_pPisIP03LineEdit);
-    pPisServerEditLayout->addSpacing(10);
-    pPisServerEditLayout->addWidget(m_pPisIP04LineEdit);
+    //pPisServerEditLayout->addSpacing(10);
+//    pPisServerEditLayout->addWidget(m_pPisIP02LineEdit);
+//    //pPisServerEditLayout->addSpacing(10);
+//    pPisServerEditLayout->addWidget(m_pPisIP03LineEdit);
+//    //pPisServerEditLayout->addSpacing(10);
+//    pPisServerEditLayout->addWidget(m_pPisIP04LineEdit);
 
     QVBoxLayout *pPisServerIPLayout = new QVBoxLayout;
     pPisServerIPLayout->addLayout(pPisServerIPLabelLayout);
@@ -81,8 +81,8 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     //
     QHBoxLayout *pPisServerLayout = new QHBoxLayout;
     pPisServerLayout->addLayout(pPisServerIPLayout);
-    pPisServerLayout->addSpacing(80);// ip 和port之间间距
-    pPisServerLayout->addLayout(pPisServerPortLayout);
+    pPisServerLayout->addSpacing(30);// ip 和port之间间距
+    //pPisServerLayout->addLayout(pPisServerPortLayout);
     pLayout->addLayout(pPisServerLayout);
     // auto conn
      QHBoxLayout *pPisAutoConnectLayout = new QHBoxLayout;

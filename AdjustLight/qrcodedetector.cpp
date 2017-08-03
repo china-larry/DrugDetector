@@ -90,7 +90,6 @@ bool QRCodeDetector::InitDevice()
             continue;
         CHidCmdThread::GetInstance()->start();
     }
-
     //关所有灯
     CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
@@ -232,8 +231,10 @@ bool QRCodeDetector::GetQRCodeImageInfo(const QString strImagePath,QString &strQ
             QZXing *pZXing = GetZxingDecoder();
             if(pZXing != NULL)
             {
-                strQRCodeInfo = pZXing->decodeImage(img);
-                if(strQRCodeInfo.isEmpty() == false)
+                strQRCodeInfo = pZXing->decodeImage(img/*,img.width(),img.height(),false*/);
+                qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
+
+                if(strQRCodeInfo != "")
                 {
                     qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
                     return true;
@@ -481,7 +482,9 @@ bool QRCodeDetector::DecodeQrcode(const QString strdecode,QRCodeInfo *qrCodeInfo
         {
             if(strListQrcodeSection.count() == 3) //V2、V4版本
             {
-                 strAllCount = strListQrcodeSection.at(0);
+                 QString AllCount = strListQrcodeSection.at(0);
+                 int iAllCount = AllCount.toInt();
+                 strAllCount = QString::number(iAllCount,16);
                  strCupType = strListQrcodeSection.at(1);
                  strVersion = strListQrcodeSection.at(2);
             }
