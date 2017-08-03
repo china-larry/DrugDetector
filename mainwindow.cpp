@@ -5,6 +5,7 @@
 #include <QBoxLayout>
 #include <QMouseEvent>
 #include <QDebug>
+#include <QDesktopWidget>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -16,7 +17,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //切换背景1
     //ui->centralWidget->setStyleSheet("#centralWidget{background-image: url(:/img/bg.png);}"); //图片放到资源文件里面
     this->setFixedSize(1000, 680);
-
 
     _InitWidget();
     //InitLayout();

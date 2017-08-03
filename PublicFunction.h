@@ -16,6 +16,7 @@
 #include <QDate>
 #include <QDateTime>
 #include <QWidget>
+#include <QTableWidget>
 // 测试页所有非结果数据(用户)结构体，便于数据传送
 struct DetectorPageUserData
 {
@@ -71,5 +72,18 @@ QString GetImagePngBase64(QString strImagePath);
   * @return
   */
 bool ConnectDataBase(const QString &strDBName);
-
+/**
+  * @brief 向TableWidget添加一行
+  * @param 添加行数据的字符串数组
+  * @return true：添加成功；false：添加失败
+  */
+bool InsertOneLine(QTableWidget *pTableWidget, QStringList strContentList);
+/**
+  * @brief 向TableWidget某行某列添加Item
+  * @param iRow：所在行
+  * @param iColumn：所在列
+  * @param strContent：Item显示的内容
+  * @return true：添加成功；false：添加失败
+  */
+bool InsertOneItem(QTableWidget *pTableWidget, int iRow, int iColumn, QString strContent);
 #endif // PUBLICFUNCTION_H

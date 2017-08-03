@@ -73,9 +73,6 @@ private:
     // 数据库
     void _InitDataBase();// 初始化数据库
     bool _DeleteDatabase(QString strID);// 删除指定ID的数据
-    // Table操作
-    bool _InsertOneLine(QTableWidget *pTableWidget, QStringList strContentList);// 行插入
-    bool _InsertOneItem(QTableWidget *pTableWidget, int iRow, int iColumn, QString strContent);// 单元格插入
 
 private:
     QTableWidget *m_pHistoryDataTableWidget;

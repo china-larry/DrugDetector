@@ -24,3 +24,21 @@ QLineEdit
     border-radius: 5px;
 }
 
+.donor-name {
+	color: #333; /* text color */
+	font-family: "Arial";
+	font-size: 14px;
+}
+QLineEdit#LastFirstName
+{
+    min-height: 20px;
+    max-width: 82px;
+    color: #333; /* text color */
+    font-family: "Arial";
+    border: 2px solid gray;
+        border-radius: 10px;
+        padding: 0 0px;
+        background: yellow;
+        selection-background-color: darkgray;
+
+}

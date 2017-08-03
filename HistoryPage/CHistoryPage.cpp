@@ -82,7 +82,7 @@ void CHistoryPage::_SlotCheckQuery()
         qDebug() << "list " << strLineDataList;
         m_strTableLineDataList.push_back(strLineDataList);
         // 表格
-        _InsertOneLine(m_pHistoryDataTableWidget, strLineDataList);
+        InsertOneLine(m_pHistoryDataTableWidget, strLineDataList);
     }
     // 显示到控件
     m_pHistoryDataTableWidget->update();
@@ -251,7 +251,7 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
     // table
     for(int i = 0; i < m_iCurrentDataProgramNumber; ++i)
     {
-        _InsertOneLine(m_pCurrentTestDataTableWidget, m_qTestDataList.at(i));
+        InsertOneLine(m_pCurrentTestDataTableWidget, m_qTestDataList.at(i));
     }
     m_pTestDataTextEdit->update();
     m_pCurrentTestDataTableWidget->update();
@@ -313,7 +313,7 @@ void CHistoryPage::ShowCurrentDateTest()
         qDebug() << "list " << strLineDataList;
         m_strTableLineDataList.push_back(strLineDataList);
         // 表格
-        _InsertOneLine(m_pHistoryDataTableWidget, strLineDataList);
+        InsertOneLine(m_pHistoryDataTableWidget, strLineDataList);
     }
     // 显示到控件
     m_pHistoryDataTableWidget->update();
@@ -650,55 +650,7 @@ bool CHistoryPage::_DeleteDatabase(QString strID)
     }
     return true;
 }
-/**
-  * @brief 向TableWidget添加一行
-  * @param 添加行数据的字符串数组
-  * @return true：添加成功；false：添加失败
-  */
-bool CHistoryPage::_InsertOneLine(QTableWidget *pTableWidget, QStringList strContentList)
-{
-    int iColumnCount = pTableWidget->columnCount();
-    int iContentListCount = strContentList.count();
-    if(iContentListCount < 1 || iContentListCount != iColumnCount)
-    {// 插入数据不正确，不进行插入操作
-        return false;
-    }
-    // 创建行
-    int iRow = pTableWidget->rowCount();
-    pTableWidget->insertRow(iRow);
-    //
-    for(int i = 0; i != iColumnCount; ++i)
-    {
-        if(!_InsertOneItem(pTableWidget, iRow, i, strContentList.at(i)))
-        {
-            return false;
-        }
-    }
-    return true;
-}
-/**
-  * @brief 向TableWidget某行某列添加Item
-  * @param iRow：所在行
-  * @param iColumn：所在列
-  * @param strContent：Item显示的内容
-  * @return true：添加成功；false：添加失败
-  */
-bool CHistoryPage::_InsertOneItem(QTableWidget *pTableWidget, int iRow, int iColumn, QString strContent)
-{
-    int iColumnCount = pTableWidget->columnCount();
-    int iRowCount = pTableWidget->rowCount();
-    if(iColumn < iColumnCount && iRow < iRowCount)
-    {
-        QTableWidgetItem *pItem = new QTableWidgetItem;
-        pItem->setText(strContent);
-        pTableWidget->setItem(iRow, iColumn, pItem);
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
+
 /**
   * @brief 创建数据库表
   * @param

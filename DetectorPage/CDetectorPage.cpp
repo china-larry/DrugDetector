@@ -11,6 +11,7 @@
 #include <QTextBlock>
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QStringList>
 #include "PublicFunction.h"
 CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
 {
@@ -56,18 +57,10 @@ void CDetectorPage::SlotReceiveTestResultData(QVariant sTestResultData)
     m_pTestResultDataList.push_back(pTestRsultData);
     qDebug() << "test " << sTestResultDataTemp.strProgramName;
     // 插入表格
-    // program
-    QTableWidgetItem *pProgramItem = new QTableWidgetItem();
-    pProgramItem->setText(sTestResultDataTemp.strProgramName);
-    m_pResultsTableWidget->setItem(m_pTestResultDataList.count() - 1, 0, pProgramItem);
-    // result
-    QTableWidgetItem *pResultItem = new QTableWidgetItem();
-    pResultItem->setText(sTestResultDataTemp.strResult);
-    m_pResultsTableWidget->setItem(m_pTestResultDataList.count() - 1, 1, pResultItem);
-    // cutoff value
-    QTableWidgetItem *pCutoffItem = new QTableWidgetItem();
-    pCutoffItem->setText(QString::number(sTestResultDataTemp.iCutoffValue));
-    m_pResultsTableWidget->setItem(m_pTestResultDataList.count() - 1, 2, pCutoffItem);
+    QStringList strItemList;
+    strItemList << sTestResultDataTemp.strProgramName << sTestResultDataTemp.strResult
+                << QString::number(sTestResultDataTemp.iCutoffValue);
+    InsertOneLine(m_pResultsTableWidget, strItemList);
 }
 // 结束测试
 void CDetectorPage::SlotEndTest()
@@ -90,7 +83,7 @@ void CDetectorPage::_SlotCheckReadTestDevice()
       m_pTestResultDataList.clear();
       qDebug() << "clear test result data list";
   }
-  m_pResultsTableWidget->clear();
+  m_pResultsTableWidget->setRowCount(0);
 }
 
 void CDetectorPage::_SlotStopTest()
@@ -350,7 +343,8 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
     // 显示格子线
     m_pResultsTableWidget->setShowGrid(true);
     // 打印按钮
-    QPushButton *m_pPrintPriviewButton = new QPushButton(tr("Print Priview"));
+    m_pPrintPriviewButton = new QPushButton(tr("Print Priview"));
+    m_pPrintPriviewButton->setFixedSize(135, 35);
     connect(m_pPrintPriviewButton, SIGNAL(clicked(bool)), this, SLOT(_SlotPrintToPDF()));
 
     QVBoxLayout *pVLayout = new QVBoxLayout;
@@ -372,8 +366,10 @@ void CDetectorPage::_InitPushButtonWidget()
 {
 
     m_pReadTestDeviceButton = new QPushButton(tr("Read Test Device"));
+    m_pReadTestDeviceButton->setFixedSize(140, 35);
     connect(m_pReadTestDeviceButton,SIGNAL(clicked(bool)), this, SLOT(_SlotCheckReadTestDevice()));
     m_pStopTestButton = new QPushButton(tr("Stop Test"));
+    m_pStopTestButton->setFixedSize(135, 35);
     connect(m_pStopTestButton, SIGNAL(clicked(bool)), this, SLOT(_SlotStopTest()));
 }
 
@@ -385,9 +381,9 @@ void CDetectorPage::_InitLayout()
     pLeftLayout->addSpacing(1);
     //
     QHBoxLayout *pHLayout = new QHBoxLayout;
-    pHLayout->addSpacing(50);
+    pHLayout->addSpacing(20);
     pHLayout->addWidget(m_pReadTestDeviceButton);
-    pHLayout->addSpacing(30);
+    pHLayout->addSpacing(20);
     pHLayout->addWidget(m_pStopTestButton);
     pLeftLayout->addLayout(pHLayout);
     //

@@ -144,6 +144,11 @@ QHeaderView::section
 }
 QPushButton
 {
-      color : rgb(255, 255, 255);
-      background-color: rgb(230, 139, 49);
+    font-size: 16px;
+    font-family:"Arial";
+    /*font-weight:bold;*/
+    border: 0px solid #0068b7;
+    border-radius: 5px;
+    color: white;
+    background-color: rgb(230, 139, 49);
 }
