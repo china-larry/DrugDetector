@@ -76,8 +76,6 @@ void CLoginInWidget::_InitWidget()
     //
     m_pMinButton = new QPushButton(this);
     m_pMinButton->setFixedSize(60, 50);
-//    m_pMinButton->setIcon(QIcon(":/image/ico/login/login_zoomout_pressed.jpg"));
-//    m_pMinButton-> setIconSize(QSize(60, 50));
     SetButtonBackImage(m_pMinButton, ":/image/ico/login/login_zoomout_pressed.jpg");
     connect(m_pMinButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckMinButton()));
 
@@ -91,19 +89,19 @@ void CLoginInWidget::_InitWidget()
     m_pLoginLabel->setObjectName("m_pLoginLabel");
     // user
     m_pUserNameLabel = new QLabel("Username: ", this);
-    m_pUserNameLabel->setObjectName("m_pUserNameLabel");
+    //m_pUserNameLabel->setFixedSize(100, 50);
+   // m_pUserNameLabel->setObjectName("m_pUserNameLabel");
     m_pUserNameLineEdit = new QLineEdit(this);
     m_pUserNameLineEdit->setFixedSize(280, 50);
     // pass
     m_pPasswordLabel = new QLabel("Password:  ", this);
-    m_pPasswordLabel->setObjectName("m_pUserNameLabel");
+   // m_pPasswordLabel->setObjectName("m_pUserNameLabel");
     m_pPasswordLineEdit = new QLineEdit(this);
     m_pPasswordLineEdit->setFixedSize(280, 50);
     //
     m_pLoginButton = new QPushButton("Login", this);
     m_pLoginButton->setFixedSize(160, 35);
     m_pLoginButton->setObjectName("m_pLoginButton");
-    //m_pLoginButton->setStyleSheet("background:#E88E34");
 
     connect(m_pLoginButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckLoginButton()));
 }

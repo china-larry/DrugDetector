@@ -21,55 +21,18 @@ QGroupBox::title
     subcontrol-position: top left;
     left: 19px;
 }
-QGroupBox::title#ResultGroupBox
-{
-    subcontrol-origin: margin;
-    border: 0px solid #ffffff;
-    border-radius: 3px;
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-        stop: 0 #0069b9, stop: 1 #1b8ee6);
-    color: white;
-    min-height: 32px;
-    min-width: 209px;
-    subcontrol-origin:  margin;
-    subcontrol-position: top left;
-    left: 19px;
-}
 QLabel
 {
         color: #333; /* text color */
         font-family: "Arial";
         font-size: 14px;
 }
-QLabel#m_pDonorNameLabel
+QLabel#PISTitle
 {
         color: #333; /* text color */
         font-family: "Arial";
-        font-size: 14px;
-        margin-top: 7px;
-}
-QLabel#m_pCamaraLabel
-{
-    background-color : rgb(128, 128, 128);
-    border-radius: 5px;
-}
-
-
-QDateEdit
-{
-    min-height: 22px;
-    min-width: 177px;
-    color: #333; /* text color */
-    font-family: "Arial";
-    font-size: 14px;
-}
-QDateTimeEdit
-{
-    min-height: 22px;
-    min-width: 177px;
-    color: #333; /* text color */
-    font-family: "Arial";
-    font-size: 14px;
+        font-size: 20px;
+        font-weight:bold;
 }
 QCheckBox
 {
@@ -89,22 +52,13 @@ QCheckBox::indicator::unchecked {
 QCheckBox::indicator::checked {
     image: url(:/image/ico/test/checked.png);
 }
-QComboBox
-{
-    min-height: 21px;
-    min-width: 177px;
-    color: #333; /* text color */
-    font-family: "Arial";
-    font-size: 14px;
-}
-
 QPushButton
 {
-    font-size: 16px;
+    font-size: 18px;
     font-family:"Arial";
     font-weight:bold;
     border: 0px solid #0068b7;
-    border-radius: 5px;
+    border-radius: 3px;
     color: white;
     background-color: rgb(230, 139, 49);
 }

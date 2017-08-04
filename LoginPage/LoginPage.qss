@@ -4,7 +4,9 @@ QPushButton#m_pLoginButton
     background-color: rgb(232, 142, 52);
     font-family:"Arial";
     font-size: 16px;
+    font-weight : bold;
     border-radius: 3px;
+
 }
 QLabel#m_pLoginLabel
 {
@@ -12,7 +14,7 @@ QLabel#m_pLoginLabel
     font-size: 32px;
     color : rgb(20, 20, 20);
 }
-QLabel#m_pUserNameLabel
+QLabel
 {
     font-family:"Arial";
     font-size: 18px;
@@ -22,23 +24,6 @@ QLineEdit
 {
     border: 1px solid #c9c9c9;
     border-radius: 5px;
-}
-
-.donor-name {
-	color: #333; /* text color */
-	font-family: "Arial";
-	font-size: 14px;
-}
-QLineEdit#LastFirstName
-{
-    min-height: 20px;
-    max-width: 82px;
-    color: #333; /* text color */
-    font-family: "Arial";
-    border: 2px solid gray;
-        border-radius: 10px;
-        padding: 0 0px;
-        background: yellow;
-        selection-background-color: darkgray;
-
+    font-family:"Arial";
+    font-size: 18px;
 }

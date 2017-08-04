@@ -14,7 +14,7 @@ CSettingPage::CSettingPage(QWidget *parent) : QWidget(parent)
 
 void CSettingPage::_LoadQss()
 {
-    LoadQss(this, ":/qss/DetectorPage/DetectorPage.qss");
+    LoadQss(this, ":/qss/SettingPage/SettingPage.qss");
 }
 
 void CSettingPage::_InitWidget()

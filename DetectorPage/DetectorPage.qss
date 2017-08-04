@@ -140,7 +140,7 @@ QHeaderView::section
     color: white;
     font-size: 14px;
     font-family:"Arial";
-    font-weight:bold;
+    font-weight:600;
 }
 QPushButton
 {
