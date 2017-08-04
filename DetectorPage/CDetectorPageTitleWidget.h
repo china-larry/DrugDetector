@@ -16,6 +16,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QPushButton>
+#include <QLineEdit>
 class CDetectorPageTitleWidget : public QWidget
 {
     Q_OBJECT
@@ -29,17 +30,18 @@ signals:
     void SignalGoSettingPage();
     void SignalMinWindow();
     void SignalCloseWindow();
-
-
 public slots:
-
-
 private:
     void _InitWidget();
     void _InitLayout();
+    // 不同界面，隐藏按钮
+    void _HideHistoryButton();// 测试页，隐藏查询设置按钮
+    void _HideTestButton();// 隐藏测试按钮
 
 private:
-    QLabel *m_pUserInfoLabel;
+    //
+    QLabel *m_pLogoLabel;
+    QLineEdit *m_pOperatorIDLineEdit;
     //
     QPushButton *m_pSettingPageButton;
     QPushButton *m_pHistoryPageButton;

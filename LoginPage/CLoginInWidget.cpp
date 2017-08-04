@@ -76,15 +76,15 @@ void CLoginInWidget::_InitWidget()
     //
     m_pMinButton = new QPushButton(this);
     m_pMinButton->setFixedSize(60, 50);
-    m_pMinButton->setIcon(QIcon(":/image/ico/login/login_zoomout_pressed.jpg"));
-    m_pMinButton-> setIconSize(QSize(60, 50));
+//    m_pMinButton->setIcon(QIcon(":/image/ico/login/login_zoomout_pressed.jpg"));
+//    m_pMinButton-> setIconSize(QSize(60, 50));
+    SetButtonBackImage(m_pMinButton, ":/image/ico/login/login_zoomout_pressed.jpg");
     connect(m_pMinButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckMinButton()));
 
     //
     m_pCloseButton = new QPushButton(this);
     m_pCloseButton->setFixedSize(60, 50);
-    m_pCloseButton->setIcon(QIcon(":/image/ico/login/login_close_pressed.jpg"));
-    m_pCloseButton-> setIconSize(QSize(60, 50));
+    SetButtonBackImage(m_pCloseButton, ":/image/ico/login/login_close_pressed.jpg");
     connect(m_pCloseButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckCloseButton()));
     //
     m_pLoginLabel = new QLabel("Login", this);

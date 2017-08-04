@@ -1,0 +1,27 @@
+QLabel
+{
+        color: #333; /* text color */
+        font-family: "Arial";
+        font-size: 14px;
+}
+QLineEdit
+{
+    color: #fff; /* text color */
+    font-family: "Arial";
+    font-size: 14px;
+    font-weight : 450;
+    border: 1px solid #005392;
+    padding: 0 0px;
+    background-color: #005392;
+    box-shadow:1px 1px 1px 1px #005392 inset;
+}
+QPushButton
+{
+    font-size: 16px;
+    font-family:"Arial";
+    font-weight:bold;
+    border: 0px solid #0068b7;
+    border-radius: 5px;
+    color: white;
+    background-color: rgb(230, 139, 49);
+}

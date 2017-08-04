@@ -30,6 +30,33 @@ void SetWidgetBackImage(QWidget *pWidget, QString strImagepath)
     pWidget->setAutoFillBackground(true);
 }
 /**
+  * @brief pushbutton背景图片
+  * @param
+  * @return
+  */
+void SetButtonBackImage(QPushButton *pButton, QString strImagePath)
+{
+    if(pButton == NULL || strImagePath.isNull())
+    {
+        return;
+    }
+    pButton->setIcon(QIcon(strImagePath));
+    pButton-> setIconSize(QSize(pButton->width(), pButton->height()));
+}
+/**
+  * @brief 设置Label背景图片
+  * @param
+  * @return
+  */
+void SetLabelBackImage(QLabel *pLabel, QString strImagePath)
+{
+    if(pLabel == NULL || strImagePath.isNull())
+    {
+        return;
+    }
+    pLabel->setPixmap(QPixmap(strImagePath));
+}
+/**
   * @brief 设置Widget的QSS样式
   * @param pWidget：控件名称
   * @param strQssFilePath：QSS样式文件地址
@@ -133,3 +160,5 @@ bool InsertOneItem(QTableWidget *pTableWidget, int iRow, int iColumn, QString st
         return false;
     }
 }
+
+

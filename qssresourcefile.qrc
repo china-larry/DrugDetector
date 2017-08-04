@@ -5,6 +5,7 @@
         <file>LoginPage/LoginPage.qss</file>
         <file>CalibrationPage/CalibrationPage.qss</file>
         <file>SettingPage/SettingPage.qss</file>
+        <file>DetectorPage/MainTitle.qss</file>
     </qresource>
     <qresource prefix="/image">
         <file>ico/login/wondfo_login_bgr.png</file>
@@ -13,5 +14,11 @@
         <file>ico/test/unchecked.png</file>
         <file>ico/login/login_close_pressed.jpg</file>
         <file>ico/login/login_zoomout_pressed.jpg</file>
+        <file>ico/title/close.jpg</file>
+        <file>ico/title/functions.jpg</file>
+        <file>ico/title/logo.jpg</file>
+        <file>ico/title/mini.jpg</file>
+        <file>ico/title/titlebackimage.jpg</file>
+        <file>ico/title/MD.jpg</file>
     </qresource>
 </RCC>

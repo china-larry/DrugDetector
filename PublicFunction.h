@@ -17,6 +17,8 @@
 #include <QDateTime>
 #include <QWidget>
 #include <QTableWidget>
+#include <QPushButton>
+#include <QLabel>
 // 测试页所有非结果数据(用户)结构体，便于数据传送
 struct DetectorPageUserData
 {
@@ -54,6 +56,18 @@ struct DetectorPageUserData
   * @return
   */
 void SetWidgetBackImage(QWidget *pWidget, QString strImagepath);
+/**
+  * @brief pushbutton背景图片
+  * @param
+  * @return
+  */
+void SetButtonBackImage(QPushButton *pButton, QString strImagePath);
+/**
+  * @brief 设置Label背景图片
+  * @param
+  * @return
+  */
+void SetLabelBackImage(QLabel *pLabel, QString strImagePath);
 /**
   * @brief 设置控件QSS样式
   * @param

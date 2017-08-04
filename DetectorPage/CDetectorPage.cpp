@@ -372,7 +372,7 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
     m_pCamaraLabel = new QLabel("temp", this);
     m_pCamaraLabel->setFixedSize(438, 283);
     m_pCamaraLabel->setObjectName("m_pCamaraLabel");
-    m_pCamaraLabel->setPixmap(QPixmap("E:\\picture\\daiyu.jpg"));
+    //m_pCamaraLabel->setPixmap(QPixmap("E:\\picture\\daiyu.jpg"));
 
     m_pResultsTableWidget = new QTableWidget(this);
     m_pResultsTableWidget->setFixedSize(445, 195);
