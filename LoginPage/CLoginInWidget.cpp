@@ -9,7 +9,7 @@
 CLoginInWidget::CLoginInWidget(QWidget *parent) : QWidget(parent)
 {
     //
-    this->setFixedSize(1000, 680);
+    this->setFixedSize(1030, 680);
     this->setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
     // 设置b背景图片
     SetWidgetBackImage(this, ":/image/ico/login/wondfo_login_bgr.png");
@@ -76,12 +76,15 @@ void CLoginInWidget::_InitWidget()
     //
     m_pMinButton = new QPushButton(this);
     m_pMinButton->setFixedSize(60, 50);
-    SetWidgetBackImage(m_pMinButton, ":/image/ico/login/login_zoomout_normal.png");
+    m_pMinButton->setIcon(QIcon(":/image/ico/login/login_zoomout_pressed.jpg"));
+    m_pMinButton-> setIconSize(QSize(60, 50));
     connect(m_pMinButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckMinButton()));
+
     //
     m_pCloseButton = new QPushButton(this);
     m_pCloseButton->setFixedSize(60, 50);
-    SetWidgetBackImage(m_pCloseButton, ":/image/ico/login/login_close_normal.png");
+    m_pCloseButton->setIcon(QIcon(":/image/ico/login/login_close_pressed.jpg"));
+    m_pCloseButton-> setIconSize(QSize(60, 50));
     connect(m_pCloseButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckCloseButton()));
     //
     m_pLoginLabel = new QLabel("Login", this);
@@ -112,6 +115,7 @@ void CLoginInWidget::_InitWidget()
 void CLoginInWidget::_InitLayout()
 {
     QHBoxLayout *pTitleLayout = new QHBoxLayout;
+    pTitleLayout->setMargin(0);
     pTitleLayout->addStretch(100);
     pTitleLayout->addWidget(m_pMinButton);
     pTitleLayout->addWidget(m_pCloseButton);
@@ -142,6 +146,7 @@ void CLoginInWidget::_InitLayout()
     //
 
     QVBoxLayout *pVLayout = new QVBoxLayout;
+    pVLayout->setMargin(0);
     pVLayout->addLayout(pTitleLayout);
     pVLayout->addStretch(100);
     pVLayout->addLayout(pFirstLineHLayout);

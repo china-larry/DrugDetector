@@ -45,12 +45,11 @@ signals:
     void SignalEndTest();
 public slots:
     // 测试
-//    void SlotReceiveQRCodeInfoEx(QVariant sQRCodeInfo);
-//    void SlotReceiveTestResultDataEx(QVariant sTestResultData);
-    void SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfo);
-    void SlotReceiveTestResultData(TestResultData sTestResultData);
-    void SlotEndTest();
-    void SlotReceiveTestError(ENUM_ERR eTestError);
+    void SlotReceiveQRCodeImage(QString strImagePath);// 接受二维码图片数据
+    void SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfo);// 接受二维码信息
+    void SlotReceiveTestResultData(TestResultData sTestResultData);// 接受每条测试结果数据
+    void SlotEndTest();// 测试结束
+    void SlotReceiveTestError(ENUM_ERR eTestError);// 错误信号
 private slots:
     // 控件
     void _SlotCheckReadTestDevice();
@@ -69,6 +68,8 @@ private:
     void _InitPushButtonWidget();
     void _InitLayout();
     void _InitLibDrug();// 初始化第三方库
+    // 更新摄像头图片
+    void _SetCamaraImage(QString strImagePath);
     // 打印
     bool _PrintToPage(QString strHtml);
     // 打印

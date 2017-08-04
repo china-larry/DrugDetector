@@ -36,33 +36,19 @@ CDetectorPage::~CDetectorPage()
         m_pTestResultDataList.clear();
     }
 }
-//// 接收二维码数据
-//void CDetectorPage::SlotReceiveQRCodeInfoEx(QVariant sQRCodeInfo)
-//{
-//    m_sQRCodeInfo = sQRCodeInfo.value<QRCodeInfo>();
-//    qDebug() << "code info" << m_sQRCodeInfo.iProductID;
-//    // 更新控件
-//    m_pProductLotWidget->SetLineText(m_sQRCodeInfo.iProductLot);
-//    m_pExpirationDateWidget->SetDate(m_sQRCodeInfo.qExprationDate);
-//    m_pProductIDWidget->SetLineText(QString::number(m_sQRCodeInfo.iProductID));
-//}
-///**
-//  * @brief 接收每次测试结果数据
-//  * @param sTestResultData:TestResultData结构体数据
-//  * @return
-//  */
-//void CDetectorPage::SlotReceiveTestResultDataEx(QVariant sTestResultData)
-//{
-//    TestResultData sTestResultDataTemp = sTestResultData.value<TestResultData>();
-//    TestResultData *pTestRsultData = new TestResultData(sTestResultDataTemp);
-//    m_pTestResultDataList.push_back(pTestRsultData);
-//    qDebug() << "test " << sTestResultDataTemp.strProgramName;
-//    // 插入表格
-//    QStringList strItemList;
-//    strItemList << sTestResultDataTemp.strProgramName << sTestResultDataTemp.strResult
-//                << QString::number(sTestResultDataTemp.iCutoffValue);
-//    InsertOneLine(m_pResultsTableWidget, strItemList);
-//}
+/**
+  * @brief 二维码图片显示
+  * @param
+  * @return
+  */
+void CDetectorPage::SlotReceiveQRCodeImage(QString strImagePath)
+{
+    if(strImagePath != "")
+    {
+        _SetCamaraImage(strImagePath);
+    }
+}
+
 /**
   * @brief 接收二维码数据
   * @param
@@ -88,6 +74,11 @@ void CDetectorPage::SlotReceiveTestResultData(TestResultData sTestResultData)
     TestResultData *pTestRsultData = new TestResultData(sTestResultDataTemp);
     m_pTestResultDataList.push_back(pTestRsultData);
     qDebug() << "test " << sTestResultDataTemp.strProgramName;
+    // 更新Label图片
+    if(sTestResultData.strPicturePath != "")
+    {
+        _SetCamaraImage(sTestResultData.strPicturePath);
+    }
     // 插入表格
     QStringList strItemList;
     strItemList << sTestResultDataTemp.strProgramName << sTestResultDataTemp.strResult
@@ -472,6 +463,18 @@ void CDetectorPage::_InitLibDrug()
     connect(m_pThreadTesting, SIGNAL(SignalTestComplete()), this, SLOT(SlotEndTest()));
     connect(m_pThreadTesting, SIGNAL(SignalErr(ENUM_ERR)), this, SLOT(SlotReceiveTestError(ENUM_ERR)));
 
+}
+
+void CDetectorPage::_SetCamaraImage(QString strImagePath)
+{
+    if(strImagePath != "")
+    {
+        QPixmap qPixmap(strImagePath);
+        if(!qPixmap.isNull())
+        {
+            m_pCamaraLabel->setPixmap(qPixmap);
+        }
+    }
 }
 /**
   * @brief 打印

@@ -231,8 +231,16 @@ bool QRCodeDetector::GetQRCodeImageInfo(const QString strImagePath,QString &strQ
             QZXing *pZXing = GetZxingDecoder();
             if(pZXing != NULL)
             {
-                strQRCodeInfo = pZXing->decodeImage(img/*,img.width(),img.height(),false*/);
-                qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
+                try
+                {
+                    strQRCodeInfo = pZXing->decodeImage(img/*,img.width(),img.height(),false*/);
+                    qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
+                }
+                catch(...)
+                {
+                    qDebug() << "not good";
+                }
+
 
                 if(strQRCodeInfo != "")
                 {

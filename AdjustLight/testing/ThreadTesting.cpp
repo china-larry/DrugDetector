@@ -116,14 +116,14 @@ void ThreadTesting::_SLotReceiveQRCode(QRCodeInfo info)
     }
     emit SignalSendCodeInfo(info);
 
-//    for(int i=1;i<5;i++)
-//    {
-//        CHidCmdThread::GetInstance()->AddOpenLedCmd(i, 3000);
-//    }
+    for(int i=1;i<5;i++)
+    {
+        CHidCmdThread::GetInstance()->AddOpenLedCmd(i, 3000);
+    }
 
-//    m_QRCodeInfo = info;
-//    _InitStatus();
-//    m_iIndexProject = 0;
+    m_QRCodeInfo = info;
+    _InitStatus();
+    m_iIndexProject = 0;
 }
 
 /**
@@ -201,7 +201,7 @@ void ThreadTesting::_SlotMotorComplete(quint16 mCmdType,bool result)
 
 void ThreadTesting::_SlotStatusHandler(bool result,ENUM_STATUS_TEST status)
 {
-//    qDebug()<< __FUNCTION__ << result << status;
+    qDebug()<< __FUNCTION__ << result << status;
 
     if(result)
     {

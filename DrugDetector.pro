@@ -21,7 +21,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
+include(./QZXing2.4/QZXing.pri)
 
 SOURCES += \
         main.cpp \
@@ -124,13 +124,17 @@ INCLUDEPATH   += $$PWD/AdjustLight/opencv/include
 #LIBS          += $$PWD/opencv/lib/libopencv_*.a
 #LIBS          += $$PWD/PC_HID
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/AdjustLight/opencv/x86/vc14/lib/ -lopencv_world320
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/AdjustLight/opencv/x86/vc14/lib/ -lopencv_world320d
+
 
 INCLUDEPATH += $$PWD/AdjustLight/opencv/x86/vc14
 DEPENDPATH += $$PWD/AdjustLight/opencv/x86/vc14
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/AdjustLight/QZXingDLL/ -lQZXing2
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/AdjustLight/QZXingDLL/ -lQZXing2d
+
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/AdjustLight/opencv/x86/vc14/lib/ -lopencv_world320
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/AdjustLight/opencv/x86/vc14/lib/ -lopencv_world320d
+#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/AdjustLight/QZXingDLL/ -lQZXing2
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/AdjustLight/QZXingDLL/ -lQZXing2d
+LIBS += -L$$PWD/AdjustLight/QZXingDLL/ -lQZXing2
 
 INCLUDEPATH += $$PWD/AdjustLight/QZXingDLL
 DEPENDPATH += $$PWD/AdjustLight/QZXingDLL
