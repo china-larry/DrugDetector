@@ -17,6 +17,7 @@
 #include <QPoint>
 #include <QStackedWidget>
 #include "DetectorPage/CDetectorPageTitleWidget.h"
+#include "HistoryPage/CHistoryPageTitleWidget.h"
 #include "DetectorPage/CDetectorPageStatusBar.h"
 #include "DetectorPage/CDetectorPage.h"
 #include "HistoryPage/CHistoryPage.h"
@@ -47,17 +48,23 @@ public slots:
     void SlotGoSettingPage();
     void SlotMinWindow();
     void SlotCloseWindow();
+    void SlotCheckHistoryItem();
     //
     void SlotDetectorPageEndTest();
 
 private:
     void _InitWidget();
     void _InitLayout();
+    void _GoHistoryPageLayout();
+    void _GoTestPageLayout();
 private:
     // UI
     Ui::MainWindow *ui;
+    QVBoxLayout *m_pMainLayout;
+    QWidget *m_pCentralWidget;// 布局
     // Title
     CDetectorPageTitleWidget *m_pDetectorPageTitleWidget;
+    CHistoryPageTitleWidget *m_pHistoryPageTitleWidget;
     // 多标签 切换控件
     QStackedWidget *m_pStackedWidget;
     // 检测页面

@@ -15,10 +15,14 @@
         <file>ico/login/login_close_pressed.jpg</file>
         <file>ico/login/login_zoomout_pressed.jpg</file>
         <file>ico/title/close.jpg</file>
-        <file>ico/title/functions.jpg</file>
         <file>ico/title/logo.jpg</file>
         <file>ico/title/mini.jpg</file>
-        <file>ico/title/titlebackimage.jpg</file>
-        <file>ico/title/MD.jpg</file>
+        <file>ico/title/titlebackimage.png</file>
+        <file>ico/title/Return.jpg</file>
+        <file>ico/title/Calibration.png</file>
+        <file>ico/title/Histroy.png</file>
+        <file>ico/title/Setting.png</file>
+        <file>ico/title/Functions.png</file>
+        <file>ico/title/MD.png</file>
     </qresource>
 </RCC>

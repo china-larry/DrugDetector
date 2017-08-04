@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setFixedSize(1030, 680);
 
     _InitWidget();
-    //InitLayout();
+    _InitLayout();
     //
     m_kiTitleHeight = 50;
     m_kiStatusBarHeight = 30;
@@ -36,6 +36,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     m_iWidgetRect = this->rect();
     // 标题栏
     m_pDetectorPageTitleWidget->setGeometry(0, 0, m_iWidgetRect.width(), m_kiTitleHeight);
+    m_pHistoryPageTitleWidget->setGeometry(0, 0, m_iWidgetRect.width(), m_kiTitleHeight);
     // 多标签
     m_pStackedWidget->setGeometry(0, m_kiTitleHeight, m_iWidgetRect.width(), m_iWidgetRect.height() - m_kiTitleHeight - m_kiStatusBarHeight);
     // 状态栏
@@ -46,6 +47,13 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if( event->button() == Qt::LeftButton &&
                 m_pDetectorPageTitleWidget->rect().contains(event->globalPos() - this->frameGeometry().topLeft()))
+    {
+        m_PressPoint = event->globalPos();
+        m_bLeftButtonCheck = true;
+    }
+    //
+    if( event->button() == Qt::LeftButton &&
+                m_pHistoryPageTitleWidget->rect().contains(event->globalPos() - this->frameGeometry().topLeft()))
     {
         m_PressPoint = event->globalPos();
         m_bLeftButtonCheck = true;
@@ -90,14 +98,22 @@ void MainWindow::SlotGoHistoryPage()
     qDebug() << "go history page";
     m_pStackedWidget->setCurrentIndex(2);
     m_pHistoryPage->ShowCurrentDateTest();// 显示当天测试结果数据
+    //
     m_pDetectorPageStatusBar->hide();
+    m_pDetectorPageTitleWidget->hide();
+    m_pHistoryPageTitleWidget->show();
+    _GoHistoryPageLayout();
 }
 // 前往测试页
 void MainWindow::SlotGoDetectorPage()
 {
     qDebug() << "go detector page";
     m_pStackedWidget->setCurrentIndex(0);
+    //
     m_pDetectorPageStatusBar->show();
+    m_pDetectorPageTitleWidget->show();
+    m_pHistoryPageTitleWidget->hide();
+    _GoTestPageLayout();
 }
 
 void MainWindow::SlotGoCalibrationPage()
@@ -115,6 +131,12 @@ void MainWindow::SlotMinWindow()
 void MainWindow::SlotCloseWindow()
 {
     this->close();
+}
+
+void MainWindow::SlotCheckHistoryItem()
+{
+    qDebug() << "check history page";
+    m_pStackedWidget->setCurrentIndex(2);
 }
 // 测试页测试结束
 void MainWindow::SlotDetectorPageEndTest()
@@ -137,14 +159,22 @@ void MainWindow::_InitWidget()
 {
     // 标题栏
     m_pDetectorPageTitleWidget = new CDetectorPageTitleWidget(this);
+    m_pHistoryPageTitleWidget = new CHistoryPageTitleWidget(this);
+    m_pHistoryPageTitleWidget->hide();
 //    QRect rect = this->rect();
 //    m_pDetectorPageTitleWidget->setGeometry(0, 0, rect.width(), m_ciTitleHeight);
-    connect(m_pDetectorPageTitleWidget, SIGNAL(SignalGoDetectorPage()), this, SLOT(SlotGoDetectorPage()));
-    connect(m_pDetectorPageTitleWidget, SIGNAL(SignalGoCalibrationPage()), this, SLOT(SlotGoCalibrationPage()));
     connect(m_pDetectorPageTitleWidget, SIGNAL(SignalGoHistoryPage()), this, SLOT(SlotGoHistoryPage()));
-    connect(m_pDetectorPageTitleWidget, SIGNAL(SignalGoSettingPage()), this, SLOT(SlotGoSettingPage()));
     connect(m_pDetectorPageTitleWidget, SIGNAL(SignalMinWindow()), this, SLOT(SlotMinWindow()));
     connect(m_pDetectorPageTitleWidget, SIGNAL(SignalCloseWindow()), this, SLOT(SlotCloseWindow()));
+    // history
+    connect(m_pHistoryPageTitleWidget, SIGNAL(SignalGoDetectorPage()), this, SLOT(SlotGoDetectorPage()));
+    connect(m_pHistoryPageTitleWidget, SIGNAL(SignalCheckHistoryItem()), this, SLOT(SlotCheckHistoryItem()));
+    connect(m_pHistoryPageTitleWidget, SIGNAL(SignalGoCalibrationPage()), this, SLOT(SlotGoCalibrationPage()));
+    connect(m_pHistoryPageTitleWidget, SIGNAL(SignalGoSettingPage()), this, SLOT(SlotGoSettingPage()));
+    connect(m_pHistoryPageTitleWidget, SIGNAL(SignalMinWindow()), this, SLOT(SlotMinWindow()));
+    connect(m_pHistoryPageTitleWidget, SIGNAL(SignalReturnWindow()), this, SLOT(SlotGoHistoryPage()));
+
+
     // 多标签
     m_pStackedWidget = new QStackedWidget(this);
     // 测试页
@@ -170,12 +200,37 @@ void MainWindow::_InitWidget()
 void MainWindow::_InitLayout()
 {
     // 主窗口
-     QVBoxLayout *pMainLayout = new QVBoxLayout;
-     pMainLayout->addWidget(m_pDetectorPageTitleWidget);
-     //pMainLayout->addStretch(200);
-     pMainLayout->addWidget(m_pStackedWidget);
-        // 布局
-     QWidget *pWidget = new QWidget();
-     setCentralWidget(pWidget);
-     pWidget->setLayout(pMainLayout);
+    m_pMainLayout = new QVBoxLayout;
+    m_pMainLayout->setMargin(0);
+    m_pMainLayout->addWidget(m_pDetectorPageTitleWidget);
+    //pMainLayout->addStretch(200);
+    m_pMainLayout->addWidget(m_pStackedWidget);
+    // 布局
+    m_pCentralWidget = new QWidget();
+    setCentralWidget(m_pCentralWidget);
+    m_pCentralWidget->setLayout(m_pMainLayout);
+}
+
+void MainWindow::_GoHistoryPageLayout()
+{
+    m_pMainLayout->removeWidget(m_pDetectorPageTitleWidget);
+    m_pMainLayout->removeWidget(m_pStackedWidget);
+    //
+    m_pMainLayout->addWidget(m_pHistoryPageTitleWidget);
+    m_pMainLayout->addWidget(m_pStackedWidget);
+       // 布局
+//    QWidget *pWidget = new QWidget();
+//    setCentralWidget(pWidget);
+    m_pCentralWidget->setLayout(m_pMainLayout);
+}
+
+void MainWindow::_GoTestPageLayout()
+{
+    m_pMainLayout->removeWidget(m_pHistoryPageTitleWidget);
+    m_pMainLayout->removeWidget(m_pStackedWidget);
+    //
+    m_pMainLayout->addWidget(m_pDetectorPageTitleWidget);
+    m_pMainLayout->addWidget(m_pStackedWidget);
+       // 布局
+    m_pCentralWidget->setLayout(m_pMainLayout);
 }

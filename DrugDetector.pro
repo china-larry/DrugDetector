@@ -61,7 +61,8 @@ SOURCES += \
     AdjustLight/upgradeprogress.cpp \
     AdjustLight/crc16/crc16.cpp \
     AdjustLight/messagebox/messagebox.cpp \
-    AdjustLight/messagebox/messagebox2.cpp
+    AdjustLight/messagebox/messagebox2.cpp \
+    HistoryPage/CHistoryPageTitleWidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -101,7 +102,8 @@ HEADERS += \
     AdjustLight/upgradeprogress.h \
     AdjustLight/crc16/crc16.h \
     AdjustLight/messagebox/messagebox.h \
-    AdjustLight/messagebox/messagebox2.h
+    AdjustLight/messagebox/messagebox2.h \
+    HistoryPage/CHistoryPageTitleWidget.h
 
 FORMS += \
         mainwindow.ui \
