@@ -223,15 +223,20 @@ void CSettingSetupWindowWidget::_InitLayout()
     // qss
     LoadQss(this, ":/qss/SettingPage/SettingPage.qss");
     //
-    QVBoxLayout *pRLayout = new QVBoxLayout;
-    pRLayout->addSpacing(40);
-    pRLayout->addWidget(_CreateLanguageGroup());
-    pRLayout->addSpacing(10);
-    pRLayout->addWidget(_CreateAboutGroup());
-   // pRLayout->addSpacing(35);
-    QHBoxLayout *pHLayout = new QHBoxLayout;
-    pHLayout->addWidget(_CreateServerGroup());
-    pHLayout->addLayout(pRLayout);
+//    QVBoxLayout *pRLayout = new QVBoxLayout;
+//    pRLayout->addSpacing(40);
+//    pRLayout->addWidget(_CreateLanguageGroup());
+//    pRLayout->addSpacing(10);
+//    pRLayout->addWidget(_CreateAboutGroup());
+//   // pRLayout->addSpacing(35);
+//    QHBoxLayout *pHLayout = new QHBoxLayout;
+//    pHLayout->addWidget(_CreateServerGroup());
+//    pHLayout->addLayout(pRLayout);
+//    //
+    QGridLayout *pGridLayout = new QGridLayout;
+    pGridLayout->addWidget(_CreateServerGroup(), 0, 0, 2, 1);
+    pGridLayout->addWidget(_CreateLanguageGroup(), 0, 1, 1, 1);
+    pGridLayout->addWidget(_CreateAboutGroup(), 1, 1, 1, 1);
     //
     QHBoxLayout *pButtonLayout = new QHBoxLayout;
     pButtonLayout->addStretch(100);
@@ -241,8 +246,8 @@ void CSettingSetupWindowWidget::_InitLayout()
     pButtonLayout->addStretch(100);
 
     QVBoxLayout *pLayout = new QVBoxLayout;
-    pRLayout->addSpacing(60);
-    pLayout->addLayout(pHLayout);
+    pLayout->addSpacing(60);
+    pLayout->addLayout(pGridLayout);
     pLayout->addStretch(1);
     pLayout->addLayout(pButtonLayout);
     pLayout->addSpacing(20);

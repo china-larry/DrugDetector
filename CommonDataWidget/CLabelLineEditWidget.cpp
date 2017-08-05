@@ -62,6 +62,11 @@ CHLabelLineEditWidget::CHLabelLineEditWidget(QString strLabel, QString strLineTe
     this->_InitLayout();
 }
 
+void CHLabelLineEditWidget::SetLineEditEnable(bool bEnable)
+{
+    m_pLineEdit->setEnabled(bEnable);
+}
+
 void CHLabelLineEditWidget::_InitLayout()
 {
     QHBoxLayout *pLayout = new QHBoxLayout;

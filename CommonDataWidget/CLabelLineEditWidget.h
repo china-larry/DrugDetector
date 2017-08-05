@@ -51,7 +51,8 @@ public:
 signals:
 
 public slots:
-
+public:
+    void SetLineEditEnable(bool bEnable);
 protected:
     void _InitLayout();
 };
