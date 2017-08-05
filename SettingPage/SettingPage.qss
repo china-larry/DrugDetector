@@ -21,6 +21,29 @@ QGroupBox::title
     subcontrol-position: top left;
     left: 19px;
 }
+QTabWidget
+{
+    border: 1px solid #0068b7;
+    border-radius: 4px;
+    margin-top: 16px;
+    font-size: 18px;
+    font-family:"Arial";
+}
+QTabBar::tab
+{
+    border: 0px solid #0068b7;
+    min-width:150px;
+    color: #878787;
+    padding:10px;
+}
+QTabBar::tab:!selected
+{
+    margin-top: 5px;
+}
+ QTabBar::tab:selected
+{
+    color: #00467b;
+}
 QLabel
 {
         color: #333; /* text color */
@@ -76,9 +99,24 @@ QRadioButton::indicator::unchecked {
 QRadioButton::indicator::checked {
     image: url(:/image/ico/setting/set_language_checked.png);
 }
+QTableWidget
+{
+    border: 1px solid #0068b7;
+    border-radius: 3px;
+
+}
+QHeaderView::section
+{
+    background-color: #1484d9;
+    height:35px;
+    color: white;
+    font-size: 14px;
+    font-family:"Arial";
+    font-weight:600;
+}
 QPushButton
 {
-    font-size: 18px;
+    font-size: 17px;
     font-family:"Arial";
     font-weight:bold;
     border: 0px solid #0068b7;

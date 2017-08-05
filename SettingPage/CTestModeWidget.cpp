@@ -9,17 +9,17 @@ CTestModeWidget::CTestModeWidget(QWidget *parent) : QWidget(parent)
 
 QGroupBox *CTestModeWidget::_CreateModeGroup()
 {
-    QGroupBox *pGroupBox = new QGroupBox(tr("Server Configuration"), this);
-    pGroupBox->setFixedSize(500, 200);
+    QGroupBox *pGroupBox = new QGroupBox(this);
+    pGroupBox->setFixedSize(570, 251);
     //
     m_pStandardModeRButton = new QRadioButton(tr("Standard Mode"), this);
-    m_pIncubatingTimeLineEditWidget = new CHLabelLineEditWidget(tr("  Incubating time "), "", this);
+    m_pStandardModeRButton->setChecked(true);
+    m_pIncubatingTimeLineEditWidget = new CHLabelLineEditWidget(tr("Incubating time "), "", this);
     m_pIncubatingTimeLineEditWidget->SetLineEditFixSize(50, 20);
     m_pMinutesLabel = new QLabel(tr("Minutes"));
     //
     m_pExpressModeRButton = new QRadioButton(tr("Express Mode"), this);
-    //
-    QVBoxLayout *pLayout = new QVBoxLayout;
+
     // standard
     QHBoxLayout *pStandardLayout = new QHBoxLayout;
     pStandardLayout->addSpacing(150);
@@ -27,7 +27,7 @@ QGroupBox *CTestModeWidget::_CreateModeGroup()
     pStandardLayout->addStretch(100);
     // time
     QHBoxLayout *pTimeLayout = new QHBoxLayout;
-    pTimeLayout->addSpacing(150);
+    pTimeLayout->addSpacing(180);
     pTimeLayout->addWidget(m_pIncubatingTimeLineEditWidget);
     pTimeLayout->addWidget(m_pMinutesLabel);
     pTimeLayout->addStretch(100);
@@ -37,10 +37,12 @@ QGroupBox *CTestModeWidget::_CreateModeGroup()
     pExpressLayout->addWidget(m_pExpressModeRButton);
     pExpressLayout->addStretch(100);
     // layout
+    QVBoxLayout *pLayout = new QVBoxLayout;
     pLayout->addStretch(10);
     pLayout->addLayout(pStandardLayout);
+    pLayout->addSpacing(15);
     pLayout->addLayout(pTimeLayout);
-    pLayout->addSpacing(20);
+    pLayout->addSpacing(50);
     pLayout->addLayout(pExpressLayout);
     pLayout->addStretch(10);
 
@@ -52,9 +54,9 @@ QGroupBox *CTestModeWidget::_CreateModeGroup()
 void CTestModeWidget::_InitWiget()
 {
     m_pConfirmButton = new QPushButton(tr("Confirm"), this);
-    m_pConfirmButton->setFixedSize(100, 30);
+    m_pConfirmButton->setFixedSize(130, 35);
     m_pCancelButton = new QPushButton(tr("Cancel"), this);
-    m_pCancelButton->setFixedSize(100, 30);
+    m_pCancelButton->setFixedSize(130, 35);
 }
 
 void CTestModeWidget::_InitLayout()
