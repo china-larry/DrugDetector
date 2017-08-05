@@ -177,10 +177,7 @@ void MainWindow::_InitWidget()
 
     // 多标签
     m_pStackedWidget = new QStackedWidget(this);
-//    QPalette  qPalette;
-//    qPalette.setBrush(m_pStackedWidget->backgroundRole(), QColor(255, 255, 255));
-//    m_pStackedWidget->setPalette(qPalette);
-//    m_pStackedWidget->setAutoFillBackground(true);
+
 
     // 测试页
     m_pDetectorPage = new CDetectorPage(this);

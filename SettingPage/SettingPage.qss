@@ -2,6 +2,7 @@ QGroupBox
 {
     border: 1px solid #0068b7;
     border-radius: 4px;
+    background-color: #fff;
     margin-top: 16px;
     font-size: 18px;
     font-family:"Arial";
@@ -23,9 +24,11 @@ QGroupBox::title
 }
 QTabWidget
 {
-    border: 1px solid #0068b7;
-    border-radius: 4px;
-    margin-top: 16px;
+    border: 0px solid #0068b7;
+    border-bottom:none;
+    background-color: #f0f0f0;
+    background:transparent;
+/*    margin-top: 16px;*/
     font-size: 18px;
     font-family:"Arial";
 }
@@ -36,13 +39,20 @@ QTabBar::tab
     color: #878787;
     padding:10px;
 }
+QTabWidget::pane
+{
+    border: 0px solid #0068b7;
+    background-color: #f0f0f0;
+}
 QTabBar::tab:!selected
 {
-    margin-top: 5px;
+/*    margin-top: 5px;*/
 }
  QTabBar::tab:selected
 {
     color: #00467b;
+    border-bottom: 3px solid qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #0069b9, stop: 1 #1b8ee6);
 }
 QLabel
 {

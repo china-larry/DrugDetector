@@ -1,29 +1,107 @@
-QLabel#m_pPhotoShowLabel
-{
-    border-color: blue;
-    border-width: 1px;
-    background-color : rgb(128, 128, 128);
-}
 QGroupBox
 {
-    border-width:1px;
-    border-color:rgb(255, 0, 0);
+    border: 1px solid #0068b7;
+    border-radius: 4px;
+    background-color: #fff;
+    margin-top: 16px;
+    font-size: 18px;
+    font-family:"Arial";
 }
 QGroupBox::title
 {
     subcontrol-origin: margin;
-    background:url(:/assets/subWindowBackground);
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-    border: 1px solid #0b477b;
-    border-bottom: none;
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-        stop: 0 #005192, stop: 1 #002f60);
+    border: 0px solid #ffffff;
+    border-radius: 3px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+        stop: 0 #0069b9, stop: 1 #1b8ee6);
     padding: 2 2px;
     color: white;
+    min-height: 32px;
+    min-width: 179px;
+    subcontrol-origin:  margin;
+    subcontrol-position: top left;
+    left: 19px;
+}
+QTabWidget
+{
+    border: 0px solid #0068b7;
+    background-color: #f0f0f0;
+    font-size: 18px;
+    font-family:"Arial";
+    border-bottom:0px solid #0068b7;
+}
+QTabBar::tab
+{
+    border: 0px solid #0068b7;
+    min-width:150px;
+    color: #878787;
+    background-color: #f0f0f0;
+    padding:10px;
+}
+QTabWidget::pane
+{
+    border: 0px solid #0068b7;
+    background-color: #f0f0f0;
+}
+QTabWidget#m_pCalibrationTabWidget
+{
+    border: 0px solid #0068b7;
+    border-radius: 4px;
+    margin-top: 16px;
+    font-size: 20px;
+    font-family:"Arial";
+}
+QTabBar#m_pCalibrationTabWidget::tab
+{
+    border: 0px solid #0068b7;
+    min-width:220px;
+    color: #878787;
+    padding:10px;
+}
+
+QTabBar::tab:!selected
+{
+/*    margin-top: 5px;*/
+}
+ QTabBar::tab:selected
+{
+    color: #00467b;
+    border-bottom: 3px solid qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #0069b9, stop: 1 #1b8ee6);
+}
+QLabel
+{
+    color: #333; /* text color */
+    font-family: "Arial";
+    font-size: 15px;
+}
+QLabel#m_pPhotoNameLabel
+{
+    color: #505050; /* text color */
+    font-family: "Arial";
+    font-size: 20px;
+}
+QLabel#m_pPhotoShowLabel
+{
+    border: 1px solid #0068b7;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333; /* text color */
+    font-family: "Arial";
+    font-size: 14px;
+}
+QGraphicsView
+{
+    border: 1px solid #0068b7;
+    border-radius: 3px;
 }
 QPushButton
 {
-      color : rgb(255, 255, 255);
-      background-color: rgb(230, 139, 49);
+    font-size: 17px;
+    font-family:"Arial";
+    font-weight:bold;
+    border: 0px solid #0068b7;
+    border-radius: 3px;
+    color: white;
+    background-color: rgb(230, 139, 49);
 }

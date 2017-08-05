@@ -224,7 +224,7 @@ void CSettingSetupWindowWidget::_InitLayout()
     LoadQss(this, ":/qss/SettingPage/SettingPage.qss");
     //
     QVBoxLayout *pRLayout = new QVBoxLayout;
-    pRLayout->addSpacing(50);
+    pRLayout->addSpacing(40);
     pRLayout->addWidget(_CreateLanguageGroup());
     pRLayout->addSpacing(10);
     pRLayout->addWidget(_CreateAboutGroup());
@@ -241,7 +241,7 @@ void CSettingSetupWindowWidget::_InitLayout()
     pButtonLayout->addStretch(100);
 
     QVBoxLayout *pLayout = new QVBoxLayout;
-    pRLayout->addSpacing(63);
+    pRLayout->addSpacing(60);
     pLayout->addLayout(pHLayout);
     pLayout->addStretch(1);
     pLayout->addLayout(pButtonLayout);

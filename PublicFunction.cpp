@@ -30,6 +30,20 @@ void SetWidgetBackImage(QWidget *pWidget, QString strImagepath)
     pWidget->setAutoFillBackground(true);
 }
 /**
+  * @brief 设置控件背景色
+  * @param pWidget：控件名称
+  * @param qColor: 颜色
+  * @return
+  */
+void SetWidgetBackColor(QWidget *pWidget, QColor qColor)
+{
+     QPalette  qPalette;
+     qPalette.setBrush(pWidget->backgroundRole(), qColor);
+     pWidget->setPalette(qPalette);
+     pWidget->setAutoFillBackground(true);
+}
+
+/**
   * @brief pushbutton背景图片
   * @param
   * @return
