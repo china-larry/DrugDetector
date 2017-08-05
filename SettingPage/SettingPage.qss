@@ -34,6 +34,12 @@ QLabel#PISTitle
         font-size: 20px;
         font-weight:bold;
 }
+QLabel#AboutGroupLabel
+{
+        color: #333; /* text color */
+        font-family: "Arial";
+        font-size: 17px;
+}
 QCheckBox
 {
     color: #333; /* text color */
@@ -51,6 +57,24 @@ QCheckBox::indicator::unchecked {
 /*选中*/
 QCheckBox::indicator::checked {
     image: url(:/image/ico/test/checked.png);
+}
+QRadioButton
+{
+    color: #333; /* text color:/image/ico/setting/set_language_checked.png */
+    font-family: "Arial";
+    font-size: 16px;
+}
+QRadioButton::indicator {
+    width: 21px;
+    height: 21px;
+}
+/*未选中*/
+QRadioButton::indicator::unchecked {
+    image: url(:/image/ico/setting/set_language_unchecked.png);
+}
+/*选中*/
+QRadioButton::indicator::checked {
+    image: url(:/image/ico/setting/set_language_checked.png);
 }
 QPushButton
 {

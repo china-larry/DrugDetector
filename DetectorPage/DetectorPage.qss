@@ -5,6 +5,7 @@ QGroupBox
     margin-top: 16px;
     font-size: 18px;
     font-family:"Arial";
+    background-color: #fff;
 }
 QGroupBox::title
 {

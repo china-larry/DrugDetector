@@ -55,7 +55,7 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     pLayout->setMargin(0);
     // pis
     QHBoxLayout *pPisLayout = new QHBoxLayout;
-    pPisLayout->addSpacing(9);
+    pPisLayout->addSpacing(15);
     pPisLayout->addWidget(m_pPisLabel);
     pPisLayout->addStretch(100);
     pLayout->addSpacing(40);
@@ -63,13 +63,13 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     pLayout->addSpacing(7);
     // server ip
     QHBoxLayout *pPisServerIPLabelLayout = new QHBoxLayout;
-    pPisServerIPLabelLayout->addSpacing(13);
+    pPisServerIPLabelLayout->addSpacing(15);
     pPisServerIPLabelLayout->addWidget(m_pPisServerIPLabel);
     pPisServerIPLabelLayout->addStretch(100);
     // ip edit
     QHBoxLayout *pPisServerEditLayout = new QHBoxLayout;
     pPisServerEditLayout->setMargin(0);
-    pPisServerEditLayout->addSpacing(13);
+    pPisServerEditLayout->addSpacing(15);
     pPisServerEditLayout->addWidget(m_pPisIP01LineEdit);
     pPisServerEditLayout->addSpacing(3);
     pPisServerEditLayout->addWidget(m_pPisIP02LineEdit);
@@ -97,7 +97,7 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     pLayout->addSpacing(5);
     // auto conn
      QHBoxLayout *pPisAutoConnectLayout = new QHBoxLayout;
-     pPisAutoConnectLayout->addSpacing(13);
+     pPisAutoConnectLayout->addSpacing(15);
     pPisAutoConnectLayout->addWidget(m_pPisAutoConnectCBox);
     pPisAutoConnectLayout->addStretch(100);
     pLayout->addLayout(pPisAutoConnectLayout);
@@ -105,20 +105,20 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     pLayout->addStretch(100);
     // poct
     QHBoxLayout *pPoctLayout = new QHBoxLayout;
-    pPoctLayout->addSpacing(13);
+    pPoctLayout->addSpacing(15);
     pPoctLayout->addWidget(m_pPoctLabel);
     pPoctLayout->addStretch(100);
     pLayout->addLayout(pPoctLayout);
     pLayout->addSpacing(7);
     // server ip
     QHBoxLayout *pPoctServerIPLabelLayout = new QHBoxLayout;
-    pPoctServerIPLabelLayout->addSpacing(13);
+    pPoctServerIPLabelLayout->addSpacing(15);
     pPoctServerIPLabelLayout->addWidget(m_pPoctServerIPLabel);
     pPoctServerIPLabelLayout->addStretch(100);
     // ip edit
     QHBoxLayout *pPoctServerEditLayout = new QHBoxLayout;
     pPoctServerEditLayout->setMargin(0);
-    pPoctServerEditLayout->addSpacing(13);
+    pPoctServerEditLayout->addSpacing(15);
     pPoctServerEditLayout->addWidget(m_pPoctIP01LineEdit);
     pPoctServerEditLayout->addSpacing(3);
     pPoctServerEditLayout->addWidget(m_pPoctIP02LineEdit);
@@ -146,7 +146,7 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     pLayout->addSpacing(5);
     // auto conn
      QHBoxLayout *pPoctAutoConnectLayout = new QHBoxLayout;
-     pPoctAutoConnectLayout->addSpacing(13);
+     pPoctAutoConnectLayout->addSpacing(15);
     pPoctAutoConnectLayout->addWidget(m_pPoctAutoConnectCBox);
     pPoctAutoConnectLayout->addStretch(100);
     pLayout->addLayout(pPoctAutoConnectLayout);
@@ -163,15 +163,19 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
   */
 QGroupBox *CSettingSetupWindowWidget::_CreateLanguageGroup()
 {
-    QGroupBox *pGroupBox = new QGroupBox(tr("Server Configuration"), this);
-    pGroupBox->setFixedSize(400, 100);
+    QGroupBox *pGroupBox = new QGroupBox(tr("Language"), this);
+    pGroupBox->setFixedSize(400, 142);
     //
     m_pEnglishRButton = new QRadioButton(tr("English"), this);
+    m_pEnglishRButton->setChecked(true);
     m_pSpainRButton = new QRadioButton(tr("Spain"), this);
 
     QHBoxLayout *pLayout = new QHBoxLayout;
+    pLayout->addSpacing(70);
     pLayout->addWidget(m_pEnglishRButton);
+    pLayout->addStretch(10);
     pLayout->addWidget(m_pSpainRButton);
+    pLayout->addSpacing(70);
 
     pGroupBox->setLayout(pLayout);
     return pGroupBox;
@@ -183,15 +187,20 @@ QGroupBox *CSettingSetupWindowWidget::_CreateLanguageGroup()
   */
 QGroupBox *CSettingSetupWindowWidget::_CreateAboutGroup()
 {
-    QGroupBox *pGroupBox = new QGroupBox(tr("Version"), this);
-    pGroupBox->setFixedSize(400, 200);
+    QGroupBox *pGroupBox = new QGroupBox(tr("About"), this);
+    pGroupBox->setFixedSize(400, 216);
     //
-    m_pSoftwareReleaseLabel = new QLabel(tr("Software Version:     V1.0.0.1"), this);
-    m_pSoftwareFullLabel = new QLabel(tr("Software Full Version:    V1.0.0.1.1"), this);
-    m_pFirmewareLabel = new QLabel(tr("Firmeware Version:    V1.0.0.1"), this);
-    m_pUserTimesLabel = new QLabel(tr("User Times:  1"), this);
+    m_pSoftwareReleaseLabel = new QLabel(tr("  Software Version:     V1.0.0.1"), this);
+    m_pSoftwareFullLabel = new QLabel(tr("  Software Full Version:    V1.0.0.1.1"), this);
+    m_pFirmewareLabel = new QLabel(tr("  Firmeware Version:    V1.0.0.1"), this);
+    m_pUserTimesLabel = new QLabel(tr("  User Times:  1"), this);
+    m_pSoftwareReleaseLabel->setObjectName("AboutGroupLabel");
+    m_pSoftwareFullLabel->setObjectName("AboutGroupLabel");
+    m_pFirmewareLabel->setObjectName("AboutGroupLabel");
+    m_pUserTimesLabel->setObjectName("AboutGroupLabel");
 
     QVBoxLayout *pLayout = new QVBoxLayout;
+    pLayout->addSpacing(15);
     pLayout->addWidget(m_pSoftwareReleaseLabel);
     pLayout->addWidget(m_pSoftwareFullLabel);
     pLayout->addWidget(m_pFirmewareLabel);
@@ -204,9 +213,9 @@ QGroupBox *CSettingSetupWindowWidget::_CreateAboutGroup()
 void CSettingSetupWindowWidget::_InitWidget()
 {
     m_pOKButton = new QPushButton(tr("OK"), this);
-    m_pOKButton->setFixedSize(100, 30);
+    m_pOKButton->setFixedSize(130, 35);
     m_pCancleButton = new QPushButton(tr("Cancle"), this);
-    m_pCancleButton->setFixedSize(100, 30);
+    m_pCancleButton->setFixedSize(130, 35);
 }
 
 void CSettingSetupWindowWidget::_InitLayout()
@@ -215,9 +224,11 @@ void CSettingSetupWindowWidget::_InitLayout()
     LoadQss(this, ":/qss/SettingPage/SettingPage.qss");
     //
     QVBoxLayout *pRLayout = new QVBoxLayout;
+    pRLayout->addSpacing(50);
     pRLayout->addWidget(_CreateLanguageGroup());
-    pRLayout->addSpacing(90);
+    pRLayout->addSpacing(10);
     pRLayout->addWidget(_CreateAboutGroup());
+   // pRLayout->addSpacing(35);
     QHBoxLayout *pHLayout = new QHBoxLayout;
     pHLayout->addWidget(_CreateServerGroup());
     pHLayout->addLayout(pRLayout);
@@ -230,7 +241,10 @@ void CSettingSetupWindowWidget::_InitLayout()
     pButtonLayout->addStretch(100);
 
     QVBoxLayout *pLayout = new QVBoxLayout;
+    pRLayout->addSpacing(63);
     pLayout->addLayout(pHLayout);
+    pLayout->addStretch(1);
     pLayout->addLayout(pButtonLayout);
+    pLayout->addSpacing(20);
     this->setLayout(pLayout);
 }

@@ -534,7 +534,7 @@ void CHistoryPage::_InitHistoryTableWidget()
 void CHistoryPage::_InitTestDataWidget()
 {
     m_pTestDataTextEdit = new QTextEdit(this);
-    m_pTestDataTextEdit->setFixedSize(407, 100);
+    m_pTestDataTextEdit->setFixedSize(409, 100);
 
     m_pCurrentTestDataTableWidget = new QTableWidget(this);
     m_pCurrentTestDataTableWidget->setFixedWidth(409);
@@ -580,6 +580,7 @@ void CHistoryPage::_InitLayout()
 
     QHBoxLayout *pDataLayout = new QHBoxLayout;
     QVBoxLayout *pTestDataLayout = new QVBoxLayout;
+    pTestDataLayout->setMargin(0);
     pTestDataLayout->addWidget(m_pCurrentTestDataTableWidget);
     pTestDataLayout->addWidget(m_pTestDataTextEdit);
     // 第一行

@@ -24,5 +24,7 @@
         <file>ico/title/Setting.png</file>
         <file>ico/title/Functions.png</file>
         <file>ico/title/MD.png</file>
+        <file>ico/setting/set_language_checked.png</file>
+        <file>ico/setting/set_language_unchecked.png</file>
     </qresource>
 </RCC>
