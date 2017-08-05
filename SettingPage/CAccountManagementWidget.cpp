@@ -16,14 +16,17 @@ void CAccountManagementWidget::_InitWidget()
     m_pUserTableWidget->setFixedSize(530, 280);
     m_pUserTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_pUserTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_pUserTableWidget->setFocusPolicy(Qt::NoFocus);
     // 表单样式
     m_pUserTableWidget->setColumnCount(2);
     // 不显示行号
     QHeaderView *pVerticalHeader = m_pUserTableWidget->verticalHeader();
     pVerticalHeader->setHidden(true);
+    pVerticalHeader->setHighlightSections(false);
     QHeaderView *pHeaderView = m_pUserTableWidget->horizontalHeader();
     pHeaderView->setDefaultSectionSize(280);
     pHeaderView->setDisabled(true);
+    pHeaderView->setHighlightSections(false);
     // 充满表格
     pHeaderView->setStretchLastSection(true);
 

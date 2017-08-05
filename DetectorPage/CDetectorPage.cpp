@@ -20,9 +20,9 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
     //应用样式 apply the qss style
     _LoadQss();
        // 初始化接收lib库
-    _InitLibDrug();
+    _InitThreadTesting();
     //
-    _InitPushButtonWidget();
+    _InitWidget();
       // 布局
     _InitLayout();
 }
@@ -139,7 +139,8 @@ void CDetectorPage::_SlotCheckReadTestDevice()
       m_pTestResultDataList.clear();
       qDebug() << "clear test result data list";
   }
-  m_pResultsTableWidget->setRowCount(0);
+  //m_pResultsTableWidget->setRowCount(0);
+  m_pResultsTableWidget->clearContents();
 }
 
 void CDetectorPage::_SlotStopTest()
@@ -330,10 +331,12 @@ QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
     strProductDifinitionList << tr("T Cup") << tr("T Cupa");
     m_pProductDefinitionWidget = new CLabelCommoBoxWidget(tr("Product Definition"), strProductDifinitionList, this);
     m_pProductLotWidget = new CLabelLineEditWidget(tr("Product Lot"), "", this);
+    m_pProductLotWidget->SetLineTextEnable(false);
     //
 
     m_pExpirationDateWidget = new CLabelDateWidget(tr("Expiration Date"), QDate::currentDate(), this);
     m_pProductIDWidget = new CLabelLineEditWidget(tr("Product ID"), "", this);
+    m_pProductIDWidget->SetLineTextEnable(false);
     //
     QVBoxLayout *pLayout = new QVBoxLayout;
     //
@@ -369,7 +372,7 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
     pGroupBox->setFlat(true);
     pGroupBox->setObjectName("ResultGroupBox");
 
-    m_pCamaraLabel = new QLabel("temp", this);
+    m_pCamaraLabel = new QLabel(this);
     m_pCamaraLabel->setFixedSize(438, 283);
     m_pCamaraLabel->setObjectName("m_pCamaraLabel");
     //m_pCamaraLabel->setPixmap(QPixmap("E:\\picture\\daiyu.jpg"));
@@ -381,10 +384,14 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
     // 表单样式
     m_pResultsTableWidget->setColumnCount(3);
     m_pResultsTableWidget->setRowCount(16);// 最大16个项目
+    // 虚线框
+    m_pResultsTableWidget->setFocusPolicy(Qt::NoFocus);
     // 不显示行号
     QHeaderView *pVerticalHeader = m_pResultsTableWidget->verticalHeader();
     pVerticalHeader->setHidden(true);
+    pVerticalHeader->setHighlightSections(false);
     QHeaderView *pHeaderView = m_pResultsTableWidget->horizontalHeader();
+    pHeaderView->setHighlightSections(false);
 //    pHeaderView->setDefaultSectionSize(120);
     pHeaderView->resizeSection(0, 120);
     pHeaderView->resizeSection(1, 190);
@@ -418,39 +425,43 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
   * @param
   * @return
   */
-void CDetectorPage::_InitPushButtonWidget()
+void CDetectorPage::_InitWidget()
 {
-
     m_pReadTestDeviceButton = new QPushButton(tr("Read Test Device"));
     m_pReadTestDeviceButton->setFixedSize(140, 35);
     connect(m_pReadTestDeviceButton,SIGNAL(clicked(bool)), this, SLOT(_SlotCheckReadTestDevice()));
     m_pStopTestButton = new QPushButton(tr("Stop Test"));
     m_pStopTestButton->setFixedSize(135, 35);
     connect(m_pStopTestButton, SIGNAL(clicked(bool)), this, SLOT(_SlotStopTest()));
+    // 状态栏
+
+
 }
 
 void CDetectorPage::_InitLayout()
 {
+    QRect m_iWidgetRect = this->rect();
+    qDebug() << "main rddect " << m_iWidgetRect.width() << m_iWidgetRect.height();
+    // 左侧详细
     QVBoxLayout *pLeftLayout = new QVBoxLayout;
     pLeftLayout->addWidget(_CreateDonorDetailsGroup());
     pLeftLayout->addWidget(_CreateProductDetailsGroup());
     pLeftLayout->addSpacing(1);
     //
-    QHBoxLayout *pHLayout = new QHBoxLayout;
-    pHLayout->addSpacing(20);
-    pHLayout->addWidget(m_pReadTestDeviceButton);
-    pHLayout->addSpacing(20);
-    pHLayout->addWidget(m_pStopTestButton);
-    pLeftLayout->addLayout(pHLayout);
+    QHBoxLayout *pLeftButtonLayout = new QHBoxLayout;
+    pLeftButtonLayout->addSpacing(20);
+    pLeftButtonLayout->addWidget(m_pReadTestDeviceButton);
+    pLeftButtonLayout->addSpacing(20);
+    pLeftButtonLayout->addWidget(m_pStopTestButton);
+    pLeftLayout->addLayout(pLeftButtonLayout);
     //
-    QHBoxLayout *pLayout = new QHBoxLayout;
-    pLayout->addLayout(pLeftLayout);
-    pLayout->addWidget(_CreateResultsGroup());
-
-    this->setLayout(pLayout);
+    QHBoxLayout *pTestLayout = new QHBoxLayout;
+    pTestLayout->addLayout(pLeftLayout);
+    pTestLayout->addWidget(_CreateResultsGroup());
+    this->setLayout(pTestLayout);
 }
 
-void CDetectorPage::_InitLibDrug()
+void CDetectorPage::_InitThreadTesting()
 {
 //    m_pLibDrugDetector = new LibDrugDetector();
 //    connect(m_pLibDrugDetector, SIGNAL(SignalSendQRCodeInfo(QVariant)), this, SLOT(SlotReceiveQRCodeInfo(QVariant)));

@@ -29,7 +29,6 @@
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelDateTimeWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
-//#include "LibDrugDetector.h"
 #include "AdjustLight/testing/ThreadTesting.h"
 #include "PublicFunction.h"
 
@@ -65,9 +64,9 @@ private:
     QGroupBox *_CreateDonorDetailsGroup();
     QGroupBox *_CreateProductDetailsGroup();
     QGroupBox *_CreateResultsGroup();
-    void _InitPushButtonWidget();
+    void _InitWidget();
     void _InitLayout();
-    void _InitLibDrug();// 初始化第三方库
+    void _InitThreadTesting();// 初始化第三方库
     // 更新摄像头图片
     void _SetCamaraImage(QString strImagePath);
     // 打印
@@ -118,6 +117,8 @@ private:
     // results
     QLabel *m_pCamaraLabel;// 摄像头
     QTableWidget *m_pResultsTableWidget;// 表格数据
+    // 状态栏
+
     // 获取数据
    // LibDrugDetector *m_pLibDrugDetector;// 获取下位机测试结果外部库
     ThreadTesting *m_pThreadTesting;

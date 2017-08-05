@@ -31,6 +31,7 @@ public slots:
 public:
     QString GetLineText();
     void SetLineText(QString strLineText);
+    void SetLineTextEnable(bool bEnable);
     void SetLineEditFixSize(int iWidth, int iHeight);
     void SetLabelObjectName(QString strObjectName);
     void SetLineEditObjectName(QString strObjectName);

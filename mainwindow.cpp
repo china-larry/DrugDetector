@@ -21,8 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
     _InitWidget();
     _InitLayout();
     //
-    m_kiTitleHeight = 50;
-    m_kiStatusBarHeight = 30;
+    m_kiTitleHeight = 50;// title高度
+    m_kiStatusBarHeight = 30;// 状态栏高度
 }
 
 MainWindow::~MainWindow()

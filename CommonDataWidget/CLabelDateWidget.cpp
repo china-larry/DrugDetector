@@ -6,6 +6,8 @@ CLabelDateWidget::CLabelDateWidget(QWidget *parent)
 {
     m_pLabel = new QLabel(this);
     m_pDateEdit = new QDateEdit(this);
+    m_pDateEdit->setCalendarPopup(true);
+    m_pDateEdit->setDisplayFormat("yyyy-MM-dd");
     _InitLayout();
 }
 
@@ -15,6 +17,8 @@ CLabelDateWidget::CLabelDateWidget(QString strLabel, QDate qDate, QWidget *paren
 {
     m_pLabel = new QLabel(strLabel, this);
     m_pDateEdit = new QDateEdit(qDate, this);
+    m_pDateEdit->setCalendarPopup(true);
+    m_pDateEdit->setDisplayFormat("yyyy-MM-dd");
     _InitLayout();
 }
 

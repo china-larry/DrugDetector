@@ -15,6 +15,8 @@
 
 #include <QWidget>
 #include <QLabel>
+#include <QLineEdit>
+#include <QProgressBar>
 class CDetectorPageStatusBar : public QWidget
 {
     Q_OBJECT
@@ -30,8 +32,8 @@ private:
     void _InitLayout();
 
 private:
-    QLabel *m_pTestStatusLabel;// 测试状态
-    QLabel *m_pProgressStatusLabel;// 进度条
+    QLineEdit *m_pTestStatusBarLineEdit;
+    QProgressBar *m_pTestProgressBar;
 };
 
 #endif // CDETECTORPAGESTATUSBAR_H

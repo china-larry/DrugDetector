@@ -138,7 +138,8 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
     qDebug()<< "cru row " << iCurrentRow << "count " <<m_pHistoryDataTableWidget->rowCount();
     // 清空控件
     m_pTestDataTextEdit->setText("");
-    m_pCurrentTestDataTableWidget->setRowCount(0);
+    //m_pCurrentTestDataTableWidget->setRowCount(0);
+    m_pCurrentTestDataTableWidget->clearContents();
     //
     if(iCurrentRow == iPreviousRow || m_pHistoryDataTableWidget->rowCount() == 0
             || iCurrentRow >= m_pHistoryDataTableWidget->rowCount()
@@ -497,6 +498,7 @@ void CHistoryPage::_InitHistoryTableWidget()
     m_pHistoryDataTableWidget = new QTableWidget(this);
     m_pHistoryDataTableWidget->setMinimumSize(550, 350);
     m_pHistoryDataTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_pHistoryDataTableWidget->setFocusPolicy(Qt::NoFocus);
     m_iTableColumnCount = 6;
     // 设置列数量
     m_pHistoryDataTableWidget->setColumnCount(m_iTableColumnCount);
@@ -504,9 +506,11 @@ void CHistoryPage::_InitHistoryTableWidget()
     // 不显示行号
     QHeaderView *pVerticalHeader = m_pHistoryDataTableWidget->verticalHeader();
     pVerticalHeader->setHidden(true);
+    pVerticalHeader->setHighlightSections(false);
     // 表单样式    
     QHeaderView *pHeaderView = m_pHistoryDataTableWidget->horizontalHeader();
     pHeaderView->setDefaultSectionSize(110);
+    pHeaderView->setHighlightSections(false);
     pHeaderView->setDisabled(true);
     // 充满表格
     pHeaderView->setStretchLastSection(true);
@@ -535,20 +539,24 @@ void CHistoryPage::_InitTestDataWidget()
 {
     m_pTestDataTextEdit = new QTextEdit(this);
     m_pTestDataTextEdit->setFixedSize(409, 100);
+    m_pTestDataTextEdit->setEnabled(false);
 
     m_pCurrentTestDataTableWidget = new QTableWidget(this);
     m_pCurrentTestDataTableWidget->setFixedWidth(409);
     m_pCurrentTestDataTableWidget->setColumnCount(3);
     m_pCurrentTestDataTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_pCurrentTestDataTableWidget->setFocusPolicy(Qt::NoFocus);
     // 每次选择一行
     m_pCurrentTestDataTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     //m_pCurrentTestDataTableWidget->setRowCount(16);// 最大16个项目
     // 不显示行号
     QHeaderView *pVerticalHeader = m_pCurrentTestDataTableWidget->verticalHeader();
     pVerticalHeader->setHidden(true);
+    pVerticalHeader->setHighlightSections(false);
     QHeaderView *pHeaderView = m_pCurrentTestDataTableWidget->horizontalHeader();
     pHeaderView->setDefaultSectionSize(120);
     pHeaderView->setDisabled(true);
+    pHeaderView->setHighlightSections(false);
     // 充满表格
     pHeaderView->setStretchLastSection(true);
     // 设置表头内容

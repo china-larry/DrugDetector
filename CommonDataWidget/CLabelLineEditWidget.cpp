@@ -30,6 +30,11 @@ void CLabelLineEditWidget::SetLineText(QString strLineText)
     m_pLineEdit->setText(m_strLineText);
 }
 
+void CLabelLineEditWidget::SetLineTextEnable(bool bEnable)
+{
+    m_pLineEdit->setEnabled(bEnable);
+}
+
 void CLabelLineEditWidget::SetLineEditFixSize(int iWidth, int iHeight)
 {
     m_pLineEdit->setFixedSize(iWidth, iHeight);

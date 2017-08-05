@@ -132,7 +132,7 @@ QTableWidget
 {
     border: 1px solid #0068b7;
     border-radius: 3px;
-
+    selection-background-color:#eeeeee;
 }
 QHeaderView::section
 {

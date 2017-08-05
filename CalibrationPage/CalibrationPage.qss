@@ -25,7 +25,7 @@ QGroupBox::title
 QTabWidget
 {
     border: 0px solid #0068b7;
-    background-color: #f0f0f0;
+    background-color: #f5f5f5;
     font-size: 18px;
     font-family:"Arial";
     border-bottom:0px solid #0068b7;
@@ -35,13 +35,13 @@ QTabBar::tab
     border: 0px solid #0068b7;
     min-width:150px;
     color: #878787;
-    background-color: #f0f0f0;
+    background-color: #f5f5f5;
     padding:10px;
 }
 QTabWidget::pane
 {
     border: 0px solid #0068b7;
-    background-color: #f0f0f0;
+    background-color: #f5f5f5;
 }
 QTabWidget#m_pCalibrationTabWidget
 {
