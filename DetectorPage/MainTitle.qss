@@ -13,7 +13,7 @@ QLineEdit
     border: 1px solid #005392;
     padding: 0 0px;
     background-color: #005392;
-    box-shadow:1px 1px 1px 1px #005392 inset;
+/*    box-shadow:1px 1px 1px 1px #005392 inset;*/
 }
 QPushButton
 {

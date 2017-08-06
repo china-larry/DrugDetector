@@ -6,6 +6,7 @@
         <file>CalibrationPage/CalibrationPage.qss</file>
         <file>SettingPage/SettingPage.qss</file>
         <file>DetectorPage/MainTitle.qss</file>
+        <file>MainWindows.qss</file>
     </qresource>
     <qresource prefix="/image">
         <file>ico/login/wondfo_login_bgr.png</file>

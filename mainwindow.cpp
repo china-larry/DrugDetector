@@ -88,14 +88,12 @@ void MainWindow::SlotReceiveLogin()
 // 前往设置页
 void MainWindow::SlotGoSettingPage()
 {
-    qDebug() << "go setting page";
     m_pStackedWidget->setCurrentIndex(3);
     m_pDetectorPageStatusBar->hide();
 }
 // 前往历史数据页
 void MainWindow::SlotGoHistoryPage()
 {
-    qDebug() << "go history page";
     m_pStackedWidget->setCurrentIndex(2);
     m_pHistoryPage->ShowCurrentDateTest();// 显示当天测试结果数据
     //
@@ -107,7 +105,6 @@ void MainWindow::SlotGoHistoryPage()
 // 前往测试页
 void MainWindow::SlotGoDetectorPage()
 {
-    qDebug() << "go detector page";
     m_pStackedWidget->setCurrentIndex(0);
     //
     m_pDetectorPageStatusBar->show();
@@ -118,7 +115,6 @@ void MainWindow::SlotGoDetectorPage()
 
 void MainWindow::SlotGoCalibrationPage()
 {
-    qDebug() << "go cali page";
     m_pStackedWidget->setCurrentIndex(1);
     m_pDetectorPageStatusBar->hide();
 }
@@ -135,10 +131,21 @@ void MainWindow::SlotCloseWindow()
 
 void MainWindow::SlotCheckHistoryItem()
 {
-    qDebug() << "check history page";
     m_pStackedWidget->setCurrentIndex(2);
 }
-// 测试页测试结束
+
+void MainWindow::SlotDetectorPageStartTest()
+{
+    m_pDetectorPageStatusBar->SetLineStartColor();
+    m_pDetectorPageStatusBar->SetLineText(tr("Start QR code"));
+}
+
+void MainWindow::SlotDetectorPageStopTest()
+{
+    m_pDetectorPageStatusBar->SetLineStopColor();
+    m_pDetectorPageStatusBar->SetLineText(tr("Stop"));
+}
+// 流程测试结束
 void MainWindow::SlotDetectorPageEndTest()
 {
     m_pTestResultDataList = m_pDetectorPage->GetTestResultData();
@@ -181,6 +188,8 @@ void MainWindow::_InitWidget()
 
     // 测试页
     m_pDetectorPage = new CDetectorPage(this);
+    connect(m_pDetectorPage, SIGNAL(SignalStartTest()), this, SLOT(SlotDetectorPageStartTest()));
+    connect(m_pDetectorPage, SIGNAL(SignalStopTest()), this, SLOT(SlotDetectorPageStopTest()));
     connect(m_pDetectorPage, SIGNAL(SignalEndTest()), this, SLOT(SlotDetectorPageEndTest()));
     // 校正
     m_pCalibrationPage = new CCalibrationPage(this);

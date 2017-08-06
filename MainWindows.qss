@@ -1,0 +1,15 @@
+QLineEdit
+{
+    color: green; /* text color */
+    font-family: "Arial";
+    font-size: 18px;
+    font-weight : bold;
+    font-style:italic;
+    border: 1px solid #7f7f7f;
+    background-color: #f5f5f5;
+}
+QProgressBar
+{
+    color: green;
+    border:1px solid #FFFFFF;
+}

@@ -49,7 +49,11 @@ public slots:
     void SlotMinWindow();
     void SlotCloseWindow();
     void SlotCheckHistoryItem();
-    //
+    // 测试开始，更改状态栏
+    void SlotDetectorPageStartTest();
+    // 主动停止测试
+    void SlotDetectorPageStopTest();
+    // 流程测试结束，非主动停止
     void SlotDetectorPageEndTest();
 
 private:

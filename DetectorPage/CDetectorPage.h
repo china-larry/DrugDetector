@@ -41,13 +41,15 @@ public:
     ~CDetectorPage();
 
 signals:
-    void SignalEndTest();
+    void SignalEndTest();// 流程测试结束，数据传输main
+    void SignalStartTest();// 开始测试
+    void SignalStopTest();// 主动停止测试
 public slots:
     // 测试
     void SlotReceiveQRCodeImage(QString strImagePath);// 接受二维码图片数据
     void SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfo);// 接受二维码信息
     void SlotReceiveTestResultData(TestResultData sTestResultData);// 接受每条测试结果数据
-    void SlotEndTest();// 测试结束
+    void SlotEndTest();// 流程测试结束
     void SlotReceiveTestError(ENUM_ERR eTestError);// 错误信号
 private slots:
     // 控件

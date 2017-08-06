@@ -26,7 +26,11 @@ public:
 signals:
 
 public slots:
-
+public:
+    void SetLineText(QString strText);
+    void SetLineStartColor();
+    void SetLineStopColor();
+    void SetProgressValue(int iValue);
 private:
     void _InitWidget();
     void _InitLayout();

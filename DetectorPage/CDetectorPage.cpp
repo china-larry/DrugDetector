@@ -129,25 +129,29 @@ void CDetectorPage::SlotReceiveTestError(ENUM_ERR eTestError)
 // 用户点击开始测试按钮，开始测试
 void CDetectorPage::_SlotCheckReadTestDevice()
 {
- // m_pLibDrugDetector->UIBeginTest();
-  m_pThreadTesting->StartTest();
-  // 清空数据区
-  // DataList清空，控件数据清空
-  if(!m_pTestResultDataList.empty())
-  {
-      qDeleteAll(m_pTestResultDataList);
-      m_pTestResultDataList.clear();
-      qDebug() << "clear test result data list";
-  }
-  //m_pResultsTableWidget->setRowCount(0);
-  m_pResultsTableWidget->clearContents();
+    // 发送到main
+    emit SignalStartTest();// 更改状态栏
+    // 进程开始测试
+    m_pThreadTesting->StartTest();
+    // 清空数据区
+    // DataList清空，控件数据清空
+    if(!m_pTestResultDataList.empty())
+    {
+        qDeleteAll(m_pTestResultDataList);
+        m_pTestResultDataList.clear();
+        qDebug() << "clear test result data list";
+    }
+    //m_pResultsTableWidget->setRowCount(0);
+    m_pResultsTableWidget->clearContents();
+
 }
 
 void CDetectorPage::_SlotStopTest()
 {
     qDebug() << "stop test";
+    emit SignalStopTest();
     //删除数据库
-    QFile::remove(QCoreApplication::applicationDirPath() + "demo.db");
+    //QFile::remove(QCoreApplication::applicationDirPath() + "demo.db");
 }
 /**
   * @brief 连接打印机打印
