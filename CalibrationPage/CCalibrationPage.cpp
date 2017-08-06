@@ -1,4 +1,4 @@
-#include "CCalibrationPage.h"
+﻿#include "CCalibrationPage.h"
 #include <QBoxLayout>
 #include "PublicFunction.h"
 CCalibrationPage::CCalibrationPage(QWidget *parent) : QWidget(parent)

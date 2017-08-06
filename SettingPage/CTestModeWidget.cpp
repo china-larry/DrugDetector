@@ -1,4 +1,4 @@
-#include "CTestModeWidget.h"
+﻿#include "CTestModeWidget.h"
 #include <QBoxLayout>
 #include "PublicFunction.h"
 CTestModeWidget::CTestModeWidget(QWidget *parent) : QWidget(parent)

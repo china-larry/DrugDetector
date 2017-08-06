@@ -1,4 +1,4 @@
-#include "CLabelLineEditWidget.h"
+﻿#include "CLabelLineEditWidget.h"
 #include <QBoxLayout>
 CLabelLineEditWidget::CLabelLineEditWidget(QWidget *parent)
     : QWidget(parent),
@@ -62,9 +62,12 @@ void CLabelLineEditWidget::_InitLayout()
 
 CHLabelLineEditWidget::CHLabelLineEditWidget(QString strLabel, QString strLineText, QWidget *parent)
 {
-    m_pLabel = new QLabel(strLabel, this);
-    m_pLineEdit = new QLineEdit(strLineText, this);
-    this->_InitLayout();
+    if(parent != NULL)
+    {
+        m_pLabel = new QLabel(strLabel, this);
+        m_pLineEdit = new QLineEdit(strLineText, this);
+        this->_InitLayout();
+    }
 }
 
 void CHLabelLineEditWidget::SetLineEditEnable(bool bEnable)

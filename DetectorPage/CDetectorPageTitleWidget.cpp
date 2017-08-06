@@ -1,4 +1,4 @@
-#include "CDetectorPageTitleWidget.h"
+﻿#include "CDetectorPageTitleWidget.h"
 
 #include <QPalette>
 #include <QDebug>

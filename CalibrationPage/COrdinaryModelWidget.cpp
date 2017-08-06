@@ -1,4 +1,4 @@
-#include "COrdinaryModelWidget.h"
+﻿#include "COrdinaryModelWidget.h"
 #include <QBoxLayout>
 #include "PublicFunction.h"
 COrdinaryModelWidget::COrdinaryModelWidget(QWidget *parent) : QWidget(parent)

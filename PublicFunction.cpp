@@ -1,4 +1,4 @@
-#include "PublicFunction.h"
+﻿#include "PublicFunction.h"
 #include <QPixmap>
 #include <QBitmap>
 #include <QPalette>

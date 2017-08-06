@@ -1,4 +1,4 @@
-#ifndef CTESTMODEWIGET_H
+﻿#ifndef CTESTMODEWIGET_H
 #define CTESTMODEWIGET_H
 
 #include <QWidget>

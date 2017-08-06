@@ -1,4 +1,4 @@
-#ifndef CCALIBRATIONPAGE_H
+﻿#ifndef CCALIBRATIONPAGE_H
 #define CCALIBRATIONPAGE_H
 
 #include <QWidget>

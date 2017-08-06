@@ -1,4 +1,4 @@
-#include "CHistoryPageTitleWidget.h"
+﻿#include "CHistoryPageTitleWidget.h"
 #include <QPalette>
 #include <QDebug>
 #include "PublicFunction.h"

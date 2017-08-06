@@ -1,4 +1,4 @@
-#include "CSettingSetupWindowWidget.h"
+﻿#include "CSettingSetupWindowWidget.h"
 #include <QBoxLayout>
 #include "PublicFunction.h"
 CSettingSetupWindowWidget::CSettingSetupWindowWidget(QWidget *parent) : QWidget(parent)

@@ -1,4 +1,4 @@
-#ifndef CHISTORYPAGETITLEWIDGET_H
+﻿#ifndef CHISTORYPAGETITLEWIDGET_H
 #define CHISTORYPAGETITLEWIDGET_H
 /*****************************************************
   * Copyright: 万孚生物

@@ -1,4 +1,4 @@
-#include "CLabelCommoBoxWidget.h"
+﻿#include "CLabelCommoBoxWidget.h"
 #include <QBoxLayout>
 CLabelCommoBoxWidget::CLabelCommoBoxWidget(QWidget *parent)
     : QWidget(parent)

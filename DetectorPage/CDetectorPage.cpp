@@ -1,4 +1,4 @@
-#include "CDetectorPage.h"
+﻿#include "CDetectorPage.h"
 #include <QGridLayout>
 #include <QFile>
 #include <QTextStream>
@@ -539,8 +539,9 @@ bool CDetectorPage::_PrintToPage(QString strHtml)
             }
 
         });
+        return false;
     });
-    return true;
+    return false;
 }
 /**
   * @brief 替换html为控件数据

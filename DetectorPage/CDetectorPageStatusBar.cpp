@@ -1,4 +1,4 @@
-#include "CDetectorPageStatusBar.h"
+﻿#include "CDetectorPageStatusBar.h"
 #include <QBoxLayout>
 #include "PublicFunction.h"
 CDetectorPageStatusBar::CDetectorPageStatusBar(QWidget *parent) : QWidget(parent)

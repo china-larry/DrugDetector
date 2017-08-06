@@ -1,4 +1,4 @@
-#include "CSettingPage.h"
+﻿#include "CSettingPage.h"
 #include <QBoxLayout>
 #include <QFile>
 #include <QTextStream>

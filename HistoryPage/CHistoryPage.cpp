@@ -1,4 +1,4 @@
-#include "CHistoryPage.h"
+﻿#include "CHistoryPage.h"
 #include <QBoxLayout>
 #include <QFile>
 #include <QTextStream>
@@ -136,6 +136,7 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
         int iCurrentRow, int iCurrentColumn, int iPreviousRow, int iPreviousColumn)
 {
     qDebug()<< "cru row " << iCurrentRow << "count " <<m_pHistoryDataTableWidget->rowCount();
+    qDebug()<< "cru iCurrentColumn " << iCurrentColumn << iPreviousColumn;
     // 清空控件
     m_pTestDataTextEdit->setText("");
     //m_pCurrentTestDataTableWidget->setRowCount(0);

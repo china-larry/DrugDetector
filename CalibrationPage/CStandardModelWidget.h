@@ -1,4 +1,4 @@
-#ifndef CSTANDARDMODELWIDGET_H
+﻿#ifndef CSTANDARDMODELWIDGET_H
 #define CSTANDARDMODELWIDGET_H
 #include <QWidget>
 #include <QGroupBox>

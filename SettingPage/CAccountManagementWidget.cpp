@@ -1,4 +1,4 @@
-#include "CAccountManagementWidget.h"
+﻿#include "CAccountManagementWidget.h"
 #include <QHeaderView>
 #include <QFont>
 #include <QScrollBar>

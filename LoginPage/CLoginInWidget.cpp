@@ -1,4 +1,4 @@
-#include "CLoginInWidget.h"
+﻿#include "CLoginInWidget.h"
 #include <QBoxLayout>
 #include <QFont>
 #include <QPixmap>

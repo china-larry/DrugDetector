@@ -1,4 +1,4 @@
-#include "CLabelDateWidget.h"
+﻿#include "CLabelDateWidget.h"
 #include <QBoxLayout>
 CLabelDateWidget::CLabelDateWidget(QWidget *parent)
     : QWidget(parent),

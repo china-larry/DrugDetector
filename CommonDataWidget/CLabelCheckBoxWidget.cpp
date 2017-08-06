@@ -1,4 +1,4 @@
-#include "CLabelCheckBoxWidget.h"
+﻿#include "CLabelCheckBoxWidget.h"
 #include <QBoxLayout>
 CLabelCheckBoxWidget::CLabelCheckBoxWidget(QWidget *parent) : QWidget(parent)
 {

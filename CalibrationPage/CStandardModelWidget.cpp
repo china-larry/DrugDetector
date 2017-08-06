@@ -1,4 +1,4 @@
-#include "CStandardModelWidget.h"
+﻿#include "CStandardModelWidget.h"
 #include <QBoxLayout>
 #include "PublicFunction.h"
 CStandardModelWidget::CStandardModelWidget(QWidget *parent) : QWidget(parent)
