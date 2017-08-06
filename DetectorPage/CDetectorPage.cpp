@@ -157,7 +157,7 @@ void CDetectorPage::_SlotStopTest()
 void CDetectorPage::_SlotPrintToPDF()
 {
     // 资源文件
-    QFile qFile("E:/work_project/DrugDetector/demo/TCube.html");
+    QFile qFile("E:/work_project/DrugDetector/demo/TCup.html");
     if(!qFile.open(QFile::ReadOnly | QIODevice::Text))
     {
         qDebug() << "open false";
@@ -498,13 +498,13 @@ bool CDetectorPage::_PrintToPage(QString strHtml)
     qPrinter->setPageSize(QPrinter::A4);
     qPrinter->setFullPage(true);
     // 输出到PDF
-//    qPrinter->setOutputFormat(QPrinter::PdfFormat);
-//    qPrinter->setOutputFileName("E:/b.pdf");
+    qPrinter->setOutputFormat(QPrinter::PdfFormat);
+    qPrinter->setOutputFileName("E:/b.pdf");
     // 连接打印机
-    QPrintDialog qPrintDialog(qPrinter, this);
-    if (qPrintDialog.exec() != QDialog::Accepted) {
-        return false;
-    }
+//    QPrintDialog qPrintDialog(qPrinter, this);
+//    if (qPrintDialog.exec() != QDialog::Accepted) {
+//        return false;
+//    }
     QWebEnginePage * pWebEnginePage = new QWebEnginePage;
     pWebEnginePage->setHtml(strHtml);
 
