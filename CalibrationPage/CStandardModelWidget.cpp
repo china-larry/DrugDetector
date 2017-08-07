@@ -6,6 +6,23 @@ CStandardModelWidget::CStandardModelWidget(QWidget *parent) : QWidget(parent)
     _InitWidget();
     _InitLayout();
 }
+
+void CStandardModelWidget::_SlotCheckConfirmButton()
+{
+    BrightnessValue brightnessValue;
+    brightnessValue.iNo1 = m_pNo1LineEditWidget->GetLineText().toInt();
+    brightnessValue.iNo2 = m_pNo2LineEditWidget->GetLineText().toInt();
+    brightnessValue.iNo3 = m_pNo3LineEditWidget->GetLineText().toInt();
+    brightnessValue.iNo4 = m_pNo4LineEditWidget->GetLineText().toInt();
+    brightnessValue.iNo5 = m_pNo5LineEditWidget->GetLineText().toInt();
+    brightnessValue.iNo6 = m_pNo6LineEditWidget->GetLineText().toInt();
+    brightnessValue.iNo7 = m_pNo7LineEditWidget->GetLineText().toInt();
+    brightnessValue.iNo8 = m_pNo8LineEditWidget->GetLineText().toInt();
+
+    brightnessValue.iCupType = 0;
+
+    emit SignalSetBrightValue(brightnessValue);
+}
 /**
   * @brief 创建brightness控件组
   * @param
@@ -35,6 +52,7 @@ QGroupBox *CStandardModelWidget::_CreateBrightnessValueGroup()
     m_pNo8LineEditWidget->SetLineEditFixSize(120, 20);
     //
     m_pConfirmButton = new QPushButton(tr("Confirm"));
+    connect(m_pConfirmButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckConfirmButton()));
     m_pConfirmButton->setFixedSize(130, 35);
     //
     QGridLayout *pGridLayout = new QGridLayout;
@@ -76,6 +94,9 @@ void CStandardModelWidget::_InitWidget()
     //
     // qss
     LoadQss(this, ":/qss/CalibrationPage/CalibrationPage.qss");
+    // 校准接口类
+    m_pStandardBrightness = new StandardBrightness;
+    connect(this, SIGNAL(SignalSetBrightValue(BrightnessValue)), m_pStandardBrightness, SLOT(SlotGetBrightValue(BrightnessValue)));
 }
 
 void CStandardModelWidget::_InitLayout()

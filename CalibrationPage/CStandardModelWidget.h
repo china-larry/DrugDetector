@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QGraphicsView>
 #include "CommonDataWidget/CLabelLineEditWidget.h"
+#include "AdjustLight/StandardBrightness.h"
 
 class CStandardModelWidget : public QWidget
 {
@@ -13,8 +14,11 @@ public:
     explicit CStandardModelWidget(QWidget *parent = nullptr);
 
 signals:
-
+    void SignalSetBrightValue(BrightnessValue brightnessValue);
 public slots:
+
+private slots:
+    void _SlotCheckConfirmButton();
 public:
 
 private:
@@ -44,6 +48,8 @@ private:
     QGraphicsView *m_pCurveGraphicsView;
     //
     QPushButton *m_pDeriveButton;
+    // 校正接口类
+    StandardBrightness *m_pStandardBrightness;
 };
 
 #endif // CSTANDARDMODELWIDGET_H

@@ -1,4 +1,4 @@
-#include "StandardBrightness.h"
+﻿#include "StandardBrightness.h"
 #include <QApplication>
 #include "CHidCmdThread.h"
 #include "hidopertaionutility.h"
@@ -18,6 +18,7 @@ StandardBrightness::~StandardBrightness()
 
 void StandardBrightness::SlotGetBrightValue(BrightnessValue brightnessValue)
 {
+
     //设置灯光
     if(SetBrightness(brightnessValue) == true)
     {
@@ -43,7 +44,7 @@ bool StandardBrightness::SetBrightness(BrightnessValue brightnessValue)
     {
         QApplication::processEvents();
     }
-
+    qDebug() << "good while";
     CHidCmdThread::GetInstance()->AddOpenLedCmd(1,brightnessValue.iNo1);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
@@ -101,7 +102,7 @@ bool StandardBrightness::SetBrightness(BrightnessValue brightnessValue)
 // 获取绿色分量曲线
 bool StandardBrightness::GetGreenComponunt(qint16 iCupType,const QString strSaveImagePath,QList<double> *dGreenComponuntList)
 {
-
+    qDebug() << "StandardBrightness::GetGreenComponunt  ";
     if(dGreenComponuntList->count() > 0)
     {
         return true;

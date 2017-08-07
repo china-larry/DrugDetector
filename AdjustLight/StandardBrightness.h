@@ -1,4 +1,4 @@
-/*******************************************************************
+﻿/*******************************************************************
  **
  ** Copyright:万孚生物
  ** Author: wwl
@@ -26,7 +26,7 @@ struct BrightnessValue
     qint16  iNo8;   // 白右灯
     qint16  iCupType;
 };
-
+Q_DECLARE_METATYPE(BrightnessValue);
 class StandardBrightness : public QObject
 {
     Q_OBJECT
