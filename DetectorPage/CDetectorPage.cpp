@@ -141,8 +141,8 @@ void CDetectorPage::_SlotCheckReadTestDevice()
         m_pTestResultDataList.clear();
         qDebug() << "clear test result data list";
     }
-    //m_pResultsTableWidget->setRowCount(0);
-    m_pResultsTableWidget->clearContents();
+    m_pResultsTableWidget->setRowCount(0);
+    //m_pResultsTableWidget->clearContents();
 
 }
 

@@ -139,8 +139,8 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
     qDebug()<< "cru iCurrentColumn " << iCurrentColumn << iPreviousColumn;
     // 清空控件
     m_pTestDataTextEdit->setText("");
-    //m_pCurrentTestDataTableWidget->setRowCount(0);
-    m_pCurrentTestDataTableWidget->clearContents();
+    m_pCurrentTestDataTableWidget->setRowCount(0);
+    //m_pCurrentTestDataTableWidget->clearContents();
     //
     if(iCurrentRow == iPreviousRow || m_pHistoryDataTableWidget->rowCount() == 0
             || iCurrentRow >= m_pHistoryDataTableWidget->rowCount()
@@ -540,7 +540,7 @@ void CHistoryPage::_InitTestDataWidget()
 {
     m_pTestDataTextEdit = new QTextEdit(this);
     m_pTestDataTextEdit->setFixedSize(409, 100);
-    m_pTestDataTextEdit->setEnabled(false);
+    //m_pTestDataTextEdit->setEnabled(false);
 
     m_pCurrentTestDataTableWidget = new QTableWidget(this);
     m_pCurrentTestDataTableWidget->setFixedWidth(409);

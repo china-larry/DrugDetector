@@ -68,10 +68,7 @@ QTableWidget
 {
     border: 1px solid #0068b7;
     border-radius: 3px;
-    color:#94f3dc;
-    font: 18px ;
     selection-background-color: #eeeeee;
-    selection-color: black
 }
 QHeaderView::section
 {
