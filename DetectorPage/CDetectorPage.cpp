@@ -35,6 +35,7 @@ CDetectorPage::~CDetectorPage()
         qDeleteAll(m_pTestResultDataList);
         m_pTestResultDataList.clear();
     }
+    delete m_pThreadTesting;
 }
 /**
   * @brief 二维码图片显示
@@ -57,11 +58,15 @@ void CDetectorPage::SlotReceiveQRCodeImage(QString strImagePath)
 void CDetectorPage::SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfo)
 {
     m_sQRCodeInfo = sQRCodeInfo;
-    qDebug() << "code info" << m_sQRCodeInfo.iProductID;
+    qDebug() << "接受二维码code info" << m_sQRCodeInfo.iProductID;
     // 更新控件
     m_pProductLotWidget->SetLineText(m_sQRCodeInfo.iProductLot);
     m_pExpirationDateWidget->SetDate(m_sQRCodeInfo.qExprationDate);
-    m_pProductIDWidget->SetLineText(QString::number(m_sQRCodeInfo.iProductID));
+    if(m_sQRCodeInfo.iProductID != 0)
+    {
+        m_pProductIDWidget->SetLineText(QString::number(m_sQRCodeInfo.iProductID));
+    }
+
 }
 /**
   * @brief 接收每次测试结果数据
@@ -161,7 +166,7 @@ void CDetectorPage::_SlotStopTest()
 void CDetectorPage::_SlotPrintToPDF()
 {
     // 资源文件
-    QFile qFile("E:/work_project/DrugDetector/demo/TCup.html");
+    QFile qFile(QCoreApplication::applicationDirPath() + "/Resources/TCube.html");
     if(!qFile.open(QFile::ReadOnly | QIODevice::Text))
     {
         qDebug() << "open false";
@@ -387,7 +392,7 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
     m_pResultsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     // 表单样式
     m_pResultsTableWidget->setColumnCount(3);
-    m_pResultsTableWidget->setRowCount(16);// 最大16个项目
+    //m_pResultsTableWidget->setRowCount(16);// 最大16个项目
     // 虚线框
     m_pResultsTableWidget->setFocusPolicy(Qt::NoFocus);
     // 不显示行号

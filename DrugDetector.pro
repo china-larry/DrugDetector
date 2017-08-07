@@ -122,22 +122,16 @@ INCLUDEPATH   += $$PWD/AdjustLight/opencv/include
                  $$PWD/AdjustLight/opencv/include/opencv
                  $$PWD/AdjustLight/opencv/include/opencv2
 
-
-#LIBS          += $$PWD/opencv/lib/libopencv_*.a
-#LIBS          += $$PWD/PC_HID
-
-
-
 INCLUDEPATH += $$PWD/AdjustLight/opencv/x86/vc14
 DEPENDPATH += $$PWD/AdjustLight/opencv/x86/vc14
 
-
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/AdjustLight/opencv/x86/vc14/lib/ -lopencv_world320
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/AdjustLight/opencv/x86/vc14/lib/ -lopencv_world320d
-#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/AdjustLight/QZXingDLL/ -lQZXing2
-#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/AdjustLight/QZXingDLL/ -lQZXing2d
+
 LIBS += -L$$PWD/AdjustLight/QZXingDLL/ -lQZXing2
-LIBS += -L$$PWD/AdjustLight/hidtest_lib/ -IP_HID
+LIBS += -L$$PWD/AdjustLight/hidtest_lib/ -lIP_HID
 
 INCLUDEPATH += $$PWD/AdjustLight/QZXingDLL
+INCLUDEPATH += $$PWD/AdjustLight/hidtest_lib
 DEPENDPATH += $$PWD/AdjustLight/QZXingDLL
+DEPENDPATH += $$PWD/AdjustLight/hidtest_lib

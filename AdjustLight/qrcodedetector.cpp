@@ -2,6 +2,8 @@
 #include <QTime>
 #include <QApplication>
 #include "CHidCmdThread.h"
+
+
 using namespace std;
 
 QRCodeDetector::QRCodeDetector()
@@ -38,14 +40,15 @@ void QRCodeDetector::SlotGetQRcode()
 {
     QString strQRCode = "";
     qint32 iQRCodePosition = 0;
+    QRCodeInfo qrcodeinfo;
      //定位二维码
+
     if(locationQRCode(strQRCode,&iQRCodePosition) == false)
     {
         emit SignalErrInfo(EnumTypeErr::ErrNoFound);
     }
     else
     {
-        QRCodeInfo qrcodeinfo;
 
         if(DecodeQrcode(strQRCode,&qrcodeinfo) == false)
         {
@@ -54,27 +57,13 @@ void QRCodeDetector::SlotGetQRcode()
         else
         {
             qrcodeinfo.iQRCodePosition = iQRCodePosition;
-            qDebug() << "qrcodeinfo.iProductID = " << qrcodeinfo.iProductID;
-            qDebug() << "qrcodeinfo.eTypeCup = " << qrcodeinfo.eTypeCup;
-            qDebug() << "qrcodeinfo iProductLot= " << qrcodeinfo.iProductLot;
-            qDebug() << "qrcodeinfo iProgramCount= " << qrcodeinfo.iProgramCount;
-            for(int i = 0;i < qrcodeinfo.listProject.count();i++)
-            {
-                InfoProject inf = qrcodeinfo.listProject.at(i);
-                qDebug() << QString::number(i) << "listProject iIndexProgram" << inf.iIndexProgram;
-                qDebug() << QString::number(i) << "listProject dThresholdUp" << inf.dThresholdUp;
-                qDebug() << QString::number(i) << "listProject dThresholdDown" << inf.dThresholdDown;
-                qDebug() << QString::number(i) << "listProject dSensitivityUp" << inf.dSensitivityUp;
-                qDebug() << QString::number(i) << "listProject dSensitivityDown" << inf.dSensitivityDown;
 
-            }
-            //qDebug() << "qrcodeinfo listProject= " << qrcodeinfo.listProject;
-            qDebug() << "qrcodeinfo qExprationDate= " << qrcodeinfo.qExprationDate;
-            qDebug() << "qrcodeinfo strVerson= " << qrcodeinfo.strVerson;
-            qDebug() << "qrcodeinfo.iQRCodePosition = " << qrcodeinfo.iQRCodePosition;
             emit SignalQRCodeInfo(qrcodeinfo);         //定位二维码后，发送二维码信息
+            qDebug() << "SlotGetQRcode end";
         }
+
     }
+
 }
 
 //初始化设备位置和灯光
@@ -82,12 +71,16 @@ bool QRCodeDetector::InitDevice()
 {
     //打开设备
     if(CHidCmdThread::GetInstance()->GetStopped())
+    {
         CHidCmdThread::GetInstance()->start();
+    }
     else
     {
         CHidCmdThread::GetInstance()->SetStopped(true);
         while(CHidCmdThread::GetInstance()->isRunning())
+        {
             continue;
+        }
         CHidCmdThread::GetInstance()->start();
     }
     //关所有灯
@@ -97,7 +90,6 @@ bool QRCodeDetector::InitDevice()
     {
         QApplication::processEvents();
     }
-
 
     //开下白灯
     CHidCmdThread::GetInstance()->AddOpenLedCmd(2,3000);
@@ -142,7 +134,7 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePositi
     {
         emit SignalQRCodeLocation(strDesImage);
         /*获取二维码字符串信息*/
-        if(GetQRCodeImageInfo(strDesImage,strQRCodeInfo) == true)
+        if(GetQRCodeImageInfo(strDesImage,&strQRCodeInfo) == true)
         {
             *iQRCodePosition = GetQRCodePosition();
             qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
@@ -169,7 +161,7 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePositi
             continue;
         }
         emit SignalQRCodeLocation(strDesImage);
-        if(GetQRCodeImageInfo(strDesImage,strQRCodeInfo) == true)
+        if(GetQRCodeImageInfo(strDesImage,&strQRCodeInfo) == true)
         {
             this->SetQRCodePosition(4096 - step1 * 10);
             *iQRCodePosition = GetQRCodePosition();
@@ -196,7 +188,7 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePositi
             continue;
         }
         emit SignalQRCodeLocation(strDesImage);
-        if(GetQRCodeImageInfo(strDesImage,strQRCodeInfo) == true)
+        if(GetQRCodeImageInfo(strDesImage,&strQRCodeInfo) == true)
         {
             this->SetQRCodePosition(step2 * 10);
             *iQRCodePosition = GetQRCodePosition();
@@ -215,7 +207,7 @@ bool QRCodeDetector::GetQRCodeImage(QString *strImagePath)
     return bIsGetImage;
 }
 
-bool QRCodeDetector::GetQRCodeImageInfo(const QString strImagePath,QString &strQRCodeInfo)
+bool QRCodeDetector::GetQRCodeImageInfo(const QString strImagePath,QString *strQRCodeInfo)
 {
     if(strImagePath.isEmpty())
     {
@@ -233,18 +225,15 @@ bool QRCodeDetector::GetQRCodeImageInfo(const QString strImagePath,QString &strQ
             {
                 try
                 {
-                    strQRCodeInfo = pZXing->decodeImage(img/*,img.width(),img.height(),false*/);
-                    qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
+                    *strQRCodeInfo = pZXing->decodeImage(img,img.width(),img.height(),false);
                 }
-                catch(...)
-                {
-                    qDebug() << "not good";
-                }
+                catch(...) {}
 
+                qDebug() << "strQRCodeInfo = " << *strQRCodeInfo;
 
-                if(strQRCodeInfo != "")
+                if(*strQRCodeInfo != "")
                 {
-                    qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
+                    //qDebug() << "strQRCodeInfo = " << *strQRCodeInfo;
                     return true;
                 }
             }

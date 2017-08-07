@@ -147,7 +147,7 @@ QVector<QByteArray> ProtocolUtility::GetWriteParamFromDevCmd(DevConfigParams dev
 
     int lenOfParams = sizeof(DevConfigParams);
     //quint8 paramStructData[lenOfParams];
-    quint8 paramStructData[1024];
+    quint8 paramStructData[51200];
     memcpy(&paramStructData, &devConfigParams, lenOfParams);
     quint8 pkgNum = 1;
     for(; pkgNum<=PARAM_PACKAGE_SIZE; pkgNum++)

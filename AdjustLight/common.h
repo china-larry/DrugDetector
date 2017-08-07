@@ -1,8 +1,6 @@
 ﻿#ifndef COMMON_H
 #define COMMON_H
 #include<QtGlobal>
-#include <QObject>
-#include <QtCore>
 
 static quint8 CRC8Table[256] = {
     0x00, 0x5e, 0xbc, 0xe2, 0x61, 0x3f, 0xdd, 0x83,
@@ -104,7 +102,7 @@ struct BasicSaveParams
     quint16 QRCodeWidth;   //QR二维码的宽度
     quint16 QRCodeHight;   //QR二维码的高度
 };
-Q_DECLARE_METATYPE(BasicSaveParams);
+
 //TCUP 保存类
 struct TCupConfigParams
 {
@@ -121,15 +119,13 @@ struct TCupConfigParams
     quint16 Block_Oriental_X;                   //定位条在图像标准的X位置
     quint16 stripMinWidth;                      // 彩色胶的最小宽度（像素）
 };
-Q_DECLARE_METATYPE(TCupConfigParams);
 
-struct  DevConfigParams
+struct DevConfigParams
 {
     TCupConfigParams TCup_pas;        //TCUP 保存参数
     BasicSaveParams CubeCup_pas;      //CUBE 保存参数
     BasicSaveParams KeyCupFive_pas;   //KCUP_5 保存参数
     BasicSaveParams KeyCupSix_pas;    //KCUP 6 保存参数
 };
-Q_DECLARE_METATYPE(DevConfigParams);
 
 #endif // COMMON_H

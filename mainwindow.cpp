@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QDebug>
 #include <QDesktopWidget>
+#include "AdjustLight/CHidCmdThread.h"
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -28,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    CHidCmdThread::GetInstance()->AddCloseHIDCmd();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)

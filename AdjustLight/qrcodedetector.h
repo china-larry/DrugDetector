@@ -1,4 +1,4 @@
-/*******************************************************************
+﻿/*******************************************************************
  **
  ** Copyright:万孚生物
  ** Author: wwl
@@ -110,7 +110,7 @@ public:
      *         strQRCodeInfo 输出解析到的二维码字符串
      * @return
      */
-    bool GetQRCodeImageInfo(const QString strImagePath,QString &strQRCodeInfo);
+    bool GetQRCodeImageInfo(const QString strImagePath,QString *strQRCodeInfo);
 
     /**
      * @brief DecodeQrcode

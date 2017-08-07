@@ -8,6 +8,12 @@
 #include <QTime>
 
 #include "protocolutility.h"
+
+
+
+
+
+
 #define ACK_TIME_OUT_SECOND 20
 HIDOpertaionUtility* HIDOpertaionUtility::instance = NULL;
 
@@ -25,7 +31,7 @@ HIDOpertaionUtility *HIDOpertaionUtility::GetInstance()
 HIDOpertaionUtility::HIDOpertaionUtility()
 {
     mReadThread = NULL;
-    mHidHandle = -1;
+    mHidHandle = NULL;
     mIsDeviceOpened = false;
     connect(this, SIGNAL(SignalHIDWrite(QByteArray)), this, SLOT(SlotWrite(QByteArray)),
             Qt::QueuedConnection);
@@ -41,13 +47,12 @@ HIDOpertaionUtility::HIDOpertaionUtility()
     mWorkThread.start();
     mDevVersion = "";
     mDevConfigParamsByte = new quint8[sizeof(DevConfigParams)];
-
-
 }
 
 HIDOpertaionUtility::~HIDOpertaionUtility()
 {
     delete mDevConfigParamsByte;
+    HIDClose();
 }
 
 void HIDOpertaionUtility::SlotLoadDll()
@@ -55,30 +60,30 @@ void HIDOpertaionUtility::SlotLoadDll()
     //导入dll,并获取dll包含的操作函数指针
     mReadThread = new HIDReadThread();
     mWorkHandle = QThread::currentThreadId();
-    mHidLib.setFileName("PC_HID.dll");
-    if(mHidLib.load())
-    {
-        mOpenFunc = (OpenMyHIDDeviceFunc) mHidLib.resolve("OpenMyHIDDevice");
-        mCloseFunc = (CloseDevFunc) mHidLib.resolve("CloseDev");
-        mWriteFunc = (WriteHidDataFunc) mHidLib.resolve("WriteHidData");
-        mReadFunc = (ReadHidDataFunc) mHidLib.resolve("ReadHidData");
-    }
-    else
-    {
-        qDebug()<<"导入DLL失败";
-        mOpenFunc = NULL;
-        mCloseFunc = NULL;
-        mWriteFunc = NULL;
-        mReadFunc = NULL;
-    }
+//    mHidLib.setFileName("PC_HIDR.dll");
+//    if(mHidLib.load())
+//    {
+//        mOpenFunc = (OpenMyHIDDeviceFunc) mHidLib.resolve("OpenMyHIDDevice");
+//        mCloseFunc = (CloseDevFunc) mHidLib.resolve("CloseDev");
+//        mWriteFunc = (WriteHidDataFunc) mHidLib.resolve("WriteHidData");
+//        mReadFunc = (ReadHidDataFunc) mHidLib.resolve("ReadHidData");
+//    }
+//    else
+//    {
+//        qDebug()<<"导入DLL失败";
+//        mOpenFunc = NULL;
+//        mCloseFunc = NULL;
+//        mWriteFunc = NULL;
+//        mReadFunc = NULL;
+//    }
 }
 
 void HIDOpertaionUtility::SlotUnloadDll()
 {
-    if(mHidLib.load())
-    {
-        mHidLib.unload();
-    }
+//    if(mHidLib.load())
+//    {
+//        mHidLib.unload();
+//    }
 }
 
 
@@ -125,9 +130,9 @@ void HIDOpertaionUtility::HIDClose()
 bool HIDOpertaionUtility::HIDRead(quint8 *recvDataBuf, int delaytime)
 {
     bool result = false;
-    if(mHidHandle && mReadFunc)
+    if(mHidHandle /*&& mReadFunc*/)
     {
-        result = mReadFunc(mHidHandle, recvDataBuf, delaytime);
+        result = ReadHidData(mHidHandle, recvDataBuf, delaytime);
     }
     return result;
 }
@@ -146,9 +151,9 @@ bool HIDOpertaionUtility::SlotOpen()
         //如已打开需关闭再重开
         SlotClose();
     }
-    if(mOpenFunc)
+    //if(mOpenFunc)
     {
-        mHidHandle = mOpenFunc(USB_PID, USB_VID);
+        mHidHandle = OpenMyHIDDevice(USB_PID, USB_VID);
         if(mHidHandle>0)
         {
             mIsDeviceOpened = true;
@@ -158,7 +163,7 @@ bool HIDOpertaionUtility::SlotOpen()
             isOpen = true;
         }
     }
-
+    emit SignalUpHIDStates(isOpen);
     return isOpen;
 }
 
@@ -169,16 +174,17 @@ bool HIDOpertaionUtility::SlotClose()
     bool result = false;
     if(mHidHandle>0)
     {
-        mCloseFunc(mHidHandle);
+        CloseDev(mHidHandle);
     }
     mIsDeviceOpened = false;//用于关闭读取线程
-    mHidHandle = -1;
+    mHidHandle = NULL;
+    emit SignalUpHIDStates(result);
     return result;
 }
 
 bool HIDOpertaionUtility::SendCmdToDev(QByteArray writeByteArray)
 {
-    if(mHidHandle && mWriteFunc)
+    if(mHidHandle /*&& mWriteFunc*/)
     {
         //发送字节，最大发送64个
         //目前发现发送到设备的命令必须是64个字节，少于64个字节发送命令执行失败，待确认原因
@@ -187,7 +193,7 @@ bool HIDOpertaionUtility::SendCmdToDev(QByteArray writeByteArray)
         {
             writeByte[i] = (quint8)writeByteArray.at(i);
         }
-        int writeResult = mWriteFunc(mHidHandle, (quint8*)&writeByte, CMD_LEN);
+        int writeResult = WriteHidData(mHidHandle, (quint8*)&writeByte, CMD_LEN);
         if (writeResult > 0)
             return true;
         else
@@ -206,7 +212,6 @@ bool HIDOpertaionUtility::SlotWrite(QByteArray qWriteByteArray)
     if(mHidHandle>0)
     {
         m_iCmdType = ((qWriteByteArray.at(5)<<8) && 0xFF00)|(qWriteByteArray.at(6)&0x00FF);
-        //quint8 mCmdType = test.at(1);
         switch (m_iCmdType) {
         case ProtocolUtility::CMD_ROTATE_MOTOR://电机转动命令
         {
@@ -243,7 +248,6 @@ bool HIDOpertaionUtility::SlotWrite(QByteArray qWriteByteArray)
     }
     emit SignalOperationComplete(m_iCmdType,result);
     SetDeviceOperate(false);
-    qDebug() << "HIDOpertaionUtility Write = " << time.elapsed();
     return result;
 }
 

@@ -1,6 +1,7 @@
 ﻿#ifndef HIDOPERTAIONUTILITY_H
 #define HIDOPERTAIONUTILITY_H
 
+
 #include<QLibrary>
 #include<QThread>
 #include<QTimer>
@@ -8,7 +9,7 @@
 #include<QMutex>
 #include "common.h"
 #include "upgradefile.h"
-
+#include "IP_HID.h"
 
 /*******************************************************************
  **
@@ -25,10 +26,10 @@
  ********************************************************************/
 
 
-typedef int (*OpenMyHIDDeviceFunc)(quint16 usbHID, quint16 usbPID);
-typedef int (*WriteHidDataFunc)(int hidHandle, quint8* reportBuf, int len);
-typedef void (*CloseDevFunc)(int hidHandle);
-typedef int (*ReadHidDataFunc)(int hidHandle, quint8* recvDataBuf, int delaytime);
+//typedef int (*OpenMyHIDDeviceFunc)(quint16 usbHID, quint16 usbPID);
+//typedef int (*WriteHidDataFunc)(int hidHandle, quint8* reportBuf, int len);
+//typedef void (*CloseDevFunc)(int hidHandle);
+//typedef int (*ReadHidDataFunc)(int hidHandle, quint8* recvDataBuf, int delaytime);
 
 static const quint8  CMD_LEN = 64;//下位机配置HID每个收/发包数据都是64字节
 static const quint16 USB_VID = 0x0483;
@@ -192,6 +193,9 @@ signals:
     void SignalUpgradeValue(int);
     //升级错误信号
     void SignalUpgradeError(QString qErrorMsgStr);
+
+    //发送HID状态信号 true-已连接 ， false-已断开
+    void SignalUpHIDStates(bool bConnect);
 private slots:
     //------------------以下几个槽只在后台线程执行---------------------//
     /**
@@ -250,12 +254,17 @@ private slots:
      */
     bool SlotUpgradeSubControl(QString filePath);
 private:
-    int mHidHandle;//USB hid 句柄
+    HANDLE mHidHandle;//USB hid 句柄
     QLibrary mHidLib;
-    OpenMyHIDDeviceFunc mOpenFunc;//打开操作函数指针
-    WriteHidDataFunc mWriteFunc;//写操作函数指针
-    CloseDevFunc mCloseFunc;//关闭操作函数指针
-    ReadHidDataFunc mReadFunc;//读取操作函数指针
+
+
+//    OpenMyHIDDeviceFunc mOpenFunc;//打开操作函数指针
+//    WriteHidDataFunc mWriteFunc;//写操作函数指针
+//    CloseDevFunc mCloseFunc;//关闭操作函数指针
+//    ReadHidDataFunc mReadFunc;//读取操作函数指针
+
+
+
     QThread mWorkThread;//工作线程，构造函数内使用moveToThread转到后台线程操作
     Qt::HANDLE mWorkHandle;//工作线程句柄
     volatile bool mIsDeviceOpened;//设备是否已打开

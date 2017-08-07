@@ -95,12 +95,14 @@ void UpgradeProgress::SlotSetProcessValue(int value)
 void UpgradeProgress::SlotUpgradeError(QString str_error)
 {
     qDebug()<<str_error;
-    MessageBox::warning("升级失败");
+    //MessageBox::warning("升级失败");
+    QMessageBox::warning(this, tr("warning"), tr("upgrade error"));
     this->close();
 }
 
 void UpgradeProgress::SlotUpdataFinish()
 {
-    MessageBox::warning("升级成功");
+    //MessageBox::warning("升级成功");
+    QMessageBox::warning(this, tr("warning"), tr("upgrade error"));
     this->close();
 }
