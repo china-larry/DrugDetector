@@ -58,15 +58,11 @@ void CDetectorPage::SlotReceiveQRCodeImage(QString strImagePath)
 void CDetectorPage::SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfo)
 {
     m_sQRCodeInfo = sQRCodeInfo;
-    qDebug() << "接受二维码code info" << m_sQRCodeInfo.iProductID;
+    qDebug() << "接受二维码code info" << m_sQRCodeInfo.strProductID;
     // 更新控件
     m_pProductLotWidget->SetLineText(m_sQRCodeInfo.iProductLot);
     m_pExpirationDateWidget->SetDate(m_sQRCodeInfo.qExprationDate);
-    if(m_sQRCodeInfo.iProductID != 0)
-    {
-        m_pProductIDWidget->SetLineText(QString::number(m_sQRCodeInfo.iProductID));
-    }
-
+    m_pProductIDWidget->SetLineText(m_sQRCodeInfo.strProductID);
 }
 /**
   * @brief 接收每次测试结果数据
@@ -166,7 +162,10 @@ void CDetectorPage::_SlotStopTest()
 void CDetectorPage::_SlotPrintToPDF()
 {
     // 资源文件
-    QFile qFile(QCoreApplication::applicationDirPath() + "/Resources/TCube.html");
+    QString strHtmlFile = QCoreApplication::applicationDirPath() + "/Resources/"
+            + m_pProductDefinitionWidget->GetCurrentSelectText() + ".html";
+    qDebug() << "html file " << strHtmlFile;
+    QFile qFile(strHtmlFile);
     if(!qFile.open(QFile::ReadOnly | QIODevice::Text))
     {
         qDebug() << "open false";
@@ -174,7 +173,16 @@ void CDetectorPage::_SlotPrintToPDF()
     QTextStream qTextStream(&qFile);
     QString strHtml = qTextStream.readAll();
     qFile.close();
-    _ReplaceHtmlData(strHtml);
+    // 替换数据
+    if(m_pProductDefinitionWidget->GetCurrentSelectText() == "TCube")
+    {
+        _ReplaceCubeHtmlData(strHtml);
+    }
+    else
+    {
+        _ReplaceCupHtmlData(strHtml);
+    }
+
     // 打印
     _PrintToPage(strHtml);
 }
@@ -509,13 +517,13 @@ bool CDetectorPage::_PrintToPage(QString strHtml)
     qPrinter->setPageSize(QPrinter::A4);
     qPrinter->setFullPage(true);
     // 输出到PDF
-//    qPrinter->setOutputFormat(QPrinter::PdfFormat);
-//    qPrinter->setOutputFileName("E:/b.pdf");
+    qPrinter->setOutputFormat(QPrinter::PdfFormat);
+    qPrinter->setOutputFileName("E:/b.pdf");
     // 连接打印机
-    QPrintDialog qPrintDialog(qPrinter, this);
-    if (qPrintDialog.exec() != QDialog::Accepted) {
-        return false;
-    }
+//    QPrintDialog qPrintDialog(qPrinter, this);
+//    if (qPrintDialog.exec() != QDialog::Accepted) {
+//        return false;
+//    }
     QWebEnginePage * pWebEnginePage = new QWebEnginePage;
     pWebEnginePage->setHtml(strHtml);
 
@@ -551,11 +559,11 @@ bool CDetectorPage::_PrintToPage(QString strHtml)
     return false;
 }
 /**
-  * @brief 替换html为控件数据
+  * @brief 替换html为控件数据,cube杯型
   * @param
   * @return
   */
-void CDetectorPage::_ReplaceHtmlData(QString &strHtml)
+void CDetectorPage::_ReplaceCubeHtmlData(QString &strHtml)
 {
     QString strFindWord = "";
     // operator id
@@ -641,7 +649,11 @@ void CDetectorPage::_ReplaceHtmlData(QString &strHtml)
     //
     strFindWord = "${test_image_02}";
     strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), strImageByte);
+}
 
+void CDetectorPage::_ReplaceCupHtmlData(QString &strHtml)
+{
+    _ReplaceCubeHtmlData(strHtml);
 }
 /**
   * @brief 获取打印格式

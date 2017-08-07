@@ -61,7 +61,7 @@ struct QRCodeInfo
 {
     QString iProductLot;            // 产品批号（通过读取二维码自动生成）
     QDate qExprationDate;           // 产品有效期（通过读取二维码自动生成）
-    int iProductID;                 // 产品ID（通过读取二维码自动生成）
+    QString strProductID;             // 产品ID（通过读取二维码自动生成）
     EnumTypeCup eTypeCup;           //杯类型
     int iProgramCount;              //项目总数
     QString strVerson;              //版本
@@ -144,6 +144,8 @@ public:
                                  QString strAllCount,                   //总子条数
                                  QString strVersion,                    //版本
                                  QVector<QStringList> qv_strListitem);  //项目信息
+
+    QString GetProjectName(const int iIndex);
     //void SetOperatorResult(bool OperatorResult);
     //bool GetOperatorResult();
     void SetQRCodePosition(int QRCodePosition);

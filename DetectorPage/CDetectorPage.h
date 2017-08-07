@@ -75,7 +75,8 @@ private:
     // 打印
     bool _PrintToPage(QString strHtml);
     // 打印
-    void _ReplaceHtmlData(QString &strHtml);// 替换html中数据位测试数据
+    void _ReplaceCubeHtmlData(QString &strHtml);// 替换html中数据位测试数据, cube杯型
+    void _ReplaceCupHtmlData(QString &strHtml);// 替换html中数据位测试数据, cup杯型
     // 测试结果打印格式（动态数量）
     QString _GetResultsDataHtml();
 

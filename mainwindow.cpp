@@ -40,6 +40,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
     CHidCmdThread::GetInstance()->AddCloseHIDCmd();
+    qDebug() << "delete ui";
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -290,4 +291,5 @@ void MainWindow::_ReadConfigFile()
             qDebug() << pError->errorString();
         }
     }
+    qFile.close();
 }

@@ -109,17 +109,6 @@ void ThreadTesting::StartTest()
 
 void ThreadTesting::_SLotReceiveQRCode(QRCodeInfo info)
 {
-    qDebug() << __FUNCTION__ << info.eTypeCup;
-    qDebug() << __FUNCTION__ << info.iProductLot;
-    qDebug() << __FUNCTION__ << info.qExprationDate;
-    qDebug() << __FUNCTION__ << info.iProductID;
-
-    for(int i=0;i<info.listProject.count();i++)
-    {
-        qDebug() << "i:" << info.listProject.at(i).strProjectName;
-
-    }
-
     if(m_eCurrentStatus !=ENUM_STATUS_TEST::STATUS_NONE)
     {
         return;
@@ -153,8 +142,8 @@ void ThreadTesting::_SlotMoveStepperMotor()
     }
     else
     {
-        emit SignalErr(ENUM_ERR::ERR_STEP_MOTOR);
-        qDebug() << "ENUM_ERR::ERR_STEP_MOTOR  1";
+//        emit SignalErr(ENUM_ERR::ERR_STEP_MOTOR);
+//        qDebug() << "ENUM_ERR::ERR_STEP_MOTOR  1";
     }
 }
 

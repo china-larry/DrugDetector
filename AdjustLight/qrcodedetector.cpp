@@ -58,6 +58,7 @@ void QRCodeDetector::SlotGetQRcode()
         {
             qrcodeinfo.iQRCodePosition = iQRCodePosition;
 
+            qDebug() << "qrcodeinfo.strProductID " << qrcodeinfo.strProductID;
             emit SignalQRCodeInfo(qrcodeinfo);         //定位二维码后，发送二维码信息
             qDebug() << "SlotGetQRcode end";
         }
@@ -429,8 +430,8 @@ bool QRCodeDetector::FindQRcodeLocationRect(IplImage *dstImg)
     {
         drawContours(myMat, contours, index[i], Scalar(0, 0, 255), 2, 8);
     }
-
-    imwrite("result.jpg", myMat);
+    QString strPath = QCoreApplication::applicationDirPath() + "/result.png";
+    imwrite(strPath.toLatin1().data(), myMat);
 
     myMat.release();
     image.release();
@@ -482,6 +483,7 @@ bool QRCodeDetector::DecodeQrcode(const QString strdecode,QRCodeInfo *qrCodeInfo
                  QString AllCount = strListQrcodeSection.at(0);
                  int iAllCount = AllCount.toInt();
                  strAllCount = QString::number(iAllCount,16);
+                 qDebug() << "strAllCount = " << strAllCount;
                  strCupType = strListQrcodeSection.at(1);
                  strVersion = strListQrcodeSection.at(2);
             }
@@ -504,9 +506,11 @@ bool QRCodeDetector::DecodeQrcode(const QString strdecode,QRCodeInfo *qrCodeInfo
             {
                 if(strListQrcodeSection.count() == 1) //卡序号
                 {
-                    if((strListQrcodeSection.at(0) != "") && (qv_strListitem.count() == strAllCount.toInt()))
+                    bool isOK = false;
+                    if((strListQrcodeSection.at(0) != "") && (qv_strListitem.count() == strAllCount.toInt(&isOK,16)))
                     {
                         strCardNumber = strListQrcodeSection.at(0);
+                        qDebug() << "strCardNumber = " << strCardNumber;
                     }
                 }
                 else if(strListQrcodeSection.count() == 3) //项目（0 - 24）
@@ -586,7 +590,7 @@ QRCodeInfo QRCodeDetector::PackageQRCodeInfo(QString strBatchNumber,            
     QRCodeInfo qrCodeInfo;
     qrCodeInfo.iProductLot = strBatchNumber;
     qrCodeInfo.qExprationDate = QDate::fromString(strValidityData, "yyMMdd");
-    qrCodeInfo.iProductID = strCardNumber.toInt();
+    qrCodeInfo.strProductID = strCardNumber;
 
     bool ok = false;
     switch (strCupType.toInt(&ok,16))
@@ -625,6 +629,7 @@ QRCodeInfo QRCodeDetector::PackageQRCodeInfo(QString strBatchNumber,            
             dThresholdUp = qv_strListitem.at(pos).at(1);
             dSensitivityUp = qv_strListitem.at(pos).at(2);
             iInfoProject.iIndexProgram = strIndexProgram.toInt(&ok,16);
+            iInfoProject.strProjectName = GetProjectName(iInfoProject.iIndexProgram);
             iInfoProject.dThresholdUp = dThresholdUp.toInt(&ok,16);
             iInfoProject.dSensitivityUp = dSensitivityUp.toDouble();
             if(qv_strListitem.at(pos).count() >= 5)
@@ -647,6 +652,125 @@ QRCodeInfo QRCodeDetector::PackageQRCodeInfo(QString strBatchNumber,            
     return qrCodeInfo;
 }
 
+QString QRCodeDetector::GetProjectName(const int iIndex)
+{
+    QString strProjectName = "";
+
+    switch (iIndex)
+    {
+    case 1:
+        strProjectName = "MOP";
+        break;
+    case 2:
+        strProjectName = "MET";
+        break;
+    case 3:
+        strProjectName = "KET";
+        break;
+    case 4:
+        strProjectName = "BZO";
+        break;
+    case 5:
+        strProjectName = "COC";
+        break;
+    case 6:
+        strProjectName = "MDMA";
+        break;
+    case 7:
+        strProjectName = "AMP";
+        break;
+    case 8:
+        strProjectName = "BAR";
+        break;
+    case 9:
+        strProjectName = "TCA";
+        break;
+    case 10:
+        strProjectName = "OXY";
+        break;
+    case 11:
+        strProjectName = "BUP";
+        break;
+    case 12:
+        strProjectName = "THC";
+        break;
+    case 13:
+        strProjectName = "PCP";
+        break;
+    case 14:
+        strProjectName = "MTD";
+        break;
+    case 15:
+        strProjectName = "OPI";
+        break;
+    case 16:
+        strProjectName = "PPX";
+        break;
+    case 17:
+        strProjectName = "CAF";
+        break;
+    case 18:
+        strProjectName = "COT";
+        break;
+    case 19:
+        strProjectName = "EDDP";
+        break;
+    case 20:
+        strProjectName = "ETG";
+        break;
+    case 21:
+        strProjectName = "FTY";
+        break;
+    case 22:
+        strProjectName = "K2";
+        break;
+    case 23:
+        strProjectName = "TRA";
+        break;
+    case 24:
+        strProjectName = "MQL";
+        break;
+    case 25:
+        strProjectName = "MC";
+        break;
+    case 26:
+        strProjectName = "nAMP";
+        break;
+    case 30:
+        strProjectName = "PCP-MDMA";
+        break;
+    case 31:
+        strProjectName = "COC-AMP";
+        break;
+    case 32:
+        strProjectName = "BAR_MTD";
+        break;
+    case 33:
+        strProjectName = "COC_MET";
+        break;
+    case 34:
+        strProjectName = "MET_THC";
+        break;
+    case 35:
+        strProjectName = "MOP_MET";
+        break;
+    case 36:
+        strProjectName = "OXY_THC";
+        break;
+    case 37:
+        strProjectName = "OPI_BZO";
+        break;
+    case 38:
+        strProjectName = "TCA_BUP";
+        break;
+    case 39:
+        strProjectName = "TRA_K2";
+        break;
+    default:
+        break;
+    }
+    return strProjectName;
+}
 
 
 int QRCodeDetector::TestLightUp(EnumTypeLight type)    //开灯

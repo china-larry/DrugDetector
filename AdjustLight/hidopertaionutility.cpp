@@ -205,8 +205,6 @@ bool HIDOpertaionUtility::SendCmdToDev(QByteArray writeByteArray)
 
 bool HIDOpertaionUtility::SlotWrite(QByteArray qWriteByteArray)
 {
-    QTime time;
-    time.start();
     bool result = false;
     m_iCmdType = 1;
     if(mHidHandle>0)
@@ -702,7 +700,7 @@ void HIDReadThread::run()
 
         //ReadHidDataFunc最后一个参数负1则读线程堵塞直到数据读取成功
         int readRetVal = HIDOpertaionUtility::GetInstance()->HIDRead((quint8*)(&readByte), -1);
-        qDebug() << "readRetVal = " << readRetVal;
+        //qDebug() << "readRetVal = " << readRetVal;
         if(readRetVal>0)
         {
             //QMutexLocker locker(&mDataMutex);
@@ -714,7 +712,7 @@ void HIDReadThread::run()
             HIDOpertaionUtility::GetInstance()->ReceiveNewCmdFromDev(data);
             //                emit SignalReceiveNewCmd(data);
             //emit SignalReceiveNewCmd();
-            qDebug()<<"ReadByte:"<<data.toHex();
+            //qDebug()<<"ReadByte:"<<data.toHex();
         }
         //else
             msleep(500);
