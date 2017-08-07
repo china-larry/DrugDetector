@@ -61,6 +61,7 @@ private:
     void _InitLayout();
     void _GoHistoryPageLayout();
     void _GoTestPageLayout();
+    void _ReadConfigFile();// 读取配置文件
 private:
     // UI
     Ui::MainWindow *ui;

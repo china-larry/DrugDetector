@@ -6,6 +6,14 @@
 #include <QMouseEvent>
 #include <QDebug>
 #include <QDesktopWidget>
+#include <QMessageBox>
+#include <QFile>
+#include <QIODevice>
+#include <QJsonParseError>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
 #include "AdjustLight/CHidCmdThread.h"
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -24,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //
     m_kiTitleHeight = 50;// title高度
     m_kiStatusBarHeight = 30;// 状态栏高度
+    // 读取配置文件
+    _ReadConfigFile();
 }
 
 MainWindow::~MainWindow()
@@ -246,4 +256,38 @@ void MainWindow::_GoTestPageLayout()
     m_pMainLayout->addWidget(m_pStackedWidget);
        // 布局
     m_pCentralWidget->setLayout(m_pMainLayout);
+}
+
+void MainWindow::_ReadConfigFile()
+{
+    QFile qFile(QApplication::applicationDirPath() + "/Resources/config.json");
+    if(!qFile.open(QFile::ReadOnly))
+    {
+        QMessageBox::critical(this, tr("Error"), tr("Open Config File Failure"));
+        return;
+    }
+    QByteArray qFileByte = qFile.readAll();
+    QJsonParseError *pError=new QJsonParseError;
+    QJsonDocument qJsonDoc=QJsonDocument::fromJson(qFileByte, pError);
+    if(pError->error == QJsonParseError::NoError)
+    {
+        if(qJsonDoc.isObject())
+        {
+            QJsonObject qJsonObject = qJsonDoc.object();//取得最外层这个大对象
+                //这里放代码，对json数据进行取值
+            QJsonArray qCupArray = qJsonObject["cup_type"].toArray();
+            QStringList strCupList;
+            foreach(QJsonValue qJsonValue, qCupArray)
+            {
+                strCupList.push_back(qJsonValue.toString());
+            }
+            qDebug() << " cup type " << strCupList;
+            // 设置控件
+            m_pDetectorPage->SetCupType(strCupList);
+        }
+        else
+        {
+            qDebug() << pError->errorString();
+        }
+    }
 }

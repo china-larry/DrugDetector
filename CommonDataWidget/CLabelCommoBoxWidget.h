@@ -27,6 +27,7 @@ signals:
 public slots:
 public:
     QString GetCurrentSelectText();
+    void SetCupType(QStringList strCupList);
 private:
     void _InitLayout();
 private:

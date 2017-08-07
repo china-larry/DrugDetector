@@ -222,6 +222,12 @@ void CDetectorPage::_LoadQss()
 {
     LoadQss(this, ":/qss/DetectorPage/DetectorPage.qss");
 }
+
+void CDetectorPage::SetCupType(QStringList strCupTypeList)
+{
+    m_strCupTypeList = strCupTypeList;
+    m_pProductDefinitionWidget->SetCupType(strCupTypeList);
+}
 // Donor Details
 /**
   * @brief 创建DonorDetail组合控件
@@ -336,13 +342,11 @@ QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
     QGroupBox *pGroupBox = new QGroupBox(tr("Product Details"), this);
     pGroupBox->setFixedSize(445, 152);
 
-    QStringList strProductDifinitionList;
-    strProductDifinitionList << tr("T Cup") << tr("T Cupa");
-    m_pProductDefinitionWidget = new CLabelCommoBoxWidget(tr("Product Definition"), strProductDifinitionList, this);
+    // 杯类型
+    m_pProductDefinitionWidget = new CLabelCommoBoxWidget(tr("Product Definition"), m_strCupTypeList, this);
     m_pProductLotWidget = new CLabelLineEditWidget(tr("Product Lot"), "", this);
     m_pProductLotWidget->SetLineTextEnable(false);
     //
-
     m_pExpirationDateWidget = new CLabelDateWidget(tr("Expiration Date"), QDate::currentDate(), this);
     m_pProductIDWidget = new CLabelLineEditWidget(tr("Product ID"), "", this);
     m_pProductIDWidget->SetLineTextEnable(false);
@@ -443,8 +447,6 @@ void CDetectorPage::_InitWidget()
     m_pStopTestButton->setFixedSize(135, 35);
     connect(m_pStopTestButton, SIGNAL(clicked(bool)), this, SLOT(_SlotStopTest()));
     // 状态栏
-
-
 }
 
 void CDetectorPage::_InitLayout()

@@ -27,6 +27,20 @@ QString CLabelCommoBoxWidget::GetCurrentSelectText()
     return m_strCurrentSelectText;
 }
 
+void CLabelCommoBoxWidget::SetCupType(QStringList strCupList)
+{
+    if(m_pComboBox != NULL)
+    {
+        m_pComboBox->clear();
+        if(strCupList.count() > 0)
+        {
+            m_pComboBox->addItems(strCupList);
+            m_pComboBox->setCurrentIndex(0);
+        }
+    }
+
+}
+
 void CLabelCommoBoxWidget::_InitLayout()
 {
     QVBoxLayout *pLayout = new QVBoxLayout;
