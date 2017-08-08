@@ -41,7 +41,7 @@ public:
 
      * @return
      */
-    bool SetBrightness(BrightnessValue brightnessValue);
+    bool SetBrightnessValue(BrightnessValue brightnessValue);
 
     /**
      * @brief GetGreenComponunt
@@ -52,7 +52,7 @@ public:
      *        dGreenComponuntList 输出绿色分量数据
      * @return
      */
-    bool GetGreenComponunt(qint16 iCupType,const QString strSaveImagePath,QList<double> *dGreenComponuntList);
+    bool GetGreenComponunt(qint16 iCupType,const QString strSaveImagePath);
 
     /**
      * @brief GetGreenComponunt
@@ -62,7 +62,7 @@ public:
      * @return
      */
     bool SaveStandardParams(QString strFileName,QString ParamsType,BrightnessValue brightnessValue,
-                            QList<double> *dGreenComponuntList);
+                            QList<int> iGreenComponuntList);
 
     /**
      * @brief GetGreenComponunt
@@ -71,8 +71,11 @@ public:
      *        dGreenComponuntList 绿色分量数据
      * @return
      */
-    bool ReadStandardParams(QString strFileName,QString ParamsType,BrightnessValue *brightnessValue,
-                            QList<double> *dGreenComponuntList);
+    bool ReadStandardParams(QString strFileName,QString ParamsType,BrightnessValue &brightnessValue,
+                            QList<int> &iGreenComponuntList);
+
+    void SetBrightness(BrightnessValue brightnessValue);
+    BrightnessValue GetBrightness();
 
 signals:
     /**
@@ -82,7 +85,10 @@ signals:
      *        dGreenComponuntList 绿色分量数据
      * @return
      */
-    void SignalSendPictureToUI(QString strPicturePath,QList<double> dGreenComponuntList);
+    void SignalSendPictureToUI(QString strPicturePath,QList<int> iGreenComponuntList);
+
+public slots:
+    void SlotSaveBrightnessValue();
 
 protected slots:
     /**
@@ -96,6 +102,8 @@ protected slots:
 
 private:
 
+    BrightnessValue m_brightnessValue;
+    QList<int> m_iGreenComponuntList;
 };
 
 #endif // STANDARDBRIGHTNESS_H

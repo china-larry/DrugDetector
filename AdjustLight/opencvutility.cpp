@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QApplication>
 
+
 OpencvUtility* OpencvUtility::instance = NULL;
 
 OpencvUtility::OpencvUtility()
@@ -43,6 +44,7 @@ bool OpencvUtility::OpenVideo()
         {
             QString strError = "open video err";
             qDebug() << strError;
+            SignalErrInfo(EnumTypeErr::ErrNoOpenVideo);
             return false;
         }
         qDebug()<<"init camera...";
@@ -57,8 +59,6 @@ bool OpencvUtility::OpenVideo()
             QApplication::processEvents();
         }
         qDebug()<<"open camera seccess!";
-        //QThread::sleep(5);
-        //namedWindow("Capture",CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
     }
     return true;
 }

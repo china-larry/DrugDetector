@@ -68,7 +68,9 @@ void SetLabelBackImage(QLabel *pLabel, QString strImagePath)
     {
         return;
     }
-    pLabel->setPixmap(QPixmap(strImagePath));
+    QPixmap qPixmap(strImagePath);
+    pLabel->setPixmap(qPixmap.scaled(pLabel->width(), pLabel->height(), Qt::KeepAspectRatio));
+    pLabel->setAlignment(Qt::AlignCenter);
 }
 /**
   * @brief 设置Widget的QSS样式

@@ -1,0 +1,20 @@
+{"StandardMachineCalibrationParams":
+	{
+	"iBrightNo1":10000,
+	"iBrightNo2":10000,
+	"iBrightNo3":10000,
+	"iBrightNo4":10000,
+	"iBrightNo5":10000,
+	"iBrightNo6":10000,
+	"iBrightNo7":10000,
+	"iBrightNo8":10000,
+	"iGreenComponentNo1":200,
+	"iGreenComponentNo2":200,
+	"iGreenComponentNo3":200,
+	"iGreenComponentNo4":200,
+	"iGreenComponentNo5":200,
+	"iGreenComponentNo6":200,
+	"iGreenComponentNo7":200,
+	"iGreenComponentNo7":200
+	}
+}

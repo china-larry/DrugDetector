@@ -128,4 +128,11 @@ struct DevConfigParams
     BasicSaveParams KeyCupSix_pas;    //KCUP 6 保存参数
 };
 
+enum EnumTypeErr
+{
+    ErrNoFoundQR = 0,    //未找到二维码
+    ErrDecodeQR,         //二维码解码失败
+    ErrNoConnectUSB,     //USB未连接
+    ErrNoOpenVideo       //摄像头打开失败
+};
 #endif // COMMON_H

@@ -3,7 +3,7 @@
 #include <QObject>
 
 
-struct BrightnessValue
+struct BrightnessOrdinaryValue
 {
     qint16  iBrightNo1; //上绿灯
     qint16  iBrightNo2; //上白灯
@@ -23,7 +23,7 @@ struct BrightnessValue
     double  iGreenComponentNo7; //右绿灯绿色分量
     double  iGreenComponentNo8; //右白灯绿色分量
 };
-
+Q_DECLARE_METATYPE(BrightnessOrdinaryValue);
 
 class OrdinaryBrightmess : public QObject
 {
@@ -50,7 +50,7 @@ public:
      *
      * @return
      */
-    bool SaveBrightnessValueParams(QString strFileName,QString ParamsType,BrightnessValue brightnessValue);
+    bool SaveBrightnessValueParams(QString strFileName,QString ParamsType,BrightnessOrdinaryValue brightnessValue);
 
     /**
      * @brief ReadBrightnessValueParams
@@ -59,27 +59,35 @@ public:
      *
      * @return
      */
-    bool ReadBrightnessValueParams(QString strFileName,QString ParamsType,BrightnessValue *brightnessValue);
+    bool ReadBrightnessValueParams(QString strFileName,QString ParamsType,BrightnessOrdinaryValue &brightnessValue);
 
-    BrightnessValue GetBrightnessValue();
+    BrightnessOrdinaryValue GetBrightnessValue();
 
-    void SetBrightnessValue(BrightnessValue brightnessValue);
+    void SetBrightnessValue(BrightnessOrdinaryValue brightnessValue);
 
     bool InitMachine(QPoint *CenterPoint);
 
-    void OrdinaryCalibration(BrightnessValue *brightnessValue);
+    void OrdinaryCalibration(BrightnessOrdinaryValue *brightnessValue);
 
     QPoint findCenterPoint(QString strImagePath);
 
 
 signals:
-    void SignalBrightnessValueToUI(BrightnessValue brightnessValue);
-
-protected slots:
+    //发送参数到UI更新
+    void SignalImportValueToUI(BrightnessOrdinaryValue brightnessValue);
+    void SignalCalibrationValueToUI(BrightnessOrdinaryValue brightnessValue);
+    void SignalReadValueToUI(BrightnessOrdinaryValue brightnessValue);
+public slots:
+    //接收UI信息
      void SlotOrdinaryCalibration();
+     void SlotOrdinaryImport();
+     //
+     void SlotOrdinarySave();
+     void SlotOrdinaryRead();
 
 private:
-    BrightnessValue m_brightnessValue;
+    BrightnessOrdinaryValue m_brightnessValue;
+    BrightnessOrdinaryValue m_StandardMachinebrightnessValue;
 };
 
 #endif // ORDINARYBRIGHTMESS_H

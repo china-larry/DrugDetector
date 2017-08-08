@@ -15,10 +15,12 @@ public:
 
 signals:
     void SignalSetBrightValue(BrightnessValue brightnessValue);
+    void SingalCheckDeriveButton();
 public slots:
-
+    void SlotGetPictureToUI(QString strPicturePath,QList<int> iGreenComponuntList);
 private slots:
     void _SlotCheckConfirmButton();
+    void _SlotCheckDeriveButton();
 public:
 
 private:
@@ -46,6 +48,7 @@ private:
     // curve valuesx
     QLabel *m_pCurveValuesLabel;
     QGraphicsView *m_pCurveGraphicsView;
+    QGraphicsScene *m_pGraphicsScene;
     //
     QPushButton *m_pDeriveButton;
     // 校正接口类

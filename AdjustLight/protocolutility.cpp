@@ -146,8 +146,8 @@ QVector<QByteArray> ProtocolUtility::GetWriteParamFromDevCmd(DevConfigParams dev
     // 0x0006		    数据包序号（1-10）		数据
 
     int lenOfParams = sizeof(DevConfigParams);
-    //quint8 paramStructData[lenOfParams];
-    quint8 paramStructData[51200];
+    quint8 paramStructData[sizeof(DevConfigParams)];
+    //quint8 paramStructData[51200];
     memcpy(&paramStructData, &devConfigParams, lenOfParams);
     quint8 pkgNum = 1;
     for(; pkgNum<=PARAM_PACKAGE_SIZE; pkgNum++)

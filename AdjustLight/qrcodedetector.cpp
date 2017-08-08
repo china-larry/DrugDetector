@@ -45,14 +45,14 @@ void QRCodeDetector::SlotGetQRcode()
 
     if(locationQRCode(strQRCode,&iQRCodePosition) == false)
     {
-        emit SignalErrInfo(EnumTypeErr::ErrNoFound);
+        emit SignalErrInfo(EnumTypeErr::ErrNoFoundQR);
     }
     else
     {
 
         if(DecodeQrcode(strQRCode,&qrcodeinfo) == false)
         {
-            emit SignalErrInfo(EnumTypeErr::ErrDecode);
+            emit SignalErrInfo(EnumTypeErr::ErrDecodeQR);
         }
         else
         {
@@ -62,9 +62,7 @@ void QRCodeDetector::SlotGetQRcode()
             emit SignalQRCodeInfo(qrcodeinfo);         //定位二维码后，发送二维码信息
             qDebug() << "SlotGetQRcode end";
         }
-
     }
-
 }
 
 //初始化设备位置和灯光
@@ -128,7 +126,10 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePositi
     this->SetQRCodePosition(0);
 
     mSleep(500);
-    GetQRCodeImage(&strImageSavePath);
+    if(GetQRCodeImage(&strImageSavePath) == false)
+    {
+        return false;
+    }
     QString strDesImage = "";
     /*从原始图片中提取二维码图片*/
     if(ExtractQRCode(strImageSavePath,strDesImage) == true)
@@ -155,7 +156,10 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePositi
             QApplication::processEvents();
         }
         mSleep(100);
-        GetQRCodeImage(&strImageSavePath);
+        if(GetQRCodeImage(&strImageSavePath) == false)
+        {
+            return false;
+        }
         QString strDesImage = "";
         if(ExtractQRCode(strImageSavePath,strDesImage) == false)
         {
@@ -182,7 +186,10 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePositi
             QApplication::processEvents();                   
         }
         mSleep(100);
-        GetQRCodeImage(&strImageSavePath);
+        if(GetQRCodeImage(&strImageSavePath) == false)
+        {
+            return false;
+        }
         QString strDesImage = "";
         if(ExtractQRCode(strImageSavePath,strDesImage) == false)
         {

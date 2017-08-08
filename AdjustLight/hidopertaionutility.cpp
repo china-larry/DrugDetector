@@ -13,7 +13,7 @@
 
 
 
-
+Q_DECLARE_METATYPE(DevConfigParams)
 #define ACK_TIME_OUT_SECOND 20
 HIDOpertaionUtility* HIDOpertaionUtility::instance = NULL;
 
@@ -52,7 +52,8 @@ HIDOpertaionUtility::HIDOpertaionUtility()
 HIDOpertaionUtility::~HIDOpertaionUtility()
 {
     delete mDevConfigParamsByte;
-    HIDClose();
+    //HIDClose();
+    SlotClose();
 }
 
 void HIDOpertaionUtility::SlotLoadDll()
@@ -60,30 +61,11 @@ void HIDOpertaionUtility::SlotLoadDll()
     //导入dll,并获取dll包含的操作函数指针
     mReadThread = new HIDReadThread();
     mWorkHandle = QThread::currentThreadId();
-//    mHidLib.setFileName("PC_HIDR.dll");
-//    if(mHidLib.load())
-//    {
-//        mOpenFunc = (OpenMyHIDDeviceFunc) mHidLib.resolve("OpenMyHIDDevice");
-//        mCloseFunc = (CloseDevFunc) mHidLib.resolve("CloseDev");
-//        mWriteFunc = (WriteHidDataFunc) mHidLib.resolve("WriteHidData");
-//        mReadFunc = (ReadHidDataFunc) mHidLib.resolve("ReadHidData");
-//    }
-//    else
-//    {
-//        qDebug()<<"导入DLL失败";
-//        mOpenFunc = NULL;
-//        mCloseFunc = NULL;
-//        mWriteFunc = NULL;
-//        mReadFunc = NULL;
-//    }
 }
 
 void HIDOpertaionUtility::SlotUnloadDll()
 {
-//    if(mHidLib.load())
-//    {
-//        mHidLib.unload();
-//    }
+
 }
 
 
@@ -130,7 +112,7 @@ void HIDOpertaionUtility::HIDClose()
 bool HIDOpertaionUtility::HIDRead(quint8 *recvDataBuf, int delaytime)
 {
     bool result = false;
-    if(mHidHandle /*&& mReadFunc*/)
+    if(mHidHandle)
     {
         result = ReadHidData(mHidHandle, recvDataBuf, delaytime);
     }
@@ -163,7 +145,10 @@ bool HIDOpertaionUtility::SlotOpen()
             isOpen = true;
         }
     }
-    emit SignalUpHIDStates(isOpen);
+    if(isOpen == false)
+    {
+        SignalErrInfo(EnumTypeErr::ErrNoConnectUSB);
+    }
     return isOpen;
 }
 
@@ -178,13 +163,12 @@ bool HIDOpertaionUtility::SlotClose()
     }
     mIsDeviceOpened = false;//用于关闭读取线程
     mHidHandle = NULL;
-    emit SignalUpHIDStates(result);
     return result;
 }
 
 bool HIDOpertaionUtility::SendCmdToDev(QByteArray writeByteArray)
 {
-    if(mHidHandle /*&& mWriteFunc*/)
+    if(mHidHandle)
     {
         //发送字节，最大发送64个
         //目前发现发送到设备的命令必须是64个字节，少于64个字节发送命令执行失败，待确认原因

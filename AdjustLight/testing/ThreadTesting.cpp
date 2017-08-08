@@ -63,6 +63,7 @@ ThreadTesting::ThreadTesting()
 
     connect(&m_CodeDetoector,SIGNAL(SignalQRCodeInfo(QRCodeInfo)),this, SLOT(_SLotReceiveQRCode(QRCodeInfo)));
     connect(&m_CodeDetoector,SIGNAL(SignalErrInfo(EnumTypeErr)),this,SLOT(_SlotReceiveQRCodeErr(EnumTypeErr)));
+    connect(&m_CodeDetoector,SIGNAL(SignalQRCodeLocation(QString)),this,SLOT(_SlotReceiveQRCodeErr(QString)));
 
 
 
@@ -143,7 +144,7 @@ void ThreadTesting::_SlotMoveStepperMotor()
     else
     {
 //        emit SignalErr(ENUM_ERR::ERR_STEP_MOTOR);
-//        qDebug() << "ENUM_ERR::ERR_STEP_MOTOR  1";
+        qDebug() << "ENUM_ERR::ERR_STEP_MOTOR  1";
     }
 }
 
@@ -401,7 +402,6 @@ TestResultData ThreadTesting::_ReceivePicPath(QString path)
         }
         else
         {
-//            qDebug()  << iLocationProjectMid << "Pic:" <<path.left(path.count()-4)+"a.bmp"  ;
             if(m_iIndexProject+1 < m_iStepList.count())
             {
                 _ModifNextStep(m_iIndexProject+1,PIXEL_HALF_OF_WIGHT_TCUP-iLocationProjectMid);
@@ -427,7 +427,51 @@ TestResultData ThreadTesting::_ReceivePicPath(QString path)
 
     _GetTestResult(projectData,resultData);
 
+    delete img;
     return resultData;
+}
+
+/**
+ * @brief ThreadTesting::_SlotReceivePicPath 接口 传入图片，返回垂直分量值
+ * @param path  图片路径
+ * @return 返回测试结果，List为空，为失败。
+ */
+
+QList<int> ThreadTesting::ReceivePicPath(QString path)
+{
+    QImage* img=new QImage();
+    QList<int> iHorizontalProjectionList;
+
+    if(!img->load(path))
+    {
+        qDebug() << "加载图像失败";
+        return iHorizontalProjectionList;
+    }
+
+    QPixmap::fromImage(img->copy(img->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP, PIXEL_TOP_MARJIN_TCUP,PIXEL_HALF_OF_WIGHT_TCUP*2,
+                                 img->height()-PIXEL_TOP_MARJIN_TCUP-PIXEL_BOTTOM_MARJIN_TCUP)).save(path.left(path.count()-4)+"a.bmp");
+
+    QList<int> iUprightProjectionList;
+    iUprightProjectionList = _UprightProjection(path.left(path.count()-4)+"a.bmp");
+
+    int iLocationProjectMid =0;
+    if(!iUprightProjectionList.isEmpty())
+    {
+        iLocationProjectMid = FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
+        if(iLocationProjectMid == -1)
+        {
+            return iHorizontalProjectionList;
+        }
+    }
+    QPixmap::fromImage(img->copy(img->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP, PIXEL_TOP_MARJIN_TCUP+PIXEL_OF_PRO_NAME_TCUP,
+                                 PIXEL_HALF_OF_WIGHT_TCUP*2,
+                                 img->height()-PIXEL_TOP_MARJIN_TCUP-PIXEL_BOTTOM_MARJIN_TCUP-PIXEL_OF_PRO_NAME_TCUP)).save(path.left(path.count()-4)+"b.bmp");
+
+    iHorizontalProjectionList = _HorizontalProjection(path.left(path.count()-4)+"b.bmp");
+
+
+    delete img;
+    return iHorizontalProjectionList;
 }
 
 
@@ -516,6 +560,7 @@ void ThreadTesting::_SlotReceivePicPath2(QString path)
 
     }
     _SlotStatusHandler(true ,m_eCurrentStatus);
+    delete img;
 }
 
 
@@ -1059,13 +1104,24 @@ int ThreadTesting::_ImageAnalysisProcess(int * A1, int Orglinecenterx,int PicW)
 void ThreadTesting::_SlotReceiveQRCodeErr(EnumTypeErr err)
 {
     switch (err) {
-    case ErrNoFound:
-        emit SignalErr(Err_NoFound);
+    case ErrNoFoundQR:
+        emit SignalErr(ERR_NO_FOUND);
         break;
-    case ErrDecode:
-        emit SignalErr(Err_Decode);
+    case ErrDecodeQR:
+        emit SignalErr(ERR_DECODE);
+        break;
+    case ErrNoConnectUSB:
+        emit SignalErr(ERR_DISCONNECT_USB);
+        break;
+    case ErrNoOpenVideo:
+        emit SignalErr(ERR_DECODE);
         break;
     default:
         break;
     }
+}
+
+void ThreadTesting::_SlotReceiveQRcodePic(QString path)
+{
+    emit SignalSendQRCodePic(path);
 }

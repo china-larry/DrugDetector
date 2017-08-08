@@ -19,6 +19,7 @@
 #include <QImage>
 #include <QDir>
 #include <QObject>
+#include "common.h"
 
 using namespace cv;
 
@@ -65,6 +66,7 @@ public:
     VideoCapture GetVideoCapture();
 
 signals:
+    void SignalErrInfo(EnumTypeErr eErr);           //错误信号
 
 protected slots:
 

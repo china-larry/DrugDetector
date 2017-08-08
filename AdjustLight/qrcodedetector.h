@@ -23,6 +23,7 @@
 #include "protocolutility.h"
 #include "opencvutility.h"
 #include "QZXing.h"
+#include "common.h"
 
 enum EnumTypeCup
 {
@@ -30,12 +31,6 @@ enum EnumTypeCup
     TypeKCup5 = 1,       //5联旋钮杯（尿液）
     TypeSCup10 = 4,      //10联唾液方杯（唾液）
     TypeKCup6 = 6        //6联旋钮杯（尿液）
-};
-
-enum EnumTypeErr
-{
-    ErrNoFound =0,    //未找到二维码
-    ErrDecode         //二维码解码失败
 };
 
 enum EnumTypeLight

@@ -6,16 +6,20 @@
 #include <QGroupBox>
 #include <QLineEdit>
 #include "CommonDataWidget/CLabelLineEditWidget.h"
+#include "AdjustLight/ordinarybrightmess.h"
 
 class COrdinaryModelWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit COrdinaryModelWidget(QWidget *parent = nullptr);
+    ~COrdinaryModelWidget();
 
 signals:
-
 public slots:
+    void SlotGetImportValue(BrightnessOrdinaryValue brightnessValue);
+    void SlotGetCalibrationValue(BrightnessOrdinaryValue brightnessValue);
+    void SlotGetReadValue(BrightnessOrdinaryValue brightnessValue);
 
 private:
     QGroupBox *_CreateStandardGroup();
@@ -46,7 +50,7 @@ private:
     QLineEdit *m_pSNo8LineEditWidget;
     // push button
     QPushButton *m_pImportButton;
-    QPushButton *m_pCalibration;
+    QPushButton *m_pCalibrationButton;
 
     // Oridinary machine
     QLabel *m_pOridinaryBrightnessValueLabel;
@@ -69,6 +73,8 @@ private:
     QLineEdit *m_pONo8LineEditWidget;
     QPushButton *m_pSaveButton;
     QPushButton *m_pReadButton;
+    //
+    OrdinaryBrightmess *m_pOrdinaryBrightmess;
 };
 
 #endif // CORDINARYMODELWIDGET_H

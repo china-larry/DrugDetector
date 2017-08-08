@@ -120,9 +120,29 @@ void CDetectorPage::SlotReceiveTestError(ENUM_ERR eTestError)
         QMessageBox::critical(NULL, "Error", "Get Data Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         break;
     }
+    case ERR_NO_FOUND:
+    {
+        QMessageBox::critical(NULL, "Error", "QR Code Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ERR_DECODE:
+    {
+        QMessageBox::critical(NULL, "Error", "QR Decode Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ERR_DISCONNECT_USB:
+    {
+        QMessageBox::critical(NULL, "Error", "USB Connect Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ERR_VIDEOOPENFAILED:
+    {
+        QMessageBox::critical(NULL, "Error", "Video Open Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
     default:
     {
-        QMessageBox::critical(NULL, "Error", "Get UnKnow Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        QMessageBox::critical(NULL, "Error", "Other Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         break;
     }
     }
@@ -482,13 +502,10 @@ void CDetectorPage::_InitLayout()
 
 void CDetectorPage::_InitThreadTesting()
 {
-//    m_pLibDrugDetector = new LibDrugDetector();
-//    connect(m_pLibDrugDetector, SIGNAL(SignalSendQRCodeInfo(QVariant)), this, SLOT(SlotReceiveQRCodeInfo(QVariant)));
-//    connect(m_pLibDrugDetector, SIGNAL(SignalSendTestResultData(QVariant)), this, SLOT(SlotReceiveTestResultData(QVariant)));
-//    connect(m_pLibDrugDetector, SIGNAL(SignalEndTest()), this, SLOT(SlotEndTest()));
     //
     m_pThreadTesting = new ThreadTesting();
     connect(m_pThreadTesting, SIGNAL(SignalSendCodeInfo(QRCodeInfo)), this, SLOT(SlotReceiveQRCodeInfo(QRCodeInfo)));
+    connect(m_pThreadTesting, SIGNAL(SignalSendQRCodePic(QString)), this, SLOT(SlotReceiveQRCodeImage(QString)));
     connect(m_pThreadTesting, SIGNAL(SignalTestResult(TestResultData)), this, SLOT(SlotReceiveTestResultData(TestResultData)));
     connect(m_pThreadTesting, SIGNAL(SignalTestComplete()), this, SLOT(SlotEndTest()));
     connect(m_pThreadTesting, SIGNAL(SignalErr(ENUM_ERR)), this, SLOT(SlotReceiveTestError(ENUM_ERR)));
@@ -499,11 +516,7 @@ void CDetectorPage::_SetCamaraImage(QString strImagePath)
 {
     if(strImagePath != "")
     {
-        QPixmap qPixmap(strImagePath);
-        if(!qPixmap.isNull())
-        {
-            m_pCamaraLabel->setPixmap(qPixmap);
-        }
+        SetLabelBackImage(m_pCamaraLabel, strImagePath);
     }
 }
 /**

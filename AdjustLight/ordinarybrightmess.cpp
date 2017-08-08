@@ -17,27 +17,9 @@ OrdinaryBrightmess::OrdinaryBrightmess()
 
 void OrdinaryBrightmess::SlotOrdinaryCalibration()
 {
-    BrightnessValue StandardbrightnessValue;
-    StandardbrightnessValue.iBrightNo1 = 300;
-    StandardbrightnessValue.iBrightNo2 = 300;
-    StandardbrightnessValue.iBrightNo3 = 300;
-    StandardbrightnessValue.iBrightNo4 = 300;
-    StandardbrightnessValue.iBrightNo5 = 300;
-    StandardbrightnessValue.iBrightNo6 = 300;
-    StandardbrightnessValue.iBrightNo7 = 300;
-    StandardbrightnessValue.iBrightNo8 = 300;
+    SetBrightnessValue(m_StandardMachinebrightnessValue);
 
-    StandardbrightnessValue.iGreenComponentNo1 = 200;
-    StandardbrightnessValue.iGreenComponentNo2 = 200;
-    StandardbrightnessValue.iGreenComponentNo3 = 200;
-    StandardbrightnessValue.iGreenComponentNo4 = 200;
-    StandardbrightnessValue.iGreenComponentNo5 = 200;
-    StandardbrightnessValue.iGreenComponentNo6 = 200;
-    StandardbrightnessValue.iGreenComponentNo7 = 200;
-    StandardbrightnessValue.iGreenComponentNo8 = 200;
-
-    SetBrightnessValue(StandardbrightnessValue);
-    BrightnessValue brightnessValue;
+    BrightnessOrdinaryValue brightnessValue;
     OrdinaryCalibration(&brightnessValue);
 
     qDebug() << "brightnessValue.iBrightNo1 = "<< brightnessValue.iBrightNo1;
@@ -57,7 +39,33 @@ void OrdinaryBrightmess::SlotOrdinaryCalibration()
     qDebug() << "brightnessValue.iGreenComponentNo6 = " << brightnessValue.iGreenComponentNo6;
     qDebug() << "brightnessValue.iGreenComponentNo7 = " << brightnessValue.iGreenComponentNo7;
     qDebug() << "brightnessValue.iGreenComponentNo8 = " << brightnessValue.iGreenComponentNo8;
-    emit SignalBrightnessValueToUI(brightnessValue);
+    emit SignalCalibrationValueToUI(brightnessValue);
+
+    //保存
+     const QString strFileName = QCoreApplication::applicationDirPath() + "/Resources/DrugDetectionMachineParams.json";
+    const QString strOrdinaryParamsType = "OrdinaryMachinebrightnesCalibrate";
+    SaveBrightnessValueParams(strFileName,strOrdinaryParamsType,brightnessValue);
+}
+
+void OrdinaryBrightmess::SlotOrdinaryImport()
+{
+    const QString strFileName = QCoreApplication::applicationDirPath() + "/Resources/DrugDetectionMachineParams.json";
+    const QString strParamsType = "StandardMachinebrightnesCalibrate";
+
+    ReadBrightnessValueParams(strFileName,strParamsType, m_StandardMachinebrightnessValue);
+
+    qDebug() << "stand " << m_StandardMachinebrightnessValue.iBrightNo1;
+    emit SignalImportValueToUI(m_StandardMachinebrightnessValue);
+}
+
+void OrdinaryBrightmess::SlotOrdinarySave()
+{
+
+}
+
+void OrdinaryBrightmess::SlotOrdinaryRead()
+{
+
 }
 
 QPoint OrdinaryBrightmess::findCenterPoint(QString strImagePath)
@@ -73,7 +81,7 @@ QPoint OrdinaryBrightmess::findCenterPoint(QString strImagePath)
     return qCenterPoint;
 }
 
-void OrdinaryBrightmess::OrdinaryCalibration(BrightnessValue *brightnessValue)
+void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue *brightnessValue)
 {
     QPoint qCenterPoint;
     InitMachine(&qCenterPoint);
@@ -249,12 +257,12 @@ bool OrdinaryBrightmess::InitMachine(QPoint *CenterPoint)
     return true;
 }
 
-BrightnessValue OrdinaryBrightmess::GetBrightnessValue()
+BrightnessOrdinaryValue OrdinaryBrightmess::GetBrightnessValue()
 {
     return m_brightnessValue;
 }
 
-void OrdinaryBrightmess::SetBrightnessValue(BrightnessValue brightnessValue)
+void OrdinaryBrightmess::SetBrightnessValue(BrightnessOrdinaryValue brightnessValue)
 {
     m_brightnessValue = brightnessValue;
 }
@@ -345,7 +353,7 @@ bool OrdinaryBrightmess::GetLightValue(const int iBrightNo,QPoint qCenterPoint,c
     return true;
 }
 bool OrdinaryBrightmess::SaveBrightnessValueParams(QString strFileName,QString ParamsType,
-                                                   BrightnessValue brightnessValue)
+                                                   BrightnessOrdinaryValue brightnessValue)
 {
     QMap<QString,QVariant> strSaveDataMap;
     strSaveDataMap.insert("iBrightNo1",brightnessValue.iBrightNo1);
@@ -377,28 +385,28 @@ bool OrdinaryBrightmess::SaveBrightnessValueParams(QString strFileName,QString P
 }
 
 bool OrdinaryBrightmess::ReadBrightnessValueParams(QString strFileName,QString ParamsType,
-                                                   BrightnessValue *brightnessValue)
+                                                   BrightnessOrdinaryValue &brightnessValue)
 {
     QMap<QString,QVariant> ParamsMap;
     if(ParamsConfiguration::getInstance()->ReadParamsFromConfigFile(strFileName,ParamsType,&ParamsMap))
     {
-        brightnessValue->iBrightNo1 = ParamsMap.value("iBrightNo1").toInt();
-        brightnessValue->iBrightNo2 = ParamsMap.value("iBrightNo2").toInt();
-        brightnessValue->iBrightNo3 = ParamsMap.value("iBrightNo3").toInt();
-        brightnessValue->iBrightNo4 = ParamsMap.value("iBrightNo4").toInt();
-        brightnessValue->iBrightNo5 = ParamsMap.value("iBrightNo5").toInt();
-        brightnessValue->iBrightNo6 = ParamsMap.value("iBrightNo6").toInt();
-        brightnessValue->iBrightNo7 = ParamsMap.value("iBrightNo7").toInt();
-        brightnessValue->iBrightNo8 = ParamsMap.value("iBrightNo8").toInt();
+        brightnessValue.iBrightNo1 = ParamsMap.value("iBrightNo1").toInt();
+        brightnessValue.iBrightNo2 = ParamsMap.value("iBrightNo2").toInt();
+        brightnessValue.iBrightNo3 = ParamsMap.value("iBrightNo3").toInt();
+        brightnessValue.iBrightNo4 = ParamsMap.value("iBrightNo4").toInt();
+        brightnessValue.iBrightNo5 = ParamsMap.value("iBrightNo5").toInt();
+        brightnessValue.iBrightNo6 = ParamsMap.value("iBrightNo6").toInt();
+        brightnessValue.iBrightNo7 = ParamsMap.value("iBrightNo7").toInt();
+        brightnessValue.iBrightNo8 = ParamsMap.value("iBrightNo8").toInt();
 
-        brightnessValue->iGreenComponentNo1 = ParamsMap.value("iGreenComponentNo2").toInt();
-        brightnessValue->iGreenComponentNo2 = ParamsMap.value("iGreenComponentNo2").toInt();
-        brightnessValue->iGreenComponentNo3 = ParamsMap.value("iGreenComponentNo3").toInt();
-        brightnessValue->iGreenComponentNo4 = ParamsMap.value("iGreenComponentNo4").toInt();
-        brightnessValue->iGreenComponentNo5 = ParamsMap.value("iGreenComponentNo5").toInt();
-        brightnessValue->iGreenComponentNo6 = ParamsMap.value("iGreenComponentNo6").toInt();
-        brightnessValue->iGreenComponentNo7 = ParamsMap.value("iGreenComponentNo7").toInt();
-        brightnessValue->iGreenComponentNo8 = ParamsMap.value("iGreenComponentNo8").toInt();
+        brightnessValue.iGreenComponentNo1 = ParamsMap.value("iGreenComponentNo2").toInt();
+        brightnessValue.iGreenComponentNo2 = ParamsMap.value("iGreenComponentNo2").toInt();
+        brightnessValue.iGreenComponentNo3 = ParamsMap.value("iGreenComponentNo3").toInt();
+        brightnessValue.iGreenComponentNo4 = ParamsMap.value("iGreenComponentNo4").toInt();
+        brightnessValue.iGreenComponentNo5 = ParamsMap.value("iGreenComponentNo5").toInt();
+        brightnessValue.iGreenComponentNo6 = ParamsMap.value("iGreenComponentNo6").toInt();
+        brightnessValue.iGreenComponentNo7 = ParamsMap.value("iGreenComponentNo7").toInt();
+        brightnessValue.iGreenComponentNo8 = ParamsMap.value("iGreenComponentNo8").toInt();
         return true;
     }
     else

@@ -3,7 +3,87 @@
 #include "PublicFunction.h"
 COrdinaryModelWidget::COrdinaryModelWidget(QWidget *parent) : QWidget(parent)
 {
+    m_pOrdinaryBrightmess = new OrdinaryBrightmess;
+    connect(m_pOrdinaryBrightmess, SIGNAL(SignalImportValueToUI(BrightnessValue)), this, SLOT(SlotGetImportValue(BrightnessOrdinaryValue)));
+    connect(m_pOrdinaryBrightmess, SIGNAL(SignalCalibrationValueToUI(BrightnessValue)), this, SLOT(SlotGetCalibrationValue(BrightnessOrdinaryValue)));
+    connect(m_pOrdinaryBrightmess, SIGNAL(SignalReadValueToUI(BrightnessValue)), this, SLOT(SlotGetReadValue(BrightnessOrdinaryValue)));
     _InitLayout();
+}
+
+COrdinaryModelWidget::~COrdinaryModelWidget()
+{
+    if(m_pOrdinaryBrightmess != NULL)
+    {
+        delete m_pOrdinaryBrightmess;
+        m_pOrdinaryBrightmess = NULL;
+    }
+}
+
+void COrdinaryModelWidget::SlotGetImportValue(BrightnessOrdinaryValue brightnessValue)
+{
+    m_pSNo1HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo1));
+    m_pSNo2HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo2));
+    m_pSNo3HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo3));
+    m_pSNo4HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo4));
+    m_pSNo5HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo5));
+    m_pSNo6HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo6));
+    m_pSNo7HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo7));
+    m_pSNo8HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo8));
+    //
+    m_pSNo1LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo1));
+    m_pSNo2LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo2));
+    m_pSNo3LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo3));
+    m_pSNo4LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo4));
+    m_pSNo5LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo5));
+    m_pSNo6LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo6));
+    m_pSNo7LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo7));
+    m_pSNo8LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo8));
+}
+/**
+  * @brief
+  * @param
+  * @return
+  */
+void COrdinaryModelWidget::SlotGetCalibrationValue(BrightnessOrdinaryValue brightnessValue)
+{
+    m_pONo1HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo1));
+    m_pONo2HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo2));
+    m_pONo3HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo3));
+    m_pONo4HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo4));
+    m_pONo5HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo5));
+    m_pONo6HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo6));
+    m_pONo7HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo7));
+    m_pONo8HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo8));
+    //
+    m_pONo1LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo1));
+    m_pONo2LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo2));
+    m_pONo3LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo3));
+    m_pONo4LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo4));
+    m_pONo5LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo5));
+    m_pONo6LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo6));
+    m_pONo7LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo7));
+    m_pONo8LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo8));
+}
+
+void COrdinaryModelWidget::SlotGetReadValue(BrightnessOrdinaryValue brightnessValue)
+{
+    m_pONo1HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo1));
+    m_pONo2HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo2));
+    m_pONo3HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo3));
+    m_pONo4HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo4));
+    m_pONo5HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo5));
+    m_pONo6HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo6));
+    m_pONo7HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo7));
+    m_pONo8HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo8));
+    //
+    m_pONo1LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo1));
+    m_pONo2LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo2));
+    m_pONo3LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo3));
+    m_pONo4LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo4));
+    m_pONo5LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo5));
+    m_pONo6LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo6));
+    m_pONo7LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo7));
+    m_pONo8LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo8));
 }
 /**
   * @brief 创建Standary组
@@ -70,9 +150,11 @@ QGroupBox *COrdinaryModelWidget::_CreateStandardGroup()
     m_pSNo8LineEditWidget->setFixedSize(120, 21);
     //
     m_pImportButton = new QPushButton(tr("Import"), this);
+    connect(m_pImportButton, SIGNAL(clicked(bool)), m_pOrdinaryBrightmess, SLOT(SlotOrdinaryImport()));
     m_pImportButton->setFixedSize(130, 35);
-    m_pCalibration = new QPushButton(tr("Calibration"), this);
-    m_pCalibration->setFixedSize(130, 35);
+    m_pCalibrationButton = new QPushButton(tr("Calibration"), this);
+    connect(m_pCalibrationButton, SIGNAL(clicked(bool)), m_pOrdinaryBrightmess, SLOT(SlotOrdinaryCalibration()));
+    m_pCalibrationButton->setFixedSize(130, 35);
      //
     QHBoxLayout *pLabelLayout = new QHBoxLayout;
     pLabelLayout->addSpacing(110);
@@ -104,7 +186,7 @@ QGroupBox *COrdinaryModelWidget::_CreateStandardGroup()
     //
     QHBoxLayout *pButtonLayout = new QHBoxLayout;    
     pButtonLayout->addWidget(m_pImportButton);
-    pButtonLayout->addWidget(m_pCalibration);
+    pButtonLayout->addWidget(m_pCalibrationButton);
     //
     QVBoxLayout *pLayout = new QVBoxLayout;
     pLayout->addSpacing(20);
@@ -164,9 +246,9 @@ QGroupBox *COrdinaryModelWidget::_CreateOridinaryGroup()
     m_pONo8HLineEditWidget->SetLineEditFixSize(120, 21);
     m_pONo8LineEditWidget->setFixedSize(120, 21);
     //
-    m_pSaveButton = new QPushButton(tr("Import"), this);
+    m_pSaveButton = new QPushButton(tr("Save"), this);
     m_pSaveButton->setFixedSize(130, 35);
-    m_pReadButton = new QPushButton(tr("Calibration"), this);
+    m_pReadButton = new QPushButton(tr("Read"), this);
     m_pReadButton->setFixedSize(130, 35);
      //
     QHBoxLayout *pLabelLayout = new QHBoxLayout;

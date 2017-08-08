@@ -1,10 +1,35 @@
 ﻿#include "CStandardModelWidget.h"
 #include <QBoxLayout>
+#include <QDebug>
 #include "PublicFunction.h"
 CStandardModelWidget::CStandardModelWidget(QWidget *parent) : QWidget(parent)
 {
     _InitWidget();
     _InitLayout();
+}
+/**
+  * @brief
+  * @param strPicturePath 图片路径
+  * @param dGreenComponuntList: Y值List，X值为递增，1-MAX
+  * @return
+  */
+void CStandardModelWidget::SlotGetPictureToUI(QString strPicturePath, QList<int> iGreenComponuntList)
+{
+    // 设置Photo
+    if(!strPicturePath.isEmpty())
+    {
+        SetLabelBackImage(m_pPhotoShowLabel, strPicturePath);
+    }
+    //
+    qDebug() << strPicturePath << "a LIS " << iGreenComponuntList.count() << "  Y value :" << iGreenComponuntList;
+    // 画曲线
+    int iGreenComponuntListCount = iGreenComponuntList.count();
+//    for(int i = 0; i < iGreenComponuntListCount - 1; ++i)
+//    {
+//        m_pGraphicsScene->addLine(i, iGreenComponuntList.at(i), i + 1, iGreenComponuntList.at(i + 1));
+//    }
+    m_pGraphicsScene->addLine(0,0,100,100);
+
 }
 
 void CStandardModelWidget::_SlotCheckConfirmButton()
@@ -22,6 +47,11 @@ void CStandardModelWidget::_SlotCheckConfirmButton()
     brightnessValue.iCupType = 0;
 
     emit SignalSetBrightValue(brightnessValue);
+}
+
+void CStandardModelWidget::_SlotCheckDeriveButton()
+{
+    emit SingalCheckDeriveButton();
 }
 /**
   * @brief 创建brightness控件组
@@ -89,7 +119,15 @@ void CStandardModelWidget::_InitWidget()
     m_pCurveGraphicsView = new QGraphicsView(this);
     m_pCurveGraphicsView->setFixedSize(432, 276);
     //
+    m_pGraphicsScene = new QGraphicsScene(this);
+    m_pCurveGraphicsView->setAlignment(Qt::AlignLeft|Qt::AlignBottom);
+    m_pCurveGraphicsView->setScene(m_pGraphicsScene);
+    //
+    m_pGraphicsScene->setSceneRect(0,0,m_pCurveGraphicsView->width(),m_pCurveGraphicsView->height());
+//    m_pGraphicsScene->addLine(0,0,100,100);
+    //
     m_pDeriveButton = new QPushButton(tr("Derive"), this);
+    connect(m_pDeriveButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckDeriveButton()));
     m_pDeriveButton->setFixedSize(130, 35);
     //
     // qss
@@ -97,6 +135,10 @@ void CStandardModelWidget::_InitWidget()
     // 校准接口类
     m_pStandardBrightness = new StandardBrightness;
     connect(this, SIGNAL(SignalSetBrightValue(BrightnessValue)), m_pStandardBrightness, SLOT(SlotGetBrightValue(BrightnessValue)));
+    connect(m_pStandardBrightness, SIGNAL(SignalSendPictureToUI(QString,QList<int>)), this, SLOT(SlotGetPictureToUI(QString,QList<int>)));
+    connect(this, SIGNAL(SingalCheckDeriveButton()), m_pStandardBrightness, SLOT(SlotSaveBrightnessValue()));
+
+
 }
 
 void CStandardModelWidget::_InitLayout()

@@ -29,8 +29,10 @@ enum ENUM_ERR
     ERR_STEP_MOTOR,         //转动电机失败
     ERR_LIGHT,              //开关灯失败
     ERR_DATA,               //参数错误
-    Err_NoFound,            //未找到二维码
-    Err_Decode              //二维码解码失败
+    ERR_NO_FOUND,            //未找到二维码
+    ERR_DECODE,              //二维码解码失败
+    ERR_DISCONNECT_USB,     //未找到二维码
+    ERR_VIDEOOPENFAILED     //二维码解码失败
 };
 Q_DECLARE_METATYPE(ENUM_ERR);
 
@@ -56,12 +58,14 @@ public:
     explicit ThreadTesting();
     ~ThreadTesting();
     void StartTest();                               //启动测试
+    QList<int> ReceivePicPath(QString path);
 signals:
     void SignalErr(ENUM_ERR err);                   //报错 错误信息
     void SignalTestResult(TestResultData result);   //每条测试结果
     void SignalTestComplete();                      //测试完成
     void SignalStartMotor();
     void SignalSendCodeInfo(QRCodeInfo info);       //二维码信息
+    void SignalSendQRCodePic(QString path);
 private slots:
     void _SlotMotorComplete(quint16 mCmdType, bool result);
     void _SlotStatusHandler(bool result, ENUM_STATUS_TEST status);
@@ -69,6 +73,7 @@ private slots:
     void _SlotMoveStepperMotor();
     void _SLotReceiveQRCode(QRCodeInfo info);
     void _SlotReceiveQRCodeErr(EnumTypeErr err);
+    void _SlotReceiveQRcodePic(QString path);
 private:
     int         m_iIndexProject;
     int         m_iStepsMoveMotor;
