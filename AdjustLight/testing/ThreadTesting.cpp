@@ -460,7 +460,7 @@ QList<int> ThreadTesting::ReceivePicPath(QString path)
         iLocationProjectMid = FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
         if(iLocationProjectMid == -1)
         {
-            return iHorizontalProjectionList;
+            return iUprightProjectionList;
         }
     }
     QPixmap::fromImage(img->copy(img->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP, PIXEL_TOP_MARJIN_TCUP+PIXEL_OF_PRO_NAME_TCUP,

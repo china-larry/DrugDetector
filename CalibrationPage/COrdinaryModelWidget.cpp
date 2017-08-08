@@ -4,9 +4,9 @@
 COrdinaryModelWidget::COrdinaryModelWidget(QWidget *parent) : QWidget(parent)
 {
     m_pOrdinaryBrightmess = new OrdinaryBrightmess;
-    connect(m_pOrdinaryBrightmess, SIGNAL(SignalImportValueToUI(BrightnessValue)), this, SLOT(SlotGetImportValue(BrightnessOrdinaryValue)));
-    connect(m_pOrdinaryBrightmess, SIGNAL(SignalCalibrationValueToUI(BrightnessValue)), this, SLOT(SlotGetCalibrationValue(BrightnessOrdinaryValue)));
-    connect(m_pOrdinaryBrightmess, SIGNAL(SignalReadValueToUI(BrightnessValue)), this, SLOT(SlotGetReadValue(BrightnessOrdinaryValue)));
+    connect(m_pOrdinaryBrightmess, SIGNAL(SignalImportValueToUI(BrightnessOrdinaryValue)), this, SLOT(SlotGetImportValue(BrightnessOrdinaryValue)));
+    connect(m_pOrdinaryBrightmess, SIGNAL(SignalCalibrationValueToUI(BrightnessOrdinaryValue)), this, SLOT(SlotGetCalibrationValue(BrightnessOrdinaryValue)));
+    connect(m_pOrdinaryBrightmess, SIGNAL(SignalReadValueToUI(BrightnessOrdinaryValue)), this, SLOT(SlotGetReadValue(BrightnessOrdinaryValue)));
     _InitLayout();
 }
 
