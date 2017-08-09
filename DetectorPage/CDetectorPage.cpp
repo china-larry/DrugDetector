@@ -93,7 +93,6 @@ void CDetectorPage::SlotEndTest()
     // 告知main，传送数据
     emit SignalEndTest();
     //
-
 }
 
 void CDetectorPage::SlotReceiveTestError(ENUM_ERR eTestError)
@@ -508,7 +507,7 @@ void CDetectorPage::_InitThreadTesting()
     connect(m_pThreadTesting, SIGNAL(SignalSendQRCodePic(QString)), this, SLOT(SlotReceiveQRCodeImage(QString)));
     connect(m_pThreadTesting, SIGNAL(SignalTestResult(TestResultData)), this, SLOT(SlotReceiveTestResultData(TestResultData)));
     connect(m_pThreadTesting, SIGNAL(SignalTestComplete()), this, SLOT(SlotEndTest()));
-    connect(m_pThreadTesting, SIGNAL(SignalErr(ENUM_ERR)), this, SLOT(SlotReceiveTestError(ENUM_ERR)));
+    connect(m_pThreadTesting, SIGNAL(SignalTestErr(ENUM_ERR)), this, SLOT(SlotReceiveTestError(ENUM_ERR)));
 
 }
 

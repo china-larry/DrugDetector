@@ -8,7 +8,8 @@
 #include <QTime>
 
 #include "protocolutility.h"
-
+#include "upgradefile.h"
+#include "qrcodedetector.h"
 
 
 

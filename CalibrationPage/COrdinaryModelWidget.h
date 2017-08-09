@@ -7,6 +7,8 @@
 #include <QLineEdit>
 #include "CommonDataWidget/CLabelLineEditWidget.h"
 #include "AdjustLight/ordinarybrightmess.h"
+#include "AdjustLight/hidopertaionutility.h"
+#include "AdjustLight/opencvutility.h"
 
 class COrdinaryModelWidget : public QWidget
 {
@@ -20,6 +22,7 @@ public slots:
     void SlotGetImportValue(BrightnessOrdinaryValue brightnessValue);
     void SlotGetCalibrationValue(BrightnessOrdinaryValue brightnessValue);
     void SlotGetReadValue(BrightnessOrdinaryValue brightnessValue);
+    void SlotGetErrorValue(EnumTypeErr enumTypeError);
 
 private:
     QGroupBox *_CreateStandardGroup();

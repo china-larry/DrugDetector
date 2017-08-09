@@ -1,5 +1,7 @@
 ﻿#include "COrdinaryModelWidget.h"
 #include <QBoxLayout>
+#include <QMessageBox>
+
 #include "PublicFunction.h"
 COrdinaryModelWidget::COrdinaryModelWidget(QWidget *parent) : QWidget(parent)
 {
@@ -7,6 +9,9 @@ COrdinaryModelWidget::COrdinaryModelWidget(QWidget *parent) : QWidget(parent)
     connect(m_pOrdinaryBrightmess, SIGNAL(SignalImportValueToUI(BrightnessOrdinaryValue)), this, SLOT(SlotGetImportValue(BrightnessOrdinaryValue)));
     connect(m_pOrdinaryBrightmess, SIGNAL(SignalCalibrationValueToUI(BrightnessOrdinaryValue)), this, SLOT(SlotGetCalibrationValue(BrightnessOrdinaryValue)));
     connect(m_pOrdinaryBrightmess, SIGNAL(SignalReadValueToUI(BrightnessOrdinaryValue)), this, SLOT(SlotGetReadValue(BrightnessOrdinaryValue)));
+    connect(HIDOpertaionUtility::GetInstance(), SIGNAL(SignalErrInfo(EnumTypeErr)), this, SLOT(SlotGetErrorValue(EnumTypeErr)));
+    connect(OpencvUtility::getInstance(), SIGNAL(SignalErrInfo(EnumTypeErr)), this, SLOT(SlotGetErrorValue(EnumTypeErr)));
+
     _InitLayout();
 }
 
@@ -84,6 +89,39 @@ void COrdinaryModelWidget::SlotGetReadValue(BrightnessOrdinaryValue brightnessVa
     m_pONo6LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo6));
     m_pONo7LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo7));
     m_pONo8LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo8));
+}
+
+void COrdinaryModelWidget::SlotGetErrorValue(EnumTypeErr enumTypeError)
+{// 错误信号处理
+    switch (enumTypeError)
+    {
+    case ErrNoFoundQR:
+    {
+        QMessageBox::critical(NULL, "Error", "QR Code Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ErrDecodeQR:
+    {
+        QMessageBox::critical(NULL, "Error", "QR Decode Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ErrNoConnectUSB:
+    {
+        QMessageBox::critical(NULL, "Error", "USB Connect Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ErrNoOpenVideo:
+    {
+        QMessageBox::critical(NULL, "Error", "Video Open Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    default:
+    {
+        QMessageBox::critical(NULL, "Error", "Other Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    }
+
 }
 /**
   * @brief 创建Standary组
@@ -247,8 +285,10 @@ QGroupBox *COrdinaryModelWidget::_CreateOridinaryGroup()
     m_pONo8LineEditWidget->setFixedSize(120, 21);
     //
     m_pSaveButton = new QPushButton(tr("Save"), this);
+    connect(m_pSaveButton, SIGNAL(clicked(bool)), m_pOrdinaryBrightmess, SLOT(SlotOrdinarySave()));
     m_pSaveButton->setFixedSize(130, 35);
     m_pReadButton = new QPushButton(tr("Read"), this);
+    connect(m_pReadButton, SIGNAL(clicked(bool)), m_pOrdinaryBrightmess, SLOT(SlotOrdinaryRead()));
     m_pReadButton->setFixedSize(130, 35);
      //
     QHBoxLayout *pLabelLayout = new QHBoxLayout;

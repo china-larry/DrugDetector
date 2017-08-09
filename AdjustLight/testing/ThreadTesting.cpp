@@ -58,12 +58,16 @@ ThreadTesting::ThreadTesting()
 
     connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalOperationComplete(quint16,bool)),this,
             SLOT(_SlotMotorComplete(quint16,bool)));
+    connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalErrInfo(EnumTypeErr)),this,
+            SLOT(_SlotReceiveErr(EnumTypeErr)));
+    connect(OpencvUtility::getInstance(),SIGNAL(SignalErrInfo(EnumTypeErr)),this,
+            SLOT(_SlotReceiveErr(EnumTypeErr)));
 
     connect(this,SIGNAL(SignalStartMotor()),this,SLOT(_SlotMoveStepperMotor()));
 
     connect(&m_CodeDetoector,SIGNAL(SignalQRCodeInfo(QRCodeInfo)),this, SLOT(_SLotReceiveQRCode(QRCodeInfo)));
-    connect(&m_CodeDetoector,SIGNAL(SignalErrInfo(EnumTypeErr)),this,SLOT(_SlotReceiveQRCodeErr(EnumTypeErr)));
-    connect(&m_CodeDetoector,SIGNAL(SignalQRCodeLocation(QString)),this,SLOT(_SlotReceiveQRCodeErr(QString)));
+    connect(&m_CodeDetoector,SIGNAL(SignalErrInfo(EnumTypeErr)),this,SLOT(_SlotReceiveErr(EnumTypeErr)));
+    connect(&m_CodeDetoector,SIGNAL(SignalQRCodeLocation(QString)),this,SLOT(_SlotReceiveQRcodePic(QString)));
 
 
 
@@ -156,7 +160,7 @@ void ThreadTesting::_SlotMoveStepperMotor()
 void ThreadTesting::_SlotMotorComplete(quint16 mCmdType,bool result)
 {
     Q_UNUSED(result);
-    qDebug() << __FUNCTION__ << mCmdType << result;
+//    qDebug() << __FUNCTION__ << mCmdType << result;
     if(mCmdType == ProtocolUtility::CMD_ROTATE_MOTOR)
     {
         _SlotStatusHandler(true,m_eCurrentStatus);
@@ -175,7 +179,7 @@ void ThreadTesting::_SlotMotorComplete(quint16 mCmdType,bool result)
             }
             else
             {
-                emit SignalErr(ENUM_ERR::ERR_STEP_MOTOR);
+                emit SignalTestErr(ENUM_ERR::ERR_STEP_MOTOR);
                 qDebug() << "ENUM_ERR::ERR_STEP_MOTOR 2";
             }
         }
@@ -186,7 +190,7 @@ void ThreadTesting::_SlotMotorComplete(quint16 mCmdType,bool result)
         {
             if((m_eCurrentStatus != STATUS_NONE)&&(m_eCurrentStatus != STATUS_READY))
             {
-                emit SignalErr(ENUM_ERR::ERR_LIGHT);
+                emit SignalTestErr(ENUM_ERR::ERR_LIGHT);
                 qDebug() << "ENUM_ERR::ERR_STEP_MOTOR 2";
             }
         }
@@ -201,7 +205,7 @@ void ThreadTesting::_SlotMotorComplete(quint16 mCmdType,bool result)
 
 void ThreadTesting::_SlotStatusHandler(bool result,ENUM_STATUS_TEST status)
 {
-    qDebug()<< __FUNCTION__ << result << status;
+//    qDebug()<< __FUNCTION__ << result << status;
 
     if(result)
     {
@@ -237,10 +241,10 @@ void ThreadTesting::_SlotStatusHandler(bool result,ENUM_STATUS_TEST status)
         switch (status)
         {
         case MOVE_THE_MORTOR:
-            emit SignalErr(ENUM_ERR::ERR_STEP_MOTOR);
+            emit SignalTestErr(ENUM_ERR::ERR_STEP_MOTOR);
             break;
         case TAKE_PHOTO:
-            emit SignalErr(ENUM_ERR::ERR_VIDEO_CAPTURE);
+            emit SignalTestErr(ENUM_ERR::ERR_VIDEO_CAPTURE);
             break;
         default:
             break;
@@ -275,7 +279,7 @@ void ThreadTesting::_SlotTakePhoto()
     else
     {
         qDebug() << __FUNCTION__ << "openVideo failed";
-        emit SignalErr(ENUM_ERR::ERR_VIDEO_CAPTURE);
+        emit SignalTestErr(ENUM_ERR::ERR_VIDEO_CAPTURE);
     }
 }
 
@@ -287,7 +291,7 @@ void ThreadTesting::_InitStatus()
 {
     if(m_QRCodeInfo.iProgramCount > MAX_PROJECT_COUNT)
     {
-        emit SignalErr(ENUM_ERR::ERR_DATA);
+        emit SignalTestErr(ENUM_ERR::ERR_DATA);
         return;
     }
     m_eCurrentStatus = ENUM_STATUS_TEST::STATUS_READY;
@@ -460,7 +464,7 @@ QList<int> ThreadTesting::ReceivePicPath(QString path)
         iLocationProjectMid = FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
         if(iLocationProjectMid == -1)
         {
-            return iUprightProjectionList;
+            return iHorizontalProjectionList;
         }
     }
     QPixmap::fromImage(img->copy(img->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP, PIXEL_TOP_MARJIN_TCUP+PIXEL_OF_PRO_NAME_TCUP,
@@ -1101,20 +1105,20 @@ int ThreadTesting::_ImageAnalysisProcess(int * A1, int Orglinecenterx,int PicW)
     return linesum;
 }
 
-void ThreadTesting::_SlotReceiveQRCodeErr(EnumTypeErr err)
+void ThreadTesting::_SlotReceiveErr(EnumTypeErr err)
 {
     switch (err) {
     case ErrNoFoundQR:
-        emit SignalErr(ERR_NO_FOUND);
+        emit SignalTestErr(ERR_NO_FOUND);
         break;
     case ErrDecodeQR:
-        emit SignalErr(ERR_DECODE);
+        emit SignalTestErr(ERR_DECODE);
         break;
     case ErrNoConnectUSB:
-        emit SignalErr(ERR_DISCONNECT_USB);
+        emit SignalTestErr(ERR_DISCONNECT_USB);
         break;
     case ErrNoOpenVideo:
-        emit SignalErr(ERR_DECODE);
+        emit SignalTestErr(ERR_DECODE);
         break;
     default:
         break;

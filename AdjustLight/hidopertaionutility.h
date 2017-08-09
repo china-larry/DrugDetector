@@ -8,10 +8,8 @@
 #include<QQueue>
 #include<QMutex>
 #include "common.h"
-#include "upgradefile.h"
 #include "IP_HID.h"
-#include "qrcodedetector.h"
-#include "common.h"
+
 
 /*******************************************************************
  **

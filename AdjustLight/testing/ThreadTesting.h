@@ -60,7 +60,7 @@ public:
     void StartTest();                               //启动测试
     QList<int> ReceivePicPath(QString path);
 signals:
-    void SignalErr(ENUM_ERR err);                   //报错 错误信息
+    void SignalTestErr(ENUM_ERR err);                   //报错 错误信息
     void SignalTestResult(TestResultData result);   //每条测试结果
     void SignalTestComplete();                      //测试完成
     void SignalStartMotor();
@@ -72,7 +72,7 @@ private slots:
     void _SlotTakePhoto();
     void _SlotMoveStepperMotor();
     void _SLotReceiveQRCode(QRCodeInfo info);
-    void _SlotReceiveQRCodeErr(EnumTypeErr err);
+    void _SlotReceiveErr(EnumTypeErr err);
     void _SlotReceiveQRcodePic(QString path);
 private:
     int         m_iIndexProject;
