@@ -16,15 +16,15 @@
 
 struct BrightnessValue
 {
-    qint16  iNo1;   // 上绿灯
-    qint16  iNo2;   // 上白灯
-    qint16  iNo3;   // 下绿灯
-    qint16  iNo4;   // 下白灯
-    qint16  iNo5;   // 左绿灯
-    qint16  iNo6;   // 左白灯
-    qint16  iNo7;   // 右绿灯
-    qint16  iNo8;   // 白右灯
-    qint16  iCupType;
+    int  iNo1;   // 上绿灯
+    int  iNo2;   // 上白灯
+    int  iNo3;   // 下绿灯
+    int  iNo4;   // 下白灯
+    int  iNo5;   // 左绿灯
+    int  iNo6;   // 左白灯
+    int  iNo7;   // 右绿灯
+    int  iNo8;   // 白右灯
+    int  iCupType;
 };
 Q_DECLARE_METATYPE(BrightnessValue);
 
