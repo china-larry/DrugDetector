@@ -1,9 +1,9 @@
 #include "CHidCmdThread.h"
 #include <QApplication>
 #include <QTime>
-#include "hidopertaionutility.h"
-#include "protocolutility.h"
-
+#include "HidOpertaionUtility.h"
+#include "ProtocolUtility.h"
+#include <QDebug>
 
 CHidCmdThread* CHidCmdThread::s_hidCmdThreadInstance = NULL;
 
@@ -11,7 +11,7 @@ CHidCmdThread::CHidCmdThread(QObject *parent):QThread(parent)
 {
     m_bStopped = true;
     connect(HIDOpertaionUtility::GetInstance(), SIGNAL(SignalOperationComplete(quint16,bool)),this,
-            SLOT(SlotHIDCmdComplete(quint16,bool)));
+            SLOT(_SlotHIDCmdComplete(quint16,bool)));
 
     m_curHIDCmdData.cmdType = ProtocolUtility::CMD_DEV_CLOSE;
 }
@@ -19,13 +19,17 @@ CHidCmdThread::CHidCmdThread(QObject *parent):QThread(parent)
 CHidCmdThread::~CHidCmdThread()
 {
     disconnect(HIDOpertaionUtility::GetInstance(), SIGNAL(SignalOperationComplete(quint16,bool)),this,
-                                                       SLOT(SlotHIDCmdComplete(quint16,bool)));
+                                                       SLOT(_SlotHIDCmdComplete(quint16,bool)));
 }
 
 CHidCmdThread *CHidCmdThread::GetInstance()
 {
     if(NULL == s_hidCmdThreadInstance)
+    {
         s_hidCmdThreadInstance = new CHidCmdThread();
+        connect(s_hidCmdThreadInstance, SIGNAL(finished()), s_hidCmdThreadInstance, SLOT(deleteLater()));
+    }
+
     return  s_hidCmdThreadInstance;
 }
 
@@ -42,13 +46,18 @@ void CHidCmdThread::AddCmd(HIDCmdData hidCmdData)
     //停止命令需要插队执行,其他命令清空
     if(ProtocolUtility::CMD_DEV_CLOSE == hidCmdData.cmdType)
     {
+        qDebug() << "_________" <<__FUNCTION__;
         HIDOpertaionUtility::GetInstance()->HIDClose();
         SetStopped(true);
         m_hidCmdDataQueue.clear();
         m_curHIDCmdData = hidCmdData;
     }
     else
+    {
+        qDebug() << "_________" <<__FUNCTION__;
         m_hidCmdDataQueue.enqueue(hidCmdData);
+    }
+
     m_qCmdMutex.unlock();
 }
 
@@ -73,6 +82,7 @@ void CHidCmdThread::AddRotateMotorCmd(quint16 speed, quint16 step, quint16 direc
 
 void CHidCmdThread::AddCloseHIDCmd()
 {
+    qDebug() << "_________" <<__FUNCTION__;
     //添加关闭HID通信命令，杀死HID读线程
     HIDCmdData hidCmdData;
     hidCmdData.cmdType = ProtocolUtility::CMD_DEV_CLOSE;
@@ -182,6 +192,7 @@ void CHidCmdThread::AddUpgradeSubControlCmd(QString qFilePathStr)
 
 void CHidCmdThread::SetStopped(bool bStopped)
 {
+    qDebug() << "_________" <<__FUNCTION__;
     m_qStoppedMutex.lock();
     m_bStopped = bStopped;
     m_qStoppedMutex.unlock();
@@ -204,7 +215,7 @@ void CHidCmdThread::run()
             m_qCmdMutex.lock();
             m_curHIDCmdData = m_hidCmdDataQueue.dequeue();
             m_qCmdMutex.unlock();
-            SetCmdCompleted(false);
+            _SetCmdCompleted(false);
             if(m_curHIDCmdData.byteArrayVect.size() == 1)
             {
                 HIDOpertaionUtility::GetInstance()->HIDWrite(m_curHIDCmdData.byteArrayVect.at(0));
@@ -237,21 +248,22 @@ void CHidCmdThread::run()
         qApp->processEvents();
         msleep(5);
     }
+    qDebug() << "_________" <<__FUNCTION__;
 
 }
 
-void CHidCmdThread::SetCmdCompleted(bool bCmdCompleted)
+void CHidCmdThread::_SetCmdCompleted(bool bCmdCompleted)
 {
     m_qCmdCompleteMutex.lock();
     m_bCmdCompleted = bCmdCompleted;
     m_qCmdCompleteMutex.unlock();
 }
 
-void CHidCmdThread::SlotHIDCmdComplete(quint16 cmdType, bool result)
+void CHidCmdThread::_SlotHIDCmdComplete(quint16 cmdType, bool result)
 {
     if(cmdType == m_curHIDCmdData.cmdType)
     {
-        SetCmdCompleted(true);
+        _SetCmdCompleted(true);
     }
 }
 

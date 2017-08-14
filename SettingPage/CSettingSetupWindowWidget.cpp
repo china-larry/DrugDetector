@@ -6,6 +6,16 @@ CSettingSetupWindowWidget::CSettingSetupWindowWidget(QWidget *parent) : QWidget(
     _InitWidget();
     _InitLayout();
 }
+
+void CSettingSetupWindowWidget::SlotGetFirmwareVersion()
+{
+
+}
+
+void CSettingSetupWindowWidget::SlotGetUserTimes()
+{
+
+}
 /**
   * @brief 创建server组
   * @param
@@ -252,4 +262,24 @@ void CSettingSetupWindowWidget::_InitLayout()
     pLayout->addLayout(pButtonLayout);
     pLayout->addSpacing(20);
     this->setLayout(pLayout);
+}
+
+void CSettingSetupWindowWidget::_ChangeToEnglish()
+{
+
+}
+
+void CSettingSetupWindowWidget::_ChangeToSpain()
+{
+
+}
+
+QString CSettingSetupWindowWidget::GetPisServer()
+{
+    return m_strPisServer;
+}
+
+QString CSettingSetupWindowWidget::GetPoctServer()
+{
+    return m_strPoctServer;
 }

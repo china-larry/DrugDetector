@@ -7,6 +7,11 @@ CTestModeWidget::CTestModeWidget(QWidget *parent) : QWidget(parent)
     _InitLayout();
 }
 
+void CTestModeWidget::_SlotConfirm()
+{
+
+}
+
 QGroupBox *CTestModeWidget::_CreateModeGroup()
 {
     QGroupBox *pGroupBox = new QGroupBox(this);
@@ -54,6 +59,7 @@ QGroupBox *CTestModeWidget::_CreateModeGroup()
 void CTestModeWidget::_InitWiget()
 {
     m_pConfirmButton = new QPushButton(tr("Confirm"), this);
+    connect(m_pConfirmButton, SIGNAL(clicked(bool)), this, SLOT(_SlotConfirm()));
     m_pConfirmButton->setFixedSize(130, 35);
     m_pCancelButton = new QPushButton(tr("Cancel"), this);
     m_pCancelButton->setFixedSize(130, 35);

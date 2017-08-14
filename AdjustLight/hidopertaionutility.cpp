@@ -1,4 +1,4 @@
-﻿#include "hidopertaionutility.h"
+﻿#include "HidOpertaionUtility.h"
 
 #include<QLibrary>
 #include <QDebug>
@@ -7,11 +7,7 @@
 #include <QCoreApplication>
 #include <QTime>
 
-#include "protocolutility.h"
-
-
-
-
+#include "ProtocolUtility.h"
 
 Q_DECLARE_METATYPE(DevConfigParams)
 #define ACK_TIME_OUT_SECOND 20
@@ -36,7 +32,7 @@ HIDOpertaionUtility::HIDOpertaionUtility()
     connect(this, SIGNAL(SignalHIDWrite(QByteArray)), this, SLOT(SlotWrite(QByteArray)),
             Qt::QueuedConnection);
     connect(this, SIGNAL(SignalHIDOpen()), this, SLOT(SlotOpen()), Qt::QueuedConnection);
-    connect(this, SIGNAL(SignalHIDClose()), this, SLOT(SlotClose()), Qt::QueuedConnection);
+    connect(this, SIGNAL(SignalHIDClose()), this, SLOT(SlotClose()), Qt::DirectConnection/*Qt::QueuedConnection*/);
     connect(this, SIGNAL(SignalReadDevParams()), this, SLOT(SlotReadDevParams()), Qt::QueuedConnection);
     connect(this, SIGNAL(SignalWriteDevParams(DevConfigParams)), this,
             SLOT(SlotWriteDevParams(DevConfigParams)), Qt::QueuedConnection);
@@ -44,6 +40,7 @@ HIDOpertaionUtility::HIDOpertaionUtility()
     moveToThread(&mWorkThread);
     connect(&mWorkThread, SIGNAL(started()), this, SLOT(SlotLoadDll()));
     connect(&mWorkThread, SIGNAL(finished()), this, SLOT(SlotUnloadDll()));
+    connect(&mWorkThread, SIGNAL(finished()), this, SLOT(deleteLater()));
     mWorkThread.start();
     mDevVersion = "";
     mDevConfigParamsByte = new quint8[sizeof(DevConfigParams)];
@@ -52,14 +49,13 @@ HIDOpertaionUtility::HIDOpertaionUtility()
 HIDOpertaionUtility::~HIDOpertaionUtility()
 {
     delete mDevConfigParamsByte;
-    //HIDClose();
-    SlotClose();
 }
 
 void HIDOpertaionUtility::SlotLoadDll()
 {
     //导入dll,并获取dll包含的操作函数指针
     mReadThread = new HIDReadThread();
+    connect(mReadThread, SIGNAL(finished()), mReadThread, SLOT(deleteLater()));
     mWorkHandle = QThread::currentThreadId();
 }
 
@@ -100,6 +96,7 @@ void HIDOpertaionUtility::HIDClose()
     //如果在HID后台操作线程则直接调用,否则需通过消息转发,以便把相应操作转到HID后台操作线程
     if(QThread::currentThreadId() == mWorkHandle)
     {
+        qDebug() << "_________" <<__FUNCTION__;
         SlotClose();
     }
     else
@@ -155,12 +152,18 @@ bool HIDOpertaionUtility::SlotOpen()
 bool HIDOpertaionUtility::SlotClose()
 {
     //关闭所有灯与电机立刻停止
+    qDebug() << "_________" <<__FUNCTION__;
+    qDebug() <<"_______" << __LINE__;
     ExecuteCmdWithAck(ProtocolUtility::GetCloseAllLEDAndStopMotorCmd());
+    qDebug() <<"_______" << __LINE__;
     bool result = false;
-    if(mHidHandle>0)
+    if(mHidHandle > 0)
     {
+        qDebug() <<"_______" << __LINE__;
+        qDebug() << "_________" <<__FUNCTION__;
         CloseDev(mHidHandle);
     }
+    qDebug() <<"_______" << __LINE__;
     mIsDeviceOpened = false;//用于关闭读取线程
     mHidHandle = NULL;
     return result;
@@ -701,4 +704,5 @@ void HIDReadThread::run()
         //else
             msleep(500);
     }
+    qDebug() << __FUNCTION__;
 }

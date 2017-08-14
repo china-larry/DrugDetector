@@ -19,11 +19,11 @@
 #include <QVariant>
 #include <QMetaType>
 #include <QObject>
-#include "hidopertaionutility.h"
-#include "protocolutility.h"
-#include "opencvutility.h"
+#include "HidOpertaionUtility.h"
+#include "ProtocolUtility.h"
+#include "OpencvUtility.h"
 #include "QZXing.h"
-#include "common.h"
+#include "Common.h"
 
 enum EnumTypeCup
 {
@@ -35,10 +35,14 @@ enum EnumTypeCup
 
 enum EnumTypeLight
 {
-    DownLightGreen = 1,     //绿灯1 下方绿灯
-    DownLightWhite = 2,     //白灯1 下方白灯
-    UpLightGreen = 3,       //绿灯2 上方绿灯
-    UpLightWhite = 4        //白灯3 上方白等
+    DownLightGreen = 1,     // 下方绿灯
+    DownLightWhite = 2,     // 下方白灯
+    UpLightGreen = 3,       // 上方绿灯
+    UpLightWhite = 4,       // 上方白等
+    LeftLightGreen = 5,     // 左方绿灯
+    LeftLightWhite = 6,     // 左方白灯
+    RightLightGreen = 7,    // 右方绿灯
+    RightLightWhite = 8     // 右方白等
 };
 
 struct InfoProject
@@ -88,7 +92,7 @@ public:
      *        iQRCodePosition 二维码距离复位位置的距离
      * @return
      */
-    bool locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePosition);
+    bool locationQRCode(QString &strQRCodeInfo,qint32 &iQRCodePosition);
 
     /**
      * @brief GetQRCodeImage
@@ -96,7 +100,7 @@ public:
      * @param  strImagePath 输出照片保存的路径
      * @return
      */
-    bool GetQRCodeImage(QString *strImagePath);
+    bool GetQRCodeImage(QString &strImagePath);
 
     /**
      * @brief GetQRCodeImageInfo
@@ -105,7 +109,7 @@ public:
      *         strQRCodeInfo 输出解析到的二维码字符串
      * @return
      */
-    bool GetQRCodeImageInfo(const QString strImagePath,QString *strQRCodeInfo);
+    bool GetQRCodeImageInfo(const QString strImagePath,QString &strQRCodeInfo);
 
     /**
      * @brief DecodeQrcode
@@ -114,13 +118,13 @@ public:
      *         qrCodeInfo  输出解析后的二维码信息
      * @return
      */
-    bool DecodeQrcode(const QString strdecode,QRCodeInfo *qrCodeInfo);
+    bool DecodeQrcode(const QString strdecode,QRCodeInfo &qrCodeInfo);
 
     /**
      * @brief DecodeQrcode
-     * 根据V2或V5版本协议 解析二维码字符串
-     * @param  strImagePath 输出照片保存的路径
-     *         qrCodeInfo  输出解析后的二维码信息
+     * 寻找二维码定位矩形
+     * @param  dstImg  输入照片保存的路径
+     *
      * @return
      */
     bool FindQRcodeLocationRect(IplImage *dstImg);

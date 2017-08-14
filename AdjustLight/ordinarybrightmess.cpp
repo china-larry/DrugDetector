@@ -1,95 +1,87 @@
-#include "OrdinaryBrightmess.h"
+﻿#include "OrdinaryBrightmess.h"
 #include <QApplication>
 #include <QTime>
 #include <QFile>
 #include "ParamsConfiguration.h"
-#include "calculategrayscale.h"
+#include "CalculateGrayscale.h"
 #include "CHidCmdThread.h"
-#include "protocolutility.h"
-#include "hidopertaionutility.h"
-#include "opencvutility.h"
-#include "linefinder.h"
+#include "ProtocolUtility.h"
+#include "HidOpertaionUtility.h"
+#include "OpencvUtility.h"
+#include "LineFinder.h"
 
 OrdinaryBrightmess::OrdinaryBrightmess()
 {
 
 }
 
+OrdinaryBrightmess::~OrdinaryBrightmess()
+{
+
+}
+
 void OrdinaryBrightmess::SlotOrdinaryCalibration()
 {
+    //设置标准灯光
     SetBrightnessValue(m_StandardMachinebrightnessValue);
-
-    BrightnessOrdinaryValue brightnessValue;
-    OrdinaryCalibration(&brightnessValue);
-
-    qDebug() << "brightnessValue.iBrightNo1 = "<< brightnessValue.iBrightNo1;
-    qDebug() << "brightnessValue.iBrightNo2 = " << brightnessValue.iBrightNo2;
-    qDebug() << "brightnessValue.iBrightNo3 = " << brightnessValue.iBrightNo3;
-    qDebug() << "brightnessValue.iBrightNo4 = " << brightnessValue.iBrightNo4;
-    qDebug() << "brightnessValue.iBrightNo5 = " << brightnessValue.iBrightNo5;
-    qDebug() << "brightnessValue.iBrightNo6 = " << brightnessValue.iBrightNo6;
-    qDebug() << "brightnessValue.iBrightNo7 = " << brightnessValue.iBrightNo7;
-    qDebug() << "brightnessValue.iBrightNo8 = " << brightnessValue.iBrightNo8;
-
-    qDebug() << "brightnessValue.iGreenComponentNo1 = " << brightnessValue.iGreenComponentNo1;
-    qDebug() << "brightnessValue.iGreenComponentNo2 = " << brightnessValue.iGreenComponentNo2;
-    qDebug() << "brightnessValue.iGreenComponentNo3 = " << brightnessValue.iGreenComponentNo3;
-    qDebug() << "brightnessValue.iGreenComponentNo4 = " << brightnessValue.iGreenComponentNo4;
-    qDebug() << "brightnessValue.iGreenComponentNo5 = " << brightnessValue.iGreenComponentNo5;
-    qDebug() << "brightnessValue.iGreenComponentNo6 = " << brightnessValue.iGreenComponentNo6;
-    qDebug() << "brightnessValue.iGreenComponentNo7 = " << brightnessValue.iGreenComponentNo7;
-    qDebug() << "brightnessValue.iGreenComponentNo8 = " << brightnessValue.iGreenComponentNo8;
-    emit SignalCalibrationValueToUI(brightnessValue);
-
-    //保存
-     const QString strFileName = QCoreApplication::applicationDirPath() + "/Resources/DrugDetectionMachineParams.json";
-    const QString strOrdinaryParamsType = "OrdinaryMachinebrightnesCalibrate";
-    SaveBrightnessValueParams(strFileName,strOrdinaryParamsType,brightnessValue);
+    //目标机灯光校准
+    OrdinaryCalibration(m_OrdinarybrightnessValue);
+    //发送信号到UI更新
+    emit SignalCalibrationValueToUI(m_OrdinarybrightnessValue);
 }
 
 void OrdinaryBrightmess::SlotOrdinaryImport()
 {
     const QString strFileName = QCoreApplication::applicationDirPath() + "/Resources/DrugDetectionMachineParams.json";
-    const QString strParamsType = "StandardMachinebrightnesCalibrate";
+    const QString strParamsType = "StandardMachineCalibrationParams";
 
     ReadBrightnessValueParams(strFileName,strParamsType, m_StandardMachinebrightnessValue);
 
-    qDebug() << "stand " << m_StandardMachinebrightnessValue.iBrightNo1;
     emit SignalImportValueToUI(m_StandardMachinebrightnessValue);
 }
 
 void OrdinaryBrightmess::SlotOrdinarySave()
 {
-
+    //保存参数
+    const QString strFileName = QCoreApplication::applicationDirPath() + "/Resources/DrugDetectionMachineParams.json";
+    const QString strOrdinaryParamsType = "OrdinaryMachinebrightnesCalibrate";
+    SaveBrightnessValueParams(strFileName,strOrdinaryParamsType,m_OrdinarybrightnessValue);
 }
 
 void OrdinaryBrightmess::SlotOrdinaryRead()
 {
+    //读取参数
+    const QString strFileName = QCoreApplication::applicationDirPath() + "/Resources/DrugDetectionMachineParams.json";
+    const QString strParamsType = "OrdinaryMachinebrightnesCalibrate";
 
+    BrightnessOrdinaryValue brightnessOrdinaryValue;
+    ReadBrightnessValueParams(strFileName,strParamsType, brightnessOrdinaryValue);
+    //发送信号给UI更新
+    emit SignalReadValueToUI(brightnessOrdinaryValue);
 }
 
 QPoint OrdinaryBrightmess::findCenterPoint(QString strImagePath)
 {
     LineFinder lineFinder;
     LocationData locationData = lineFinder.findCenterPointAndCrossPoints(strImagePath);
-    qDebug() << "centerPoint.x = " << locationData.centerPoint.x;
-    qDebug() << "centerPoint.y = " << locationData.centerPoint.y;
+    //qDebug() << "centerPoint.x = " << locationData.centerPoint.x;
+    //qDebug() << "centerPoint.y = " << locationData.centerPoint.y;
     QPoint qCenterPoint;
-    qCenterPoint.setX(locationData.centerPoint.y + 650);
+    qCenterPoint.setX(locationData.centerPoint.y + 620);
     qCenterPoint.setY(locationData.centerPoint.x);
     qDebug() << "qCenterPoint = " << qCenterPoint;
     return qCenterPoint;
 }
 
-void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue *brightnessValue)
+void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue &brightnessValue)
 {
     QPoint qCenterPoint;
-    InitMachine(&qCenterPoint);
+    InitMachine(qCenterPoint);
 
     if(GetBrightnessValue().iBrightNo1 > 0)
     {
         GetLightValue(1,qCenterPoint,GetBrightnessValue().iBrightNo1,GetBrightnessValue().iGreenComponentNo1,
-                      &(brightnessValue->iBrightNo1),&(brightnessValue->iGreenComponentNo1));
+                      brightnessValue.iBrightNo1,brightnessValue.iGreenComponentNo1);
     }
 
     //关所有灯
@@ -103,7 +95,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue *brightness
     if(GetBrightnessValue().iBrightNo2 > 0)
     {
         GetLightValue(2,qCenterPoint,GetBrightnessValue().iBrightNo2,GetBrightnessValue().iGreenComponentNo2,
-                      &(brightnessValue->iBrightNo2),&(brightnessValue->iGreenComponentNo2));
+                      brightnessValue.iBrightNo2,brightnessValue.iGreenComponentNo2);
     }
 
     //关所有灯
@@ -117,7 +109,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue *brightness
     if(GetBrightnessValue().iBrightNo3 > 0)
     {
         GetLightValue(3,qCenterPoint,GetBrightnessValue().iBrightNo3,GetBrightnessValue().iGreenComponentNo3,
-                      &(brightnessValue->iBrightNo3),&(brightnessValue->iGreenComponentNo3));
+                      brightnessValue.iBrightNo3,brightnessValue.iGreenComponentNo3);
     }
 
     //关所有灯
@@ -131,7 +123,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue *brightness
     if(GetBrightnessValue().iBrightNo4 > 0)
     {
         GetLightValue(4,qCenterPoint,GetBrightnessValue().iBrightNo4,GetBrightnessValue().iGreenComponentNo4,
-                      &(brightnessValue->iBrightNo4),&(brightnessValue->iGreenComponentNo4));
+                      brightnessValue.iBrightNo4,brightnessValue.iGreenComponentNo4);
     }
 
     //关所有灯
@@ -145,7 +137,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue *brightness
     if(GetBrightnessValue().iBrightNo5 > 0)
     {
         GetLightValue(5,qCenterPoint,GetBrightnessValue().iBrightNo5,GetBrightnessValue().iGreenComponentNo5,
-                     &(brightnessValue->iBrightNo5),&(brightnessValue->iGreenComponentNo5));
+                     brightnessValue.iBrightNo5,brightnessValue.iGreenComponentNo5);
     }
 
     //关所有灯
@@ -159,7 +151,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue *brightness
     if(GetBrightnessValue().iBrightNo6 > 0)
     {
         GetLightValue(6,qCenterPoint,GetBrightnessValue().iBrightNo6,GetBrightnessValue().iGreenComponentNo6,
-                      &(brightnessValue->iBrightNo6),&(brightnessValue->iGreenComponentNo6));
+                      brightnessValue.iBrightNo6,brightnessValue.iGreenComponentNo6);
     }
 
     //关所有灯
@@ -173,7 +165,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue *brightness
     if(GetBrightnessValue().iBrightNo7 > 0)
     {
         GetLightValue(7,qCenterPoint,GetBrightnessValue().iBrightNo7,GetBrightnessValue().iGreenComponentNo7,
-                      &(brightnessValue->iBrightNo7),&(brightnessValue->iGreenComponentNo7));
+                      brightnessValue.iBrightNo7,brightnessValue.iGreenComponentNo7);
     }
 
     //关所有灯
@@ -187,7 +179,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue *brightness
     if(GetBrightnessValue().iBrightNo8 > 0)
     {
         GetLightValue(8,qCenterPoint,GetBrightnessValue().iBrightNo8,GetBrightnessValue().iGreenComponentNo8,
-                      &(brightnessValue->iBrightNo8),&(brightnessValue->iGreenComponentNo8));
+                      brightnessValue.iBrightNo8,brightnessValue.iGreenComponentNo8);
     }
 
     //关所有灯
@@ -199,10 +191,28 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue *brightness
     }
 }
 
-bool OrdinaryBrightmess::InitMachine(QPoint *CenterPoint)
+bool OrdinaryBrightmess::InitMachine(QPoint &CenterPoint)
 {
+    qDebug() << "InitMachine";
+
+    //打开设备
+    if(CHidCmdThread::GetInstance()->GetStopped())
+    {
+        CHidCmdThread::GetInstance()->start();
+    }
+    else
+    {
+        CHidCmdThread::GetInstance()->SetStopped(true);
+        while(CHidCmdThread::GetInstance()->isRunning())
+        {
+            continue;
+        }
+        CHidCmdThread::GetInstance()->start();
+    }
+
     //关所有灯
     CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
+    qDebug() << "CMD_CLOSE_ALL_LED";
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
     {
@@ -239,17 +249,18 @@ bool OrdinaryBrightmess::InitMachine(QPoint *CenterPoint)
     OpencvUtility::getInstance()->QuickGetVideoCapture(&strSaveImagePath);//丢弃
     OpencvUtility::getInstance()->QuickGetVideoCapture(&strSaveImagePath);
 
-    *CenterPoint = findCenterPoint(strSaveImagePath);
+    CenterPoint = findCenterPoint(strSaveImagePath);
 
     if(QFile::exists(strSaveImagePath))
     {
         Mat matImage = imread(strSaveImagePath.toLatin1().data(),-1);
-        cvNamedWindow( "donkeyaime", CV_WINDOW_AUTOSIZE );
+
         CalculateGrayscale calculategrayscale;
         for(int i = 0;i < 4;i++)
         {
-           calculategrayscale.drawRect(matImage,*CenterPoint,30,30,i);
+           calculategrayscale.drawRect(matImage,CenterPoint,30,40,i);
         }
+        cv::namedWindow( "donkeyaime", cv::WINDOW_NORMAL );
         imshow("donkeyaime",matImage);
         waitKey(0);
     }
@@ -259,17 +270,17 @@ bool OrdinaryBrightmess::InitMachine(QPoint *CenterPoint)
 
 BrightnessOrdinaryValue OrdinaryBrightmess::GetBrightnessValue()
 {
-    return m_brightnessValue;
+    return m_OrdinarybrightnessValue;
 }
 
 void OrdinaryBrightmess::SetBrightnessValue(BrightnessOrdinaryValue brightnessValue)
 {
-    m_brightnessValue = brightnessValue;
+    m_OrdinarybrightnessValue = brightnessValue;
 }
 
-bool OrdinaryBrightmess::GetLightValue(const int iBrightNo,QPoint qCenterPoint,const qint16 /*iStandardBright*/,
-                                       const double dStandardGreenComponent,qint16 *iOrdinaryBright,
-                                       double *dOrdinaryGreenComponent)
+bool OrdinaryBrightmess::GetLightValue(const int iBrightNo,QPoint qCenterPoint,const int /*iStandardBright*/,
+                                       const double dStandardGreenComponent,int &iOrdinaryBright,
+                                       double &dOrdinaryGreenComponent)
 {
     QString strFileName = "grayscale%1.csv";
     QFile file(strFileName.arg(iBrightNo));
@@ -285,8 +296,6 @@ bool OrdinaryBrightmess::GetLightValue(const int iBrightNo,QPoint qCenterPoint,c
     const int iRectR = 30;
     const int iRectD = 40;
 
-    //QPoint point(1180,1024);
-
     CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
     QThread::msleep(100);
 
@@ -301,7 +310,7 @@ bool OrdinaryBrightmess::GetLightValue(const int iBrightNo,QPoint qCenterPoint,c
     const int iStartLightValue = 500;
     int iPosLightValue = 0;
 
-    double dAvg = 0.0;
+    double dAvgSum = 0.0;
     double dStandardSD = 0.0;
     double dGreenSDSum = 0.0;
 
@@ -309,7 +318,7 @@ bool OrdinaryBrightmess::GetLightValue(const int iBrightNo,QPoint qCenterPoint,c
 
     for(int i = 0;i < iMaxCount;i++)
     {
-        dAvg = 0.0;
+        dAvgSum = 0.0;
         dStandardSD = 0.0;
         dGreenSDSum = 0.0;
         HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
@@ -332,23 +341,26 @@ bool OrdinaryBrightmess::GetLightValue(const int iBrightNo,QPoint qCenterPoint,c
         out << iPosLightValue << ",";
 
         /*计算绿色分量*/
+        double dAvg = 0.0;
         for(int j = 0;j < 4;j++)
         {
+            dAvg = 0.0;
             calculategrayscale.GetGreenComponentSDAvg(strSaveImagePath,qCenterPoint,iRectR,iRectD,j,
-                                                      dStandardGreenComponent,&dAvg,&dStandardSD);
+                                                      dStandardGreenComponent,dAvg,dStandardSD);
             dGreenSDSum += dStandardSD;
-            dAvg += dAvg;
+            dAvgSum += dAvg;
         }
         out << dGreenSDSum << ",";
+        out <<( dAvgSum/4) << ",";
         out <<  "\n";
 
         qGraySDSumMap.insert(dGreenSDSum,iPosLightValue);
-        qGreenComponentMap.insert(dGreenSDSum,dAvg/4);
+        qGreenComponentMap.insert(dGreenSDSum,dAvgSum/4);
     }
     //得到标准差最小的灯光值
-    *iOrdinaryBright = qGraySDSumMap.begin().value();
-    //得到标准差最小的绿色分量值
-    *dOrdinaryGreenComponent = qGreenComponentMap.begin().value();
+    iOrdinaryBright = qGraySDSumMap.begin().value();
+    //得到标准差最小的绿色分量均值
+    dOrdinaryGreenComponent = qGreenComponentMap.begin().value();
     file.close();
     return true;
 }

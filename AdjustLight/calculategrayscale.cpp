@@ -1,4 +1,4 @@
-#include "calculategrayscale.h"
+#include "CalculateGrayscale.h"
 #include <QDebug>
 
 using namespace cv;
@@ -13,12 +13,12 @@ CalculateGrayscale::~CalculateGrayscale()
 }
 
 //获取pos个矩形的平均绿色分量和标准差
-bool CalculateGrayscale::GetGreenComponentSDAvg(QString imagePath,QPoint point,int r,int d,int pos,
-                                                double dStandardValue,double *dAvg,double *dStandardSD)
+bool CalculateGrayscale::GetGreenComponentSDAvg(QString imagePath,QPoint qPoint,int iRectR,int iRectD,int iPos,
+                                                double dStandardValue,double &dAvg,double &dStandardSD)
 {        
     IplImage* srcImg = cvLoadImage( imagePath.toLatin1().data(), -1 );
     IplImage *dstImg;
-    CvRect rect = GetRect(point,r,d,pos);
+    CvRect rect = GetRect(qPoint,iRectR,iRectD,iPos);
     dstImg=cvCreateImage(cvSize(rect.width,rect.height),srcImg->depth,srcImg->nChannels);//创建图像空间
 
     //设置ROI区域
@@ -36,125 +36,74 @@ bool CalculateGrayscale::GetGreenComponentSDAvg(QString imagePath,QPoint point,i
     //   dSdv = ScalarSdv.val[1];
 
     //获取绿色分量
-    std::vector<int> Vintensity;
+    QVector<int> Vintensity;
     uchar* g_pixel;
     for (int row = 0; row < dstImg->height; row++)
     {
        for (int cols = 0; cols < dstImg->width; cols++)
        {
             g_pixel = reinterpret_cast<uchar*>(dstImg->imageData + row*dstImg->widthStep + (cols*dstImg->nChannels + 1));
-            Vintensity.push_back(*g_pixel);
+            Vintensity.append(*g_pixel);
 
         }
     }
     double accum  = 0.0;
     double dIntensity = 0.0;
-    std::for_each (std::begin(Vintensity), std::end(Vintensity), [&](const double d)
+
+    foreach (int value, Vintensity)
     {
-        accum  += (d-dStandardValue)*(d-dStandardValue);
-        dIntensity += d;
-    });
+        accum  += (value - dStandardValue) * (value - dStandardValue);
+        dIntensity += value;
+    }
 
     //均值
-    Q_ASSERT(dstImg->height != 0);
-    Q_ASSERT(dstImg->width != 0);
-    *dAvg = dIntensity / (dstImg->height * dstImg->width);
+
+    Q_ASSERT(Vintensity.count());
+    dAvg = dIntensity / Vintensity.count();
     //标准差
-    Q_ASSERT(Vintensity.size() > 1);
-    *dStandardSD = sqrt(accum/(Vintensity.size()-1)); //标准差
+    Q_ASSERT(Vintensity.count() > 1);
+    dStandardSD = sqrt(accum/(Vintensity.count()-1)); //标准差
 
     cvReleaseImage(&srcImg);
     cvReleaseImage(&dstImg);
     return true;
 }
 
-//获取第pos个矩形绿色分量的标准差
-double CalculateGrayscale::GetGreenComponentSD(QString imagePath,QPoint point,int r,int d,int pos,double dStandardValue)
+
+void CalculateGrayscale::drawRect(Mat &matImage,QPoint qPoint,int iRectR,int iRectD,int iPos)
 {
-    IplImage* srcImg = cvLoadImage( imagePath.toLatin1().data(), -1 );//-1 默认读取图像的原通道数,0 强制转化读取图像为灰度图,1 读取彩色图
-    std::vector<int> Vintensity;
-
-    IplImage *dst;
-    CvRect rect = GetRect(point,r,d,pos);
-    dst=cvCreateImage(cvSize(rect.width,rect.height),srcImg->depth,srcImg->nChannels);//创建图像空间
-
-    //设置ROI区域
-    cvSetImageROI(srcImg,rect);
-
-    //提取ROI
-    cvCopy(srcImg,dst);
-
-    //取消设置
-    cvResetImageROI(srcImg);
-
-    for (int row = 0; row < dst->height; row++)
-    {
-       for (int cols = 0; cols < dst->width; cols++)
-       {
-            uchar* g_pixel = (uchar*)(dst->imageData + row*dst->widthStep + (cols*dst->nChannels + 1));
-            Vintensity.push_back(*g_pixel);
-        }
-    }
-
-    cvReleaseImage(&srcImg);
-    cvReleaseImage(&dst);
-
-    double accum  = 0.0;
-    std::for_each (std::begin(Vintensity), std::end(Vintensity), [&](const double d)
-    {
-        accum  += (d-dStandardValue)*(d-dStandardValue);
-    });
-    //标准差
-    Q_ASSERT(Vintensity.size() > 1);
-    double SD = sqrt(accum/(Vintensity.size()-1)); //标准差
-    return SD;
-}
-
-//获取四个矩形绿色分量的标准差之和
-double CalculateGrayscale::GetGreenComponentSDSum(QString imagePath,QPoint point,int r,int d)
-{
-    double dGraySDSum = 0.0;
-    for(int i = 0;i < 4;i++)
-    {
-        dGraySDSum += GetGreenComponentSD(imagePath,point,r,d,i,150.0);
-    }
-    return dGraySDSum;
-}
-
-void CalculateGrayscale::drawRect(Mat &matImage,QPoint point,int r,int d,int pos)
-{
-    CvRect rect = GetRect(point,r,d,pos);
+    CvRect rect = GetRect(qPoint,iRectR,iRectD,iPos);
     cv::rectangle(matImage,rect,Scalar(255,0,0),1,1,0);
 }
 
-CvRect CalculateGrayscale::GetRect(QPoint point,int r,int d,int pos)
+CvRect CalculateGrayscale::GetRect(QPoint qPoint,int iRectR,int iRectD,int iPos)
 {
-    int rowBegin = 0;
-    int colsBegin = 0;
-    switch (pos)
+    int iRowBegin = 0;
+    int iColsBegin = 0;
+    switch (iPos)
     {
     case 0:
-        rowBegin =  point.y() - r - d;
-        colsBegin = point.x() - r - d;
+        iRowBegin =  qPoint.y() - iRectR - iRectD;
+        iColsBegin = qPoint.x() - iRectR - iRectD;
         break;
     case 1:
-        rowBegin =  point.y() - r - d;
-        colsBegin = point.x() + d;
+        iRowBegin =  qPoint.y() - iRectR - iRectD;
+        iColsBegin = qPoint.x() + iRectD;
         break;
     case 2:
-        rowBegin =  point.y() + d;
-        colsBegin = point.x() + d;
+        iRowBegin =  qPoint.y() + iRectD;
+        iColsBegin = qPoint.x() + iRectD;
         break;
     case 3:
-        rowBegin =  point.y() + d;
-        colsBegin = point.x() - r - d;
+        iRowBegin =  qPoint.y() + iRectD;
+        iColsBegin = qPoint.x() - iRectR - iRectD;
         break;
     default:
-        rowBegin =  point.y() - r - d;
-        colsBegin = point.x() - r - d;
+        iRowBegin =  qPoint.y() - iRectR - iRectD;
+        iColsBegin = qPoint.x() - iRectR - iRectD;
         break;
     }
     CvRect rect;
-    rect.x = rowBegin,rect.y = colsBegin,rect.width = r,rect.height = r;
+    rect.x = iRowBegin,rect.y = iColsBegin,rect.width = iRectR,rect.height = iRectR;
     return rect;
 }

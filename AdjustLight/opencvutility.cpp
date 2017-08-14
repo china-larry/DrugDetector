@@ -1,4 +1,4 @@
-﻿#include "opencvutility.h"
+﻿#include "OpencvUtility.h"
 #include "QZXingDLL/QZXing.h"
 #include <QDir>
 #include <QApplication>

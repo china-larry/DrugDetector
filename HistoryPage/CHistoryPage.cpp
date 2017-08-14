@@ -425,7 +425,17 @@ void CHistoryPage::InsertToDatabase()
 //    else
 //    {
 //        qDebug() << "打开数据库失败";
-//    }
+    //    }
+}
+
+void CHistoryPage::SetPisServer(QString strPisServer)
+{
+    m_strPisServer = strPisServer;
+}
+
+void CHistoryPage::SetPoctServer(QString strPoctServer)
+{
+    m_strPoctServer = strPoctServer;
 }
 
 void CHistoryPage::_LoadQss()
@@ -623,7 +633,11 @@ void CHistoryPage::_InitLayout()
     this->setLayout(pLayout);
 }
 
-
+/**
+  * @brief 删除指定ID的数据
+  * @param
+  * @return
+  */
 bool CHistoryPage::_DeleteDatabase(QString strID)
 {
     if(strID == "")
@@ -653,6 +667,16 @@ bool CHistoryPage::_DeleteDatabase(QString strID)
         qSqlQuery.finish();
     }
     return true;
+}
+
+void CHistoryPage::_UpdateToPisServer()
+{
+
+}
+
+void CHistoryPage::_UpdateToPoctServer()
+{
+
 }
 
 /**

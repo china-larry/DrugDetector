@@ -11,13 +11,13 @@
 #include <QLabel>
 #include <QProgressBar>
 
-#include "upgradeprogress.h"
+#include "UpgradeProgress.h"
 #include "ui_upgradeprogress.h"
 
 #include "crc16/crc16.h"
 #include "messagebox/messagebox2.h"
 #include "messagebox/messagebox.h"
-#include "hidopertaionutility.h"
+#include "HidOpertaionUtility.h"
 #include "CHidCmdThread.h"
 
 #define DATA_COUNT_TIME (36)

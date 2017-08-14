@@ -1,5 +1,7 @@
-﻿#include "linefinder.h"
+﻿#include "LineFinder.h"
 #include <QDebug>
+#include <QApplication>
+#include <QDir>
 
 using namespace cv;
 #define MAX_SIZE 600
@@ -49,7 +51,7 @@ std::vector<cv::Point2d> LineFinder::findCrossPoints()
                 if(crossPointVal.x<MAX_SIZE && crossPointVal.y<MAX_SIZE && crossPointVal.x>0 && crossPointVal.y>0)
                 {
                     crossPointVect.push_back(crossPointVal);
-                    qDebug()<<"Cross point X:"<<crossPointVal.x <<"Y:"<<crossPointVal.y;
+                    //qDebug()<<"Cross point X:"<<crossPointVal.x <<"Y:"<<crossPointVal.y;
                 }
             }
         }
@@ -146,27 +148,45 @@ void LineFinder::cutImage(QString strImagePath)
     IplImage* pDest = cvCreateImage(size,src->depth,src->nChannels);//创建目标图像
     cvCopy(src,pDest); //复制图像
     cvResetImageROI(pDest);//源图像用完后，清空ROI
-    cvSaveImage("location.png",pDest);//保存目标图像
+
+    const QString strDir = QCoreApplication::applicationDirPath() + "/camera";
+    QDir qDir;
+    if(!qDir.exists(strDir))
+    {
+        qDir.mkdir(strDir);
+    }
+    const QString strLocationImagePath = strDir + "/location.png";
+    cvSaveImage(strLocationImagePath.toLatin1().data(),pDest);//保存目标图像
 }
 
 LocationData LineFinder::findCenterPointAndCrossPoints(QString strImagePath)
 {
+    const int OriginalImageWigth = 2048;
+    const int OriginalImageHight = 1536;
     cutImage(strImagePath);
-    cv::Mat image = imread("location.png");
+    const QString strDir = QCoreApplication::applicationDirPath() + "/camera";
+    QDir qDir;
+    if(!qDir.exists(strDir))
+    {
+        qDir.mkdir(strDir);
+    }
+    const QString strLocationImagePath = strDir + "/location.png";
+    cv::Mat image = imread(strLocationImagePath.toLatin1().data());
     cv::Mat result;
     cv::cvtColor (image,result,CV_BGRA2GRAY);
     cv::Mat contours;
-    cv::Canny (result,contours,125,350);  //边缘检测
+    cv::Canny (result,contours,50/*125*/,150/*350*/);  //边缘检测
     LineFinder finder;
     finder.setMinVote (80);
     finder.setLineLengthAndGap (100,20);
     finder.findLines (contours);
-    qDebug()<<"";
+    qDebug()<<"image.rows " << image.rows;
+    qDebug()<<"image.cols " << image.cols;
     LocationData locationData;
     locationData.crossPointVect = finder.findCrossPoints();
     locationData.centerPoint = finder.getCenterPoint(locationData.crossPointVect);
-    locationData.centerPoint.x = locationData.centerPoint.x + (2048 - 700) / 2;
-    locationData.centerPoint.y = locationData.centerPoint.y + (1536 - 800) / 2;
+    locationData.centerPoint.x = locationData.centerPoint.x + (OriginalImageWigth - image.cols) / 2;
+    locationData.centerPoint.y = locationData.centerPoint.y + (OriginalImageHight - image.rows) / 2;
 
     //展示直线
 //    finder.drawDetectedLines (image);

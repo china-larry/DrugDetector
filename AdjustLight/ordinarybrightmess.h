@@ -1,18 +1,33 @@
+﻿/*******************************************************************
+ **
+ ** Copyright:万孚生物
+ ** Author: wwl
+ ** Date:2017-08-1
+ ** Description: 普通机型灯光校准，根据标准机型的绿色分量值，求出普通机型的灯光值
+ ** ----------------------------------------------------------
+ ** History:
+ **   1.Author:
+ **-----------------------------------------------------------
+ **
+ ********************************************************************/
+
+
 #ifndef ORDINARYBRIGHTMESS_H
 #define ORDINARYBRIGHTMESS_H
 #include <QObject>
+#include <QPoint>
 
 
 struct BrightnessOrdinaryValue
 {
-    qint16  iBrightNo1; //上绿灯
-    qint16  iBrightNo2; //上白灯
-    qint16  iBrightNo3; //下绿灯
-    qint16  iBrightNo4; //下白灯
-    qint16  iBrightNo5; //左绿灯
-    qint16  iBrightNo6; //左白灯
-    qint16  iBrightNo7; //右绿灯
-    qint16  iBrightNo8; //右白灯
+    int iBrightNo1; //上绿灯
+    int iBrightNo2; //上白灯
+    int iBrightNo3; //下绿灯
+    int iBrightNo4; //下白灯
+    int iBrightNo5; //左绿灯
+    int iBrightNo6; //左白灯
+    int iBrightNo7; //右绿灯
+    int iBrightNo8; //右白灯
 
     double  iGreenComponentNo1; //上绿灯绿色分量
     double  iGreenComponentNo2; //上白灯绿色分量
@@ -23,6 +38,7 @@ struct BrightnessOrdinaryValue
     double  iGreenComponentNo7; //右绿灯绿色分量
     double  iGreenComponentNo8; //右白灯绿色分量
 };
+//注册结构体
 Q_DECLARE_METATYPE(BrightnessOrdinaryValue);
 
 class OrdinaryBrightmess : public QObject
@@ -30,7 +46,20 @@ class OrdinaryBrightmess : public QObject
     Q_OBJECT
 public:
     OrdinaryBrightmess();
+    ~OrdinaryBrightmess();
 
+signals:
+    //发送参数到UI更新
+    void SignalImportValueToUI(BrightnessOrdinaryValue brightnessValue);
+    void SignalCalibrationValueToUI(BrightnessOrdinaryValue brightnessValue);
+    void SignalReadValueToUI(BrightnessOrdinaryValue brightnessValue);
+public slots:
+    //接收UI信息
+     void SlotOrdinaryCalibration();
+     void SlotOrdinaryImport();
+     //
+     void SlotOrdinarySave();
+     void SlotOrdinaryRead();
     /**
      * @brief GetLightValue
      * 获取绿色分量标准差最小的灯光值
@@ -40,8 +69,8 @@ public:
      *        dGreenComponent 绿色分量
      * @return
      */
-    bool GetLightValue(const int iBrightNo,QPoint qCenterPoint,const qint16 iStandardBright,
-                       const double dStandardGreenComponent,qint16 *iOrdinaryBright,double *dOrdinaryGreenComponent);
+    bool GetLightValue(const int iBrightNo,QPoint qCenterPoint,const int iStandardBright,
+                       const double dStandardGreenComponent,int &iOrdinaryBright,double &dOrdinaryGreenComponent);
 
     /**
      * @brief SaveBrightnessValueParams
@@ -65,28 +94,21 @@ public:
 
     void SetBrightnessValue(BrightnessOrdinaryValue brightnessValue);
 
-    bool InitMachine(QPoint *CenterPoint);
+    /**
+     * @brief ReadBrightnessValueParams
+     * 保存到配置文件
+     * @param brightnessValue 灯光值结构体
+     *
+     * @return
+     */
+    bool InitMachine(QPoint &CenterPoint);
 
-    void OrdinaryCalibration(BrightnessOrdinaryValue *brightnessValue);
+    void OrdinaryCalibration(BrightnessOrdinaryValue &brightnessValue);
 
     QPoint findCenterPoint(QString strImagePath);
 
-
-signals:
-    //发送参数到UI更新
-    void SignalImportValueToUI(BrightnessOrdinaryValue brightnessValue);
-    void SignalCalibrationValueToUI(BrightnessOrdinaryValue brightnessValue);
-    void SignalReadValueToUI(BrightnessOrdinaryValue brightnessValue);
-public slots:
-    //接收UI信息
-     void SlotOrdinaryCalibration();
-     void SlotOrdinaryImport();
-     //
-     void SlotOrdinarySave();
-     void SlotOrdinaryRead();
-
 private:
-    BrightnessOrdinaryValue m_brightnessValue;
+    BrightnessOrdinaryValue m_OrdinarybrightnessValue;
     BrightnessOrdinaryValue m_StandardMachinebrightnessValue;
 };
 

@@ -18,6 +18,8 @@ signals:
 
 public slots:
 
+private slots:
+    void _SlotConfirm();// 设置测试模式
 
 private:
     QGroupBox *_CreateModeGroup();

@@ -10,6 +10,21 @@ CAccountManagementWidget::CAccountManagementWidget(QWidget *parent) : QWidget(pa
     _InitLayout();
 }
 
+void CAccountManagementWidget::_SlotAddUser()
+{
+
+}
+
+void CAccountManagementWidget::_SlotDeleteUser()
+{
+
+}
+
+void CAccountManagementWidget::_SlotModifyUser()
+{
+
+}
+
 void CAccountManagementWidget::_InitWidget()
 {
     m_pUserTableWidget = new QTableWidget(this);
@@ -39,10 +54,13 @@ void CAccountManagementWidget::_InitWidget()
 
     //
     m_pAddButton = new QPushButton(tr("Add"), this);
+    connect(m_pAddButton, SIGNAL(clicked(bool)), this, SLOT(_SlotAddUser()));
     m_pAddButton->setFixedSize(130, 35);
     m_pDeleteButton = new QPushButton(tr("Delete"), this);
+    connect(m_pDeleteButton, SIGNAL(clicked(bool)), this, SLOT(_SlotDeleteUser()));
     m_pDeleteButton->setFixedSize(130, 35);
     m_pModifyButton = new QPushButton(tr("Modify"), this);
+    connect(m_pModifyButton, SIGNAL(clicked(bool)), this, SLOT(_SlotModifyUser()));
     m_pModifyButton->setFixedSize(130, 35);
 
 }
@@ -65,4 +83,9 @@ void CAccountManagementWidget::_InitLayout()
     pLayout->addWidget(m_pUserTableWidget, 1, Qt::AlignHCenter);
     pLayout->addLayout(pButtonLayout);
     this->setLayout(pLayout);
+}
+
+void CAccountManagementWidget::_InitDataBase()
+{
+
 }

@@ -23,6 +23,7 @@ class CLoginInWidget : public QWidget
     Q_OBJECT
 public:
     explicit CLoginInWidget(QWidget *parent = nullptr);
+    // 鼠标移动事件重载
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -31,10 +32,8 @@ private slots:
     void _SlotCheckCloseButton();
     void _SlotCheckLoginButton();
 signals:
-    void SigShowMainWindow();
+    void SigShowMainWindow();// 显示主窗口
 public slots:
-
-
 private:
     void _InitWidget();
     void _InitLayout();

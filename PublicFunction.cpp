@@ -96,8 +96,8 @@ void LoadQss(QWidget *pWidget, QString strQssFilePath)
 }
 /**
   * @brief 获取图片的base64值(PNG)
-  * @param
-  * @return
+  * @param strImagePath:输入图片的路径
+  * @return QString:获取的base64值
   */
 QString GetImagePngBase64(QString strImagePath)
 {

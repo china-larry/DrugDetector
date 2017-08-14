@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QDataStream>
 
-#include "upgradefile.h"
+#include "UpgradeFile.h"
 #include "crc16/crc16.h"
 
 UpgradeFile::UpgradeFile()

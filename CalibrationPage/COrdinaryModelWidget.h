@@ -1,4 +1,16 @@
-﻿#ifndef CORDINARYMODELWIDGET_H
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 普通机型亮度校准
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#ifndef CORDINARYMODELWIDGET_H
 #define CORDINARYMODELWIDGET_H
 
 #include <QWidget>
@@ -76,7 +88,7 @@ private:
     QLineEdit *m_pONo8LineEditWidget;
     QPushButton *m_pSaveButton;
     QPushButton *m_pReadButton;
-    //
+    // 普通机型接口类
     OrdinaryBrightmess *m_pOrdinaryBrightmess;
 };
 

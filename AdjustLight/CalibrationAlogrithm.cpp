@@ -7,9 +7,9 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonParseError>
-#include "hidopertaionutility.h"
+#include "HidOpertaionUtility.h"
 #include "CHidCmdThread.h"
-#include "opencvutility.h"
+#include "OpencvUtility.h"
 #include "ParamsConfiguration.h"
 
 CalibrationAlogrithm::CalibrationAlogrithm()
@@ -31,7 +31,7 @@ CalibrationAlogrithm::CalibrationAlogrithm()
  * @return
  */
 void CalibrationAlogrithm::TraverseLedLight(StandardMachineCalibrateParams mParams,
-                                            StandardMachineCalibrateLight *mStandardMachineCalibrateLight)
+                                            StandardMachineCalibrateLight &mStandardMachineCalibrateLight)
 {
     QFile file("CalibrationAlogrithm.csv");
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -48,7 +48,7 @@ void CalibrationAlogrithm::TraverseLedLight(StandardMachineCalibrateParams mPara
     std::vector<double> dTCValueC8Vector;
     std::vector<double> dZValueVector;
 
-    mStandardMachineCalibrateLight->dZMaxValue = 0.0;
+    mStandardMachineCalibrateLight.dZMaxValue = 0.0;
     double dTestZMaxValue = 0.0;
     qint16 ipos = 0;
 
@@ -203,13 +203,13 @@ void CalibrationAlogrithm::TraverseLedLight(StandardMachineCalibrateParams mPara
                 //返回Z最大值和最大值的下标
                 GetMaxValue(dZValueVector,dTestZMaxValue,ipos);
 
-                if(dTestZMaxValue > mStandardMachineCalibrateLight->dZMaxValue)
+                if(dTestZMaxValue > mStandardMachineCalibrateLight.dZMaxValue)
                 {
-                    mStandardMachineCalibrateLight->dZMaxValue = dTestZMaxValue;
-                    mStandardMachineCalibrateLight->iUpGreenLightCalibrateValue = iUpGreenLightValue;
-                    mStandardMachineCalibrateLight->iDownGreenLightCalibrateValue = iDownGreenLightValue;
-                    mStandardMachineCalibrateLight->iLeftGreenLightCalibrateValue = iLeftGreenLightValue;
-                    mStandardMachineCalibrateLight->iRightGreenLightCalibrateValue = mParams.iRightGreenLightValueMin
+                    mStandardMachineCalibrateLight.dZMaxValue = dTestZMaxValue;
+                    mStandardMachineCalibrateLight.iUpGreenLightCalibrateValue = iUpGreenLightValue;
+                    mStandardMachineCalibrateLight.iDownGreenLightCalibrateValue = iDownGreenLightValue;
+                    mStandardMachineCalibrateLight.iLeftGreenLightCalibrateValue = iLeftGreenLightValue;
+                    mStandardMachineCalibrateLight.iRightGreenLightCalibrateValue = mParams.iRightGreenLightValueMin
                                                                            + ipos * mParams.iRightGreenLightValueStep;
                 }
             }

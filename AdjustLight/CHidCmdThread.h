@@ -7,7 +7,7 @@
 #include <QMutex>
 #include <QTimer>
 
-#include "common.h"
+#include "Common.h"
 
 struct HIDCmdData
 {
@@ -64,15 +64,15 @@ public:
     bool GetStopped();
 
 
-
 protected:
     virtual void run();
 
 private:
-    void SetCmdCompleted(bool bCmdCompleted);
+    //HID命令运行结束
+    void _SetCmdCompleted(bool bCmdCompleted);
 private slots:
     //HID命令结果返回信号处理槽
-    void SlotHIDCmdComplete(quint16 cmdType ,bool result);
+    void _SlotHIDCmdComplete(quint16 cmdType ,bool result);
 private:
     static CHidCmdThread* s_hidCmdThreadInstance;
     QQueue<HIDCmdData> m_hidCmdDataQueue;//上位机往设备下发命令队列

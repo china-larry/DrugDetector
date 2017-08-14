@@ -35,10 +35,10 @@ private:
     void _InitLayout();
 
 private:
-    CSettingSetupWindowWidget *m_pSetupWindosWidget;
-    CAccountManagementWidget *m_pAccountManagementWidget;
-    CTestModeWidget *m_pTestModeWidget;
-    QTabWidget *m_pSetTabWidget;
+    CSettingSetupWindowWidget *m_pSetupWindosWidget;// 设置页
+    CAccountManagementWidget *m_pAccountManagementWidget;// 用户管理页
+    CTestModeWidget *m_pTestModeWidget;// 测试模式页
+    QTabWidget *m_pSetTabWidget;// 切换控件
 
 };
 

@@ -1,9 +1,9 @@
-﻿#include "protocolutility.h"
+﻿#include "ProtocolUtility.h"
 #include <QDataStream>
 #include <QVector>
 #include <QFileInfo>
 
-#include "upgradefile.h"
+#include "UpgradeFile.h"
 
 ProtocolUtility::ProtocolUtility()
 {

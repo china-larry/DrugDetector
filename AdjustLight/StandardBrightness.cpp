@@ -1,9 +1,9 @@
 #include "StandardBrightness.h"
 #include <QApplication>
 #include "CHidCmdThread.h"
-#include "hidopertaionutility.h"
-#include "protocolutility.h"
-#include "opencvutility.h"
+#include "HidOpertaionUtility.h"
+#include "ProtocolUtility.h"
+#include "OpencvUtility.h"
 #include "ParamsConfiguration.h"
 #include "testing/ThreadTesting.h"
 
@@ -174,13 +174,13 @@ bool StandardBrightness::SetBrightnessValue(BrightnessValue brightnessValue)
 // 获取绿色分量曲线
 bool StandardBrightness::GetGreenComponunt(qint16 iCupType,const QString strSaveImagePath)
 {
-    ThreadTesting threadTesting;
-    m_iGreenComponuntList.clear();
-    m_iGreenComponuntList = threadTesting.ReceivePicPath(strSaveImagePath);
-    if(!m_iGreenComponuntList.isEmpty())
-    {
-        return true;
-    }
+//    ThreadTesting threadTesting;
+//    m_iGreenComponuntList.clear();
+//    m_iGreenComponuntList = threadTesting.ReceivePicPath(strSaveImagePath);
+//    if(!m_iGreenComponuntList.isEmpty())
+//    {
+//        return true;
+//    }
 
     return false;
 }

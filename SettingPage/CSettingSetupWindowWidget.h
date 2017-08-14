@@ -17,9 +17,15 @@ public:
     explicit CSettingSetupWindowWidget(QWidget *parent = nullptr);
 
 signals:
-
+    void SignalReadFirmwareVersion();// 发送读取硬件版本信号
+    void SignalReadUserTimes();// 发送仪器使用次数信号
 public slots:
-
+    void SlotGetFirmwareVersion();// 获得硬件版本信息
+    void  SlotGetUserTimes();// 获得仪器使用次数信号
+public:
+    //
+    QString GetPisServer(); // 返回PIS服务器
+    QString GetPoctServer();// 返回POCT服务器
 private:
     QGroupBox *_CreateServerGroup();
     QGroupBox *_CreateLanguageGroup();
@@ -27,6 +33,10 @@ private:
     //
     void _InitWidget();
     void _InitLayout();
+    //
+    void _ChangeToEnglish();// 切换至英文版本
+    void _ChangeToSpain();// 切换至西班牙版本
+
 private:
     // server
     QLabel *m_pPisLabel;
@@ -59,6 +69,9 @@ private:
     //
     QPushButton *m_pOKButton;
     QPushButton *m_pCancleButton;
+    // 服务器
+    QString m_strPisServer;
+    QString m_strPoctServer;
 };
 
 #endif // CSETTINGSETUPWINDOWWIDGET_H

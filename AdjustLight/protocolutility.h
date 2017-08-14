@@ -3,7 +3,7 @@
 
 #include <QByteArray>
 
-#include "common.h"
+#include "Common.h"
 
 /*******************************************************************
  **

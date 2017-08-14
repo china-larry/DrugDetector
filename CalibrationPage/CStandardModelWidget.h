@@ -1,4 +1,16 @@
-﻿#ifndef CSTANDARDMODELWIDGET_H
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 标准机型亮度校准
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#ifndef CSTANDARDMODELWIDGET_H
 #define CSTANDARDMODELWIDGET_H
 #include <QWidget>
 #include <QGroupBox>
@@ -14,10 +26,10 @@ public:
     explicit CStandardModelWidget(QWidget *parent = nullptr);
 
 signals:
-    void SignalSetBrightValue(BrightnessValue brightnessValue);
+    void SignalSetBrightValue(BrightnessValue brightnessValue);// 发送设置亮度数据
     void SingalCheckDeriveButton();
 public slots:
-    void SlotGetPictureToUI(QString strPicturePath,QList<int> iGreenComponuntList);
+    void SlotGetPictureToUI(QString strPicturePath,QList<int> iGreenComponuntList);// 绘制图片
 private slots:
     void _SlotCheckConfirmButton();
     void _SlotCheckDeriveButton();
@@ -51,7 +63,7 @@ private:
     QGraphicsScene *m_pGraphicsScene;
     //
     QPushButton *m_pDeriveButton;
-    // 校正接口类
+    // 标准机型接口类
     StandardBrightness *m_pStandardBrightness;
 };
 

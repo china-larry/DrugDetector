@@ -7,7 +7,7 @@
 #include<QTimer>
 #include<QQueue>
 #include<QMutex>
-#include "common.h"
+#include "Common.h"
 #include "IP_HID.h"
 
 /*******************************************************************
@@ -198,19 +198,13 @@ private slots:
      */
     void SlotLoadDll();
 
-    /**
-     * @brief UnloadDll
-     * 释放DLL
-     */
     void SlotUnloadDll();
-
     /**
      * @brief Open
      * 打开USB HID
      * @return
      */
     bool SlotOpen();
-
 
     /**
      * @brief Close

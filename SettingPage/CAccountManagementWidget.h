@@ -13,11 +13,14 @@ public:
 signals:
 
 public slots:
-
+    void _SlotAddUser();// 添加用户
+    void _SlotDeleteUser();// 删除用户
+    void _SlotModifyUser();// 修改用户
 
 private:
     void _InitWidget();
     void _InitLayout();
+    void _InitDataBase();// 初始化数据库
 private:
     QTableWidget *m_pUserTableWidget;
     QPushButton *m_pAddButton;

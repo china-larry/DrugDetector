@@ -55,13 +55,16 @@ private slots:
     void _SlotHistoryDataSelectChange(
             int iCurrentRow, int iCurrentColumn, int iPreviousRow, int iPreviousColumn);
 public:
-    // 获得测试结果
+    // Main窗口设置测试结果
     void SetTestResultDataList(QList<TestResultData*> pTestResultDataList);
     void SetTestUserData(DetectorPageUserData sDetectorPageUserData);
     // 切换到历史数据，显示当天测试数据
     void ShowCurrentDateTest();
     // 将测试页获取的数据插入数据库
     void InsertToDatabase();
+    // 服务器
+    void SetPisServer(QString strPisServer);
+    void SetPoctServer(QString strPoctServer);
 
 private:
     void _LoadQss();
@@ -73,9 +76,12 @@ private:
     // 数据库
     void _InitDataBase();// 初始化数据库
     bool _DeleteDatabase(QString strID);// 删除指定ID的数据
+    // 上传服务器
+    void _UpdateToPisServer();
+    void _UpdateToPoctServer();
 
 private:
-    QTableWidget *m_pHistoryDataTableWidget;
+    QTableWidget *m_pHistoryDataTableWidget;// 历史数据表控件
     int m_iTableColumnCount;// 列数量
     // 数据分表
     QTextEdit *m_pTestDataTextEdit;
@@ -84,9 +90,6 @@ private:
     int m_iCurrentDataProgramNumber;// 当前选择行的测试项目数量
     // 当前选择行的测试结果
     QList<QStringList> m_qTestDataList;
-//    QStringList m_strCurrentProgramNameList;
-//    QStringList m_strCurrentResultList;
-//    QStringList m_strCurrentCutoffList;
     // query condition
     CLabelLineEditWidget *m_pDonorIDWidget;
     CLabelLineEditWidget *m_pProductLotWidget;
@@ -108,6 +111,9 @@ private:
     QList<QStringList> m_strTableLineDataList;// 每行数据
     // 数据库
     QString m_strDatabaseName;
+    // PIS/POCT服务器
+    QString m_strPisServer;
+    QString m_strPoctServer;
 
 };
 

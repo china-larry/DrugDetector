@@ -10,47 +10,46 @@
     #include "protocolutility.h"
     #include "opencvutility.h"
 #endif
-#define MOVE_FORWARD    0
-#define MOVE_REVERSE    1
-#define SPEED_MOTOR     20
-#define RESET_MOTOR     10
+#define MOVE_FORWARD    0           //向前移动电机
+#define MOVE_REVERSE    1           //向后移动电机
+#define SPEED_MOTOR     20          //电机移动速度
+#define RESET_MOTOR     10          //电机复位速度
+
+#define SMOOTH_VALUE    8           //滤波系数
+
+#define PIXEL_HALF_OF_WIGHT_TCUP_PRO   110      //圆杯
+#define PIXEL_HALF_OF_WIGHT_SCUP_PRO   390      //方杯 唾液被3
+
+#define PIXEL_HALF_OF_WIGHT_TCUP_TAR   25      //圆杯
+#define PIXEL_HALF_OF_WIGHT_SCUP_TAR   25      //方杯 唾液被3
+
+#define PIXEL_TOP_MARJIN_TCUP      450          //项目区域 距离照片顶部的像素 圆杯
+#define PIXEL_TOP_MARJIN_SCUP      333          //项目区域 距离照片顶部的像素 方杯
+#define PIXEL_BOTTOM_MARJIN_TCUP   320          //项目区域 距离照片底部的像素 圆杯
+#define PIXEL_BOTTOM_MARJIN_SCUP   220          //项目区域 距离照片底部的像素 方杯
+
+#define PIXEL_SCREEN_ERR           (-85)        //屏幕误差
+
+#define PIXEL_OF_PRO_NAME_TCUP   420            //项目名称色块像素长度 圆杯
+#define PIXEL_OF_PRO_NAME_SCUP   650            //项目名称色块像素长度 方杯
 
 
-#define PIXEL_HALF_OF_WIGHT_TCUP   110      //圆杯
-#define PIXEL_HALF_OF_WIGHT_SCUP   390      //方杯 唾液被
+#define PIXEL_HEIGHT_LEVEL_TCUP    60           //项目垂直分量最小界限 圆杯
+#define PIXEL_HEIGHT_LEVEL_SCUP    200          //项目垂直分量最小界限 方杯
 
-#define PIXEL_TOP_MARJIN_TCUP      450
-#define PIXEL_TOP_MARJIN_SCUP      333
-#define PIXEL_BOTTOM_MARJIN_TCUP   320
-#define PIXEL_BOTTOM_MARJIN_SCUP   220
-
-#define PIXEL_SCREEN_ERR           (-85)
-
-#define PIXEL_OF_PRO_NAME_TCUP   420
-#define PIXEL_OF_PRO_NAME_SCUP   650
+#define PIXEL_SUSTAIN_TCUP         105          //项目垂直分量最小宽度 圆杯
+#define PIXEL_SUSTAIN_SCUP         75           //项目垂直分量最小宽度 方杯
 
 
-#define MOVE_FORWARD    0
-#define MOVE_REVERSE    1
-#define SPEED_MOTOR     20
+#define STEP_BETWEEN_PRIJECT    140             //项目间电机步数 理论值
+#define PIX_BETWEEN_PRIJECT     218             //项目间像素宽度 理论值
+#define MAGIFICATION    1000                    //计算中间过程 放大系数
+#define STEP_PER_PIX    (STEP_BETWEEN_PRIJECT*MAGIFICATION/PIX_BETWEEN_PRIJECT)     //每个像素电机步数
 
-#define PIXEL_HEIGHT_LEVEL_TCUP    60
-#define PIXEL_HEIGHT_LEVEL_SCUP    200
+#define PIXEL_LINE  20                          //C线 像素宽度
+#define PIXEL_TC_DISTANCE   120                 //T线 C线 像素距离
 
-#define PIXEL_SUSTAIN_TCUP         105
-#define PIXEL_SUSTAIN_SCUP         75
-
-
-#define STEP_BETWEEN_PRIJECT    140
-#define PIX_BETWEEN_PRIJECT     218
-#define MAGIFICATION    1000
-#define STEP_PER_PIX    (STEP_BETWEEN_PRIJECT*MAGIFICATION/PIX_BETWEEN_PRIJECT)
-
-#define PIXEL_LINE  20
-#define PIXEL_TC_DISTANCE   120
-
-#define MAX_PROJECT_COUNT   14
-#define VERSION_V3      "V3"
+#define MAX_PROJECT_COUNT   14                  //最大项目数
 
 ThreadTesting::ThreadTesting()
 {
@@ -65,7 +64,7 @@ ThreadTesting::ThreadTesting()
 
     connect(this,SIGNAL(SignalStartMotor()),this,SLOT(_SlotMoveStepperMotor()));
 
-    connect(&m_CodeDetoector,SIGNAL(SignalQRCodeInfo(QRCodeInfo)),this, SLOT(_SLotReceiveQRCode(QRCodeInfo)));
+    connect(&m_CodeDetoector,SIGNAL(SignalQRCodeInfo(QRCodeInfo)),this, SLOT(_SLotReceiveQRCodeInfo(QRCodeInfo)));
     connect(&m_CodeDetoector,SIGNAL(SignalErrInfo(EnumTypeErr)),this,SLOT(_SlotReceiveErr(EnumTypeErr)));
     connect(&m_CodeDetoector,SIGNAL(SignalQRCodeLocation(QString)),this,SLOT(_SlotReceiveQRcodePic(QString)));
 
@@ -88,7 +87,7 @@ ThreadTesting::~ThreadTesting()
 
 void ThreadTesting::StartTest()
 {
-    qDebug() << __FUNCTION__ << "--------------";
+    qDebug() << __FUNCTION__ ;
 #if 1
     m_CodeDetoector.TestGetQRCode();
 #else
@@ -109,21 +108,28 @@ void ThreadTesting::StartTest()
 
 /**
  * @brief ThreadTesting::_SLotReceiveQRCode 接收二维码信息 槽函数
- * @param info
+ * @param info 二维码信息
  */
 
-void ThreadTesting::_SLotReceiveQRCode(QRCodeInfo info)
+void ThreadTesting::_SLotReceiveQRCodeInfo(QRCodeInfo info)
 {
+    qDebug() << "info.iQRCodePosition:" << info.iQRCodePosition;
     if(m_eCurrentStatus !=ENUM_STATUS_TEST::STATUS_NONE)
     {
         return;
     }
     emit SignalSendCodeInfo(info);
-
+#if 1
     for(int i=1;i<5;i++)
     {
         CHidCmdThread::GetInstance()->AddOpenLedCmd(i, 3000);
     }
+#else
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(1, 3000);
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(2, 0);
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(3, 3000);
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(4, 0);
+#endif
 
     m_QRCodeInfo = info;
     _InitStatus();
@@ -135,25 +141,23 @@ void ThreadTesting::_SLotReceiveQRCode(QRCodeInfo info)
  */
 void ThreadTesting::_SlotMoveStepperMotor()
 {
-    qDebug() << __FUNCTION__ <<"index:" << m_iIndexProject << "total:" << m_iStepList.count() << QThread::currentThreadId();
+//    qDebug() << __FUNCTION__ <<"index:" << m_iIndexProject << "total:" << m_iStepList.count() << QThread::currentThreadId();
     if((m_iIndexProject>-1)&&(m_iIndexProject<m_iStepList.count()))
     {
         m_eCurrentStatus = MOVE_THE_MORTOR;
         quint16 step = m_iStepList.at(m_iIndexProject);
 //        qDebug() << __FUNCTION__ << "move " << step << "steps";
 
-//        HIDOpertaionUtility::getInstance()->HIDWrite(ProtocolUtility::GetMotorRotateCmd(MOVE_REVERSE, step, SPEED_MOTOR));
         CHidCmdThread::GetInstance()->AddRotateMotorCmd(SPEED_MOTOR, step, MOVE_REVERSE);
     }
     else
     {
-//        emit SignalErr(ENUM_ERR::ERR_STEP_MOTOR);
-        qDebug() << "ENUM_ERR::ERR_STEP_MOTOR  1";
+//        emit SignalTestErr(ENUM_ERR::ERR_STEP_MOTOR);
     }
 }
 
 /**
- * @brief ThreadTesting::_SlotMotorComplete 点击回馈信号
+ * @brief ThreadTesting::_SlotMotorComplete 电机回馈信号
  * @param mCmdType  命令类型
  * @param result 命令结果：是否成功
  */
@@ -163,7 +167,7 @@ void ThreadTesting::_SlotMotorComplete(quint16 mCmdType,bool result)
 //    qDebug() << __FUNCTION__ << mCmdType << result;
     if(mCmdType == ProtocolUtility::CMD_ROTATE_MOTOR)
     {
-        _SlotStatusHandler(true,m_eCurrentStatus);
+        _StatusHandler(true,m_eCurrentStatus);
     }
     else if(mCmdType == ProtocolUtility::CMD_RESET_MOTOR)
     {
@@ -203,9 +207,9 @@ void ThreadTesting::_SlotMotorComplete(quint16 mCmdType,bool result)
  * @param status 当前状态
  */
 
-void ThreadTesting::_SlotStatusHandler(bool result,ENUM_STATUS_TEST status)
+void ThreadTesting::_StatusHandler(bool result,ENUM_STATUS_TEST status)
 {
-//    qDebug()<< __FUNCTION__ << result << status;
+//    qDebug()<< __FUNCTION__ << "result:"<< result << "status:" << status << "m_iIndexProject:"<< m_iIndexProject<< "m_iStepsMoveMotor:"<< m_iStepsMoveMotor;
 
     if(result)
     {
@@ -266,14 +270,14 @@ void ThreadTesting::_SlotTakePhoto()
         OpencvUtility::getInstance()->GetVideoCapture(&strPath);
         if(m_QRCodeInfo.eTypeCup ==TypeTCup)
         {
-            TestResultData resultData = _ReceivePicPath(strPath);
+            TestResultData resultData = _ReceivePicPathTCup(strPath);
 
             emit SignalTestResult(resultData);
-            _SlotStatusHandler(true ,m_eCurrentStatus);
+            _StatusHandler(true ,m_eCurrentStatus);
         }
         else if(m_QRCodeInfo.eTypeCup)
         {
-            _SlotReceivePicPath2(strPath);
+            _ReceivePicPathSCup(strPath);
         }
     }
     else
@@ -291,6 +295,7 @@ void ThreadTesting::_InitStatus()
 {
     if(m_QRCodeInfo.iProgramCount > MAX_PROJECT_COUNT)
     {
+        qDebug() << __FUNCTIONW__<< "ERR_DATA";
         emit SignalTestErr(ENUM_ERR::ERR_DATA);
         return;
     }
@@ -344,12 +349,12 @@ void ThreadTesting::_InitStatus()
 }
 
 /**
- * @brief ThreadTesting::_SlotReceivePicPath 得到所拍照片，解析 计算测试结果。
+ * @brief ThreadTesting::_ReceivePicPath 得到所拍照片，解析 计算圆杯测试结果。
  * @param path  图片路径
  * @return 返回测试结果
  */
 
-TestResultData ThreadTesting::_ReceivePicPath(QString path)
+TestResultData ThreadTesting::_ReceivePicPathTCup(QString path)
 {
 //    qDebug() << __FUNCTION__ << m_iIndexProject << path;
 //    qDebug() << __FILE__ << "IndexProject:" << m_iIndexProject;
@@ -376,18 +381,18 @@ TestResultData ThreadTesting::_ReceivePicPath(QString path)
     else
     {
         qDebug() << "没有项目名称";
-        resultData.strResult = "err";
+        resultData.strResult = "Error";
         return resultData;
     }
 
     if(!img->load(path))
     {
         qDebug() << "加载图像失败";
-        resultData.strResult = "err";
+        resultData.strResult = "Error";
         return resultData;
     }
 
-    QPixmap::fromImage(img->copy(img->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP, PIXEL_TOP_MARJIN_TCUP,PIXEL_HALF_OF_WIGHT_TCUP*2,
+    QPixmap::fromImage(img->copy(img->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP_PRO, PIXEL_TOP_MARJIN_TCUP,PIXEL_HALF_OF_WIGHT_TCUP_PRO*2,
                                  img->height()-PIXEL_TOP_MARJIN_TCUP-PIXEL_BOTTOM_MARJIN_TCUP)).save(path.left(path.count()-4)+"a.bmp");
 
     QList<int> iUprightProjectionList;
@@ -397,25 +402,27 @@ TestResultData ThreadTesting::_ReceivePicPath(QString path)
     if(!iUprightProjectionList.isEmpty())
     {
 //        iLocationProjectMid = _FindProject(iUprightProjectionList);
-        iLocationProjectMid = FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
+        iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
         if(iLocationProjectMid == -1)
         {
-            qDebug() << "err Pic:" << path.left(path.count()-4)+"a.bmp";
-            resultData.strResult = "err";
+            qDebug() << "m_iIndexProject:" << m_iIndexProject<< "ERR Pic Path:"  << path.left(path.count()-4)+"a.bmp";
+            resultData.strResult = "Error";
             return resultData;
         }
         else
         {
             if(m_iIndexProject+1 < m_iStepList.count())
             {
-                _ModifNextStep(m_iIndexProject+1,PIXEL_HALF_OF_WIGHT_TCUP-iLocationProjectMid);
+                _ModifNextStep(m_iIndexProject+1,PIXEL_HALF_OF_WIGHT_TCUP_PRO-iLocationProjectMid);
             }
         }
     }
 
-    QPixmap::fromImage(img->copy(img->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP, PIXEL_TOP_MARJIN_TCUP+PIXEL_OF_PRO_NAME_TCUP,
-                                 PIXEL_HALF_OF_WIGHT_TCUP*2,
+    QPixmap::fromImage(img->copy(img->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP_PRO + iLocationProjectMid - PIXEL_HALF_OF_WIGHT_TCUP_TAR,
+                                 PIXEL_TOP_MARJIN_TCUP+PIXEL_OF_PRO_NAME_TCUP, PIXEL_HALF_OF_WIGHT_TCUP_TAR*2,
                                  img->height()-PIXEL_TOP_MARJIN_TCUP-PIXEL_BOTTOM_MARJIN_TCUP-PIXEL_OF_PRO_NAME_TCUP)).save(path.left(path.count()-4)+"b.bmp");
+
+    qDebug() << "img->width()/2" << img->width()/2 << "iLocationProjectMid:" << iLocationProjectMid;
 
     QList<int> iHorizontalProjectionList;
     iHorizontalProjectionList = _HorizontalProjection(path.left(path.count()-4)+"b.bmp");
@@ -436,12 +443,12 @@ TestResultData ThreadTesting::_ReceivePicPath(QString path)
 }
 
 /**
- * @brief ThreadTesting::_SlotReceivePicPath 接口 传入图片，返回垂直分量值
+ * @brief ThreadTesting::GetComponentGreen 接口 传入图片，返回临绿色分量值
  * @param path  图片路径
  * @return 返回测试结果，List为空，为失败。
  */
 
-QList<int> ThreadTesting::ReceivePicPath(QString path)
+QList<int> ThreadTesting::GetComponentGreenTCup(QString path)
 {
     QImage* img=new QImage();
     QList<int> iHorizontalProjectionList;
@@ -452,7 +459,7 @@ QList<int> ThreadTesting::ReceivePicPath(QString path)
         return iHorizontalProjectionList;
     }
 
-    QPixmap::fromImage(img->copy(img->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP, PIXEL_TOP_MARJIN_TCUP,PIXEL_HALF_OF_WIGHT_TCUP*2,
+    QPixmap::fromImage(img->copy(img->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP_PRO, PIXEL_TOP_MARJIN_TCUP,PIXEL_HALF_OF_WIGHT_TCUP_PRO*2,
                                  img->height()-PIXEL_TOP_MARJIN_TCUP-PIXEL_BOTTOM_MARJIN_TCUP)).save(path.left(path.count()-4)+"a.bmp");
 
     QList<int> iUprightProjectionList;
@@ -461,15 +468,16 @@ QList<int> ThreadTesting::ReceivePicPath(QString path)
     int iLocationProjectMid =0;
     if(!iUprightProjectionList.isEmpty())
     {
-        iLocationProjectMid = FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
+        iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
         if(iLocationProjectMid == -1)
         {
             return iHorizontalProjectionList;
         }
     }
-    QPixmap::fromImage(img->copy(img->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP, PIXEL_TOP_MARJIN_TCUP+PIXEL_OF_PRO_NAME_TCUP,
-                                 PIXEL_HALF_OF_WIGHT_TCUP*2,
+    QPixmap::fromImage(img->copy(img->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP_PRO + iLocationProjectMid - PIXEL_HALF_OF_WIGHT_TCUP_TAR,
+                                 PIXEL_TOP_MARJIN_TCUP+PIXEL_OF_PRO_NAME_TCUP, PIXEL_HALF_OF_WIGHT_TCUP_TAR*2,
                                  img->height()-PIXEL_TOP_MARJIN_TCUP-PIXEL_BOTTOM_MARJIN_TCUP-PIXEL_OF_PRO_NAME_TCUP)).save(path.left(path.count()-4)+"b.bmp");
+
 
     iHorizontalProjectionList = _HorizontalProjection(path.left(path.count()-4)+"b.bmp");
 
@@ -478,9 +486,68 @@ QList<int> ThreadTesting::ReceivePicPath(QString path)
     return iHorizontalProjectionList;
 }
 
+/**
+ * @brief ThreadTesting::GetComponentGreen 接口 传入图片，返回临绿色分量值 方杯
+ * @param path  图片路径
+ * @return 返回测试结果，List为空，为失败。
+ */
+
+QList<int> ThreadTesting::GetComponentGreenSCup(QString path)
+{
+    QImage* img=new QImage;
+    QList<int> iHorizontalProjectionList;
+    iHorizontalProjectionList.clear();
+
+    if(!img->load(path))
+    {
+        qDebug() << "加载图像失败";
+        return iHorizontalProjectionList;
+    }
 
 
-void ThreadTesting::_SlotReceivePicPath2(QString path)
+    int iXPic = img->width()/2 - PIXEL_HALF_OF_WIGHT_SCUP_PRO + PIXEL_SCREEN_ERR;
+    int iYPic = PIXEL_TOP_MARJIN_SCUP;
+    int iWidth = PIXEL_HALF_OF_WIGHT_SCUP_PRO*2;
+    int iHeight = img->height()-PIXEL_TOP_MARJIN_SCUP-PIXEL_BOTTOM_MARJIN_SCUP;
+
+    QString strPathPic = path.left(path.count()-4)+"a.bmp";
+
+    QPixmap::fromImage(img->copy(iXPic, iYPic,iWidth, iHeight)).save(strPathPic);
+
+    QList<int> iUprightProjectionList;
+    iUprightProjectionList = _UprightProjection(strPathPic);
+
+    QList<int> iProjectMidList = _FindProjectSCup(iUprightProjectionList);
+    if(iProjectMidList.isEmpty())
+    {
+        qDebug() << "未定位到项目";
+        return iHorizontalProjectionList;
+    }
+    int iProjectMidSum =0;
+
+    iProjectMidSum += iProjectMidList.at(0);
+    int iXProject = iXPic + iProjectMidSum - PIXEL_SUSTAIN_SCUP/2 -30;
+    int iYProject = iYPic + PIXEL_OF_PRO_NAME_SCUP;
+    int iWidthProject = PIXEL_SUSTAIN_SCUP + 60;
+    int iHeightProject = iYProject - PIXEL_OF_PRO_NAME_SCUP;
+
+    QString strPathTar = path.left(path.count()-4)+"+"+QString::number(0)+"b.bmp";
+    QPixmap::fromImage(img->copy(iXProject , iYProject,iWidthProject, iHeightProject)).save(strPathTar);
+
+
+    iHorizontalProjectionList = _HorizontalProjection(strPathTar);
+    delete img;
+
+    return iHorizontalProjectionList;
+}
+
+/**
+ * @brief ThreadTesting::_ReceivePicPath 得到所拍照片，解析 计算圆杯测试结果。
+ * @param path  图片路径
+ * @return 返回测试结果
+ */
+
+void ThreadTesting::_ReceivePicPathSCup(QString path)
 {
     QImage* img=new QImage;
     TestResultData resultData;
@@ -501,14 +568,14 @@ void ThreadTesting::_SlotReceivePicPath2(QString path)
     {
         qDebug() << "加载图像失败";
         emit SignalTestResult(resultData);
-        _SlotStatusHandler(true ,m_eCurrentStatus);
+        _StatusHandler(true ,m_eCurrentStatus);
         return;
     }
 
 
-    int iXPic = img->width()/2 - PIXEL_HALF_OF_WIGHT_SCUP + PIXEL_SCREEN_ERR;
+    int iXPic = img->width()/2 - PIXEL_HALF_OF_WIGHT_SCUP_PRO + PIXEL_SCREEN_ERR;
     int iYPic = PIXEL_TOP_MARJIN_SCUP;
-    int iWidth = PIXEL_HALF_OF_WIGHT_SCUP*2;
+    int iWidth = PIXEL_HALF_OF_WIGHT_SCUP_PRO*2;
     int iHeight = img->height()-PIXEL_TOP_MARJIN_SCUP-PIXEL_BOTTOM_MARJIN_SCUP;
 
     QString strPathPic = path.left(path.count()-4)+"a.bmp";
@@ -522,9 +589,9 @@ void ThreadTesting::_SlotReceivePicPath2(QString path)
     if(iProjectMidList.isEmpty())
     {
         qDebug() << "未定位到项目";
-        resultData.strResult = "err";
+        resultData.strResult = "Error";
         emit SignalTestResult(resultData);
-        _SlotStatusHandler(true ,m_eCurrentStatus);
+        _StatusHandler(true ,m_eCurrentStatus);
         return;
     }
     int iProjectMidSum =0;
@@ -550,7 +617,7 @@ void ThreadTesting::_SlotReceivePicPath2(QString path)
         {
 //            return resultData;
             qDebug() << "T/C获取失败";
-            resultData.strResult = "err";
+            resultData.strResult = "Error";
             emit SignalTestResult(resultData);
             continue;
         }
@@ -563,7 +630,7 @@ void ThreadTesting::_SlotReceivePicPath2(QString path)
         emit SignalTestResult(resultData);
 
     }
-    _SlotStatusHandler(true ,m_eCurrentStatus);
+    _StatusHandler(true ,m_eCurrentStatus);
     delete img;
 }
 
@@ -576,7 +643,7 @@ QList<int> ThreadTesting::_FindProjectSCup(QList<int> iUprightProjectionList)
     for(int i=0;i<5;i++)
     {
         int iProjectMid = -1;
-        iProjectMid = FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_SCUP,PIXEL_SUSTAIN_SCUP);
+        iProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_SCUP,PIXEL_SUSTAIN_SCUP);
         if(iProjectMid == -1)
         {
             qDebug() << i << "found no Project!";
@@ -600,20 +667,25 @@ QList<int> ThreadTesting::_FindProjectSCup(QList<int> iUprightProjectionList)
 
 int ThreadTesting::_GetValueTC(const QList<int> &iHorizontalProjectionList,TestResultData &resultData)
 {
+//    for(int i=0;i<iHorizontalProjectionList.count();i++)
+//    {
+//        qDebug() << "GetValue    i:" << i << "value:" << iHorizontalProjectionList.at(i);
+//    }
+
     int iLocationCLineMid = _FindCLine(iHorizontalProjectionList);
 
     int *A3 =new int[iHorizontalProjectionList.count()];
     if (!A3)
     {
         printf("malloc A3 error!\n");
-        resultData.strResult = "err";
+        resultData.strResult = "Error";
         return -1;
     }
     int *A2 =new int[iHorizontalProjectionList.count()];
     if (!A2)
     {
         printf("malloc A2 error!\n");
-        resultData.strResult = "err";
+        resultData.strResult = "Error";
         return -1;
     }
     for(int i=0;i<iHorizontalProjectionList.count();i++)
@@ -624,7 +696,7 @@ int ThreadTesting::_GetValueTC(const QList<int> &iHorizontalProjectionList,TestR
     resultData.iCValue = _ImageAnalysisProcess(A2,iLocationCLineMid,iHorizontalProjectionList.count());
     resultData.iTValue = _ImageAnalysisProcess(A3,iLocationCLineMid+PIXEL_TC_DISTANCE,iHorizontalProjectionList.count());
 
-    qDebug() << "C_SUm:" << resultData.iCValue << "C_SUm:" <<resultData.iTValue;
+    qDebug() << "C_SUm:" << resultData.iCValue << "T_SUm:" <<resultData.iTValue;
 
     delete A2;
     delete A3;
@@ -705,23 +777,26 @@ void ThreadTesting::_GetTestResult(const double concentration,const InfoProject 
 void ThreadTesting::_GetTestResult(const InfoProject &projectData,TestResultData &resultData)
 {
     double dValueTC=resultData.iTValue /resultData.iCValue;
-    if (dValueTC>projectData.dThresholdUp)
+    if (dValueTC < projectData.dThresholdUp)
     {
-        resultData.strResult=tr("POSITIVE");
+        resultData.strResult=tr("NEGATIVE");
     }
     else
     {
-        resultData.strResult=tr("NEGATIVE");
+        resultData.strResult=tr("Non-Negative");
     }
     return;
 }
 
+
 /**
- * @brief 判断是否有项目
- * @param iUprightProjectionList 图片垂直投影
+ * @brief 获取项目位置
+ * @param iUprightProjectionList 图片垂直投影数据
+ * @param iPixelLevel 项目像素高度
+ * @param iPixelSustain  项目像素宽度
  * @return 成功返回项目中心坐标，失败返回-1
  */
-int ThreadTesting::FindProjectMid(QList<int> iUprightProjectionList,int iPixelLevel,int iPixelSustain)
+int ThreadTesting::_FindProjectMid(QList<int> iUprightProjectionList,int iPixelLevel,int iPixelSustain)
 {
     int count=0;
     int iLocationProjectStart = 0;
@@ -774,6 +849,7 @@ int ThreadTesting::_FindCLine(QList<int> iHorizontalProjectionList)
         }
         iLine20Sum.append(sum);
     }
+#if 0
     int max = iLine20Sum.at(0);
     int index = 0;
     for(int i=0;i<iLine20Sum.count();i++)
@@ -784,17 +860,28 @@ int ThreadTesting::_FindCLine(QList<int> iHorizontalProjectionList)
             index = i;
         }
     }
+#else
+    int min = iLine20Sum.at(0);
+    int index = 0;
+    for(int i=0;i<iLine20Sum.count();i++)
+    {
+        if(iLine20Sum.at(i)<min)
+        {
+            min = iLine20Sum.at(i);
+            index = i;
+        }
+    }
+#endif
     return index + PIXEL_LINE/2;
 }
 
 /**
- * @brief 垂直投影
+ * @brief 计算垂直投影
  * @param strImgPath 图像路径
- * @return 垂直投影值
+ * @return 垂直投影数据
  */
 QList<int>  ThreadTesting::_UprightProjection(QString strImgPath)
 {
-
     IplImage * pImg=cvLoadImage(strImgPath.toLatin1().data(), 0);
     IplImage* pImg_51 = cvCreateImage( cvGetSize(pImg),IPL_DEPTH_8U, 1 );
     cvSmooth( pImg, pImg, CV_BLUR, 3, 3, 0, 0 );
@@ -824,46 +911,76 @@ QList<int>  ThreadTesting::_UprightProjection(QString strImgPath)
 //        qDebug() << __FUNCTION__ << "x:" << x << "node:" << iNode;
         iResultList.append(iNode);
     }
+
+    _SmoothData(iResultList,SMOOTH_VALUE);
+
     return iResultList;
 }
+
+
+
+void ThreadTesting::_SmoothData(QList<int> &iResultList,int iSmoothValue)
+{
+    for (int i = 0; i < (iResultList.length()-iSmoothValue); i++)
+    {
+        for (int j=0;j <iSmoothValue;j++)
+        {
+            iResultList[i] += iResultList[i + j];
+        }
+        iResultList[i] = iResultList[i] / iSmoothValue;
+    }
+}
+
 /**
- * @brief 水平投影
+ * @brief 计算水平投影
  * @param 图片路径
- * @return  水平投影灰度值
+ * @return  水平投影数据
  */
 
 QList<int> ThreadTesting::_HorizontalProjection(QString strImgPath)
 {
-
-    IplImage * pImg=cvLoadImage(strImgPath.toLatin1().data(), 0);
-    IplImage* pImg_51 = cvCreateImage( cvGetSize(pImg),IPL_DEPTH_8U, 1 );
-    cvSmooth( pImg, pImg, CV_BLUR, 3, 3, 0, 0 );
-    cvAdaptiveThreshold( pImg, pImg_51 , 255, CV_THRESH_BINARY , CV_ADAPTIVE_THRESH_GAUSSIAN_C , 51, 5 );
-
-    cvSaveImage(strImgPath.left(strImgPath.count()-4).toLatin1() + "51.bmp",pImg_51);
-
     QList<int> iResultList;
     iResultList.clear();
     int iNode;
 
-    CvScalar scalar;
+    QImage* img=new QImage;
+    if(!img->load(strImgPath))
+    {
+        qDebug() << "加载图像失败";
+        return iResultList;
+    }
 
-    for(int y=0;y<pImg_51->height;y++)
+    for(int y=0;y<img->height();y++)
     {
         iNode = 0;
-        for(int x=0;x<pImg_51->width;x++)
+        for(int x=0;x<img->width();x++)
         {
-            scalar=cvGet2D(pImg_51,y,x);
-
-            if(scalar.val[0]==255)
-            {
-                iNode++;
-            }
+            QRgb pixel = img->pixel(x,y);
+            iNode += qGreen(pixel);;
         }
         iResultList.append(iNode);
-
-//        qDebug() << __FUNCTION__ << "y:" << y << "node:" << iNode;// << "scalar.val[0]:" << scalar.val[0];
     }
+#if 1
+    _SmoothData(iResultList,4);
+#else
+
+    int min = iResultList.at(0);
+    int index = 0;
+    for(int i=0;i<iResultList.count();i++)
+    {
+        if(iResultList.at(i)<min)
+        {
+            min = iResultList.at(i);
+            index = i;
+        }
+    }
+    for(int i=0;i<iResultList.count();i++)
+    {
+        iResultList.replace(i,iResultList.at(i)- min);
+        qDebug() << "i:" << i << "value:" << iResultList.at(i);
+    }
+    qDebug() << "min:" << min;
+#endif
     return iResultList;
 }
 
@@ -874,7 +991,7 @@ QList<int> ThreadTesting::_HorizontalProjection(QString strImgPath)
  */
 void ThreadTesting::_ModifNextStep(int step,int pixel)
 {
-//    qDebug() << "step:" << step <<"pixel:"<< pixel << "STEP_PER_PIX:" << STEP_PER_PIX;;
+    qDebug() << "step:" << step <<"pixel:"<< pixel << "STEP_PER_PIX:" << STEP_PER_PIX;;
     if(m_iStepList.count() > step)
     {
         m_iStepList.replace(step,m_iStepList.at(step) - pixel*STEP_PER_PIX/MAGIFICATION);
@@ -945,7 +1062,7 @@ int ThreadTesting::_GetTLineLoction(const int * A1, int OrgCenterxLocation)
  * @brief 最小二乘法
  * @param A1 b1 b2 b3 b4 b5 b6
  * @param  PicW 图像宽度
- * @return
+ * @return 成功返回0，失败返回-1
  */
 int ThreadTesting::_ErCMethod2(int* A1,int b1,int b2,int b3,int b4,int b5,int b6,int PicW)
 {
@@ -1073,7 +1190,10 @@ int ThreadTesting::_ImageAnalysisProcess(int * A1, int Orglinecenterx,int PicW)
     int beginx = (Orglinecenterx - PIXEL_LINE/2);
     int endx = beginx + PIXEL_LINE;
 #endif
-    if((beginx>PicW)||(endx>PicW))   return -1;
+    if((beginx>PicW)||(endx>PicW))
+    {
+        return -1;
+    }
 
     int value_min = A1[0];
     for(int i=0;i<PicW;i++)
@@ -1083,16 +1203,18 @@ int ThreadTesting::_ImageAnalysisProcess(int * A1, int Orglinecenterx,int PicW)
             value_min = A1[i];
         }
     }
-//    qDebug() <<" A1[0]  :"<< A1[0] << "value_min:" << value_min;
     for(int i=0;i<PicW;i++)
     {
         A1[i]-=value_min;
     }
 
-//    intClass retvc = _GetRealLine(A1, CorrectLineCenterX, PicW);
-//    if (retvc.IsSucessuful == false) return -1;
-
-
+#if 1
+    intClass retvc = _GetRealLine(A1, Orglinecenterx, PicW);
+    if (retvc.IsSucessuful == false)
+    {
+        return -1;
+    }
+#endif
     //求线宽的值和
     int linesum = 0;
 
@@ -1100,11 +1222,15 @@ int ThreadTesting::_ImageAnalysisProcess(int * A1, int Orglinecenterx,int PicW)
     {
         linesum += A1[i];
     }
+
     if(linesum<0)   linesum = 1;
 
     return linesum;
 }
-
+/**
+ * @brief ThreadTesting::_SlotReceiveErr 二维码错误信息处理
+ * @param err 错误信息类型
+ */
 void ThreadTesting::_SlotReceiveErr(EnumTypeErr err)
 {
     switch (err) {
@@ -1124,7 +1250,10 @@ void ThreadTesting::_SlotReceiveErr(EnumTypeErr err)
         break;
     }
 }
-
+/**
+ * @brief ThreadTesting::_SlotReceiveQRcodePic 二维码图片路径 处理函数
+ * @param path 二维码图片路径
+ */
 void ThreadTesting::_SlotReceiveQRcodePic(QString path)
 {
     emit SignalSendQRCodePic(path);

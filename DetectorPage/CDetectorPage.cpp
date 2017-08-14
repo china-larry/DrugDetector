@@ -94,7 +94,11 @@ void CDetectorPage::SlotEndTest()
     emit SignalEndTest();
     //
 }
-
+/**
+  * @brief 获得错误类型，弹窗提示
+  * @param
+  * @return
+  */
 void CDetectorPage::SlotReceiveTestError(ENUM_ERR eTestError)
 {
     switch (eTestError)
@@ -201,7 +205,6 @@ void CDetectorPage::_SlotPrintToPDF()
     {
         _ReplaceCupHtmlData(strHtml);
     }
-
     // 打印
     _PrintToPage(strHtml);
 }
@@ -475,7 +478,11 @@ void CDetectorPage::_InitWidget()
     connect(m_pStopTestButton, SIGNAL(clicked(bool)), this, SLOT(_SlotStopTest()));
     // 状态栏
 }
-
+/**
+  * @brief 初始化布局
+  * @param
+  * @return
+  */
 void CDetectorPage::_InitLayout()
 {
     QRect m_iWidgetRect = this->rect();

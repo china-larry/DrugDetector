@@ -40,6 +40,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
     CHidCmdThread::GetInstance()->AddCloseHIDCmd();
+    QThread::sleep(2);
     qDebug() << "delete ui";
 }
 

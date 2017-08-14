@@ -1,4 +1,4 @@
-﻿#include "qrcodedetector.h"
+﻿#include "QrcodeDetector.h"
 #include <QTime>
 #include <QApplication>
 #include "CHidCmdThread.h"
@@ -43,14 +43,14 @@ void QRCodeDetector::SlotGetQRcode()
     QRCodeInfo qrcodeinfo;
      //定位二维码
 
-    if(locationQRCode(strQRCode,&iQRCodePosition) == false)
+    if(locationQRCode(strQRCode,iQRCodePosition) == false)
     {
         emit SignalErrInfo(EnumTypeErr::ErrNoFoundQR);
     }
     else
     {
 
-        if(DecodeQrcode(strQRCode,&qrcodeinfo) == false)
+        if(DecodeQrcode(strQRCode,qrcodeinfo) == false)
         {
             emit SignalErrInfo(EnumTypeErr::ErrDecodeQR);
         }
@@ -59,6 +59,11 @@ void QRCodeDetector::SlotGetQRcode()
             qrcodeinfo.iQRCodePosition = iQRCodePosition;
 
             qDebug() << "qrcodeinfo.strProductID " << qrcodeinfo.strProductID;
+            qDebug() << "strProjectName" << qrcodeinfo.listProject.at(0).strProjectName;
+            qDebug() << "dSensitivityDown" << qrcodeinfo.listProject.at(0).dSensitivityDown;
+            qDebug() << "dSensitivityUp" << qrcodeinfo.listProject.at(0).dSensitivityUp;
+            qDebug() << "dThresholdDown" << qrcodeinfo.listProject.at(0).dThresholdDown;
+            qDebug() << "dThresholdUp" << qrcodeinfo.listProject.at(0).dThresholdUp;
             emit SignalQRCodeInfo(qrcodeinfo);         //定位二维码后，发送二维码信息
             qDebug() << "SlotGetQRcode end";
         }
@@ -90,6 +95,16 @@ bool QRCodeDetector::InitDevice()
         QApplication::processEvents();
     }
 
+
+    //motorReset
+    CHidCmdThread::GetInstance()->AddResetMotorCmd(10);
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    //等待电机复位
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+
     //开下白灯
     CHidCmdThread::GetInstance()->AddOpenLedCmd(2,3000);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
@@ -106,19 +121,12 @@ bool QRCodeDetector::InitDevice()
         QApplication::processEvents();
     }
 
-    //motorReset
-    CHidCmdThread::GetInstance()->AddResetMotorCmd(10);
-    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
-    //等待电机复位
-    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
-    {
-        QApplication::processEvents();
-    }
+
     return true;
 }
 
 //定位二维码
-bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePosition)
+bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 &iQRCodePosition)
 {
     QString strImageSavePath = "";
      //初始化设备位置和灯光
@@ -126,7 +134,7 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePositi
     this->SetQRCodePosition(0);
 
     mSleep(500);
-    if(GetQRCodeImage(&strImageSavePath) == false)
+    if(GetQRCodeImage(strImageSavePath) == false)
     {
         return false;
     }
@@ -136,11 +144,11 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePositi
     {
         emit SignalQRCodeLocation(strDesImage);
         /*获取二维码字符串信息*/
-        if(GetQRCodeImageInfo(strDesImage,&strQRCodeInfo) == true)
+        if(GetQRCodeImageInfo(strDesImage,strQRCodeInfo) == true)
         {
-            *iQRCodePosition = GetQRCodePosition();
+            iQRCodePosition = GetQRCodePosition();
             qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
-            qDebug() << "QRCodePosition = " << *iQRCodePosition;
+            qDebug() << "QRCodePosition = " << iQRCodePosition;
             return true;
         }
     }
@@ -149,14 +157,14 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePositi
     for(qint16 step1 = 0;step1 < 15;step1++)
     {
         HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
-        CHidCmdThread::GetInstance()->AddRotateMotorCmd(20,10,0);
+        CHidCmdThread::GetInstance()->AddRotateMotorCmd(10,20,0);
 
         while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
         {
             QApplication::processEvents();
         }
         mSleep(100);
-        if(GetQRCodeImage(&strImageSavePath) == false)
+        if(GetQRCodeImage(strImageSavePath) == false)
         {
             return false;
         }
@@ -166,12 +174,12 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePositi
             continue;
         }
         emit SignalQRCodeLocation(strDesImage);
-        if(GetQRCodeImageInfo(strDesImage,&strQRCodeInfo) == true)
+        if(GetQRCodeImageInfo(strDesImage,strQRCodeInfo) == true)
         {
             this->SetQRCodePosition(4096 - step1 * 10);
-            *iQRCodePosition = GetQRCodePosition();
+            iQRCodePosition = GetQRCodePosition();
             qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
-            qDebug() << "QRCodePosition = " << *iQRCodePosition;
+            qDebug() << "QRCodePosition = " << iQRCodePosition;
             return true;
         }
     }
@@ -179,14 +187,14 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePositi
     for(qint16 step2 = 0;step2 < 30;step2++)
     {
 		HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
-        CHidCmdThread::GetInstance()->AddRotateMotorCmd(20,10,1);
+        CHidCmdThread::GetInstance()->AddRotateMotorCmd(10,20,1);
 
         while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
         {
             QApplication::processEvents();                   
         }
         mSleep(100);
-        if(GetQRCodeImage(&strImageSavePath) == false)
+        if(GetQRCodeImage(strImageSavePath) == false)
         {
             return false;
         }
@@ -196,12 +204,12 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePositi
             continue;
         }
         emit SignalQRCodeLocation(strDesImage);
-        if(GetQRCodeImageInfo(strDesImage,&strQRCodeInfo) == true)
+        if(GetQRCodeImageInfo(strDesImage,strQRCodeInfo) == true)
         {
             this->SetQRCodePosition(step2 * 10);
-            *iQRCodePosition = GetQRCodePosition();
+            iQRCodePosition = GetQRCodePosition();
             qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
-            qDebug() << "QRCodePosition = " << *iQRCodePosition;
+            qDebug() << "QRCodePosition = " << iQRCodePosition;
             return true;
         }
     }
@@ -209,13 +217,13 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 *iQRCodePositi
     return false;
 }
 
-bool QRCodeDetector::GetQRCodeImage(QString *strImagePath)
+bool QRCodeDetector::GetQRCodeImage(QString &strImagePath)
 {
-    bool bIsGetImage = OpencvUtility::getInstance()->GetVideoCapture(strImagePath);
+    bool bIsGetImage = OpencvUtility::getInstance()->GetVideoCapture(&strImagePath);
     return bIsGetImage;
 }
 
-bool QRCodeDetector::GetQRCodeImageInfo(const QString strImagePath,QString *strQRCodeInfo)
+bool QRCodeDetector::GetQRCodeImageInfo(const QString strImagePath,QString &strQRCodeInfo)
 {
     if(strImagePath.isEmpty())
     {
@@ -233,15 +241,14 @@ bool QRCodeDetector::GetQRCodeImageInfo(const QString strImagePath,QString *strQ
             {
                 try
                 {
-                    *strQRCodeInfo = pZXing->decodeImage(img,img.width(),img.height(),false);
+                    strQRCodeInfo = pZXing->decodeImage(img,img.width(),img.height(),false);
                 }
                 catch(...) {}
 
-                qDebug() << "strQRCodeInfo = " << *strQRCodeInfo;
+                qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
 
-                if(*strQRCodeInfo != "")
+                if(strQRCodeInfo != "")
                 {
-                    //qDebug() << "strQRCodeInfo = " << *strQRCodeInfo;
                     return true;
                 }
             }
@@ -278,10 +285,14 @@ bool QRCodeDetector::ExtractQRCode(QString strSrcImage,QString &strDesImage)
     cvErode(erode_dilate, erode_dilate, kernal, 2/*6*/);//X方向腐蚀去除碎片
     cvDilate(erode_dilate, erode_dilate, kernal, 1);//X方向膨胀回复形态
 
+
     //自定义3*1的核进行Y方向的膨胀腐蚀
     kernal = cvCreateStructuringElementEx(1,3, 0, 1, CV_SHAPE_RECT);
     cvErode(erode_dilate, erode_dilate, kernal, 2);// Y方向腐蚀去除碎片
     cvDilate(erode_dilate, erode_dilate, kernal, 6);//回复形态
+
+
+//    cv::namedWindow( "1", cv::WINDOW_NORMAL );
 //    cvShowImage("1", erode_dilate);
 //    cvWaitKey(0);
 
@@ -306,7 +317,7 @@ bool QRCodeDetector::ExtractQRCode(QString strSrcImage,QString &strDesImage)
         CvRect rect = cvBoundingRect( contours, 1 );  //cvBoundingRect计算点集的最外面（up-right）矩形边界。
         if(rect.width / rect.height > 0.8
             &&rect.width / rect.height < 1.5
-            &&rect.height * rect.height * 10 > copy1->height * copy1->width
+            &&rect.height * rect.height * 15 > copy1->height * copy1->width
             &&rect.y < copy1->height - 50
             )
         {
@@ -364,6 +375,7 @@ bool QRCodeDetector::ExtractQRCode(QString strSrcImage,QString &strDesImage)
             QString strDesImage1 = strSrcImage.insert(pos,"QR");
             cvSaveImage(strDesImage1.toLatin1().data(),dstImg);
             strDesImage = strDesImage1;
+            break;
         }
         cvReleaseImage(&dstImg);
     }
@@ -455,7 +467,7 @@ bool QRCodeDetector::FindQRcodeLocationRect(IplImage *dstImg)
 * Return:           bool 解码成功返回 true 失败返回 false
 * Others:
 *************************************************/
-bool QRCodeDetector::DecodeQrcode(const QString strdecode,QRCodeInfo *qrCodeInfo)//解析二维码
+bool QRCodeDetector::DecodeQrcode(const QString strdecode,QRCodeInfo &qrCodeInfo)//解析二维码
 {
     QStringList strListQrcode = strdecode.split(";");
     QString strQrcode = "";
@@ -580,7 +592,7 @@ bool QRCodeDetector::DecodeQrcode(const QString strdecode,QRCodeInfo *qrCodeInfo
         }
     }
 
-    *qrCodeInfo =  PackageQRCodeInfo(strBatchNumber,strValidityData,strCardNumber,
+    qrCodeInfo =  PackageQRCodeInfo(strBatchNumber,strValidityData,strCardNumber,
                                     strCupType,strAllCount,strVersion,qv_strListitem);
     return true;
 }

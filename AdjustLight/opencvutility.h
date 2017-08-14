@@ -12,14 +12,16 @@
  ********************************************************************/
 #ifndef OPENCVUTILITY_H
 #define OPENCVUTILITY_H
-#include <QDebug>
+
 #include <QFileDialog>
-#include "opencv2/opencv.hpp"
-#include "opencv2/highgui/highgui.hpp"
 #include <QImage>
 #include <QDir>
 #include <QObject>
-#include "common.h"
+#include <QDebug>
+
+#include "opencv2/opencv.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "Common.h"
 
 using namespace cv;
 

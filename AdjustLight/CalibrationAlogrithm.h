@@ -57,7 +57,7 @@ public:
      */
     //
     void TraverseLedLight(StandardMachineCalibrateParams mParams,
-                          StandardMachineCalibrateLight *mStandardMachineCalibrateLight);
+                          StandardMachineCalibrateLight &mStandardMachineCalibrateLight);
 
     /**
      * @brief GetResult

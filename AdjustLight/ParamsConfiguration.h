@@ -56,11 +56,22 @@ public:
     bool ReadParamsFromConfigFile(QString strConfigFileName,QString strParamsType,QString strParamsName,
                                   QVariant *qParams);
 
+    /**
+    * @brief ExportParamsConfigFile 导出文件
+    * @param strSaveFileName 文件路径
+    * @return
+    */
     bool ExportParamsConfigFile(QString strSaveFileName);
 
+    /**
+    * @brief  ImportPatamsConfigFile  导入文件
+    * @param  strImportFileName       文件路径
+    * @param
+    * @return
+    */
     bool ImportPatamsConfigFile(QString strImportFileName);
 private:
-    static ParamsConfiguration* sm_Pinstance;
+    static ParamsConfiguration* sm_Pinstance;  //类对象指针
 };
 
 #endif // PARAMSCONFIGURATION_H

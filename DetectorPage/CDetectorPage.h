@@ -45,7 +45,6 @@ signals:
     void SignalStartTest();// 开始测试
     void SignalStopTest();// 主动停止测试
 public slots:
-    // 测试
     void SlotReceiveQRCodeImage(QString strImagePath);// 接受二维码图片数据
     void SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfo);// 接受二维码信息
     void SlotReceiveTestResultData(TestResultData sTestResultData);// 接受每条测试结果数据
@@ -58,8 +57,8 @@ private slots:
     // 打印PDF
     void _SlotPrintToPDF();
 public:
-    QList<TestResultData*> GetTestResultData();
-    DetectorPageUserData GetUserData();
+    QList<TestResultData*> GetTestResultData();// 获得测试结果
+    DetectorPageUserData GetUserData(); // 获得被测者信息
     void SetCupType(QStringList strCupTypeList);// 设置杯类型
 
 private:
@@ -69,7 +68,7 @@ private:
     QGroupBox *_CreateResultsGroup();
     void _InitWidget();
     void _InitLayout();
-    void _InitThreadTesting();// 初始化第三方库
+    void _InitThreadTesting();// 初始化测试线程
     // 更新摄像头图片
     void _SetCamaraImage(QString strImagePath);
     // 打印
@@ -125,8 +124,7 @@ private:
     // 状态栏
 
     // 获取数据
-   // LibDrugDetector *m_pLibDrugDetector;// 获取下位机测试结果外部库
-    ThreadTesting *m_pThreadTesting;
+    ThreadTesting *m_pThreadTesting; // 测试线程
     QRCodeInfo m_sQRCodeInfo;       // 二维码数据，项目总数
     QList<TestResultData*> m_pTestResultDataList;// 下位机的测试结果列表
     DetectorPageUserData m_sDetectorPageUserData;// 用户列表数据

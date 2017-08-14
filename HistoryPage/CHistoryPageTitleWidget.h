@@ -1,6 +1,4 @@
-﻿#ifndef CHISTORYPAGETITLEWIDGET_H
-#define CHISTORYPAGETITLEWIDGET_H
-/*****************************************************
+﻿/*****************************************************
   * Copyright: 万孚生物
   * Author: 刘青
   * Date: 2017-7-9
@@ -12,7 +10,8 @@
   *
   * -------------------------------------------------------------------------
   ****************************************************/
-
+#ifndef CHISTORYPAGETITLEWIDGET_H
+#define CHISTORYPAGETITLEWIDGET_H
 #include <QWidget>
 #include <QLabel>
 #include <QPushButton>
