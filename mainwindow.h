@@ -59,8 +59,8 @@ public slots:
 private:
     void _InitWidget();
     void _InitLayout();
-    void _GoHistoryPageLayout();
-    void _GoTestPageLayout();
+    void _GoHistoryPageLayout();// 前往历史页面布局（标题栏显示）
+    void _GoTestPageLayout();// 前往测试页面布局（标题栏显示）
     void _ReadConfigFile();// 读取配置文件
 private:
     // UI
@@ -94,8 +94,8 @@ private:
     QRect m_iWidgetRect;
 
     // 数据区
-    QList<TestResultData*> m_pTestResultDataList;
-    DetectorPageUserData m_sDetectorPageUserData;
+    QList<TestResultData*> m_pTestResultDataList;// 测试结果数据
+    DetectorPageUserData m_sDetectorPageUserData;// 测试页面被测者信息数据
 };
 
 #endif // MAINWINDOW_H
