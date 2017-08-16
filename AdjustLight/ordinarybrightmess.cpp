@@ -3,7 +3,7 @@
 #include <QTime>
 #include <QFile>
 #include "ParamsConfiguration.h"
-#include "CalculateGrayscale.h"
+#include "CalculateGreenComponent.h"
 #include "CHidCmdThread.h"
 #include "ProtocolUtility.h"
 #include "HidOpertaionUtility.h"
@@ -64,8 +64,7 @@ QPoint OrdinaryBrightmess::findCenterPoint(QString strImagePath)
 {
     LineFinder lineFinder;
     LocationData locationData = lineFinder.findCenterPointAndCrossPoints(strImagePath);
-    //qDebug() << "centerPoint.x = " << locationData.centerPoint.x;
-    //qDebug() << "centerPoint.y = " << locationData.centerPoint.y;
+
     QPoint qCenterPoint;
     qCenterPoint.setX(locationData.centerPoint.y + 620);
     qCenterPoint.setY(locationData.centerPoint.x);
@@ -85,7 +84,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue &brightness
     }
 
     //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::s_iCmdCloseAllLed);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
     {
@@ -99,7 +98,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue &brightness
     }
 
     //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::s_iCmdCloseAllLed);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
     {
@@ -113,7 +112,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue &brightness
     }
 
     //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::s_iCmdCloseAllLed);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
     {
@@ -127,7 +126,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue &brightness
     }
 
     //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::s_iCmdCloseAllLed);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
     {
@@ -141,7 +140,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue &brightness
     }
 
     //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::s_iCmdCloseAllLed);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
     {
@@ -155,7 +154,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue &brightness
     }
 
     //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::s_iCmdCloseAllLed);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
     {
@@ -169,7 +168,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue &brightness
     }
 
     //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::s_iCmdCloseAllLed);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
     {
@@ -183,7 +182,7 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue &brightness
     }
 
     //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::s_iCmdCloseAllLed);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
     {
@@ -211,8 +210,8 @@ bool OrdinaryBrightmess::InitMachine(QPoint &CenterPoint)
     }
 
     //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
-    qDebug() << "CMD_CLOSE_ALL_LED";
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::s_iCmdCloseAllLed);
+
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
     {
@@ -246,8 +245,7 @@ bool OrdinaryBrightmess::InitMachine(QPoint &CenterPoint)
     QThread::msleep(10);
 
     QString strSaveImagePath = "";
-    OpencvUtility::getInstance()->QuickGetVideoCapture(&strSaveImagePath);//丢弃
-    OpencvUtility::getInstance()->QuickGetVideoCapture(&strSaveImagePath);
+    OpencvUtility::getInstance()->GetVideoCapture(&strSaveImagePath);
 
     CenterPoint = findCenterPoint(strSaveImagePath);
 
@@ -255,10 +253,10 @@ bool OrdinaryBrightmess::InitMachine(QPoint &CenterPoint)
     {
         Mat matImage = imread(strSaveImagePath.toLatin1().data(),-1);
 
-        CalculateGrayscale calculategrayscale;
+        CalculateGreenComponent calculateGreenComponent;
         for(int i = 0;i < 4;i++)
         {
-           calculategrayscale.drawRect(matImage,CenterPoint,30,40,i);
+           calculateGreenComponent.drawRect(matImage,CenterPoint,30,40,i);
         }
         cv::namedWindow( "donkeyaime", cv::WINDOW_NORMAL );
         imshow("donkeyaime",matImage);
@@ -291,12 +289,12 @@ bool OrdinaryBrightmess::GetLightValue(const int iBrightNo,QPoint qCenterPoint,c
     }
     QTextStream out(&file);
 
-    CalculateGrayscale calculategrayscale;
+    CalculateGreenComponent calculateGreenComponent;
 
     const int iRectR = 30;
     const int iRectD = 40;
 
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::s_iCmdCloseAllLed);
     QThread::msleep(100);
 
     QMap<double,int> qGraySDSumMap;
@@ -335,8 +333,7 @@ bool OrdinaryBrightmess::GetLightValue(const int iBrightNo,QPoint qCenterPoint,c
         QThread::msleep(10);
 
         /*拍照*/
-        //上一帧
-        OpencvUtility::getInstance()->QuickGetVideoCapture(&strSaveImagePath);
+        OpencvUtility::getInstance()->GetVideoCapture(&strSaveImagePath);
 
         out << iPosLightValue << ",";
 
@@ -345,7 +342,7 @@ bool OrdinaryBrightmess::GetLightValue(const int iBrightNo,QPoint qCenterPoint,c
         for(int j = 0;j < 4;j++)
         {
             dAvg = 0.0;
-            calculategrayscale.GetGreenComponentSDAvg(strSaveImagePath,qCenterPoint,iRectR,iRectD,j,
+            calculateGreenComponent.GetGreenComponentSDAvg(strSaveImagePath,qCenterPoint,iRectR,iRectD,j,
                                                       dStandardGreenComponent,dAvg,dStandardSD);
             dGreenSDSum += dStandardSD;
             dAvgSum += dAvg;

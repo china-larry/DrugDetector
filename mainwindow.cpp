@@ -1,6 +1,17 @@
-﻿#include "mainwindow.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 主窗口函数，主要对数据层进行操作，数据传输，切换等
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
-
 #include <QRect>
 #include <QBoxLayout>
 #include <QMouseEvent>
@@ -40,7 +51,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
     CHidCmdThread::GetInstance()->AddCloseHIDCmd();
-    QThread::sleep(2);
+    QThread::sleep(2);// 结束UI，sleep2秒后可执行
     qDebug() << "delete ui";
 }
 
@@ -52,9 +63,11 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     m_pDetectorPageTitleWidget->setGeometry(0, 0, m_iWidgetRect.width(), m_kiTitleHeight);
     m_pHistoryPageTitleWidget->setGeometry(0, 0, m_iWidgetRect.width(), m_kiTitleHeight);
     // 多标签
-    m_pStackedWidget->setGeometry(0, m_kiTitleHeight, m_iWidgetRect.width(), m_iWidgetRect.height() - m_kiTitleHeight - m_kiStatusBarHeight);
+    m_pStackedWidget->setGeometry(0, m_kiTitleHeight, m_iWidgetRect.width(),
+                                  m_iWidgetRect.height() - m_kiTitleHeight - m_kiStatusBarHeight);
     // 状态栏
-    m_pDetectorPageStatusBar->setGeometry(0, m_iWidgetRect.height() - m_kiStatusBarHeight, m_iWidgetRect.width(), m_kiStatusBarHeight);
+    m_pDetectorPageStatusBar->setGeometry(0, m_iWidgetRect.height() - m_kiStatusBarHeight,
+                                          m_iWidgetRect.width(), m_kiStatusBarHeight);
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -62,14 +75,13 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     if( event->button() == Qt::LeftButton &&
                 m_pDetectorPageTitleWidget->rect().contains(event->globalPos() - this->frameGeometry().topLeft()))
     {
-        m_PressPoint = event->globalPos();
+        m_qPressPoint = event->globalPos();
         m_bLeftButtonCheck = true;
     }
-    //
     if( event->button() == Qt::LeftButton &&
                 m_pHistoryPageTitleWidget->rect().contains(event->globalPos() - this->frameGeometry().topLeft()))
     {
-        m_PressPoint = event->globalPos();
+        m_qPressPoint = event->globalPos();
         m_bLeftButtonCheck = true;
     }
     event->ignore();//表示继续向下传递事件，其他的控件还可以去获取
@@ -88,13 +100,13 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     if( m_bLeftButtonCheck )
     {
-        m_MovePoint = event->globalPos();
-        this->move( this->pos() + m_MovePoint - m_PressPoint );
-        m_PressPoint = m_MovePoint;
+        m_qMovePoint = event->globalPos();
+        this->move( this->pos() + m_qMovePoint - m_qPressPoint );
+        m_qPressPoint = m_qMovePoint;
     }
     event->ignore();
 }
-
+// 登陆信号
 void MainWindow::SlotReceiveLogin()
 {
     this->show();
@@ -126,7 +138,7 @@ void MainWindow::SlotGoDetectorPage()
     m_pHistoryPageTitleWidget->hide();
     _GoTestPageLayout();
 }
-
+// 前往校准页面
 void MainWindow::SlotGoCalibrationPage()
 {
     m_pStackedWidget->setCurrentIndex(1);
@@ -142,18 +154,18 @@ void MainWindow::SlotCloseWindow()
 {
     this->close();
 }
-
+// 前往历史数据页面
 void MainWindow::SlotCheckHistoryItem()
 {
     m_pStackedWidget->setCurrentIndex(2);
 }
-
+// 状态栏显示开始
 void MainWindow::SlotDetectorPageStartTest()
 {
     m_pDetectorPageStatusBar->SetLineStartColor();
     m_pDetectorPageStatusBar->SetLineText(tr("Start QR code"));
 }
-
+// 状态栏显示结束
 void MainWindow::SlotDetectorPageStopTest()
 {
     m_pDetectorPageStatusBar->SetLineStopColor();
@@ -163,12 +175,12 @@ void MainWindow::SlotDetectorPageStopTest()
 void MainWindow::SlotDetectorPageEndTest()
 {
     m_pTestResultDataList = m_pDetectorPage->GetTestResultData();
-    m_sDetectorPageUserData = m_pDetectorPage->GetUserData();
+    m_sDetectorPageUserDataStruct = m_pDetectorPage->GetUserData();
     qDebug() << "get test size: " << m_pTestResultDataList.count();
-    qDebug() << "user data: " << m_sDetectorPageUserData.strOtherReasonComments;
+    qDebug() << "user data: " << m_sDetectorPageUserDataStruct.strOtherReasonComments;
     //
     m_pHistoryPage->SetTestResultDataList(m_pTestResultDataList);
-    m_pHistoryPage->SetTestUserData(m_sDetectorPageUserData);
+    m_pHistoryPage->SetTestUserData(m_sDetectorPageUserDataStruct);
     m_pHistoryPage->InsertToDatabase();
 }
 /**
@@ -194,12 +206,8 @@ void MainWindow::_InitWidget()
     connect(m_pHistoryPageTitleWidget, SIGNAL(SignalGoSettingPage()), this, SLOT(SlotGoSettingPage()));
     connect(m_pHistoryPageTitleWidget, SIGNAL(SignalMinWindow()), this, SLOT(SlotMinWindow()));
     connect(m_pHistoryPageTitleWidget, SIGNAL(SignalReturnWindow()), this, SLOT(SlotGoHistoryPage()));
-
-
     // 多标签
     m_pStackedWidget = new QStackedWidget(this);
-
-
     // 测试页
     m_pDetectorPage = new CDetectorPage(this);
     connect(m_pDetectorPage, SIGNAL(SignalStartTest()), this, SLOT(SlotDetectorPageStartTest()));
@@ -259,7 +267,11 @@ void MainWindow::_GoTestPageLayout()
        // 布局
     m_pCentralWidget->setLayout(m_pMainLayout);
 }
-
+/**
+  * @brief 读取配置文件
+  * @param
+  * @return
+  */
 void MainWindow::_ReadConfigFile()
 {
     QFile qFile(QApplication::applicationDirPath() + "/Resources/config.json");

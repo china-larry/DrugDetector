@@ -17,7 +17,6 @@
 #include <QObject>
 #include <QPoint>
 
-
 struct BrightnessOrdinaryValue
 {
     int iBrightNo1; //上绿灯
@@ -44,9 +43,6 @@ Q_DECLARE_METATYPE(BrightnessOrdinaryValue);
 class OrdinaryBrightmess : public QObject
 {
     Q_OBJECT
-public:
-    OrdinaryBrightmess();
-    ~OrdinaryBrightmess();
 
 signals:
     //发送参数到UI更新
@@ -103,13 +99,28 @@ public slots:
      */
     bool InitMachine(QPoint &CenterPoint);
 
+    /**
+    * @brief  OrdinaryCalibration 对目标机型进行亮度校准
+    * @param  brightnessValue  目标机型亮度结构体
+    * @return
+    */
     void OrdinaryCalibration(BrightnessOrdinaryValue &brightnessValue);
 
+    /**
+    * @brief  findCenterPoint
+    * 定位色块
+    * @param   strImagePath 图片路径
+    * @return  QPoint 色块坐标
+    */
     QPoint findCenterPoint(QString strImagePath);
 
+public:
+    explicit OrdinaryBrightmess();
+    ~OrdinaryBrightmess();
+
 private:
-    BrightnessOrdinaryValue m_OrdinarybrightnessValue;
-    BrightnessOrdinaryValue m_StandardMachinebrightnessValue;
+    BrightnessOrdinaryValue m_OrdinarybrightnessValue;        //目标机型亮度结构体
+    BrightnessOrdinaryValue m_StandardMachinebrightnessValue; //标准机型亮度结构体
 };
 
 #endif // ORDINARYBRIGHTMESS_H

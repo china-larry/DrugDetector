@@ -16,7 +16,13 @@
 #include <QWidget>
 #include <QLabel>
 #include <QLineEdit>
-
+/*****************************************************
+  * Class: CHLabelLineEditWidget
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 实现复合组合控件Label和LineEdit，垂直布局
+  * Others:
+  ****************************************************/
 class CLabelLineEditWidget : public QWidget
 {
     Q_OBJECT
@@ -42,6 +48,13 @@ protected:
     QLineEdit *m_pLineEdit;
     QString m_strLineText;
 };
+/*****************************************************
+  * Class: CHLabelLineEditWidget
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 实现复合组合控件Label和LineEdit，水平布局
+  * Others:
+  ****************************************************/
 class CHLabelLineEditWidget : public CLabelLineEditWidget
 {
     Q_OBJECT

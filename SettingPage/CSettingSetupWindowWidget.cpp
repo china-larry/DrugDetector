@@ -1,4 +1,16 @@
-﻿#include "CSettingSetupWindowWidget.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-15
+  * Description: 实现
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "CSettingSetupWindowWidget.h"
 #include <QBoxLayout>
 #include "PublicFunction.h"
 CSettingSetupWindowWidget::CSettingSetupWindowWidget(QWidget *parent) : QWidget(parent)

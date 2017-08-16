@@ -1,7 +1,18 @@
-﻿#include "COrdinaryModelWidget.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 普通机型亮度校准
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "COrdinaryModelWidget.h"
 #include <QBoxLayout>
 #include <QMessageBox>
-
 #include "PublicFunction.h"
 COrdinaryModelWidget::COrdinaryModelWidget(QWidget *parent) : QWidget(parent)
 {
@@ -11,7 +22,6 @@ COrdinaryModelWidget::COrdinaryModelWidget(QWidget *parent) : QWidget(parent)
     connect(m_pOrdinaryBrightmess, SIGNAL(SignalReadValueToUI(BrightnessOrdinaryValue)), this, SLOT(SlotGetReadValue(BrightnessOrdinaryValue)));
     connect(HIDOpertaionUtility::GetInstance(), SIGNAL(SignalErrInfo(EnumTypeErr)), this, SLOT(SlotGetErrorValue(EnumTypeErr)));
     connect(OpencvUtility::getInstance(), SIGNAL(SignalErrInfo(EnumTypeErr)), this, SLOT(SlotGetErrorValue(EnumTypeErr)));
-
     _InitLayout();
 }
 
@@ -23,7 +33,11 @@ COrdinaryModelWidget::~COrdinaryModelWidget()
         m_pOrdinaryBrightmess = NULL;
     }
 }
-
+/**
+  * @brief 获得inport值
+  * @param
+  * @return
+  */
 void COrdinaryModelWidget::SlotGetImportValue(BrightnessOrdinaryValue brightnessValue)
 {
     m_pSNo1HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo1));
@@ -46,7 +60,7 @@ void COrdinaryModelWidget::SlotGetImportValue(BrightnessOrdinaryValue brightness
 }
 /**
   * @brief
-  * @param
+  * @param 获得calibration值
   * @return
   */
 void COrdinaryModelWidget::SlotGetCalibrationValue(BrightnessOrdinaryValue brightnessValue)
@@ -91,37 +105,36 @@ void COrdinaryModelWidget::SlotGetReadValue(BrightnessOrdinaryValue brightnessVa
     m_pONo8LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo8));
 }
 
-void COrdinaryModelWidget::SlotGetErrorValue(EnumTypeErr enumTypeError)
+void COrdinaryModelWidget::SlotGetErrorValue(EnumTypeErr eTypeError)
 {// 错误信号处理
-    switch (enumTypeError)
+    switch (eTypeError)
     {
-    case ErrNoFoundQR:
-    {
-        QMessageBox::critical(NULL, "Error", "QR Code Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        break;
+        case ErrNoFoundQR:
+        {
+            QMessageBox::critical(NULL, "Error", "QR Code Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+            break;
+        }
+        case ErrDecodeQR:
+        {
+            QMessageBox::critical(NULL, "Error", "QR Decode Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+            break;
+        }
+        case ErrNoConnectUSB:
+        {
+            QMessageBox::critical(NULL, "Error", "USB Connect Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+            break;
+        }
+        case ErrNoOpenVideo:
+        {
+            QMessageBox::critical(NULL, "Error", "Video Open Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+            break;
+        }
+        default:
+        {
+            QMessageBox::critical(NULL, "Error", "Other Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+            break;
+        }
     }
-    case ErrDecodeQR:
-    {
-        QMessageBox::critical(NULL, "Error", "QR Decode Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        break;
-    }
-    case ErrNoConnectUSB:
-    {
-        QMessageBox::critical(NULL, "Error", "USB Connect Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        break;
-    }
-    case ErrNoOpenVideo:
-    {
-        QMessageBox::critical(NULL, "Error", "Video Open Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        break;
-    }
-    default:
-    {
-        QMessageBox::critical(NULL, "Error", "Other Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        break;
-    }
-    }
-
 }
 /**
   * @brief 创建Standary组
@@ -334,11 +347,6 @@ QGroupBox *COrdinaryModelWidget::_CreateOridinaryGroup()
 
     pGroupBox->setLayout(pLayout);
     return pGroupBox;
-}
-
-void COrdinaryModelWidget::_InitWidget()
-{
-
 }
 
 void COrdinaryModelWidget::_InitLayout()

@@ -27,7 +27,7 @@ public:
 
 signals:
     void SignalSetBrightValue(BrightnessValue brightnessValue);// 发送设置亮度数据
-    void SingalCheckDeriveButton();
+    void SingalCheckDeriveButton();// 保存本地
 public slots:
     void SlotGetPictureToUI(QString strPicturePath,QList<int> iGreenComponuntList);// 绘制图片
 private slots:
@@ -40,8 +40,6 @@ private:
     //
     void _InitWidget();
     void _InitLayout();
-
-
 private:
     // brightness value
     CHLabelLineEditWidget *m_pNo1LineEditWidget;

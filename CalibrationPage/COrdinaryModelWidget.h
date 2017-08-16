@@ -31,17 +31,14 @@ public:
 
 signals:
 public slots:
-    void SlotGetImportValue(BrightnessOrdinaryValue brightnessValue);
-    void SlotGetCalibrationValue(BrightnessOrdinaryValue brightnessValue);
-    void SlotGetReadValue(BrightnessOrdinaryValue brightnessValue);
-    void SlotGetErrorValue(EnumTypeErr enumTypeError);
-
+    void SlotGetImportValue(BrightnessOrdinaryValue brightnessValue);// 获得本地配置数据
+    void SlotGetCalibrationValue(BrightnessOrdinaryValue brightnessValue);// 获得计算数据
+    void SlotGetReadValue(BrightnessOrdinaryValue brightnessValue);// 读取本地数据
+    void SlotGetErrorValue(EnumTypeErr eTypeError);// 获得错误类型
 private:
-    QGroupBox *_CreateStandardGroup();
-    QGroupBox *_CreateOridinaryGroup();
-    void _InitWidget();
+    QGroupBox *_CreateStandardGroup();// 标准机型组件
+    QGroupBox *_CreateOridinaryGroup();// 普通机型组件
     void _InitLayout();
-
 private:
     // standard machine
     QLabel *m_pStandardBrightnessValueLabel;

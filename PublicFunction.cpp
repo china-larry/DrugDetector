@@ -1,4 +1,16 @@
-﻿#include "PublicFunction.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 公用函数库文件
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "PublicFunction.h"
 #include <QPixmap>
 #include <QBitmap>
 #include <QPalette>
@@ -15,14 +27,14 @@
   * @param strImagepath：背景图片的地址（资源类型）
   * @return
   */
-void SetWidgetBackImage(QWidget *pWidget, QString strImagepath)
+void SetWidgetBackImage(QWidget *pWidget, QString strImagePath)
 {
-    if(pWidget == NULL || strImagepath.isNull())
+    if(pWidget == NULL || strImagePath.isNull())
     {
         return;
     }
     //this->setWindowOpacity(0.7); //窗口整体透明度，0-1 从全透明到不透明
-    QPixmap qPixmap(strImagepath);
+    QPixmap qPixmap(strImagePath);
     QPalette  qPalette;
     qPalette.setBrush(pWidget->backgroundRole(),QBrush(qPixmap));
     pWidget->setPalette(qPalette);
@@ -37,6 +49,10 @@ void SetWidgetBackImage(QWidget *pWidget, QString strImagepath)
   */
 void SetWidgetBackColor(QWidget *pWidget, QColor qColor)
 {
+    if(pWidget == NULL)
+    {
+        return;
+    }
      QPalette  qPalette;
      qPalette.setBrush(pWidget->backgroundRole(), qColor);
      pWidget->setPalette(qPalette);
@@ -101,6 +117,10 @@ void LoadQss(QWidget *pWidget, QString strQssFilePath)
   */
 QString GetImagePngBase64(QString strImagePath)
 {
+    if(strImagePath.isNull())
+    {
+        return "";
+    }
     QImage qImage(strImagePath);
     QByteArray qByteArray;
     QBuffer qBuffer(&qByteArray);
@@ -108,14 +128,14 @@ QString GetImagePngBase64(QString strImagePath)
     QString strBase64(qByteArray.toBase64());
     return strBase64;
 }
-bool ConnectDataBase(const QString &strDBName)
+bool ConnectDataBase(const QString &kstrDBName)
 {
     QSqlDatabase qSqlDataBase = QSqlDatabase::addDatabase("QSQLITE");
 //    db.setHostName("host");
 //    db.setDatabaseName("dbname");
 //    db.setUserName("username");
 //    db.setPassword("password");
-    qSqlDataBase.setDatabaseName(strDBName);
+    qSqlDataBase.setDatabaseName(kstrDBName);
     if (!qSqlDataBase.open())
     {
         QMessageBox::critical(0, QObject::tr("Database Error"),

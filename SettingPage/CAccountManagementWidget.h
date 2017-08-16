@@ -1,4 +1,16 @@
-﻿#ifndef CACCOUNTMANAGEMENTWIDGET_H
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-15
+  * Description: 实现账户管理UI
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#ifndef CACCOUNTMANAGEMENTWIDGET_H
 #define CACCOUNTMANAGEMENTWIDGET_H
 
 #include <QWidget>

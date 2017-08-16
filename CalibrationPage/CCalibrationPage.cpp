@@ -1,4 +1,16 @@
-﻿#include "CCalibrationPage.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 校准页面UI
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "CCalibrationPage.h"
 #include <QBoxLayout>
 #include "PublicFunction.h"
 CCalibrationPage::CCalibrationPage(QWidget *parent) : QWidget(parent)
@@ -6,11 +18,15 @@ CCalibrationPage::CCalibrationPage(QWidget *parent) : QWidget(parent)
     _InitWidget();
     _InitLayout();
 }
-
+/**
+  * @brief 初始化控件
+  * @param
+  * @return
+  */
 void CCalibrationPage::_InitWidget()
 {
     // 测试代码
-    pLabel3 = new QLabel;
+    m_pLabelTest = new QLabel;
     m_pStandardModelWidget = new CStandardModelWidget;
     //SetWidgetBackColor(m_pStandardModelWidget, QColor(240, 240, 240));
     m_pOrdinaryModelWidget = new COrdinaryModelWidget;
@@ -26,9 +42,13 @@ void CCalibrationPage::_InitWidget()
     m_pCalibrationTabWidget->setObjectName("m_pCalibrationTabWidget");
     m_pCalibrationTabWidget->setMinimumSize(900, 400);
     m_pCalibrationTabWidget->addTab(m_pBrightnessTabWidget, tr("Brightness Calibration"));
-    m_pCalibrationTabWidget->addTab(pLabel3, tr("Location Calibration"));
+    m_pCalibrationTabWidget->addTab(m_pLabelTest, tr("Location Calibration"));
 }
-
+/**
+  * @brief 布局
+  * @param
+  * @return
+  */
 void CCalibrationPage::_InitLayout()
 {
     // qss

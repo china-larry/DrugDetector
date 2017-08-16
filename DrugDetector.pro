@@ -57,12 +57,12 @@ SOURCES += \
     AdjustLight/OrdinaryBrightmess.cpp \
     AdjustLight/OpencvUtility.cpp \
     AdjustLight/QrcodeDetector.cpp \
-    AdjustLight/CalculateGrayscale.cpp \
     AdjustLight/HidOpertaionUtility.cpp \
     AdjustLight/LineFinder.cpp \
     AdjustLight/ProtocolUtility.cpp \
     AdjustLight/UpgradeFile.cpp \
-    AdjustLight/UpgradeProgress.cpp
+    AdjustLight/UpgradeProgress.cpp \
+    AdjustLight/CalculateGreenComponent.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -94,7 +94,6 @@ HEADERS += \
     AdjustLight/messagebox/messagebox.h \
     AdjustLight/messagebox/messagebox2.h \
     HistoryPage/CHistoryPageTitleWidget.h \
-    AdjustLight/CalculateGrayscale.h \
     AdjustLight/Common.h \
     AdjustLight/HidOpertaionUtility.h \
     AdjustLight/LineFinder.h \
@@ -103,7 +102,8 @@ HEADERS += \
     AdjustLight/ProtocolUtility.h \
     AdjustLight/QrcodeDetector.h \
     AdjustLight/UpgradeFile.h \
-    AdjustLight/UpgradeProgress.h
+    AdjustLight/UpgradeProgress.h \
+    AdjustLight/CalculateGreenComponent.h
 
 FORMS += \
         mainwindow.ui \

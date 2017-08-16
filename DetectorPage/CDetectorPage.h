@@ -23,15 +23,12 @@
 #include <QTableWidget>
 #include <QList>
 #include <QWebEnginePage>
-
-
 #include "CommonDataWidget/CLabelLineEditWidget.h"
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelDateTimeWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
 #include "AdjustLight/testing/ThreadTesting.h"
 #include "PublicFunction.h"
-
 //
 class CDetectorPage : public QWidget
 {
@@ -46,13 +43,13 @@ signals:
     void SignalStopTest();// 主动停止测试
 public slots:
     void SlotReceiveQRCodeImage(QString strImagePath);// 接受二维码图片数据
-    void SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfo);// 接受二维码信息
-    void SlotReceiveTestResultData(TestResultData sTestResultData);// 接受每条测试结果数据
+    void SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfoStruct);// 接受二维码信息
+    void SlotReceiveTestResultData(TestResultData sTestResultDataStruct);// 接受每条测试结果数据
     void SlotEndTest();// 流程测试结束
     void SlotReceiveTestError(ENUM_ERR eTestError);// 错误信号
 private slots:
     // 控件
-    void _SlotCheckReadTestDevice();
+    void _SlotCheckReadTestDevice();// 开始测试
     void _SlotStopTest();// 主动停止测试
     // 打印PDF
     void _SlotPrintToPDF();
@@ -125,9 +122,9 @@ private:
 
     // 获取数据
     ThreadTesting *m_pThreadTesting; // 测试线程
-    QRCodeInfo m_sQRCodeInfo;       // 二维码数据，项目总数
+    QRCodeInfo m_sQRCodeInfoStruct;       // 二维码数据，项目总数
     QList<TestResultData*> m_pTestResultDataList;// 下位机的测试结果列表
-    DetectorPageUserData m_sDetectorPageUserData;// 用户列表数据
+    DetectorPageUserData m_sDetectorPageUserDataStruct;// 用户列表数据
 };
 
 #endif // CDETECTORPAGE_H

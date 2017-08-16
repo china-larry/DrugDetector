@@ -18,18 +18,18 @@ public:
 
     ~UpgradeProgress();
     //设置消息文本
-    void SetMessageText(QString qMessageTextStr);
+    void SetMessageText(QString strMessageText);
 
     //设置升级文件路径
-    void SetUpgradeFilePath(QString qUpgradeFilePathStr);
+    void SetUpgradeFilePath(QString strUpgradeFilePath);
 
 private slots:
-    void on_okButton_clicked();
-    void on_cancelButton_clicked();
-    void SlotSetProcessValue(int value);
-    void SlotUpgradeError(QString);
-    void SlotUpdataFinish();
-private:
+    void _SlotOkButtonClick();
+    void _SlotCancelButton();
+    void _SlotSetProcessValue(int iValue);
+    void _SlotUpgradeError(QString);
+    void _SlotUpdataFinish();
+
 private:
     Ui::UpgradeProgress *ui;
     QProcess *m_pProcess;

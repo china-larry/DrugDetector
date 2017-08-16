@@ -29,9 +29,8 @@ class OpencvUtility : public QObject
 {
     Q_OBJECT
 
-private:
-    explicit OpencvUtility();
-    ~OpencvUtility();
+signals:
+    void SignalErrInfo(EnumTypeErr eErr);           //错误信号
 
 public:
 
@@ -63,15 +62,13 @@ public:
      * @return
      */
     bool GetVideoCapture(QString *strImagePath);
-    bool QuickGetVideoCapture(QString *strImagePath);
+
     void SetVideoCapture(VideoCapture videocapture);
     VideoCapture GetVideoCapture();
 
-signals:
-    void SignalErrInfo(EnumTypeErr eErr);           //错误信号
-
-protected slots:
-
+private:
+    explicit OpencvUtility();
+    ~OpencvUtility();
 
 private:    
     VideoCapture m_VideoCapture;

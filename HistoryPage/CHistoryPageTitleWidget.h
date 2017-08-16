@@ -24,12 +24,12 @@ public:
     explicit CHistoryPageTitleWidget(QWidget *parent = nullptr);
 
 signals:
-    void SignalGoDetectorPage();
-    void SignalGoCalibrationPage();
-    void SignalCheckHistoryItem();
-    void SignalGoSettingPage();
-    void SignalMinWindow();
-    void SignalReturnWindow();
+    void SignalGoDetectorPage();// 前往测试页面
+    void SignalGoCalibrationPage();// 前往校准页面
+    void SignalCheckHistoryItem();// 前往历史数据页面
+    void SignalGoSettingPage();// 前往设置页面
+    void SignalMinWindow();// 最小化
+    void SignalReturnWindow();// 返回
 public slots:
 
 private slots:

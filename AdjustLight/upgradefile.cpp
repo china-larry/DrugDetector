@@ -65,16 +65,16 @@ quint8 UpgradeFile::parseUpgradeFile(const QString &upgradeFile)
     }
     /********************   判断sign  END  ********************/
 
-    in>>modelCode>>imageCode>>hwVersionMajor>>hwVersionMinor>>swVersionMajor>>swVersionMinor
-            >>swVersionIncre>>swVersionBuild>>createTime>>dataLen;
-    qDebug()<<"File data"<<modelCode<<imageCode<<hwVersionMajor<<hwVersionMinor<<swVersionMajor<<swVersionMinor
-           <<swVersionIncre<<swVersionBuild<<createTime<<dataLen;
-    char *data=new char[dataLen];
-    in.readRawData(data,dataLen);
-    realData.clear();
-    realData.append(data,dataLen);
+    in >> m_iodelCode >> m_imageCode >> m_ihwVersionMajor >> m_ihwVersionMinor >> m_iswVersionMajor >> m_iswVersionMinor
+            >> m_iswVersionIncre >> m_iswVersionBuild >> m_icreateTime >> m_idataLen;
+    qDebug()<<"File data" << m_iodelCode << m_imageCode << m_ihwVersionMajor << m_ihwVersionMinor << m_iswVersionMajor
+           << m_iswVersionMinor << m_iswVersionIncre << m_iswVersionBuild << m_icreateTime << m_idataLen;
+    char *data=new char[m_idataLen];
+    in.readRawData(data,m_idataLen);
+    m_brealDataByteArry.clear();
+    m_brealDataByteArry.append(data,m_idataLen);
 
-    dataCrc16=(quint16)getCRC16(data,dataLen,0);
+    m_idataCrc16=(quint16)getCRC16(data,m_idataLen,0);
 
     delete []data;
 
@@ -84,51 +84,51 @@ quint8 UpgradeFile::parseUpgradeFile(const QString &upgradeFile)
 }
 quint8 UpgradeFile::getHwVersionMinor() const
 {
-    return hwVersionMinor;
+    return m_ihwVersionMinor;
 }
 quint8 UpgradeFile::getModelCode() const
 {
-    return modelCode;
+    return m_iodelCode;
 }
 quint8 UpgradeFile::getImageCode() const
 {
-    return imageCode;
+    return m_imageCode;
 }
 quint8 UpgradeFile::getHwVersionMajor() const
 {
-    return hwVersionMajor;
+    return m_ihwVersionMajor;
 }
 quint8 UpgradeFile::getSwVersionMajor() const
 {
-    return swVersionMajor;
+    return m_iswVersionMajor;
 }
 quint8 UpgradeFile::getSwVersionMinor() const
 {
-    return swVersionMinor;
+    return m_iswVersionMinor;
 }
 quint16 UpgradeFile::getSwVersionIncre() const
 {
-    return swVersionIncre;
+    return m_iswVersionIncre;
 }
 quint16 UpgradeFile::getSwVersionBuild() const
 {
-    return swVersionBuild;
+    return m_iswVersionBuild;
 }
 quint32 UpgradeFile::getCreateTime() const
 {
-    return createTime;
+    return m_icreateTime;
 }
 quint32 UpgradeFile::getDataLen() const
 {
-    return dataLen;
+    return m_idataLen;
 }
 QByteArray UpgradeFile::getRealData() const
 {
-    return realData;
+    return m_brealDataByteArry;
 }
 quint16 UpgradeFile::getDataCrc16() const
 {
-    return dataCrc16;
+    return m_idataCrc16;
 }
 
 

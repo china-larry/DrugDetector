@@ -62,10 +62,6 @@ public:
      */
     StandardMachineCalibrateParams GetStandardMachineCalibrateParams();
 
-signals:
-
-private slots:
-
 private:
     Ui::StandardMachineCalibrateDialog *ui;
 };

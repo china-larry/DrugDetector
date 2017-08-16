@@ -48,6 +48,11 @@ class UpgradeFile
 public:
     UpgradeFile();
 
+    /**
+     * @brief UpgradeFile::parseUpgradeFile  解析升级文件
+     * @param upgradeFile
+     * @return
+     */
     quint8 parseUpgradeFile(const QString &upgradeFile);
 
     quint8 getModelCode() const;
@@ -75,18 +80,18 @@ public:
     quint16 getDataCrc16() const;
 
 private:
-    quint8 modelCode;
-    quint8 imageCode;
-    quint8 hwVersionMajor;
-    quint8 hwVersionMinor;
-    quint8 swVersionMajor;
-    quint8 swVersionMinor;
-    quint16 swVersionIncre;
-    quint16 swVersionBuild;
-    quint32 createTime;
-    quint32 dataLen;
-    QByteArray realData;
-    quint16 dataCrc16;
+    quint8 m_iodelCode;
+    quint8 m_imageCode;
+    quint8 m_ihwVersionMajor;
+    quint8 m_ihwVersionMinor;
+    quint8 m_iswVersionMajor;
+    quint8 m_iswVersionMinor;
+    quint16 m_iswVersionIncre;
+    quint16 m_iswVersionBuild;
+    quint32 m_icreateTime;
+    quint32 m_idataLen;
+    QByteArray m_brealDataByteArry;
+    quint16 m_idataCrc16;
 
 };
 

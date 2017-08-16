@@ -1,4 +1,16 @@
-﻿#include "CLabelDateWidget.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 复合组合控件Label和Date
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "CLabelDateWidget.h"
 #include <QBoxLayout>
 CLabelDateWidget::CLabelDateWidget(QWidget *parent)
     : QWidget(parent),

@@ -1,4 +1,16 @@
-﻿#include "CLoginInWidget.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 登陆页面Widget，用户登陆操作
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "CLoginInWidget.h"
 #include <QBoxLayout>
 #include <QFont>
 #include <QPixmap>
@@ -25,7 +37,7 @@ void CLoginInWidget::mousePressEvent(QMouseEvent *event)
 {
     if( event->button() == Qt::LeftButton)
     {
-        m_PressPoint = event->globalPos();
+        m_iPressPoint = event->globalPos();
         m_bLeftButtonCheck = true;
     }
     event->ignore();//表示继续向下传递事件，其他的控件还可以去获取
@@ -44,9 +56,9 @@ void CLoginInWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if( m_bLeftButtonCheck )
     {
-        m_MovePoint = event->globalPos();
-        this->move( this->pos() + m_MovePoint - m_PressPoint );
-        m_PressPoint = m_MovePoint;
+        m_iMovePoint = event->globalPos();
+        this->move( this->pos() + m_iMovePoint - m_iPressPoint );
+        m_iPressPoint = m_iMovePoint;
     }
     event->ignore();
 }

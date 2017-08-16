@@ -1,4 +1,16 @@
-﻿#include "CDetectorPageStatusBar.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 测试页的状态栏，显示测试的当前状态，进度条
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "CDetectorPageStatusBar.h"
 #include <QBoxLayout>
 #include "PublicFunction.h"
 CDetectorPageStatusBar::CDetectorPageStatusBar(QWidget *parent) : QWidget(parent)
@@ -32,7 +44,11 @@ void CDetectorPageStatusBar::SetProgressValue(int iValue)
     m_pTestProgressBar->setValue(iValue);
 }
 
-
+/**
+  * @brief 初始化控件
+  * @param
+  * @return
+  */
 void CDetectorPageStatusBar::_InitWidget()
 {
     m_pTestStatusBarLineEdit = new QLineEdit(this);

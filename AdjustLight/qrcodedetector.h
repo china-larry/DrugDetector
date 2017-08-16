@@ -24,7 +24,9 @@
 #include "OpencvUtility.h"
 #include "QZXing.h"
 #include "Common.h"
+#include "OrdinaryBrightmess.h"
 
+//杯类型
 enum EnumTypeCup
 {
     TypeTCup = 0,        //圆杯（尿液）
@@ -33,18 +35,20 @@ enum EnumTypeCup
     TypeKCup6 = 6        //6联旋钮杯（尿液）
 };
 
+//灯光类型
 enum EnumTypeLight
 {
     DownLightGreen = 1,     // 下方绿灯
     DownLightWhite = 2,     // 下方白灯
     UpLightGreen = 3,       // 上方绿灯
-    UpLightWhite = 4,       // 上方白等
+    UpLightWhite = 4,       // 上方白灯
     LeftLightGreen = 5,     // 左方绿灯
     LeftLightWhite = 6,     // 左方白灯
     RightLightGreen = 7,    // 右方绿灯
-    RightLightWhite = 8     // 右方白等
+    RightLightWhite = 8     // 右方白灯
 };
 
+//项目数据
 struct InfoProject
 {
     int     iIndexProgram;      //项目序号
@@ -67,10 +71,21 @@ struct QRCodeInfo
     QList<InfoProject> listProject; //项目信息
     qint32 iQRCodePosition;         //二维码位置（距离复位需要顺时针转的步数）
 };
-Q_DECLARE_METATYPE(QRCodeInfo)
+Q_DECLARE_METATYPE(QRCodeInfo)      //注册结构体
+
 class QRCodeDetector : public QObject
 {
     Q_OBJECT
+
+signals:
+    void SignalQRCodeLocation(QString strPathPic);     //定位二维码过程中，每次拍照都要发送该照片的路径
+    void SignalQRCodeInfo(QRCodeInfo info);         //定位二维码后，发送二维码信息
+    void SignalErrInfo(EnumTypeErr eErr);           //错误信号
+    void SignalGetQRCode();                         //开始获取二维码信号
+
+private slots:
+    void _SlotGetQRcode();                           //
+    //void SlotGetOperationResult(quint16 mCmdType,bool OperatorResult);  //USB命令返回 mCmdType命令类型，result 命令执行结果
 public:
     explicit QRCodeDetector();
     ~QRCodeDetector();
@@ -129,20 +144,38 @@ public:
      */
     bool FindQRcodeLocationRect(IplImage *dstImg);
 
-    //开灯 成功 0 失败-1
-    int TestLightUp(EnumTypeLight type);
+    /**
+    * @brief    TestLightUp
+    * 开灯
+    * @param    TypeLight   灯类型
+    * @param
+    * @return   成功 0 失败-1
+    */
+    int TestLightUp(EnumTypeLight TypeLight);
 
     //关灯 成功 0 失败-1
     int TestLightDown();
 
-    //封装二维码信息
-    QRCodeInfo PackageQRCodeInfo(QString strBatchNumber,                //项目批号
-                                 QString strValidityData,               //有效期
-                                 QString strCardNumber,                 //卡序列号
-                                 QString strCupType,                    //杯型
-                                 QString strAllCount,                   //总子条数
-                                 QString strVersion,                    //版本
-                                 QVector<QStringList> qv_strListitem);  //项目信息
+
+    /**
+    * @brief    PackageQRCodeInfo
+    * 封装二维码信息
+    * @param    strBatchNumber                //项目批号
+    * @param    strValidityData               //有效期
+    * @param    strCardNumber                 //卡序列号
+    * @param    strCupType                    //杯型
+    * @param    strAllCount                   //总子条数
+    * @param    strVersion                    //版本
+    * @param    qv_strListitem                //项目信息
+    * @return   QRCodeInfo                    //二维码信息结构体
+    */
+    QRCodeInfo PackageQRCodeInfo(QString strBatchNumber,
+                                 QString strValidityData,
+                                 QString strCardNumber,
+                                 QString strCupType,
+                                 QString strAllCount,
+                                 QString strVersion,
+                                 QVector<QStringList> qv_strListitem);
 
     QString GetProjectName(const int iIndex);
     //void SetOperatorResult(bool OperatorResult);
@@ -157,7 +190,7 @@ public:
 
      * @return
      */
-    void mSleep(qint32 msec);
+    void mSleep(qint32 iMsec);
 
     /**
      * @brief ExtractQRCode
@@ -171,20 +204,19 @@ public:
     QZXing *GetZxingDecoder();
     void SetZxingDecoder(QZXing *pZxingDecoder);
 
-signals:
-    void SignalQRCodeLocation(QString pathPic);     //定位二维码过程中，每次拍照都要发送该照片的路径
-    void SignalQRCodeInfo(QRCodeInfo info);         //定位二维码后，发送二维码信息
-    void SignalErrInfo(EnumTypeErr eErr);           //错误信号
-    void SignalGetQRCode();                         //开始获取二维码信号
-
-private slots:
-    void SlotGetQRcode();                           //
-    //void SlotGetOperationResult(quint16 mCmdType,bool OperatorResult);    //USB命令返回 mCmdType命令类型，result 命令执行结果
+    /**
+    * @brief    GetOrdinaryBrightmess
+    * 读取校准后的灯光
+    * @param
+    * @param
+    * @return   BrightnessOrdinaryValue 普通机型灯光
+    */
+    BrightnessOrdinaryValue GetOrdinaryBrightmess();
 
 private:
     //bool m_bOperatorResult;
     int m_iQRCodePosition;         //二维码定位后，距离复位位置的距离（顺时针转到复位位置的步数）
-    QZXing *m_pZxingDecoder;
+    QZXing *m_pZxingDecoder;       //解码库对象指针
 };
 
 #endif // QRCODEDETECTOR_H

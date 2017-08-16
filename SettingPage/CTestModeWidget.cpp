@@ -1,4 +1,16 @@
-﻿#include "CTestModeWidget.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-15
+  * Description: 测试模式设置UI
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "CTestModeWidget.h"
 #include <QBoxLayout>
 #include "PublicFunction.h"
 CTestModeWidget::CTestModeWidget(QWidget *parent) : QWidget(parent)
@@ -11,7 +23,11 @@ void CTestModeWidget::_SlotConfirm()
 {
 
 }
-
+/**
+  * @brief 创建控件组
+  * @param
+  * @return
+  */
 QGroupBox *CTestModeWidget::_CreateModeGroup()
 {
     QGroupBox *pGroupBox = new QGroupBox(this);
@@ -64,7 +80,11 @@ void CTestModeWidget::_InitWiget()
     m_pCancelButton = new QPushButton(tr("Cancel"), this);
     m_pCancelButton->setFixedSize(130, 35);
 }
-
+/**
+  * @brief 布局
+  * @param
+  * @return
+  */
 void CTestModeWidget::_InitLayout()
 {
     // qss

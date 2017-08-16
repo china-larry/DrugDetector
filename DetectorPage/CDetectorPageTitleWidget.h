@@ -25,9 +25,9 @@ public:
     explicit CDetectorPageTitleWidget(QWidget *parent = nullptr);
 
 signals:    
-    void SignalGoHistoryPage();
-    void SignalMinWindow();
-    void SignalCloseWindow();
+    void SignalGoHistoryPage();// 前往历史数据页面
+    void SignalMinWindow();// 最小化
+    void SignalCloseWindow();// 关闭
 public slots:
 
 private slots:

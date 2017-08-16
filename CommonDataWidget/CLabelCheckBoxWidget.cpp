@@ -1,4 +1,16 @@
-﻿#include "CLabelCheckBoxWidget.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 复合组合控件Label和CheckBox
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "CLabelCheckBoxWidget.h"
 #include <QBoxLayout>
 CLabelCheckBoxWidget::CLabelCheckBoxWidget(QWidget *parent) : QWidget(parent)
 {

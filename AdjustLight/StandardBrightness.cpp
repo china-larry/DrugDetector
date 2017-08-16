@@ -46,16 +46,19 @@ void StandardBrightness::SlotGetBrightValue(BrightnessValue brightnessValue)
                     QApplication::processEvents();
                 }
 
-                //获取绿色分量
-                GetGreenComponunt(brightnessValue.iCupType,strSaveImagePath);
-                if(!m_iGreenComponuntList.isEmpty())
+                if(OpencvUtility::getInstance()->GetVideoCapture(&strSaveImagePath) == true)
                 {
-                    //发送给UI显示
-                    emit SignalSendPictureToUI(strSaveImagePath,m_iGreenComponuntList);
-                    return;
+                    //获取绿色分量
+                    GetGreenComponunt(brightnessValue.iCupType,strSaveImagePath);
+                    if(!m_iGreenComponuntList.isEmpty())
+                    {
+                        //发送给UI显示
+                        emit SignalSendPictureToUI(strSaveImagePath,m_iGreenComponuntList);
+                        return;
+                    }
                 }
-            }
 
+            }
 
             //逆时针转 30 * 10 步
             for(qint16 step2 = 0;step2 < 30;step2++)
@@ -68,14 +71,18 @@ void StandardBrightness::SlotGetBrightValue(BrightnessValue brightnessValue)
                     QApplication::processEvents();
                 }
 
-                //获取绿色分量
-                GetGreenComponunt(brightnessValue.iCupType,strSaveImagePath);
-                if(!m_iGreenComponuntList.isEmpty())
+                if(OpencvUtility::getInstance()->GetVideoCapture(&strSaveImagePath) == true)
                 {
-                    //发送给UI显示
-                    emit SignalSendPictureToUI(strSaveImagePath,m_iGreenComponuntList);
-                    return;
+                    //获取绿色分量
+                    GetGreenComponunt(brightnessValue.iCupType,strSaveImagePath);
+                    if(!m_iGreenComponuntList.isEmpty())
+                    {
+                        //发送给UI显示
+                        emit SignalSendPictureToUI(strSaveImagePath,m_iGreenComponuntList);
+                        return;
+                    }
                 }
+
             } 
         }
     }
@@ -110,8 +117,25 @@ bool StandardBrightness::SetBrightnessValue(BrightnessValue brightnessValue)
     }
 
     //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::CMD_CLOSE_ALL_LED);
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::s_iCmdCloseAllLed);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+
+    //motorReset
+    CHidCmdThread::GetInstance()->AddResetMotorCmd(10);
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    //等待电机复位
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    CHidCmdThread::GetInstance()->AddRotateMotorCmd(10,1024,1);
+
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
     {
         QApplication::processEvents();
@@ -174,13 +198,22 @@ bool StandardBrightness::SetBrightnessValue(BrightnessValue brightnessValue)
 // 获取绿色分量曲线
 bool StandardBrightness::GetGreenComponunt(qint16 iCupType,const QString strSaveImagePath)
 {
-//    ThreadTesting threadTesting;
-//    m_iGreenComponuntList.clear();
-//    m_iGreenComponuntList = threadTesting.ReceivePicPath(strSaveImagePath);
-//    if(!m_iGreenComponuntList.isEmpty())
-//    {
-//        return true;
-//    }
+    ThreadTesting threadTesting;
+    m_iGreenComponuntList.clear();
+    if(0 == iCupType)
+    {
+        //T-cup
+        m_iGreenComponuntList = threadTesting.GetComponentGreenTCup(strSaveImagePath);
+    }
+    else if(4 == iCupType)
+    {
+        //S-cup
+         m_iGreenComponuntList = threadTesting.GetComponentGreenSCup(strSaveImagePath);
+    }
+    if(!m_iGreenComponuntList.isEmpty())
+    {
+        return true;
+    }
 
     return false;
 }

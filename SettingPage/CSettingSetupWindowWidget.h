@@ -1,4 +1,16 @@
-﻿#ifndef CSETTINGSETUPWINDOWWIDGET_H
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-15
+  * Description: 实现
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#ifndef CSETTINGSETUPWINDOWWIDGET_H
 #define CSETTINGSETUPWINDOWWIDGET_H
 
 #include <QWidget>
@@ -21,7 +33,7 @@ signals:
     void SignalReadUserTimes();// 发送仪器使用次数信号
 public slots:
     void SlotGetFirmwareVersion();// 获得硬件版本信息
-    void  SlotGetUserTimes();// 获得仪器使用次数信号
+    void SlotGetUserTimes();// 获得仪器使用次数信号
 public:
     //
     QString GetPisServer(); // 返回PIS服务器

@@ -46,18 +46,18 @@ public slots:
 
 private slots:
     // 点击数据库操作按钮
-    void _SlotCheckQuery();
-    void _SlotCheckSelectAll();
-    void _SlotCheckDeselectAll();
-    void _SlotCheckDelete();
-    void _SlotCheckExport();
+    void _SlotCheckQuery();// 查询
+    void _SlotCheckSelectAll();// 选择全部
+    void _SlotCheckDeselectAll();// 删除全部
+    void _SlotCheckDelete();// 删除选中
+    void _SlotCheckExport();// 导出
     // Table选择改变
     void _SlotHistoryDataSelectChange(
             int iCurrentRow, int iCurrentColumn, int iPreviousRow, int iPreviousColumn);
 public:
     // Main窗口设置测试结果
     void SetTestResultDataList(QList<TestResultData*> pTestResultDataList);
-    void SetTestUserData(DetectorPageUserData sDetectorPageUserData);
+    void SetTestUserData(DetectorPageUserData sDetectorPageUserDataStruct);
     // 切换到历史数据，显示当天测试数据
     void ShowCurrentDateTest();
     // 将测试页获取的数据插入数据库
@@ -106,7 +106,7 @@ private:
 
     // 单次测试数据区
     QList<TestResultData*> m_pTestResultDataList;
-    DetectorPageUserData m_sDetectorPageUserData;
+    DetectorPageUserData m_sDetectorPageUserDataStruct;
     // table数据
     QList<QStringList> m_strTableLineDataList;// 每行数据
     // 数据库
@@ -114,7 +114,6 @@ private:
     // PIS/POCT服务器
     QString m_strPisServer;
     QString m_strPoctServer;
-
 };
 
 #endif // CHISTORYPAGE_H

@@ -26,40 +26,40 @@ HIDOpertaionUtility *HIDOpertaionUtility::GetInstance()
 
 HIDOpertaionUtility::HIDOpertaionUtility()
 {
-    mReadThread = NULL;
-    mHidHandle = NULL;
-    mIsDeviceOpened = false;
-    connect(this, SIGNAL(SignalHIDWrite(QByteArray)), this, SLOT(SlotWrite(QByteArray)),
+    m_ReadThread = NULL;
+    m_HidHandle = NULL;
+    m_IsDeviceOpened = false;
+    connect(this, SIGNAL(SignalHIDWrite(QByteArray)), this, SLOT(_SlotWrite(QByteArray)),
             Qt::QueuedConnection);
-    connect(this, SIGNAL(SignalHIDOpen()), this, SLOT(SlotOpen()), Qt::QueuedConnection);
-    connect(this, SIGNAL(SignalHIDClose()), this, SLOT(SlotClose()), Qt::DirectConnection/*Qt::QueuedConnection*/);
-    connect(this, SIGNAL(SignalReadDevParams()), this, SLOT(SlotReadDevParams()), Qt::QueuedConnection);
+    connect(this, SIGNAL(SignalHIDOpen()), this, SLOT(_SlotOpen()), Qt::QueuedConnection);
+    connect(this, SIGNAL(SignalHIDClose()), this, SLOT(_SlotClose()), Qt::DirectConnection/*Qt::QueuedConnection*/);
+    connect(this, SIGNAL(SignalReadDevParams()), this, SLOT(_SlotReadDevParams()), Qt::QueuedConnection);
     connect(this, SIGNAL(SignalWriteDevParams(DevConfigParams)), this,
-            SLOT(SlotWriteDevParams(DevConfigParams)), Qt::QueuedConnection);
-    connect(this, SIGNAL(SignalHIDUpgradeSubControl(QString)),this, SLOT(SlotUpgradeSubControl(QString)));
-    moveToThread(&mWorkThread);
-    connect(&mWorkThread, SIGNAL(started()), this, SLOT(SlotLoadDll()));
-    connect(&mWorkThread, SIGNAL(finished()), this, SLOT(SlotUnloadDll()));
-    connect(&mWorkThread, SIGNAL(finished()), this, SLOT(deleteLater()));
-    mWorkThread.start();
-    mDevVersion = "";
-    mDevConfigParamsByte = new quint8[sizeof(DevConfigParams)];
+            SLOT(_SlotWriteDevParams(DevConfigParams)), Qt::QueuedConnection);
+    connect(this, SIGNAL(SignalHIDUpgradeSubControl(QString)),this, SLOT(_SlotUpgradeSubControl(QString)));
+    moveToThread(&m_WorkThread);
+    connect(&m_WorkThread, SIGNAL(started()), this, SLOT(_SlotLoadDll()));
+    connect(&m_WorkThread, SIGNAL(finished()), this, SLOT(_SlotUnloadDll()));
+    //connect(&mWorkThread, SIGNAL(finished()), this, SLOT(deleteLater()));
+    m_WorkThread.start();
+    m_DevVersion = "";
+    m_DevConfigParamsByte = new quint8[sizeof(DevConfigParams)];
 }
 
 HIDOpertaionUtility::~HIDOpertaionUtility()
 {
-    delete mDevConfigParamsByte;
+    delete m_DevConfigParamsByte;
 }
 
-void HIDOpertaionUtility::SlotLoadDll()
+void HIDOpertaionUtility::_SlotLoadDll()
 {
     //导入dll,并获取dll包含的操作函数指针
-    mReadThread = new HIDReadThread();
-    connect(mReadThread, SIGNAL(finished()), mReadThread, SLOT(deleteLater()));
-    mWorkHandle = QThread::currentThreadId();
+    m_ReadThread = new HIDReadThread();
+    //connect(mReadThread, SIGNAL(finished()), mReadThread, SLOT(deleteLater()));
+    m_WorkHandle = QThread::currentThreadId();
 }
 
-void HIDOpertaionUtility::SlotUnloadDll()
+void HIDOpertaionUtility::_SlotUnloadDll()
 {
 
 }
@@ -68,9 +68,9 @@ void HIDOpertaionUtility::SlotUnloadDll()
 void HIDOpertaionUtility::HIDWrite(QByteArray writeByteArray)
 {
     //如果在HID后台操作线程则直接调用,否则需通过消息转发,以便把相应操作转到HID后台操作线程
-    if(QThread::currentThreadId() == mWorkHandle)
+    if(QThread::currentThreadId() == m_WorkHandle)
     {
-        SlotWrite(writeByteArray);
+        _SlotWrite(writeByteArray);
     }
     else
         emit SignalHIDWrite(writeByteArray);
@@ -79,9 +79,9 @@ void HIDOpertaionUtility::HIDWrite(QByteArray writeByteArray)
 void HIDOpertaionUtility::HIDOpen()
 {
     //如果在HID后台操作线程则直接调用,否则需通过消息转发,以便把相应操作转到HID后台操作线程
-    if(QThread::currentThreadId() == mWorkHandle)
+    if(QThread::currentThreadId() == m_WorkHandle)
     {
-        SlotOpen();
+        _SlotOpen();
     }
     else
     {
@@ -91,13 +91,12 @@ void HIDOpertaionUtility::HIDOpen()
 
 void HIDOpertaionUtility::HIDClose()
 {
-    SetWaitForAck(false);
-    SetWaitForReturn(false);
+    _SetWaitForAck(false);
+    _SetWaitForReturn(false);
     //如果在HID后台操作线程则直接调用,否则需通过消息转发,以便把相应操作转到HID后台操作线程
-    if(QThread::currentThreadId() == mWorkHandle)
+    if(QThread::currentThreadId() == m_WorkHandle)
     {
-        qDebug() << "_________" <<__FUNCTION__;
-        SlotClose();
+        _SlotClose();
     }
     else
     {
@@ -109,36 +108,39 @@ void HIDOpertaionUtility::HIDClose()
 bool HIDOpertaionUtility::HIDRead(quint8 *recvDataBuf, int delaytime)
 {
     bool result = false;
-    if(mHidHandle)
+    if(m_HidHandle)
     {
-        result = ReadHidData(mHidHandle, recvDataBuf, delaytime);
+        result = ReadHidData(m_HidHandle, recvDataBuf, delaytime);
     }
     return result;
 }
 
 bool HIDOpertaionUtility::IsDeviceOpen()
 {
-    return mIsDeviceOpened;
+    return m_IsDeviceOpened;
 }
 
-bool HIDOpertaionUtility::SlotOpen()
+bool HIDOpertaionUtility::_SlotOpen()
 {
     //打开设备,开启设备读线程
     bool isOpen = false;
-    if(mHidHandle>0)
+    if(m_HidHandle > 0)
     {
         //如已打开需关闭再重开
-        SlotClose();
+        _SlotClose();
     }
     //if(mOpenFunc)
     {
-        mHidHandle = OpenMyHIDDevice(USB_PID, USB_VID);
-        if(mHidHandle>0)
+        m_HidHandle = OpenMyHIDDevice(USB_PID, USB_VID);
+        if(m_HidHandle > 0)
         {
-            mIsDeviceOpened = true;
-            if(!mReadThread)
-                mReadThread = new HIDReadThread();
-            mReadThread->start();
+            m_IsDeviceOpened = true;
+            if(!m_ReadThread)
+            {
+                m_ReadThread = new HIDReadThread();
+            }
+
+            m_ReadThread->start();
             isOpen = true;
         }
     }
@@ -149,29 +151,23 @@ bool HIDOpertaionUtility::SlotOpen()
     return isOpen;
 }
 
-bool HIDOpertaionUtility::SlotClose()
+bool HIDOpertaionUtility::_SlotClose()
 {
     //关闭所有灯与电机立刻停止
-    qDebug() << "_________" <<__FUNCTION__;
-    qDebug() <<"_______" << __LINE__;
-    ExecuteCmdWithAck(ProtocolUtility::GetCloseAllLEDAndStopMotorCmd());
-    qDebug() <<"_______" << __LINE__;
+    _ExecuteCmdWithAck(ProtocolUtility::GetCloseAllLEDAndStopMotorCmd());
     bool result = false;
-    if(mHidHandle > 0)
+    if(m_HidHandle > 0)
     {
-        qDebug() <<"_______" << __LINE__;
-        qDebug() << "_________" <<__FUNCTION__;
-        CloseDev(mHidHandle);
+        CloseDev(m_HidHandle);
     }
-    qDebug() <<"_______" << __LINE__;
-    mIsDeviceOpened = false;//用于关闭读取线程
-    mHidHandle = NULL;
+    m_IsDeviceOpened = false;//用于关闭读取线程
+    m_HidHandle = NULL;
     return result;
 }
 
-bool HIDOpertaionUtility::SendCmdToDev(QByteArray writeByteArray)
+bool HIDOpertaionUtility::_SendCmdToDev(QByteArray writeByteArray)
 {
-    if(mHidHandle)
+    if(m_HidHandle)
     {
         //发送字节，最大发送64个
         //目前发现发送到设备的命令必须是64个字节，少于64个字节发送命令执行失败，待确认原因
@@ -180,7 +176,7 @@ bool HIDOpertaionUtility::SendCmdToDev(QByteArray writeByteArray)
         {
             writeByte[i] = (quint8)writeByteArray.at(i);
         }
-        int writeResult = WriteHidData(mHidHandle, (quint8*)&writeByte, CMD_LEN);
+        int writeResult = WriteHidData(m_HidHandle, (quint8*)&writeByte, CMD_LEN);
         if (writeResult > 0)
             return true;
         else
@@ -190,41 +186,41 @@ bool HIDOpertaionUtility::SendCmdToDev(QByteArray writeByteArray)
         return false;
 }
 
-bool HIDOpertaionUtility::SlotWrite(QByteArray qWriteByteArray)
+bool HIDOpertaionUtility::_SlotWrite(QByteArray qWriteByteArray)
 {
     bool result = false;
     m_iCmdType = 1;
-    if(mHidHandle>0)
+    if(m_HidHandle > 0)
     {
         m_iCmdType = ((qWriteByteArray.at(5)<<8) && 0xFF00)|(qWriteByteArray.at(6)&0x00FF);
         switch (m_iCmdType) {
-        case ProtocolUtility::CMD_ROTATE_MOTOR://电机转动命令
+        case ProtocolUtility::s_iCmdRotateMotor://电机转动命令
         {
-            result = RotateMotor(qWriteByteArray);
+            result = _RotateMotor(qWriteByteArray);
             break;
         }
-        case ProtocolUtility::CMD_RESET_MOTOR://电机复位指令
+        case ProtocolUtility::s_iCmdResetMotor://电机复位指令
         {
-            result = ExecuteCmdWithAckAndReturn(qWriteByteArray,120);
+            result = _ExecuteCmdWithAckAndReturn(qWriteByteArray,120);
             break;
         }
-        case ProtocolUtility::CMD_OPEN_OR_CLOSE_LED://LED灯开关命令
-        case ProtocolUtility::CMD_CLOSE_ALL_LED://关闭所有灯指令
-        case ProtocolUtility::CMD_CLOSE_ALL_LED_AND_STOP_MOTOR://关闭所有灯与电机立刻停止
+        case ProtocolUtility::s_iCmdOpenOrCloseLed://LED灯开关命令
+        case ProtocolUtility::s_iCmdCloseAllLed://关闭所有灯指令
+        case ProtocolUtility::s_iCmdCloseAllLedAndStopMotor://关闭所有灯与电机立刻停止
         {
-            result = ExecuteCmdWithAck(qWriteByteArray);
+            result = _ExecuteCmdWithAck(qWriteByteArray);
             break;
         }
-        case ProtocolUtility::CMD_READ_DEV_VERSION://读取仪器下位机软件版本
+        case ProtocolUtility::s_iCmdReadDevVersion://读取仪器下位机软件版本
         {
-            result = ExecuteCmdWithReturn(qWriteByteArray,100);
+            result = _ExecuteCmdWithReturn(qWriteByteArray,100);
             break;
         }
-        case ProtocolUtility::CMD_READ_TEST_COUNT:
-        case ProtocolUtility::CMD_ADD_TEST_COUNT:
-        case ProtocolUtility::CMD_CLEAR_TEST_COUNT:
+        case ProtocolUtility::s_iCmdReadTestCount:
+        case ProtocolUtility::s_iCmdAddTestCount:
+        case ProtocolUtility::s_iCmdClearTestCount:
         {
-            result = ExecuteCmdWithReturn(qWriteByteArray,10);
+            result = _ExecuteCmdWithReturn(qWriteByteArray,10);
             break;
         }
         default:
@@ -242,38 +238,38 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray data)
     //毒检设备所有消息统一在这里处理，消息有两种类型ACK和结果，
     //因为有命令需要等待ACK和结果，因而这里使用类的成员变量mIsWaitForAck
     // /mIsWaitForReturn/mAckResult/mReturnResult进行状态同步
-    if(mIsWaitForAck)
+    if(m_IsWaitForAck)
     {
         if((quint8)data.at(1)==quint8(m_iCmdType))
         {
-            SetAckResult(true);
+            _SetAckResult(true);
         }
-        SetWaitForAck(false);
+        _SetWaitForAck(false);
 
     }
-    else if(mIsWaitForReturn)
+    else if(m_IsWaitForReturn)
     {
         switch (quint8(m_iCmdType)) {
-        case ProtocolUtility::CMD_ROTATE_MOTOR:
-        case ProtocolUtility::CMD_RESET_MOTOR:
-        case ProtocolUtility::CMD_CLOSE_ALL_LED:
-        case ProtocolUtility::CMD_CLOSE_ALL_LED_AND_STOP_MOTOR:
-        case ProtocolUtility::CMD_CLEAR_TEST_COUNT:
-        case ProtocolUtility::CMD_UPGRADE_APP_END:
+        case ProtocolUtility::s_iCmdRotateMotor:
+        case ProtocolUtility::s_iCmdResetMotor:
+        case ProtocolUtility::s_iCmdCloseAllLed:
+        case ProtocolUtility::s_iCmdCloseAllLedAndStopMotor:
+        case ProtocolUtility::s_iCmdClearTestCount:
+        case ProtocolUtility::s_iCmdUpgradeAppEnd:
         {
             if(data.at(5) == (m_iCmdType/256) && (data.at(6) == quint8(m_iCmdType))
                     && data.at(1) == 0x01 && data.at(2) == 0x01)
             {
-                SetReturnResult(true);
+                _SetReturnResult(true);
             }
             break;
         }
-        case ProtocolUtility::CMD_READ_PARAM_FROM_DEV:
+        case ProtocolUtility::s_iCmdReadParamFromDev:
         {
             if(data.at(5) == (m_iCmdType/256) && (data.at(6) == quint8(m_iCmdType))
                     && data.at(1) == 0x01 && data.at(2) == 0x01)
             {
-                SetReturnResult(true);
+                _SetReturnResult(true);
                 quint8 cmdLen = data.at(3);
                 cmdLen = cmdLen * 256 + data.at(4);
                 //if (ReadCRC8(data, cmdLen - 1) != GetReadbyte[cmdLen]) return null;
@@ -283,44 +279,44 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray data)
                 int index = (pkgNum-1)*PARAM_PACKAGE_DATA_LEN;
                 for (int i = 0; i < cmdLen; i++)
                 {
-                    mDevConfigParamsByte[index] = data.at(DATA_START_INDEX + i);
+                    m_DevConfigParamsByte[index] = data.at(DATA_START_INDEX + i);
                     index++;
                 }
                 if(pkgNum == PARAM_PACKAGE_SIZE)
                 {
-                    memcpy(&mParams, mDevConfigParamsByte,sizeof(DevConfigParams));
-                    emit SignalReceiveDevParams(mParams);
+                    memcpy(&m_Params, m_DevConfigParamsByte,sizeof(DevConfigParams));
+                    emit SignalReceiveDevParams(m_Params);
                 }
             }
             break;
         }
-        case ProtocolUtility::CMD_READ_DEV_VERSION:
+        case ProtocolUtility::s_iCmdReadDevVersion:
         {
             if(data.at(5) == (m_iCmdType/256) && (data.at(6) == quint8(m_iCmdType))
                     && data.at(1) == 0x01 && data.at(2) == 0x01)
             {
-                SetReturnResult(true);
+                _SetReturnResult(true);
                 quint8 cmdLen = data.at(3);
                 cmdLen = cmdLen * 256 + data.at(4);
                 //if (ReadCRC8(data, cmdLen - 1) != GetReadbyte[cmdLen]) return null;
                 cmdLen -= DATA_START_INDEX;
-                mDevVersion.clear();
+                m_DevVersion.clear();
                 for (int i = 0; i < cmdLen; i++)
                 {
-                    mDevVersion.push_back(data.at(DATA_START_INDEX + i));
+                    m_DevVersion.push_back(data.at(DATA_START_INDEX + i));
                 }
-                qDebug()<<"Version:"<<mDevVersion;
-                emit SignalReceiveDevVersion(mDevVersion);
+                qDebug()<<"Version:"<<m_DevVersion;
+                emit SignalReceiveDevVersion(m_DevVersion);
             }
             break;
         }
-        case ProtocolUtility::CMD_ADD_TEST_COUNT:
-        case ProtocolUtility::CMD_READ_TEST_COUNT:
+        case ProtocolUtility::s_iCmdAddTestCount:
+        case ProtocolUtility::s_iCmdReadTestCount:
         {
             if(data.at(5) == (m_iCmdType/256) && (data.at(6) == quint8(m_iCmdType))
                     && data.at(1) == 0x01 && data.at(2) == 0x01)
             {
-                SetReturnResult(true);
+                _SetReturnResult(true);
                 quint8 cmdLen = data.at(3);
                 cmdLen = cmdLen * 256 + data.at(4);
                 //if (ReadCRC8(data, cmdLen - 1) != GetReadbyte[cmdLen]) return null;
@@ -331,7 +327,7 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray data)
                 }
                 else
                 {
-                    mDevVersion.clear();
+                    m_DevVersion.clear();
                     quint8 testCountArray[4];
                     for (int i = 0; i < 4; i++)
                     {
@@ -347,7 +343,7 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray data)
             }
             break;
         }
-        case ProtocolUtility::CMD_UPGRADE_APP_START:
+        case ProtocolUtility::s_iCmdUpgradeAppStart:
         {
             if((data.at(5) == (m_iCmdType/256))
                     && (data.at(6) == quint8(m_iCmdType))
@@ -356,38 +352,38 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray data)
                     && (data.at(DATA_START_INDEX) == 0x5A)
                     && (data.at(DATA_START_INDEX+1) == 0x5A ))
             {
-                SetReturnResult(true);
+                _SetReturnResult(true);
             }
             break;
         }
-        case ProtocolUtility::CMD_UPGRADE_APP_DATA:
+        case ProtocolUtility::s_iCmdUpgradeAppData:
         {
             if(data.at(5) == (m_iCmdType/256) && (data.at(6) == quint8(m_iCmdType))
                     && (data.at(1) == 0x01) && (data.at(2)) == 0x01
                     && (data.at(DATA_START_INDEX) == 0xAB) && (data.at(DATA_START_INDEX+1) == 0xAB) )
             {
-                SetReturnResult(true);
+                _SetReturnResult(true);
             }
             break;
         }
         default:
             break;
         }
-        SetWaitForReturn(false);
+        _SetWaitForReturn(false);
     }
 }
 
 QString HIDOpertaionUtility::GetVersion()
 {
-    return mDevVersion;
+    return m_DevVersion;
 }
 
 void HIDOpertaionUtility::HIDReadDevParams()
 {
     //如果在HID后台操作线程则直接调用,否则需通过消息转发,以便把相应操作转到HID后台操作线程
-    if(QThread::currentThreadId() == mWorkHandle)
+    if(QThread::currentThreadId() == m_WorkHandle)
     {
-        SlotReadDevParams();
+        _SlotReadDevParams();
     }
     else
         emit SignalReadDevParams();
@@ -396,50 +392,50 @@ void HIDOpertaionUtility::HIDReadDevParams()
 void HIDOpertaionUtility::HIDWriteDevParams(DevConfigParams devConfigParams)
 {
     //如果在HID后台操作线程则直接调用,否则需通过消息转发,以便把相应操作转到HID后台操作线程
-    if(QThread::currentThreadId() == mWorkHandle)
+    if(QThread::currentThreadId() == m_WorkHandle)
     {
-        SlotWriteDevParams(devConfigParams);
+        _SlotWriteDevParams(devConfigParams);
     }
     else
         emit SignalWriteDevParams(devConfigParams);
 
 }
 
-void HIDOpertaionUtility::SetWaitForAck(bool isWaitForAck)
+void HIDOpertaionUtility::_SetWaitForAck(bool isWaitForAck)
 {
-    mAckMutex.lock();
-    mIsWaitForAck = isWaitForAck;
-    mAckMutex.unlock();
+    m_AckMutex.lock();
+    m_IsWaitForAck = isWaitForAck;
+    m_AckMutex.unlock();
 }
 
-void HIDOpertaionUtility::SetAckResult(bool ackResult)
+void HIDOpertaionUtility::_SetAckResult(bool ackResult)
 {
-    mAckMutex.lock();
-    mAckResult = ackResult;
-    mAckMutex.unlock();
+    m_AckMutex.lock();
+    m_AckResult = ackResult;
+    m_AckMutex.unlock();
 }
 
-void HIDOpertaionUtility::SetWaitForReturn(bool isWaitForReturn)
+void HIDOpertaionUtility::_SetWaitForReturn(bool isWaitForReturn)
 {
-    mResultMutex.lock();
-    mIsWaitForReturn = isWaitForReturn;
-    mResultMutex.unlock();
+    m_ResultMutex.lock();
+    m_IsWaitForReturn = isWaitForReturn;
+    m_ResultMutex.unlock();
 }
 
-void HIDOpertaionUtility::SetReturnResult(bool returnResult)
+void HIDOpertaionUtility::_SetReturnResult(bool returnResult)
 {
-    mResultMutex.lock();
-    mReturnResult = returnResult;
-    mResultMutex.unlock();
+    m_ResultMutex.lock();
+    m_ReturnResult = returnResult;
+    m_ResultMutex.unlock();
 }
 
 
-bool HIDOpertaionUtility::GetCmdACK()
+bool HIDOpertaionUtility::_GetCmdACK()
 {
-    SetAckResult(false);
-    SetWaitForAck(true);
+    _SetAckResult(false);
+    _SetWaitForAck(true);
     QTime oldTime=QTime::currentTime();
-    while(mIsWaitForAck)
+    while(m_IsWaitForAck)
     {
         int seconds=oldTime.secsTo(QTime::currentTime());
         if(seconds>ACK_TIME_OUT_SECOND)
@@ -447,58 +443,58 @@ bool HIDOpertaionUtility::GetCmdACK()
             break;
         }
     }
-    qDebug()<<"ACK result:"<<mAckResult;
-    return mAckResult;
+    qDebug()<<"ACK result:"<<m_AckResult;
+    return m_AckResult;
 }
 
-bool HIDOpertaionUtility::GetCmdReturn(int delaySeconds)
+bool HIDOpertaionUtility::_GetCmdReturn(int delaySeconds)
 {
-    SetReturnResult(false);
-    SetWaitForReturn(true);
+    _SetReturnResult(false);
+    _SetWaitForReturn(true);
     QTime oldTime=QTime::currentTime();
-    while(mIsWaitForReturn)
+    while(m_IsWaitForReturn)
     {
         int seconds=oldTime.secsTo(QTime::currentTime());
-        if(seconds>delaySeconds)
+        if(seconds > delaySeconds)
         {
             break;
         }
     }
-    return mReturnResult;
+    return m_ReturnResult;
 }
 
-bool HIDOpertaionUtility::ExecuteCmdWithAckAndReturn(QByteArray writeByteArray,
+bool HIDOpertaionUtility::_ExecuteCmdWithAckAndReturn(QByteArray writeByteArray,
                                                      int delaySeconds)
 {
     bool result = false;
-    if(!SendCmdToDev(writeByteArray))
+    if(!_SendCmdToDev(writeByteArray))
         return result;
-    if(!GetCmdACK())
+    if(!_GetCmdACK())
         return result;
-    if(!GetCmdReturn(delaySeconds))
+    if(!_GetCmdReturn(delaySeconds))
         return result;
     result = true;
     return result;
 }
 
-bool HIDOpertaionUtility::ExecuteCmdWithAck(QByteArray writeByteArray)
+bool HIDOpertaionUtility::_ExecuteCmdWithAck(QByteArray writeByteArray)
 {
     bool result = false;
-    if(!SendCmdToDev(writeByteArray))
+    if(!_SendCmdToDev(writeByteArray))
         return result;
-    if(!GetCmdACK())
+    if(!_GetCmdACK())
         return result;
     result = true;
     return result;
 }
 
-bool HIDOpertaionUtility::ExecuteCmdWithReturn(QByteArray writeByteArray,
+bool HIDOpertaionUtility::_ExecuteCmdWithReturn(QByteArray writeByteArray,
                                                      int delaySeconds)
 {
     bool result = false;
-    if(!SendCmdToDev(writeByteArray))
+    if(!_SendCmdToDev(writeByteArray))
         return result;
-    if(!GetCmdReturn(delaySeconds))
+    if(!_GetCmdReturn(delaySeconds))
         return result;
     result = true;
     return result;
@@ -510,7 +506,7 @@ bool HIDOpertaionUtility::ExecuteCmdWithReturn(QByteArray writeByteArray,
 //    return ExecuteCmdWithAck(writeByteArray);
 //}
 
-bool HIDOpertaionUtility::RotateMotor(QByteArray writeByteArray)
+bool HIDOpertaionUtility::_RotateMotor(QByteArray writeByteArray)
 {
     if(writeByteArray.length()<12)//非法命令
         return false;
@@ -518,7 +514,7 @@ bool HIDOpertaionUtility::RotateMotor(QByteArray writeByteArray)
     quint16 speed = writeByteArray.at(DATA_START_INDEX+2)*256+writeByteArray.at(DATA_START_INDEX+3);
 
     int delaySeconds =  (speed * step * 0.015);
-    return ExecuteCmdWithAckAndReturn(writeByteArray, delaySeconds);
+    return _ExecuteCmdWithAckAndReturn(writeByteArray, delaySeconds);
 
 }
 
@@ -557,41 +553,41 @@ bool HIDOpertaionUtility::RotateMotor(QByteArray writeByteArray)
 //    return ExecuteCmdWithReturn(qWriteByteArray,10);
 //}
 
-bool HIDOpertaionUtility::SlotReadDevParams()
+bool HIDOpertaionUtility::_SlotReadDevParams()
 {
     bool result = false;
-    memset(mDevConfigParamsByte, 0,sizeof(DevConfigParams));//清空设备配置参数临时数组内容
-    m_iCmdType = ProtocolUtility::CMD_READ_PARAM_FROM_DEV;
+    memset(m_DevConfigParamsByte, 0,sizeof(DevConfigParams));//清空设备配置参数临时数组内容
+    m_iCmdType = ProtocolUtility::s_iCmdReadParamFromDev;
     QVector<QByteArray> readDevParamsVect = ProtocolUtility::GetReadParamsFromDevCmd();
     for(quint8 pkgNum = 1;pkgNum<=readDevParamsVect.size();pkgNum++)
     {
-        if(!ExecuteCmdWithReturn(readDevParamsVect[pkgNum-1],3))
+        if(!_ExecuteCmdWithReturn(readDevParamsVect[pkgNum-1],3))
         {
-            emit SignalOperationComplete(ProtocolUtility::CMD_READ_PARAM_FROM_DEV, result);
+            emit SignalOperationComplete(ProtocolUtility::s_iCmdReadParamFromDev, result);
             return result;
         }
     }
     result = true;
-    emit SignalOperationComplete(ProtocolUtility::CMD_READ_PARAM_FROM_DEV, result);
+    emit SignalOperationComplete(ProtocolUtility::s_iCmdReadParamFromDev, result);
     return result;
 }
 
-bool HIDOpertaionUtility::SlotWriteDevParams(DevConfigParams devConfigParams)
+bool HIDOpertaionUtility::_SlotWriteDevParams(DevConfigParams devConfigParams)
 {
     bool result = false;
-    m_iCmdType = ProtocolUtility::CMD_WRITE_PARAM_TO_DEV;
+    m_iCmdType = ProtocolUtility::s_iCmdWriteParamToDev;
     QVector<QByteArray> writeDevParamsVect = ProtocolUtility::
             GetWriteParamFromDevCmd(devConfigParams);
     for(quint8 pkgNum = 1;pkgNum<=10;pkgNum++)
     {
-        if(!ExecuteCmdWithAck(writeDevParamsVect[pkgNum-1]))
+        if(!_ExecuteCmdWithAck(writeDevParamsVect[pkgNum-1]))
         {
-            emit SignalOperationComplete(ProtocolUtility::CMD_WRITE_PARAM_TO_DEV, result);
+            emit SignalOperationComplete(ProtocolUtility::s_iCmdWriteParamToDev, result);
             return result;
         }
     }
     result = true;
-    emit SignalOperationComplete(ProtocolUtility::CMD_WRITE_PARAM_TO_DEV, result);
+    emit SignalOperationComplete(ProtocolUtility::s_iCmdWriteParamToDev, result);
     return result;
 }
 
@@ -601,21 +597,21 @@ void HIDOpertaionUtility::_EmitUpgradeErrorSignal(bool result)
     emit SignalUpgradeError(QString::fromLocal8Bit("升级失败"));
 }
 
-bool HIDOpertaionUtility::SlotUpgradeSubControl(QString qFilePathStr)
+bool HIDOpertaionUtility::_SlotUpgradeSubControl(QString qFilePathStr)
 {
     bool result = false;
     //升级步骤1 升级开始命令发送
-    m_iCmdType = ProtocolUtility::CMD_UPGRADE_APP_START;
+    m_iCmdType = ProtocolUtility::s_iCmdUpgradeAppStart;
     QByteArray qCmdByteArray = ProtocolUtility::GetUpgradeAppStartCmd();
-    if(ExecuteCmdWithReturn(qCmdByteArray, 50))
+    if(_ExecuteCmdWithReturn(qCmdByteArray, 50))
     {
         emit SignalUpgradeValue(5);//升级开始和升级结束命令各占5%的进度
         //升级步骤2 升级文件数据传输
-        m_iCmdType = ProtocolUtility::CMD_UPGRADE_APP_DATA;
+        m_iCmdType = ProtocolUtility::s_iCmdUpgradeAppData;
         QVector<QByteArray> upgradeDataCmdVect = ProtocolUtility::GetUpgradeAppCmd(qFilePathStr);
         for(quint8 pkgNum = 1;pkgNum<=upgradeDataCmdVect.size();pkgNum++)
         {
-            if(!ExecuteCmdWithReturn(upgradeDataCmdVect[pkgNum-1], 50))
+            if(!_ExecuteCmdWithReturn(upgradeDataCmdVect[pkgNum-1], 50))
             {
                 _EmitUpgradeErrorSignal(result);
                 return result;
@@ -626,9 +622,9 @@ bool HIDOpertaionUtility::SlotUpgradeSubControl(QString qFilePathStr)
             }
         }
         //升级步骤3 升级结束命令发送
-        m_iCmdType = ProtocolUtility::CMD_UPGRADE_APP_END;
+        m_iCmdType = ProtocolUtility::s_iCmdUpgradeAppEnd;
         qCmdByteArray = ProtocolUtility::GetUpgradeAppEndCmd();
-        if(!ExecuteCmdWithReturn(qCmdByteArray, 50))
+        if(!_ExecuteCmdWithReturn(qCmdByteArray, 50))
         {
             _EmitUpgradeErrorSignal(result);
             return result;
@@ -647,25 +643,24 @@ bool HIDOpertaionUtility::SlotUpgradeSubControl(QString qFilePathStr)
 
 void HIDOpertaionUtility::SetDeviceOperate(bool bIsOperate)
 {
-    DeviceOperateMutex.lock();
-    qDebug() << "mbIsDeviceOperate = " << mbIsDeviceOperate;
-    mbIsDeviceOperate = bIsOperate;
-    DeviceOperateMutex.unlock();
+    m_DeviceOperateMutex.lock();
+    m_bIsDeviceOperate = bIsOperate;
+    m_DeviceOperateMutex.unlock();
 }
 
 bool HIDOpertaionUtility::GetDeviceOperateStates()
 {
     //DeviceOperateMutex.lock();
-    return mbIsDeviceOperate;
+    return m_bIsDeviceOperate;
     //DeviceOperateMutex.unlock();
 }
 
 void HIDOpertaionUtility::HIDUpgradeSubControl(QString filePath)
 {
     //如果在HID后台操作线程则直接调用,否则需通过消息转发,以便把相应操作转到HID后台操作线程
-    if(QThread::currentThreadId() == mWorkHandle)
+    if(QThread::currentThreadId() == m_WorkHandle)
     {
-        SlotUpgradeSubControl(filePath);
+        _SlotUpgradeSubControl(filePath);
     }
     else
         emit SignalHIDUpgradeSubControl(filePath);
@@ -679,7 +674,7 @@ HIDReadThread::HIDReadThread(QObject *parent) :
 void HIDReadThread::run()
 {
 
-    quint8 readByte[CMD_LEN]={0xFF};
+    quint8 readByte[CMD_LEN] = {0xFF};
 
     //读线程必须是另外一个HIDOpertaionUtility操作线程打开仪器后才有存在意义
     while(HIDOpertaionUtility::GetInstance()->IsDeviceOpen())
@@ -688,11 +683,11 @@ void HIDReadThread::run()
         //ReadHidDataFunc最后一个参数负1则读线程堵塞直到数据读取成功
         int readRetVal = HIDOpertaionUtility::GetInstance()->HIDRead((quint8*)(&readByte), -1);
         //qDebug() << "readRetVal = " << readRetVal;
-        if(readRetVal>0)
+        if(readRetVal > 0)
         {
             //QMutexLocker locker(&mDataMutex);
             QByteArray data;
-            for(int i=0;i<CMD_LEN;i++)
+            for(int i=0; i < CMD_LEN; i++)
             {
                 data.push_back(readByte[i]);
             }
@@ -704,5 +699,4 @@ void HIDReadThread::run()
         //else
             msleep(500);
     }
-    qDebug() << __FUNCTION__;
 }

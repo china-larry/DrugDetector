@@ -54,8 +54,8 @@ private:
 
     // m_Move标题栏移动变量
     bool m_bLeftButtonCheck;
-    QPoint m_PressPoint;
-    QPoint m_MovePoint;
+    QPoint m_iPressPoint;
+    QPoint m_iMovePoint;
 };
 
 #endif // CLOGININWIDGET_H

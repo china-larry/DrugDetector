@@ -31,8 +31,11 @@ struct HIDCmdData
 class CHidCmdThread : public QThread
 {
     Q_OBJECT
-public:
-    static const int CMD_WAIT_TIME = 10000;//ms
+
+private slots:
+    //HID命令结果返回信号处理槽
+    void _SlotHIDCmdComplete(quint16 cmdType ,bool result);
+
 public:
     explicit CHidCmdThread(QObject *parent = Q_NULLPTR);
 
@@ -63,16 +66,16 @@ public:
 
     bool GetStopped();
 
-
 protected:
     virtual void run();
 
 private:
     //HID命令运行结束
     void _SetCmdCompleted(bool bCmdCompleted);
-private slots:
-    //HID命令结果返回信号处理槽
-    void _SlotHIDCmdComplete(quint16 cmdType ,bool result);
+
+public:
+    static const int CMD_WAIT_TIME = 10000;//ms
+
 private:
     static CHidCmdThread* s_hidCmdThreadInstance;
     QQueue<HIDCmdData> m_hidCmdDataQueue;//上位机往设备下发命令队列

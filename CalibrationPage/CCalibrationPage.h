@@ -31,11 +31,9 @@ public slots:
 private:
     void _InitWidget();
     void _InitLayout();
-
-
 private:
     // 测试代码
-    QLabel *pLabel3;
+    QLabel *m_pLabelTest;
     QTabWidget *m_pCalibrationTabWidget;
     QTabWidget *m_pBrightnessTabWidget;
     //

@@ -46,9 +46,11 @@ UpgradeProgress::UpgradeProgress(QWidget *parent) :
     ui->label_2->setText(tr("升级"));
     ui->messageLabel->setText(tr("确定升级软件?"));
     ui->progressBar->hide();
-    connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalUpgradeValue(int)),this,SLOT(SlotSetProcessValue(int)));//刷新process bar
-    connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalUpgradeError(QString)),this,SLOT(SlotUpgradeError(QString)));
-    connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalUpgradeFinish()),this,SLOT(SlotUpdataFinish()));
+    connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalUpgradeValue(int)),this,SLOT(_SlotSetProcessValue(int)));
+    connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalUpgradeError(QString)),this,SLOT(_SlotUpgradeError(QString)));
+    connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalUpgradeFinish()),this,SLOT(_SlotUpdataFinish()));
+    connect(ui->okButton,SIGNAL(clicked(bool)),this,SLOT(_SlotOkButtonClick()));
+    connect(ui->cancelButton,SIGNAL(clicked(bool)),this,SLOT(_SlotCancelButton()));
 }
 
 UpgradeProgress::~UpgradeProgress()
@@ -57,21 +59,21 @@ UpgradeProgress::~UpgradeProgress()
 
 }
 
-void UpgradeProgress::SetMessageText(QString qMessageTextStr)
+void UpgradeProgress::SetMessageText(QString strMessageText)
 {
-    ui->messageLabel->setText(qMessageTextStr);
+    ui->messageLabel->setText(strMessageText);
 }
 
-void UpgradeProgress::SetUpgradeFilePath(QString qUpgradeFilePathStr)
+void UpgradeProgress::SetUpgradeFilePath(QString strUpgradeFilePath)
 {
-    m_qUpgradeFilePathStr = qUpgradeFilePathStr;
+    m_qUpgradeFilePathStr = strUpgradeFilePath;
 }
 
 
 /**
  * @brief UpgradeProgress::on_okButton_clicked  执行升级流程
  */
-void UpgradeProgress::on_okButton_clicked()
+void UpgradeProgress::_SlotOkButtonClick()
 {
     ui->okButton->hide();
     ui->cancelButton->hide();
@@ -82,25 +84,25 @@ void UpgradeProgress::on_okButton_clicked()
 }
 
 
-void UpgradeProgress::on_cancelButton_clicked()
+void UpgradeProgress::_SlotCancelButton()
 {
     reject();
 }
 
-void UpgradeProgress::SlotSetProcessValue(int value)
+void UpgradeProgress::_SlotSetProcessValue(int iValue)
 {
-    ui->progressBar->setValue(value);
+    ui->progressBar->setValue(iValue);
 }
 
-void UpgradeProgress::SlotUpgradeError(QString str_error)
+void UpgradeProgress::_SlotUpgradeError(QString strError)
 {
-    qDebug()<<str_error;
+    qDebug()<< strError;
     //MessageBox::warning("升级失败");
     QMessageBox::warning(this, tr("warning"), tr("upgrade error"));
     this->close();
 }
 
-void UpgradeProgress::SlotUpdataFinish()
+void UpgradeProgress::_SlotUpdataFinish()
 {
     //MessageBox::warning("升级成功");
     QMessageBox::warning(this, tr("warning"), tr("upgrade error"));

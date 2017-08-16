@@ -1,4 +1,16 @@
-﻿#include "CSettingPage.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 设置页面Widget，版本信息，调光，校正等操作
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "CSettingPage.h"
 #include <QBoxLayout>
 #include <QFile>
 #include <QTextStream>
@@ -16,7 +28,11 @@ void CSettingPage::_LoadQss()
 {
     LoadQss(this, ":/qss/SettingPage/SettingPage.qss");
 }
-
+/**
+  * @brief 初始化控件
+  * @param
+  * @return
+  */
 void CSettingPage::_InitWidget()
 {
     // test

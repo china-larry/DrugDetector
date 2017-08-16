@@ -1,5 +1,16 @@
-﻿#include "CDetectorPageTitleWidget.h"
-
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 实现页面Title的widget，页面切换等操作
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "CDetectorPageTitleWidget.h"
 #include <QPalette>
 #include <QDebug>
 #include "PublicFunction.h"

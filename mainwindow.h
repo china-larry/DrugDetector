@@ -43,12 +43,12 @@ public slots:
     // 标题栏
     void SlotReceiveLogin();// 登陆界面跳转
     void SlotGoDetectorPage();// 标题栏发送来的跳转测试界面
-    void SlotGoCalibrationPage();
-    void SlotGoHistoryPage();
-    void SlotGoSettingPage();
-    void SlotMinWindow();
-    void SlotCloseWindow();
-    void SlotCheckHistoryItem();
+    void SlotGoCalibrationPage();// 前往校准页面
+    void SlotGoHistoryPage();// 前往历史页面
+    void SlotGoSettingPage();// 前往设置页面
+    void SlotMinWindow();// 最小化
+    void SlotCloseWindow();// 关闭
+    void SlotCheckHistoryItem();// 前往历史页
     // 测试开始，更改状态栏
     void SlotDetectorPageStartTest();
     // 主动停止测试
@@ -85,17 +85,17 @@ private:
 
     // m_Move标题栏移动变量
     bool m_bLeftButtonCheck;
-    QPoint m_PressPoint;
-    QPoint m_MovePoint;
+    QPoint m_qPressPoint;
+    QPoint m_qMovePoint;
 
     //
     int m_kiTitleHeight;// 标题栏高度
     int m_kiStatusBarHeight;
-    QRect m_iWidgetRect;
+    QRect m_iWidgetRect;    
 
     // 数据区
     QList<TestResultData*> m_pTestResultDataList;// 测试结果数据
-    DetectorPageUserData m_sDetectorPageUserData;// 测试页面被测者信息数据
+    DetectorPageUserData m_sDetectorPageUserDataStruct;// 测试页面被测者信息数据
 };
 
 #endif // MAINWINDOW_H

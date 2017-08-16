@@ -6,45 +6,49 @@
 using namespace cv;
 #define MAX_SIZE 600
 LineFinder::LineFinder():
-    mDeltaRho(1),
-    mDeltaTheta(PI/180),
-    mMinVote(10),
-    mMinLength(0.),
-    mMaxGap(0.)
+    m_dDeltaRho(1),
+    m_dDeltaTheta(PI/180),
+    m_iMinVote(10),
+    m_dMinLength(0.),
+    m_dMaxGap(0.)
 {
 
 }
 
+LineFinder::~LineFinder()
+{
+
+}
 void LineFinder::setMinVote(int minv)  // 设置最小投票数
 {
-    mMinVote= minv;
+    m_iMinVote= minv;
 }
 
 void LineFinder::setLineLengthAndGap(double length, double gap)  // 设置最小线段长度和线段间距容忍度
 {
-    mMinLength= length;
-    mMaxGap= gap;
+    m_dMinLength = length;
+    m_dMaxGap = gap;
 }
 
 std::vector<cv::Vec4i> LineFinder::findLines(cv::Mat &binary)  //寻找线段
 {
-    lines.clear();
-    cv::HoughLinesP(binary,lines, mDeltaRho, mDeltaTheta, mMinVote,mMinLength, mMaxGap);
-    return lines;
+    m_lineszVectoe.clear();
+    cv::HoughLinesP(binary,m_lineszVectoe, m_dDeltaRho, m_dDeltaTheta, m_iMinVote,m_dMinLength, m_dMaxGap);
+    return m_lineszVectoe;
 }
 
 std::vector<cv::Point2d> LineFinder::findCrossPoints()
 {
     //查找直线集合的所有交点
     std::vector<cv::Point2d> crossPointVect;
-    for(size_t i=0;i<lines.size();i++)
+    for(size_t i = 0; i < m_lineszVectoe.size(); i++)
     {
-        for(size_t j= i+1; j<lines.size();j++)
+        for(size_t j= i+1; j < m_lineszVectoe.size(); j++)
         {
-            cv::Vec4i line1 = lines.at(i);
-            cv::Vec4i line2 = lines.at(j);
+            cv::Vec4i line1 = m_lineszVectoe.at(i);
+            cv::Vec4i line2 = m_lineszVectoe.at(j);
             cv::Point2d crossPointVal;
-            if(crossPoint(line1, line2, crossPointVal))
+            if(_crossPoint(line1, line2, crossPointVal))
             {
                 //下面的这行判定代码仅适用于本项目，因为拍照的图片的尺寸要求不能超过MAX_SIZE，
                 //由于浮点精度问题，会有本应平行的两条线会求出交点，这里需要筛掉这些交叉点
@@ -59,7 +63,7 @@ std::vector<cv::Point2d> LineFinder::findCrossPoints()
     return crossPointVect;
 }
 
-bool LineFinder::crossPoint(cv::Vec4i line1, cv::Vec4i line2, Point2d& pt)
+bool LineFinder::_crossPoint(cv::Vec4i line1, cv::Vec4i line2, Point2d& pt)
 {
     bool isFind = true;
 
@@ -86,8 +90,8 @@ bool LineFinder::crossPoint(cv::Vec4i line1, cv::Vec4i line2, Point2d& pt)
         k2= double (line2[3]-line2[1])/(line2[2]-line2[0]);
         b2 =double ( line2[1]- k2*line2[0]);
 
-        qDebug()<<"k1:"<<k1<<" b1:"<<b1;
-        qDebug()<<"k2:"<<k2<<" b2:"<<b2;
+        //qDebug()<<"k1:"<<k1<<" b1:"<<b1;
+        //qDebug()<<"k2:"<<k2<<" b2:"<<b2;
         if(k1!=k2)
         {
             pt.x=(b2-b1)/(k1-k2);  //算出x
@@ -108,13 +112,13 @@ bool LineFinder::crossPoint(cv::Vec4i line1, cv::Vec4i line2, Point2d& pt)
 
 void LineFinder::drawDetectedLines(cv::Mat &image, cv::Scalar color)  // 画线段
 {
-    std::vector<cv::Vec4i>::const_iterator it2=lines.begin();
-    while (it2!=lines.end())
+    std::vector<cv::Vec4i>::const_iterator it2 = m_lineszVectoe.begin();
+    while (it2 != m_lineszVectoe.end())
     {
         cv::Point pt1((*it2)[0],(*it2)[1]);
         cv::Point pt2((*it2)[2],(*it2)[3]);
-        qDebug()<<"Point1 X:"<<pt1.x<<"Y"<<pt1.y;
-        qDebug()<<"Point2 X:"<<pt2.x<<"Y"<<pt2.y;
+        //qDebug()<<"Point1 X:"<<pt1.x<<"Y"<<pt1.y;
+        //qDebug()<<"Point2 X:"<<pt2.x<<"Y"<<pt2.y;
         cv::line( image, pt1, pt2, color);
         ++it2;
     }
@@ -136,7 +140,7 @@ Point2d LineFinder::getCenterPoint(std::vector<Point2d> pointVect)
 }
 
 
-void LineFinder::cutImage(QString strImagePath)
+void LineFinder::_cutImage(QString strImagePath)
 {
     IplImage *src = cvLoadImage(strImagePath.toLatin1().data(), 0);
     CvSize size = cvSize(700,800);
@@ -163,7 +167,7 @@ LocationData LineFinder::findCenterPointAndCrossPoints(QString strImagePath)
 {
     const int OriginalImageWigth = 2048;
     const int OriginalImageHight = 1536;
-    cutImage(strImagePath);
+    _cutImage(strImagePath);
     const QString strDir = QCoreApplication::applicationDirPath() + "/camera";
     QDir qDir;
     if(!qDir.exists(strDir))

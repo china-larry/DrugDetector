@@ -26,11 +26,35 @@ struct BrightnessValue
     int  iNo8;   // 白右灯
     int  iCupType;
 };
-Q_DECLARE_METATYPE(BrightnessValue);
+Q_DECLARE_METATYPE(BrightnessValue);//注册结构体
 
 class StandardBrightness : public QObject
 {
     Q_OBJECT
+
+signals:
+    /**
+     * @brief SignalSendPictureToUI
+     * 发送信号到UI界面更新
+     * @param strPicturePath 图片路径
+     *        dGreenComponuntList 绿色分量数据
+     * @return
+     */
+    void SignalSendPictureToUI(QString strPicturePath,QList<int> iGreenComponuntList);
+
+public slots:
+    void SlotSaveBrightnessValue();
+
+protected slots:
+    /**
+     * @brief SignalSendPictureToUI
+     * 仪器灯光值槽
+     * @param brightnessValue 灯光值结构体
+     *
+     * @return
+     */
+    void SlotGetBrightValue(BrightnessValue brightnessValue);
+
 public:
     StandardBrightness();
     ~StandardBrightness();
@@ -76,29 +100,6 @@ public:
 
     void SetBrightness(BrightnessValue brightnessValue);
     BrightnessValue GetBrightness();
-
-signals:
-    /**
-     * @brief SignalSendPictureToUI
-     * 发送信号到UI界面更新
-     * @param strPicturePath 图片路径
-     *        dGreenComponuntList 绿色分量数据
-     * @return
-     */
-    void SignalSendPictureToUI(QString strPicturePath,QList<int> iGreenComponuntList);
-
-public slots:
-    void SlotSaveBrightnessValue();
-
-protected slots:
-    /**
-     * @brief SignalSendPictureToUI
-     * 仪器灯光值槽
-     * @param brightnessValue 灯光值结构体
-     *
-     * @return
-     */
-    void SlotGetBrightValue(BrightnessValue brightnessValue);
 
 private:
 

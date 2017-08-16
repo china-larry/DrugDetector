@@ -10,6 +10,10 @@ ProtocolUtility::ProtocolUtility()
 
 }
 
+ProtocolUtility::~ProtocolUtility()
+{
+
+}
 
 void ProtocolUtility::SetCmdLength(QByteArray& dataByteArray)
 {
@@ -33,7 +37,7 @@ void ProtocolUtility::DealWithCmdHead(QDataStream& out)
 {
     out.setByteOrder(QDataStream::BigEndian);  //设置大端格式
 
-   out<<quint8(DEV_ADDR_HIGH)<<quint8(DEV_ADDR_LOW)//设备地址
+   out<<quint8(s_iDevAddrHigh)<<quint8(s_iDevAddrLow)//设备地址
       <<quint8(0x00)<<quint8(0x00);//临时帧长度
 }
 
@@ -44,7 +48,7 @@ QByteArray ProtocolUtility::GetLEDCmd(quint16 ledIndex, quint16 brightness)
     DealWithCmdHead(out);//填充头部公共部分 设备地址+临时帧长度
 
     //填充LED控制命令特殊内容
-    out<<quint8(CMD_OPEN_OR_CLOSE_LED/256)<<quint8(CMD_OPEN_OR_CLOSE_LED)//LED开关命令类型
+    out<<quint8(s_iCmdOpenOrCloseLed/256)<<quint8(s_iCmdOpenOrCloseLed)//LED开关命令类型
       <<quint8(0x00)<<quint8(ledIndex)//LED灯索引
      <<quint8(brightness/256)<<quint8(brightness);//LED灯亮度
 
@@ -63,7 +67,7 @@ QByteArray ProtocolUtility::GetMotorRotateCmd(quint16 direction, quint16 step, q
     DealWithCmdHead(out);//填充头部公共部分 设备地址+临时帧长度
 
     //填充 电机转动命令 特殊内容
-    out<<quint8(CMD_ROTATE_MOTOR/256)<<quint8(CMD_ROTATE_MOTOR)//命令类型
+    out<<quint8(s_iCmdRotateMotor/256)<<quint8(s_iCmdRotateMotor)//命令类型
       <<quint8(direction/256)<<quint8(direction)//运动方向
      <<quint8(step/256)<<quint8(step)//运动步数
     <<quint8(speed/256)<<quint8(speed);//运动速度
@@ -83,7 +87,7 @@ QByteArray ProtocolUtility::GetMotorResetCmd(quint16 speed)
     DealWithCmdHead(out);//填充头部公共部分 设备地址+临时帧长度
 
     //填充 电机复位命令 特殊内容
-    out<<quint8(CMD_RESET_MOTOR/256)<<quint8(CMD_RESET_MOTOR)//命令类型
+    out<<quint8(s_iCmdResetMotor/256)<<quint8(s_iCmdResetMotor)//命令类型
       <<quint8(0x00)<<quint8(0x01)//运动方向
     <<quint8(speed/256)<<quint8(speed);//运动速度
 
@@ -98,7 +102,7 @@ QByteArray ProtocolUtility::GetCloseAllLEDCmd()
     //命令类型(2byte)		命令参数(2byte)    数据(2byte)
     //0x0004            0x0001              无
 
-    return GetCmdByteArrayWithoutCmdData(CMD_CLOSE_ALL_LED);
+    return GetCmdByteArrayWithoutCmdData(s_iCmdCloseAllLed);
 }
 
 QByteArray ProtocolUtility::GetCloseAllLEDAndStopMotorCmd()
@@ -106,7 +110,7 @@ QByteArray ProtocolUtility::GetCloseAllLEDAndStopMotorCmd()
     //关闭所有灯与电机立刻停止 独有部分
     //命令类型(2byte)		命令参数(2byte)    数据(2byte)
     //0x0005            0x0001              无
-    return GetCmdByteArrayWithoutCmdData(CMD_CLOSE_ALL_LED_AND_STOP_MOTOR);
+    return GetCmdByteArrayWithoutCmdData(s_iCmdCloseAllLedAndStopMotor);
 
 }
 
@@ -128,7 +132,7 @@ QVector<QByteArray> ProtocolUtility::GetReadParamsFromDevCmd()
         DealWithCmdHead(out);//填充头部公共部分 设备地址+临时帧长度
 
         //填充 读取仪器参数命令  特殊内容
-        out<<quint8(CMD_READ_PARAM_FROM_DEV/256)<<quint8(CMD_READ_PARAM_FROM_DEV)//命令类型
+        out<<quint8(s_iCmdReadParamFromDev/256)<<quint8(s_iCmdReadParamFromDev)//命令类型
           <<quint8(0x00)<<quint8(pkgNum)<<quint8(0)<<quint8(0);//
         DealWithCmdEnding(dataByteArray, out);//填充命令公共尾部 更新命令长度、填充CRC、头部最前位置添加'0x00'
         byteArrayVect.push_back(dataByteArray);
@@ -157,7 +161,7 @@ QVector<QByteArray> ProtocolUtility::GetWriteParamFromDevCmd(DevConfigParams dev
         DealWithCmdHead(out);//填充头部公共部分 设备地址+临时帧长度
 
         //填充 读取仪器参数命令  特殊内容
-        out<<quint8(CMD_WRITE_PARAM_TO_DEV/256)<<quint8(CMD_WRITE_PARAM_TO_DEV)//命令类型
+        out<<quint8(s_iCmdWriteParamToDev/256)<<quint8(s_iCmdWriteParamToDev)//命令类型
           <<quint8(0x00)<<quint8(pkgNum);//
         for(int i=0;i<PARAM_PACKAGE_DATA_LEN;i++)
         {
@@ -178,7 +182,7 @@ QByteArray ProtocolUtility::GetReadVersionCmd()
     //读取仪器下位机软件版本 独有部分
     //命令类型(2byte)		命令参数(2byte)    数据(2byte)
     //0x0008            0x0001              无
-    return GetCmdByteArrayWithoutCmdData(CMD_READ_DEV_VERSION);
+    return GetCmdByteArrayWithoutCmdData(s_iCmdReadDevVersion);
 
 }
 
@@ -188,7 +192,7 @@ QByteArray ProtocolUtility::GetAddTestCountCmd()
     //命令类型(2byte)		命令参数(2byte)    数据(2byte)
     //0x0009            0x0001              无
 
-    return GetCmdByteArrayWithoutCmdData(CMD_ADD_TEST_COUNT);
+    return GetCmdByteArrayWithoutCmdData(s_iCmdAddTestCount);
 }
 
 QByteArray ProtocolUtility::GetReadTestCountCmd()
@@ -197,7 +201,7 @@ QByteArray ProtocolUtility::GetReadTestCountCmd()
     //命令类型(2byte)		命令参数(2byte)    数据(2byte)
     //0x000A            0x0001              无
 
-    return GetCmdByteArrayWithoutCmdData(CMD_READ_TEST_COUNT);
+    return GetCmdByteArrayWithoutCmdData(s_iCmdReadTestCount);
 }
 
 QByteArray ProtocolUtility::GetClearTestCountCmd()
@@ -205,7 +209,7 @@ QByteArray ProtocolUtility::GetClearTestCountCmd()
     //仪器测量次数清0 独有部分
     //命令类型(2byte)		命令参数(2byte)    数据(2byte)
     //0x000B            0x0001              无
-    return GetCmdByteArrayWithoutCmdData(CMD_CLEAR_TEST_COUNT);
+    return GetCmdByteArrayWithoutCmdData(s_iCmdClearTestCount);
 }
 
 QByteArray ProtocolUtility::GetUpgradeAppStartCmd()
@@ -218,7 +222,7 @@ QByteArray ProtocolUtility::GetUpgradeAppStartCmd()
     DealWithCmdHead(out);//填充头部公共部分 设备地址+临时帧长度
 
     //填充 仪器下位机程序升级开始 特殊内容
-    out<<quint8(CMD_UPGRADE_APP_START/256)<<quint8(CMD_UPGRADE_APP_START)//命令类型
+    out<<quint8(s_iCmdUpgradeAppStart/256)<<quint8(s_iCmdUpgradeAppStart)//命令类型
       <<quint8(0x00)<<quint8(0x01)//命令参数
     <<quint8(0xA5)<<quint8(0xA5);//数据
 
@@ -231,7 +235,7 @@ QByteArray ProtocolUtility::GetUpgradeAppEndCmd()
     //仪器下位机程序升级结束 独有部分
     //命令类型(2byte)		命令参数(2byte)    数据(2byte)
     //0x000E            0x0001              无
-    return GetCmdByteArrayWithoutCmdData(CMD_UPGRADE_APP_END);
+    return GetCmdByteArrayWithoutCmdData(s_iCmdUpgradeAppEnd);
 }
 
 QVector<QByteArray> ProtocolUtility::GetUpgradeAppCmd(QString qFilePathStr)
@@ -260,7 +264,7 @@ QVector<QByteArray> ProtocolUtility::GetUpgradeAppCmd(QString qFilePathStr)
                 DealWithCmdHead(out);//填充头部公共部分 设备地址+临时帧长度
 
                 //填充 升级下位机数据命令  特殊内容
-                out<<quint8(CMD_UPGRADE_APP_DATA/256)<<quint8(CMD_UPGRADE_APP_DATA)//命令类型
+                out<<quint8(s_iCmdUpgradeAppData/256)<<quint8(s_iCmdUpgradeAppData)//命令类型
                   <<quint8(0x00)<<quint8(iPkgIndex);//
                 for(int i=0;i<UPGRAGE_PACKAGE_DATA_LEN;i++)
                 {
@@ -277,12 +281,13 @@ QVector<QByteArray> ProtocolUtility::GetUpgradeAppCmd(QString qFilePathStr)
                 DealWithCmdEnding(qDataByteArray, out);//填充命令公共尾部 更新命令长度、填充CRC、头部最前位置添加'0x00'
                 qByteArrayVect.push_back(qDataByteArray);
             }
-            return qByteArrayVect;
+
         }
     }
+    return qByteArrayVect;
 }
 
-QByteArray ProtocolUtility::GetCmdByteArrayWithoutCmdData(quint16 qCmdType)
+QByteArray ProtocolUtility::GetCmdByteArrayWithoutCmdData(int qCmdType)
 {
     QByteArray dataByteArray;
     QDataStream out(&dataByteArray,QIODevice::ReadWrite);

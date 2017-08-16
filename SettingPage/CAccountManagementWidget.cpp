@@ -1,4 +1,16 @@
-﻿#include "CAccountManagementWidget.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-15
+  * Description: 实现账户管理UI
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "CAccountManagementWidget.h"
 #include <QHeaderView>
 #include <QFont>
 #include <QScrollBar>
@@ -24,7 +36,11 @@ void CAccountManagementWidget::_SlotModifyUser()
 {
 
 }
-
+/**
+  * @brief 初始化控件
+  * @param
+  * @return
+  */
 void CAccountManagementWidget::_InitWidget()
 {
     m_pUserTableWidget = new QTableWidget(this);
@@ -64,7 +80,11 @@ void CAccountManagementWidget::_InitWidget()
     m_pModifyButton->setFixedSize(130, 35);
 
 }
-
+/**
+  * @brief 布局
+  * @param
+  * @return
+  */
 void CAccountManagementWidget::_InitLayout()
 {
     // qss

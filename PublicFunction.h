@@ -29,7 +29,6 @@ struct DetectorPageUserData
     QDate qBirthDate;
     QString strDonorID;
     QString strTestSite;
-    //
     // operator
     QString strOperator;// 操作者身份
     // reason
@@ -52,15 +51,11 @@ struct DetectorPageUserData
 
 /**
   * @brief 设置控件背景图片
-  * @param
+  * @param pWidget:控件，非空
+  * @param strImagepath:路径地址
   * @return
   */
-void SetWidgetBackImage(QWidget *pWidget, QString strImagepath);
-/**
-  * @brief pushbutton背景图片
-  * @param
-  * @return
-  */
+void SetWidgetBackImage(QWidget *pWidget, QString strImagePath);
 /**
   * @brief 设置控件背景色
   * @param pWidget：控件名称
@@ -70,37 +65,41 @@ void SetWidgetBackImage(QWidget *pWidget, QString strImagepath);
 void SetWidgetBackColor(QWidget *pWidget, QColor qColor);
 /**
   * @brief pushbutton背景图片
-  * @param
+  * @param pButton:控件
+  * @param strImagePath：路径
   * @return
   */
 void SetButtonBackImage(QPushButton *pButton, QString strImagePath);
 /**
   * @brief 设置Label背景图片
-  * @param
+  * @param pLabel：控件
+  * @param strImagePath：路径
   * @return
   */
 void SetLabelBackImage(QLabel *pLabel, QString strImagePath);
 /**
   * @brief 设置控件QSS样式
-  * @param
+  * @param pWidget：控件
+  * @param strQssFilePath：地址
   * @return
   */
 void LoadQss(QWidget *pWidget, QString strQssFilePath);
 /**
   * @brief 获取图片的base64值(PNG)
-  * @param
+  * @param strImagePath：地址
   * @return
   */
 QString GetImagePngBase64(QString strImagePath);
 /**
   * @brief 连接数据库
-  * @param
+  * @param strDBName：数据库路径名称
   * @return
   */
-bool ConnectDataBase(const QString &strDBName);
+bool ConnectDataBase(const QString &kstrDBName);
 /**
   * @brief 向TableWidget添加一行
-  * @param 添加行数据的字符串数组
+  * @param pTableWidget：控件
+  * @param strContentList：添加行数据的字符串数组
   * @return true：添加成功；false：添加失败
   */
 bool InsertOneLine(QTableWidget *pTableWidget, QStringList strContentList);

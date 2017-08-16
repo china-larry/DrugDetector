@@ -223,7 +223,7 @@ bool CalibrationAlogrithm::GetTCResult(qint16 iCapType,qint16 iPaper,double &dTC
 {
     //随机数参数测试数据
     QString strSaveImagePath = "";
-    OpencvUtility::getInstance()->QuickGetVideoCapture(&strSaveImagePath);
+    OpencvUtility::getInstance()->GetVideoCapture(&strSaveImagePath);
 
     QTime t= QTime::currentTime();
     qsrand(t.msec()+t.second()*1000);

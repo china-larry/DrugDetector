@@ -1,12 +1,21 @@
-﻿#include "CLabelLineEditWidget.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 复合组合控件Label和LineEdit
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "CLabelLineEditWidget.h"
 #include <QBoxLayout>
 CLabelLineEditWidget::CLabelLineEditWidget(QWidget *parent)
     : QWidget(parent),
       m_strLineText("")
 {
-//    m_pLabel = new QLabel(this);
-//    m_pLineEdit = new QLineEdit(this);
-//    _InitLayout();
 }
 
 CLabelLineEditWidget::CLabelLineEditWidget(QString strLabel, QString strLineText, QWidget *parent)

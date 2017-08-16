@@ -48,8 +48,8 @@ enum Direction
 class ProtocolUtility
 {
 public:
-    ProtocolUtility();
-
+    explicit ProtocolUtility();
+    ~ProtocolUtility();
 
     /**
      * @brief GetLEDCmd LED灯开关命令
@@ -176,35 +176,35 @@ private:
      * @param qCmdType 命令类型，默认命令参数为0x0001
      * @return
      */
-    static QByteArray GetCmdByteArrayWithoutCmdData(quint16 qCmdType);
+    static QByteArray GetCmdByteArrayWithoutCmdData(int qCmdType);
 
 public:
     //上位机设备地址：0x0100
-    static const quint8 PC_ADDR_HIGH = 0x01;
-    static const quint8 PC_ADDR_LOW = 0x00;
+    static const int s_iPcAddrHigh = 0x01;
+    static const int s_iPcAddrLow = 0x00;
     //下位机设备地址：0x0101
-    static const quint8 DEV_ADDR_HIGH = 0x01;
-    static const quint8 DEV_ADDR_LOW = 0x00;
+    static const int s_iDevAddrHigh = 0x01;
+    static const int s_iDevAddrLow = 0x00;
 
     //命令类型
-    static const quint16 CMD_DEV_CLOSE = 0x0000;//关闭设备HID通信
-    static const quint16 CMD_OPEN_OR_CLOSE_LED = 0x0001;//LED灯开关命令
-    static const quint16 CMD_ROTATE_MOTOR = 0x0002;//电机转动命令
-    static const quint16 CMD_RESET_MOTOR = 0x0003;//电机复位指令
-    static const quint16 CMD_CLOSE_ALL_LED = 0x0004;//关闭所有灯指令
-    static const quint16 CMD_CLOSE_ALL_LED_AND_STOP_MOTOR = 0x0005;//关闭所有灯与电机立刻停止
-    static const quint16 CMD_WRITE_PARAM_TO_DEV = 0x0006;//写仪器参数
-    static const quint16 CMD_READ_PARAM_FROM_DEV = 0x0007;//读取仪器参数
-    static const quint16 CMD_READ_DEV_VERSION = 0x0008;//读取仪器下位机软件版本
-    static const quint16 CMD_ADD_TEST_COUNT = 0x0009;//仪器测量次数加1
-    static const quint16 CMD_READ_TEST_COUNT = 0x000A;//仪器测量次数读取
-    static const quint16 CMD_CLEAR_TEST_COUNT = 0x000B;//仪器测量次数清零
-    static const quint16 CMD_UPGRADE_APP_START = 0x000C;//仪器下位机程序升级开始
-    static const quint16 CMD_UPGRADE_APP_DATA = 0x000D;//仪器下位机程序升级数据
-    static const quint16 CMD_UPGRADE_APP_END = 0x000E;//仪器下位机程序升级结束
+    static const int s_iCmdDevClose = 0x0000;//关闭设备HID通信
+    static const int s_iCmdOpenOrCloseLed = 0x0001;//LED灯开关命令
+    static const int s_iCmdRotateMotor = 0x0002;//电机转动命令
+    static const int s_iCmdResetMotor = 0x0003;//电机复位指令
+    static const int s_iCmdCloseAllLed = 0x0004;//关闭所有灯指令
+    static const int s_iCmdCloseAllLedAndStopMotor = 0x0005;//关闭所有灯与电机立刻停止
+    static const int s_iCmdWriteParamToDev = 0x0006;//写仪器参数
+    static const int s_iCmdReadParamFromDev = 0x0007;//读取仪器参数
+    static const int s_iCmdReadDevVersion = 0x0008;//读取仪器下位机软件版本
+    static const int s_iCmdAddTestCount = 0x0009;//仪器测量次数加1
+    static const int s_iCmdReadTestCount = 0x000A;//仪器测量次数读取
+    static const int s_iCmdClearTestCount = 0x000B;//仪器测量次数清零
+    static const int s_iCmdUpgradeAppStart = 0x000C;//仪器下位机程序升级开始
+    static const int s_iCmdUpgradeAppData = 0x000D;//仪器下位机程序升级数据
+    static const int s_iCmdUpgradeAppEnd = 0x000E;//仪器下位机程序升级结束
     //命令参数
-    static const quint8 COMMON_PARAM_HIGH = 0x00;
-    static const quint8 COMMON_PARAM_LOW = 0x01;
+    static const int s_iCommonParamHigh = 0x00;
+    static const int s_iCommonParamLow = 0x01;
 
 };
 

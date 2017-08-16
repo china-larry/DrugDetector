@@ -1,4 +1,16 @@
-﻿#include "CHistoryPage.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 实现对数据库中历史数据的插入、查询、删除等操作
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "CHistoryPage.h"
 #include <QBoxLayout>
 #include <QFile>
 #include <QTextStream>
@@ -92,17 +104,18 @@ void CHistoryPage::_SlotCheckQuery()
 
 void CHistoryPage::_SlotCheckSelectAll()
 {
-    qDebug() << "select all";
     m_pHistoryDataTableWidget->selectAll();
-
-    //m_pHistoryDataTableWidget->selectAll();
 }
 
 void CHistoryPage::_SlotCheckDeselectAll()
 {
 
 }
-
+/**
+  * @brief 删除选中
+  * @param
+  * @return
+  */
 void CHistoryPage::_SlotCheckDelete()
 {
     int iRow = m_pHistoryDataTableWidget->currentRow();
@@ -155,7 +168,7 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
         return;
     }
     QString strID = pItem->text();
-    bool bOk;
+    bool bOk = false;
     int iCurrentID = strID.toInt(&bOk, 10);
     if(bOk && iCurrentID >= 0)
     {
@@ -261,18 +274,16 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
     m_pCurrentTestDataTableWidget->update();
 }
 
-
-
 void CHistoryPage::SetTestResultDataList(QList<TestResultData *> pTestResultDataList)
 {
     m_pTestResultDataList = pTestResultDataList;
     qDebug() << "get history  test size: " << m_pTestResultDataList.count();
 }
 
-void CHistoryPage::SetTestUserData(DetectorPageUserData sDetectorPageUserData)
+void CHistoryPage::SetTestUserData(DetectorPageUserData sDetectorPageUserDataStruct)
 {
-    m_sDetectorPageUserData = sDetectorPageUserData;
-    qDebug() << "user histroyt  data: " << m_sDetectorPageUserData.strOtherReasonComments;
+    m_sDetectorPageUserDataStruct = sDetectorPageUserDataStruct;
+    qDebug() << "user histroyt  data: " << m_sDetectorPageUserDataStruct.strOtherReasonComments;
 }
 /**
   * @brief 显示当天测试结果数据至Table控件
@@ -353,45 +364,45 @@ void CHistoryPage::InsertToDatabase()
         QSqlQuery qSqlQuery;
         qSqlQuery.prepare(strInsert);
 
-        qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorFirstName.toLocal8Bit());
-        qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorLastName.toLocal8Bit());
-        qSqlQuery.addBindValue(m_sDetectorPageUserData.qTestDateTime);
-        qSqlQuery.addBindValue(m_sDetectorPageUserData.qBirthDate);
-        qSqlQuery.addBindValue(m_sDetectorPageUserData.strDonorID);
-        qSqlQuery.addBindValue(m_sDetectorPageUserData.strTestSite.toLocal8Bit());
-        qSqlQuery.addBindValue(m_sDetectorPageUserData.strOperator);// 获得用户身份
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strDonorFirstName.toLocal8Bit());
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strDonorLastName.toLocal8Bit());
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.qTestDateTime);
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.qBirthDate);
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strDonorID);
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strTestSite.toLocal8Bit());
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strOperator);// 获得用户身份
         //
         QString strFlag = "false";
         //
-        strFlag = m_sDetectorPageUserData.bPreEmployment ? "true" : "false";
+        strFlag = m_sDetectorPageUserDataStruct.bPreEmployment ? "true" : "false";
         qSqlQuery.addBindValue(strFlag);
         //
-        strFlag = m_sDetectorPageUserData.bRandom ? "true" : "false";
+        strFlag = m_sDetectorPageUserDataStruct.bRandom ? "true" : "false";
         qSqlQuery.addBindValue(strFlag);
         //
-        strFlag = m_sDetectorPageUserData.bReasonableSuspicionCause ? "true" : "false";
+        strFlag = m_sDetectorPageUserDataStruct.bReasonableSuspicionCause ? "true" : "false";
         qSqlQuery.addBindValue(strFlag);
         //
-        strFlag = m_sDetectorPageUserData.bPostAccident ? "true" : "false";
+        strFlag = m_sDetectorPageUserDataStruct.bPostAccident ? "true" : "false";
         qSqlQuery.addBindValue(strFlag);
         //
-        strFlag = m_sDetectorPageUserData.bReturnToDuty ? "true" : "false";
+        strFlag = m_sDetectorPageUserDataStruct.bReturnToDuty ? "true" : "false";
         qSqlQuery.addBindValue(strFlag);
         //
-        strFlag = m_sDetectorPageUserData.bFollowUp ? "true" : "false";
+        strFlag = m_sDetectorPageUserDataStruct.bFollowUp ? "true" : "false";
         qSqlQuery.addBindValue(strFlag);
         // commets
-        qSqlQuery.addBindValue(m_sDetectorPageUserData.strOtherReasonComments);
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strOtherReasonComments);
         //
-        strFlag = m_sDetectorPageUserData.bTemperatureNormal ? "true" : "false";
+        strFlag = m_sDetectorPageUserDataStruct.bTemperatureNormal ? "true" : "false";
         qSqlQuery.addBindValue(strFlag);
         // product details
-        qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductDefinition);
-        qSqlQuery.addBindValue(m_sDetectorPageUserData.qExpriationDate);
-        qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductLot);
-        qSqlQuery.addBindValue(m_sDetectorPageUserData.strProductID);
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strProductDefinition);
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.qExpriationDate);
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strProductLot);
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strProductID);
         // program and picture
-        qSqlQuery.addBindValue(m_sDetectorPageUserData.iProgramsNumber);
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.iProgramsNumber);
         // 插入结果数据
         int iTestResultDataCount = m_pTestResultDataList.count();
         for(int i = 0; i < iTestResultDataCount; ++i)

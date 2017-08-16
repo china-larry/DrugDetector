@@ -1,4 +1,16 @@
-﻿#include "CDetectorPage.h"
+﻿/*****************************************************
+  * Copyright: 万孚生物
+  * Author: 刘青
+  * Date: 2017-7-9
+  * Description: 实现测试页功能，用户数据输入，测试流程操作，测试数据显示
+  * -------------------------------------------------------------------------
+  * History:
+  *
+  *
+  *
+  * -------------------------------------------------------------------------
+  ****************************************************/
+#include "CDetectorPage.h"
 #include <QGridLayout>
 #include <QFile>
 #include <QTextStream>
@@ -16,12 +28,11 @@
 #include "PublicFunction.h"
 CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
 {
-
     //应用样式 apply the qss style
     _LoadQss();
-       // 初始化接收lib库
+    // 初始化接收lib库
     _InitThreadTesting();
-    //
+    // 初始化控件
     _InitWidget();
       // 布局
     _InitLayout();
@@ -35,7 +46,12 @@ CDetectorPage::~CDetectorPage()
         qDeleteAll(m_pTestResultDataList);
         m_pTestResultDataList.clear();
     }
-    delete m_pThreadTesting;
+    if(m_pThreadTesting != NULL)
+    {
+        delete m_pThreadTesting;
+        m_pThreadTesting = NULL;
+    }
+
 }
 /**
   * @brief 二维码图片显示
@@ -55,30 +71,30 @@ void CDetectorPage::SlotReceiveQRCodeImage(QString strImagePath)
   * @param
   * @return
   */
-void CDetectorPage::SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfo)
+void CDetectorPage::SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfoStruct)
 {
-    m_sQRCodeInfo = sQRCodeInfo;
-    qDebug() << "接受二维码code info" << m_sQRCodeInfo.strProductID;
+    m_sQRCodeInfoStruct = sQRCodeInfoStruct;
+    qDebug() << "接受二维码code info" << m_sQRCodeInfoStruct.strProductID;
     // 更新控件
-    m_pProductLotWidget->SetLineText(m_sQRCodeInfo.iProductLot);
-    m_pExpirationDateWidget->SetDate(m_sQRCodeInfo.qExprationDate);
-    m_pProductIDWidget->SetLineText(m_sQRCodeInfo.strProductID);
+    m_pProductLotWidget->SetLineText(m_sQRCodeInfoStruct.iProductLot);
+    m_pExpirationDateWidget->SetDate(m_sQRCodeInfoStruct.qExprationDate);
+    m_pProductIDWidget->SetLineText(m_sQRCodeInfoStruct.strProductID);
 }
 /**
   * @brief 接收每次测试结果数据
   * @param sTestResultData:TestResultData结构体数据
   * @return
   */
-void CDetectorPage::SlotReceiveTestResultData(TestResultData sTestResultData)
+void CDetectorPage::SlotReceiveTestResultData(TestResultData sTestResultDataStruct)
 {
-    TestResultData sTestResultDataTemp = sTestResultData;
+    TestResultData sTestResultDataTemp = sTestResultDataStruct;
     TestResultData *pTestRsultData = new TestResultData(sTestResultDataTemp);
     m_pTestResultDataList.push_back(pTestRsultData);
     qDebug() << "test " << sTestResultDataTemp.strProgramName;
     // 更新Label图片
-    if(sTestResultData.strPicturePath != "")
+    if(sTestResultDataStruct.strPicturePath != "")
     {
-        _SetCamaraImage(sTestResultData.strPicturePath);
+        _SetCamaraImage(sTestResultDataStruct.strPicturePath);
     }
     // 插入表格
     QStringList strItemList;
@@ -174,8 +190,6 @@ void CDetectorPage::_SlotStopTest()
 {
     qDebug() << "stop test";
     emit SignalStopTest();
-    //删除数据库
-    //QFile::remove(QCoreApplication::applicationDirPath() + "demo.db");
 }
 /**
   * @brief 连接打印机打印
@@ -221,31 +235,31 @@ QList<TestResultData *> CDetectorPage::GetTestResultData()
 DetectorPageUserData CDetectorPage::GetUserData()
 {
     // 获取用户表格数据
-    m_sDetectorPageUserData.strDonorFirstName = m_pFirstNameWidget->GetLineText();
-    m_sDetectorPageUserData.strDonorLastName = m_pLastNameWidget->GetLineText();
-    m_sDetectorPageUserData.qTestDateTime = m_pTestTimeWidget->GetDateTime();
-    m_sDetectorPageUserData.qBirthDate = m_pBirthDateWidget->GetDate();
-    m_sDetectorPageUserData.strDonorID = m_pDonorIDWidget->GetLineText();
-    m_sDetectorPageUserData.strTestSite = m_pTestingSiteWidget->GetLineText();
-    m_sDetectorPageUserData.bPreEmployment = m_pPreEmploymentCBox->isChecked();
-    m_sDetectorPageUserData.bRandom = m_pRandomCBox->isChecked();
-    m_sDetectorPageUserData.bReasonableSuspicionCause = m_pReasonableSuspicionCauseCBox->isChecked();
-    m_sDetectorPageUserData.bPostAccident = m_pPostAccidentCBox->isChecked();
-    m_sDetectorPageUserData.bReturnToDuty = m_pReturnToDutyCBox->isChecked();
-    m_sDetectorPageUserData.bFollowUp = m_pFollowUpCBox->isChecked();
-    m_sDetectorPageUserData.bOtherReason = m_pOtherReasonForTestCBox->isChecked();
-    m_sDetectorPageUserData.strOtherReasonComments = m_pOtherReasonCommentsLineEdit->text();
+    m_sDetectorPageUserDataStruct.strDonorFirstName = m_pFirstNameWidget->GetLineText();
+    m_sDetectorPageUserDataStruct.strDonorLastName = m_pLastNameWidget->GetLineText();
+    m_sDetectorPageUserDataStruct.qTestDateTime = m_pTestTimeWidget->GetDateTime();
+    m_sDetectorPageUserDataStruct.qBirthDate = m_pBirthDateWidget->GetDate();
+    m_sDetectorPageUserDataStruct.strDonorID = m_pDonorIDWidget->GetLineText();
+    m_sDetectorPageUserDataStruct.strTestSite = m_pTestingSiteWidget->GetLineText();
+    m_sDetectorPageUserDataStruct.bPreEmployment = m_pPreEmploymentCBox->isChecked();
+    m_sDetectorPageUserDataStruct.bRandom = m_pRandomCBox->isChecked();
+    m_sDetectorPageUserDataStruct.bReasonableSuspicionCause = m_pReasonableSuspicionCauseCBox->isChecked();
+    m_sDetectorPageUserDataStruct.bPostAccident = m_pPostAccidentCBox->isChecked();
+    m_sDetectorPageUserDataStruct.bReturnToDuty = m_pReturnToDutyCBox->isChecked();
+    m_sDetectorPageUserDataStruct.bFollowUp = m_pFollowUpCBox->isChecked();
+    m_sDetectorPageUserDataStruct.bOtherReason = m_pOtherReasonForTestCBox->isChecked();
+    m_sDetectorPageUserDataStruct.strOtherReasonComments = m_pOtherReasonCommentsLineEdit->text();
     // product details
-    m_sDetectorPageUserData.bTemperatureNormal = m_pTemperatureNormalCBox->isChecked();
-    m_sDetectorPageUserData.strProductDefinition = m_pProductDefinitionWidget->GetCurrentSelectText();
-    m_sDetectorPageUserData.strProductLot = m_pProductLotWidget->GetLineText();
-    m_sDetectorPageUserData.qExpriationDate = m_pExpirationDateWidget->GetDate();
-    m_sDetectorPageUserData.strProductID = m_pProductIDWidget->GetLineText();
+    m_sDetectorPageUserDataStruct.bTemperatureNormal = m_pTemperatureNormalCBox->isChecked();
+    m_sDetectorPageUserDataStruct.strProductDefinition = m_pProductDefinitionWidget->GetCurrentSelectText();
+    m_sDetectorPageUserDataStruct.strProductLot = m_pProductLotWidget->GetLineText();
+    m_sDetectorPageUserDataStruct.qExpriationDate = m_pExpirationDateWidget->GetDate();
+    m_sDetectorPageUserDataStruct.strProductID = m_pProductIDWidget->GetLineText();
     //
-    m_sDetectorPageUserData.iProgramsNumber = m_sQRCodeInfo.iProgramCount;
+    m_sDetectorPageUserDataStruct.iProgramsNumber = m_sQRCodeInfoStruct.iProgramCount;
     // admin
-    m_sDetectorPageUserData.strOperator = "admin";
-    return m_sDetectorPageUserData;
+    m_sDetectorPageUserDataStruct.strOperator = "admin";
+    return m_sDetectorPageUserDataStruct;
 }
 
 void CDetectorPage::_LoadQss()
@@ -258,7 +272,6 @@ void CDetectorPage::SetCupType(QStringList strCupTypeList)
     m_strCupTypeList = strCupTypeList;
     m_pProductDefinitionWidget->SetCupType(strCupTypeList);
 }
-// Donor Details
 /**
   * @brief 创建DonorDetail组合控件
   * @param
@@ -361,7 +374,6 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     pGroupBox->setLayout(pLayout);
     return pGroupBox;
 }
-// product details
 /**
   * @brief 创建ProductDetail组合控件
   * @param
@@ -402,7 +414,6 @@ QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
 
     return pGroupBox;
 }
-// result
 /**
   * @brief 创建Result组合控件
   * @param
@@ -462,7 +473,6 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
     pGroupBox->setLayout(pVLayout);
     return pGroupBox;
 }
-// button
 /**
   * @brief 创建页面按钮button组合控件
   * @param
@@ -476,7 +486,6 @@ void CDetectorPage::_InitWidget()
     m_pStopTestButton = new QPushButton(tr("Stop Test"));
     m_pStopTestButton->setFixedSize(135, 35);
     connect(m_pStopTestButton, SIGNAL(clicked(bool)), this, SLOT(_SlotStopTest()));
-    // 状态栏
 }
 /**
   * @brief 初始化布局
@@ -508,14 +517,12 @@ void CDetectorPage::_InitLayout()
 
 void CDetectorPage::_InitThreadTesting()
 {
-    //
     m_pThreadTesting = new ThreadTesting();
     connect(m_pThreadTesting, SIGNAL(SignalSendCodeInfo(QRCodeInfo)), this, SLOT(SlotReceiveQRCodeInfo(QRCodeInfo)));
     connect(m_pThreadTesting, SIGNAL(SignalSendQRCodePic(QString)), this, SLOT(SlotReceiveQRCodeImage(QString)));
     connect(m_pThreadTesting, SIGNAL(SignalTestResult(TestResultData)), this, SLOT(SlotReceiveTestResultData(TestResultData)));
     connect(m_pThreadTesting, SIGNAL(SignalTestComplete()), this, SLOT(SlotEndTest()));
     connect(m_pThreadTesting, SIGNAL(SignalTestErr(ENUM_ERR)), this, SLOT(SlotReceiveTestError(ENUM_ERR)));
-
 }
 
 void CDetectorPage::_SetCamaraImage(QString strImagePath)

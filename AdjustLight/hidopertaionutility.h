@@ -33,27 +33,111 @@ static const quint16 USB_PID = 0x5750;
 class HIDReadThread : public QThread
 {
     Q_OBJECT
-public:
-    QByteArray GetCmd();
-    explicit HIDReadThread(QObject *parent = 0);
+
 signals:
     //从设备读取到新消息
     void SignalReceiveNewCmd(QByteArray data);
     void SignalReceiveNewCmd();
+
+public:
+    QByteArray GetCmd();
+    explicit HIDReadThread(QObject *parent = 0);
+
 protected:
     void run();
 private:
-    QQueue<QByteArray> mReceiveDatas;
-    QMutex mDataMutex;
+    QQueue<QByteArray> m_ReceiveDatas;
+    QMutex m_DataMutex;
 };
 
 
 class HIDOpertaionUtility:public QObject
 {
     Q_OBJECT
-private:
-    HIDOpertaionUtility();
-    ~HIDOpertaionUtility();
+
+signals:
+    void SignalHIDOpen();
+
+    void SignalHIDClose();
+
+    void SignalHIDWrite(QByteArray writeByteArray);
+
+    void SignalReceiveDevVersion(QString devVersion);
+
+    void SignalReadDevParams();
+
+    void SignalWriteDevParams(DevConfigParams devConfigParams);
+
+    void SignalReceiveDevParams(DevConfigParams devConfigParams);
+
+    void SignalOperationComplete(quint16 m_iCmdType,bool result);
+
+    void SignalReceiveTestCount(quint32 qTestCount);
+
+    //升级下位机信号，以把执行放置到后台线程，filePath为升级文件路径
+    void SignalHIDUpgradeSubControl(QString filePath);
+
+    //升级完成信号
+    void SignalUpgradeFinish();
+
+    //升级进度信号
+    void SignalUpgradeValue(int);
+    //升级错误信号
+    void SignalUpgradeError(QString qErrorMsgStr);
+
+    //发送HID状态信号
+    void SignalErrInfo(EnumTypeErr qErrorMsg);
+private slots:
+    //------------------以下几个槽只在后台线程执行---------------------//
+    /**
+     * @brief LoadDll
+     * 导入DLL函数
+     */
+    void _SlotLoadDll();
+
+    void _SlotUnloadDll();
+    /**
+     * @brief Open
+     * 打开USB HID
+     * @return
+     */
+    bool _SlotOpen();
+
+    /**
+     * @brief Close
+     * 关闭USB HID
+     * @return
+     */
+    bool _SlotClose();
+
+    /**
+     * @brief Write
+     * @param writeByteArray
+     * 写命令到USB HID
+     * @return
+     */
+    bool _SlotWrite(QByteArray writeByteArray);
+
+    /**
+     * @brief ReadDevParams
+     * @return
+     */
+    bool _SlotReadDevParams();
+
+    /**
+     * @brief WriteDevParams
+     * @param devConfigParams
+     * @return
+     */
+    bool _SlotWriteDevParams(DevConfigParams devConfigParams);
+
+    /**
+     * @brief SlotUpgradeSubControl
+     * 升级下位机
+     * @param filePath 升级文件路径
+     * @return
+     */
+    bool _SlotUpgradeSubControl(QString filePath);
 
 public:
     static HIDOpertaionUtility* instance;
@@ -131,137 +215,56 @@ public:
 
 private:
 
+    HIDOpertaionUtility();
+    ~HIDOpertaionUtility();
     //---------------------各命令只跑在后台线程-----------------------------//
 
-    bool RotateMotor(QByteArray writeByteArray);
+    bool _RotateMotor(QByteArray writeByteArray);
     //发送升级错误信号以及结果信号
     void _EmitUpgradeErrorSignal(bool result);
     //-----------------------工具方法--------------------------------//
-    bool SendCmdToDev(QByteArray writeByteArray);
 
-    bool GetCmdACK();
+    //发送命令到设备
+    bool _SendCmdToDev(QByteArray writeByteArray);
+    //获取应答
+    bool _GetCmdACK();
+    //设置应答
+    void _SetAckResult(bool ackResult);
+    //等待应答
+    void _SetWaitForAck(bool isWaitForAck);
+    //等待返回
+    void _SetWaitForReturn(bool isWaitForReturn);
+    //设置返回结果
+    void _SetReturnResult(bool returnResult);
+    //获取命令返回时间
+    bool _GetCmdReturn(int delayTime);
+    //发送数据、等待应答、等待返回时间
+    bool _ExecuteCmdWithAckAndReturn(QByteArray writeByteArray, int delaySeconds);
+    //发送数据、等待应答
+    bool _ExecuteCmdWithAck(QByteArray writeByteArray);
+    //发送数据、等待返回时间
+    bool _ExecuteCmdWithReturn(QByteArray writeByteArray, int delaySeconds);
 
-    void SetAckResult(bool ackResult);
-
-    void SetWaitForAck(bool isWaitForAck);
-
-    void SetWaitForReturn(bool isWaitForReturn);
-
-    void SetReturnResult(bool returnResult);
-
-    bool GetCmdReturn(int delayTime);
-
-    bool ExecuteCmdWithAckAndReturn(QByteArray writeByteArray, int delaySeconds);
-
-    bool ExecuteCmdWithAck(QByteArray writeByteArray);
-
-    bool ExecuteCmdWithReturn(QByteArray writeByteArray, int delaySeconds);
-
-
-signals:
-    void SignalHIDOpen();
-
-    void SignalHIDClose();
-
-    void SignalHIDWrite(QByteArray writeByteArray);
-
-    void SignalReceiveDevVersion(QString devVersion);
-
-    void SignalReadDevParams();
-
-    void SignalWriteDevParams(DevConfigParams devConfigParams);
-
-    void SignalReceiveDevParams(DevConfigParams devConfigParams);
-
-    void SignalOperationComplete(quint16 m_iCmdType,bool result);
-
-    void SignalReceiveTestCount(quint32 qTestCount);
-
-    //升级下位机信号，以把执行放置到后台线程，filePath为升级文件路径
-    void SignalHIDUpgradeSubControl(QString filePath);
-
-    //升级完成信号
-    void SignalUpgradeFinish();
-
-    //升级进度信号
-    void SignalUpgradeValue(int);
-    //升级错误信号
-    void SignalUpgradeError(QString qErrorMsgStr);
-
-    //发送HID状态信号
-    void SignalErrInfo(EnumTypeErr qErrorMsg);
-private slots:
-    //------------------以下几个槽只在后台线程执行---------------------//
-    /**
-     * @brief LoadDll
-     * 导入DLL函数
-     */
-    void SlotLoadDll();
-
-    void SlotUnloadDll();
-    /**
-     * @brief Open
-     * 打开USB HID
-     * @return
-     */
-    bool SlotOpen();
-
-    /**
-     * @brief Close
-     * 关闭USB HID
-     * @return
-     */
-    bool SlotClose();
-
-    /**
-     * @brief Write
-     * @param writeByteArray
-     * 写命令到USB HID
-     * @return
-     */
-    bool SlotWrite(QByteArray writeByteArray);
-
-    /**
-     * @brief ReadDevParams
-     * @return
-     */
-    bool SlotReadDevParams();
-
-    /**
-     * @brief WriteDevParams
-     * @param devConfigParams
-     * @return
-     */
-    bool SlotWriteDevParams(DevConfigParams devConfigParams);
-
-    /**
-     * @brief SlotUpgradeSubControl
-     * 升级下位机
-     * @param filePath 升级文件路径
-     * @return
-     */
-    bool SlotUpgradeSubControl(QString filePath);
 private:
-    HANDLE mHidHandle;//USB hid 句柄
+    HANDLE m_HidHandle;//USB hid 句柄
 
-    QThread mWorkThread;//工作线程，构造函数内使用moveToThread转到后台线程操作
-    Qt::HANDLE mWorkHandle;//工作线程句柄
-    volatile bool mIsDeviceOpened;//设备是否已打开
-    HIDReadThread* mReadThread;//设备读线程
-    bool mAckResult;//ACK结果
-    bool mIsWaitForAck;//是否正在等待ACK,用于读写两个线程的信号同步
-    bool mReturnResult;//结果
-    bool mIsWaitForReturn;//是否正在等待结果，用于读写两个线程的信号同步
+    QThread m_WorkThread;//工作线程，构造函数内使用moveToThread转到后台线程操作
+    Qt::HANDLE m_WorkHandle;//工作线程句柄
+    volatile bool m_IsDeviceOpened;//设备是否已打开
+    HIDReadThread* m_ReadThread;//设备读线程
+    bool m_AckResult;//ACK结果
+    bool m_IsWaitForAck;//是否正在等待ACK,用于读写两个线程的信号同步
+    bool m_ReturnResult;//结果
+    bool m_IsWaitForReturn;//是否正在等待结果，用于读写两个线程的信号同步
     quint16 m_iCmdType;//当前处理命令的命令类型
-    QMutex mAckMutex;
-    QMutex mResultMutex;
-    QString mDevVersion;//设备版本
-    DevConfigParams mParams;//设备参数
-    quint8* mDevConfigParamsByte;//配置信息字节数组，用于每次从设备读取配置参数时临时存储数据
+    QMutex m_AckMutex;
+    QMutex m_ResultMutex;
+    QString m_DevVersion;//设备版本
+    DevConfigParams m_Params;//设备参数
+    quint8* m_DevConfigParamsByte;//配置信息字节数组，用于每次从设备读取配置参数时临时存储数据
     quint32 m_qTestCount;//仪器测试次数
-    QMutex DeviceOperateMutex;
-    bool mbIsDeviceOperate;
-
+    QMutex m_DeviceOperateMutex;
+    bool m_bIsDeviceOperate;
 };
 
 

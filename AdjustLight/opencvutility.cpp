@@ -1,7 +1,7 @@
 ﻿#include "OpencvUtility.h"
-#include "QZXingDLL/QZXing.h"
 #include <QDir>
 #include <QApplication>
+#include "QZXingDLL/QZXing.h"
 
 
 OpencvUtility* OpencvUtility::instance = NULL;
@@ -166,40 +166,7 @@ bool OpencvUtility::GetVideoCapture(QString *strImagePath)
     return false;
 }
 
-//截屏
-bool OpencvUtility::QuickGetVideoCapture(QString *strImagePath)
-{
-    if(OpenVideo() == true)
-    {
-        const QString strDir = QCoreApplication::applicationDirPath() + "/camera";
-        QDir qDir;
-        if(!qDir.exists(strDir))
-        {
-            qDir.mkdir(strDir);
-        }
-        static int iImgIndex = 0;
 
-        *strImagePath = strDir + "/QrCapture%1.png";
-        std::vector<int>compression_params;
-        compression_params.push_back(CV_IMWRITE_JPEG_QUALITY);
-        compression_params.push_back(100);
-
-        Mat mframe;
-        //cap.read(frame);//丢弃，抓到的是上一帧，原因未知
-        this->GetVideoCapture().read(mframe);// 从摄像头中抓取并返回每一帧
-
-        if(!mframe.empty())
-        {
-            //imshow( "Capture",frame);
-            //cvWaitKey(10);
-            *strImagePath = (*strImagePath).arg(iImgIndex);
-            imwrite((*strImagePath).toLatin1().data(), mframe,compression_params);
-            iImgIndex++;
-            return true;
-        }
-    }
-    return false;
-}
 
 void OpencvUtility::SetVideoCapture(VideoCapture videocapture)
 {
