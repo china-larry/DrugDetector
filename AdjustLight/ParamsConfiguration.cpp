@@ -1,4 +1,4 @@
-#include "ParamsConfiguration.h"
+﻿#include "ParamsConfiguration.h"
 #include <QFile>
 #include <QJsonParseError>
 #include <QJsonDocument>
@@ -7,7 +7,7 @@
 #include <QTextStream>
 #include <QFileDialog>
 
-ParamsConfiguration* ParamsConfiguration::sm_Pinstance = NULL;
+ParamsConfiguration* ParamsConfiguration::sm_pInstance = NULL;
 
 ParamsConfiguration::ParamsConfiguration()
 {
@@ -19,19 +19,28 @@ ParamsConfiguration::~ParamsConfiguration()
 
 }
 
-ParamsConfiguration* ParamsConfiguration::getInstance()
+ParamsConfiguration* ParamsConfiguration::GetInstance()
 {
-    if(sm_Pinstance == NULL)
+    if(sm_pInstance == NULL)
     {
-        sm_Pinstance = new ParamsConfiguration();
+        sm_pInstance = new ParamsConfiguration();
 
     }
-    return sm_Pinstance;
+    return sm_pInstance;
 }
 
+
+/**
+ * @brief SaveParamsToConfigFile
+ * 保存参数到配置文件
+ * @param strConfigFileName 配置文件名
+ *        strParamsType    参数类型
+ *        QMap<QString,QVariant> ParamsMap  一个QMap容器 key：参数名 ， value：参数值
+ * @return
+ */
 bool ParamsConfiguration::SaveParamsToConfigFile(QString strConfigFileName,
                                                  QString strParamsType,
-                                                 QMap<QString,QVariant> ParamsMap)
+                                                 QMap<QString,QVariant> qParamsMap)
 {
     QFile qConfigfile(strConfigFileName);
     if(!qConfigfile.open(QIODevice::ReadWrite))
@@ -48,18 +57,18 @@ bool ParamsConfiguration::SaveParamsToConfigFile(QString strConfigFileName,
         QVariantMap qConfigureVariantMap;
 
         QMap<QString,QVariant> qConfiguretMap;
-        QMap<QString,QVariant>::const_iterator ParamsMapIter;
-        for (ParamsMapIter = ParamsMap.constBegin(); ParamsMapIter != ParamsMap.constEnd(); ++ParamsMapIter)
+        QMap<QString,QVariant>::const_iterator qParamsMapIter;
+        for (qParamsMapIter = qParamsMap.constBegin(); qParamsMapIter != qParamsMap.constEnd(); ++qParamsMapIter)
         {
-            qConfiguretMap.insert(ParamsMapIter.key(),ParamsMapIter.value());
+            qConfiguretMap.insert(qParamsMapIter.key(),qParamsMapIter.value());
         }
 
-        QVariant qConfiguretQVariant = QVariant(qConfiguretMap);
+        QVariant qConfiguretQVariant = static_cast <QVariant> (qConfiguretMap);
 
         qConfigureVariantMap.insert(strParamsType,qConfiguretQVariant);
 
         // 转化为 JSON 文档
-        QJsonDocument qJsonDoucment = QJsonDocument::fromVariant(QVariant(qConfigureVariantMap));
+        QJsonDocument qJsonDoucment = QJsonDocument::fromVariant(static_cast <QVariant>(qConfigureVariantMap));
 
         QByteArray qJosnByteArray = qJsonDoucment.toJson(QJsonDocument::Compact);
         QString strJson(qJosnByteArray);
@@ -73,10 +82,10 @@ bool ParamsConfiguration::SaveParamsToConfigFile(QString strConfigFileName,
     else
     {
         //配置文件不为空
-        QJsonParseError qJsonError;
+        QJsonParseError sJsonError;
         // 转化为 JSON 文档
-        QJsonDocument qJsonDoucment = QJsonDocument::fromJson(qJsonByteArray, &qJsonError);
-        if (!qJsonDoucment.isNull() && (qJsonError.error == QJsonParseError::NoError))
+        QJsonDocument qJsonDoucment = QJsonDocument::fromJson(qJsonByteArray, &sJsonError);
+        if (!qJsonDoucment.isNull() && (sJsonError.error == QJsonParseError::NoError))
         {  // 解析未发生错误
             if (qJsonDoucment.isObject())
             { // JSON 文档为对象
@@ -91,18 +100,18 @@ bool ParamsConfiguration::SaveParamsToConfigFile(QString strConfigFileName,
                     qParamsTypeParamsMap = qParamsTypeParamsVariant.toMap();
                 }
 
-                QMap<QString,QVariant>::const_iterator ParamsMapIter;
-                for (ParamsMapIter = ParamsMap.constBegin(); ParamsMapIter != ParamsMap.constEnd(); ++ParamsMapIter)
+                QMap<QString,QVariant>::const_iterator qParamsMapIter;
+                for (qParamsMapIter = qParamsMap.constBegin(); qParamsMapIter != qParamsMap.constEnd(); ++qParamsMapIter)
                 {
                     //写入新内容，原来没有就插入，原来存在就覆盖
-                    qParamsTypeParamsMap.insert(ParamsMapIter.key(),ParamsMapIter.value());
+                    qParamsTypeParamsMap.insert(qParamsMapIter.key(),qParamsMapIter.value());
                 }
 
-                QVariant qConfiguretQVariant = QVariant(qParamsTypeParamsMap);
+                QVariant qConfiguretQVariant = static_cast <QVariant>(qParamsTypeParamsMap);
                 //重新插入QVariantMap
                 qConfigureVariantMap.insert(strParamsType,qConfiguretQVariant);
                 // 转化为 JSON 文档
-                qJsonDoucment = QJsonDocument::fromVariant(QVariant(qConfigureVariantMap));
+                qJsonDoucment = QJsonDocument::fromVariant(static_cast <QVariant>(qConfigureVariantMap));
                 QByteArray qJosnByteArray = qJsonDoucment.toJson(QJsonDocument::Compact);
 
                 QString strJson(qJosnByteArray);
@@ -121,9 +130,18 @@ bool ParamsConfiguration::SaveParamsToConfigFile(QString strConfigFileName,
     return true;
 }
 
+
+/**
+ * @brief SaveParamsToConfigFile
+ * 从配置文件中读取参数
+ * @param strConfigFileName 配置文件名
+ *        strParamsType    参数类型
+ *        QMap<QString,QVariant> ParamsMap  一个QMap容器 key：参数名 ， value：参数值
+ * @return
+ */
 bool ParamsConfiguration::ReadParamsFromConfigFile(QString strConfigFileName,
                                                    QString strParamsType,
-                                                   QMap<QString,QVariant> *ParamsMap)
+                                                   QMap<QString,QVariant> *pParamsMap)
 {
     QFile qConfigfile(strConfigFileName);
     if(!qConfigfile.open(QIODevice::ReadWrite))
@@ -150,7 +168,7 @@ bool ParamsConfiguration::ReadParamsFromConfigFile(QString strConfigFileName,
                          ++ParamsMapIter)
                     {
                         //插入QMap
-                        ParamsMap->insert(ParamsMapIter.key(),ParamsMapIter.value());
+                        pParamsMap->insert(ParamsMapIter.key(),ParamsMapIter.value());
                     }
                     qConfigfile.close();
                     return true;
@@ -164,23 +182,39 @@ bool ParamsConfiguration::ReadParamsFromConfigFile(QString strConfigFileName,
 
 }
 
+
+/**
+ * @brief SaveParamsToConfigFile
+ * 从配置文件中读取参数
+ * @param strConfigFileName 配置文件名
+ *        strParamsType    参数类型
+ *        strParamsName    参数名称
+ *        qParams          参数值
+ * @return
+ */
 bool ParamsConfiguration::ReadParamsFromConfigFile(QString strConfigFileName,
                                                    QString strParamsType,
                                                    QString strParamsName,
                                                    QVariant *qParams)
 {
-    QMap<QString,QVariant> ParamsMap;
-    if(ReadParamsFromConfigFile(strConfigFileName,strParamsType,&ParamsMap))
+    QMap<QString,QVariant> qParamsMap;
+    if(ReadParamsFromConfigFile(strConfigFileName,strParamsType,&qParamsMap))
     {
-        if(ParamsMap.isEmpty() == false)
+        if(qParamsMap.isEmpty() == false)
         {
-            *qParams = ParamsMap.value(strParamsName);
+            *qParams = qParamsMap.value(strParamsName);
             return true;
         }
     }
     return false;
 }
 
+
+/**
+* @brief ExportParamsConfigFile 导出文件
+* @param strSaveFileName 文件路径
+* @return
+*/
 bool ParamsConfiguration::ExportParamsConfigFile(QString strSaveFileName)
 {
     if (!strSaveFileName.isNull())
@@ -197,6 +231,12 @@ bool ParamsConfiguration::ExportParamsConfigFile(QString strSaveFileName)
 
 }
 
+/**
+* @brief  ImportPatamsConfigFile  导入文件
+* @param  strImportFileName       文件路径
+* @param
+* @return
+*/
 bool ParamsConfiguration::ImportPatamsConfigFile(QString strImportFileName)
 {
     if (!strImportFileName.isNull())

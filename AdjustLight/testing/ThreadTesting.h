@@ -1,4 +1,4 @@
-/*****************************************************
+﻿/*****************************************************
   * Copyright: 万孚生物
   * Author: 张良
   * Date: 2017-7-9
@@ -66,31 +66,31 @@ public:
     explicit ThreadTesting();
     ~ThreadTesting();
 signals:
-    void SignalTestErr(ENUM_ERR eErr);               //报错 错误信息
-    void SignalTestResult(TestResultData sResultTestData);   //每条测试结果
-    void SignalTestComplete();                      //测试完成
-    void SignalSendCodeInfo(QRCodeInfo sInfoQRCode);       //二维码信息
-    void SignalSendQRCodePic(QString strPath);         //二维码照片路径
+    void SignalTestErr(ENUM_ERR eErr);                      //报错 错误信息
+    void SignalTestResult(TestResultData sResultTestData);  //每条测试结果
+    void SignalTestComplete();                              //测试完成
+    void SignalSendQRCodePic(QString strPath);              //二维码照片路径
+    void SignalSendCodeInfo(QRCodeInfo sInfoQRCodeStruct);  //二维码信息
     void SignalStartMotor();
 private slots:
     void _SlotMotorComplete(quint16 iCmdType, bool bResult);
     void _SlotTakePhoto();
     void _SlotMoveStepperMotor();
+    void _SLotReceiveQRCodeInfo(QRCodeInfo sInfoQRCodeStruct);
     void _SlotReceiveErr(EnumTypeErr eErr);
-    void _SLotReceiveQRCodeInfo(QRCodeInfo sInfoQRCode);
     void _SlotReceiveQRcodePic(QString strPath);
 public:
-    void StartTest();                               //启动测试
-    void StopTest();                                //停止测试
-    QList<int> GetComponentGreenTCup(QString strPath); //获取目标区域绿色分量数据 圆杯
-    QList<int> GetComponentGreenSCup(QString strPath); //获取目标区域绿色分量数据 方杯
+    void StartTest();                                   //启动测试
+    void StopTest();                                    //停止测试
+    QList<int> GetComponentGreenTCup(QString strPath);  //获取目标区域绿色分量数据 圆杯
+    QList<int> GetComponentGreenSCup(QString strPath);  //获取目标区域绿色分量数据 方杯
 private:
     int _ImageAnalysisProcess(int *pDataArr, int iOrgLineCenterX, int iPicWide);                       //获取目标线（C线或者T线）的面积积分
     int _ErCMethod2(int *pData, int iBackGround1, int iBackGround2, int iBackGround3,
                     int iBackGround4, int iBackGround5, int iBackGround6, int iPicWide);        //最小二乘法 去除背景
-    int _GetTLineLoction(const int *pDataArr, int iOrgCenterxLocation);
-    int _GetMinLocation(const int *pSumLineWidth, int iArrLength);
-    int _GetValueTC(const QList<int> &iHorizontalProjectionList, TestResultData &resultData);
+    int _GetTLineLoction(const int *kpDataArr, int iOrgCenterxLocation);
+    int _GetMinLocation(const int *kpSumLineWidth, int iArrLength);
+    int _GetValueTC(const QList<int> &kiHorizontalProjectionList, TestResultData &sResultTestDataStruct);
     int _FindCLine(QList<int> iHorizontalProjectionList);
     int _FindProjectMid(QList<int> iUprightProjectionList, int iPixelLevel, int iPixelSustain);
 
@@ -98,10 +98,10 @@ private:
     void _ReceivePicPathSCup(QString strPath);
     TestResultData _ReceivePicPathTCup(QString strPath);
     void _ModifNextStep(int iStep, int iPixel);
-    void _StatusHandler(bool bResult, ENUM_STATUS_TEST status);
-    void _GetTestResult(const InfoProject &projectData, TestResultData &resultData);
-    void _GetTestResult(const double concentration, const InfoProject &projectData, TestResultData &resultData);
-    double _GetConcentration(const InfoProject &projectData, const TestResultData &resultData);
+    void _StatusHandler(bool bResult, ENUM_STATUS_TEST eTestStatus);
+    void _GetTestResult(const InfoProject &ksProjectDataStruct, TestResultData &sResultDataStruct);
+    void _GetTestResult(const double kdConcentration, const InfoProject &ksProjectDataStruct, TestResultData &sResultDataStruct);
+    double _GetConcentration(const InfoProject &kprojectDataStruct, const TestResultData &ksResultDataStruct);
     QList<int> _FindProjectSCup(QList<int> iUprightProjectionList);
     QList<int> _UprightProjection(QString strImgPath);
     QList<int> _HorizontalProjection(QString strImgPath);

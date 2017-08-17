@@ -138,7 +138,7 @@ bool ConnectDataBase(const QString &kstrDBName)
     qSqlDataBase.setDatabaseName(kstrDBName);
     if (!qSqlDataBase.open())
     {
-        QMessageBox::critical(0, QObject::tr("Database Error"),
+        QMessageBox::warning(0, QObject::tr("Database Error"),
                               qSqlDataBase.lastError().text());
         return false;
     }
@@ -196,5 +196,92 @@ bool InsertOneItem(QTableWidget *pTableWidget, int iRow, int iColumn, QString st
         return false;
     }
 }
+/**
+  * @brief 错误类型弹框提示
+  * @param eTypeError:错误类型
+  * @return
+  */
+void TipErrorInfomation(EnumTypeErr eTypeError)
+{// 错误信号处理
+    switch (eTypeError)
+    {
+        case ErrNoFoundQR:
+        {
+            QMessageBox::information(NULL, "Error", "QR Code Error!", QMessageBox::Ok, QMessageBox::Ok);
+            break;
+        }
+        case ErrDecodeQR:
+        {
+            QMessageBox::information(NULL, "Error", "QR Decode Failure!", QMessageBox::Ok, QMessageBox::Ok);
+            break;
+        }
+        case ErrNoConnectUSB:
+        {
+            QMessageBox::information(NULL, "Error", "USB Connect Failure!", QMessageBox::Ok, QMessageBox::Ok);
+            break;
+        }
+        case ErrNoOpenVideo:
+        {
+            QMessageBox::information(NULL, "Error", "Video Open Failure!", QMessageBox::Ok, QMessageBox::Ok);
+            break;
+        }
+        default:
+        {
+            QMessageBox::information(NULL, "Error", "Other Error!", QMessageBox::Ok, QMessageBox::Ok);
+            break;
+        }
+    }
+}
 
 
+void TipErrorInfomation(ENUM_ERR eTestError)
+{
+    switch (eTestError)
+    {
+    case ERR_VIDEO_CAPTURE:
+    {
+        QMessageBox::critical(NULL, "Error", "Get Video Capture Failure", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ERR_STEP_MOTOR:
+    {
+        QMessageBox::critical(NULL, "Error", "Step Motor Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ERR_LIGHT:
+    {
+        QMessageBox::critical(NULL, "Error", "Open Light Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ERR_DATA:
+    {
+        QMessageBox::critical(NULL, "Error", "Get Data Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ERR_NO_FOUND:
+    {
+        QMessageBox::critical(NULL, "Error", "QR Code Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ERR_DECODE:
+    {
+        QMessageBox::critical(NULL, "Error", "QR Decode Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ERR_DISCONNECT_USB:
+    {
+        QMessageBox::critical(NULL, "Error", "USB Connect Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    case ERR_VIDEOOPENFAILED:
+    {
+        QMessageBox::critical(NULL, "Error", "Video Open Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    default:
+    {
+        QMessageBox::critical(NULL, "Error", "Other Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        break;
+    }
+    }
+}

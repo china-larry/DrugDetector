@@ -4,7 +4,7 @@
 #include "QZXingDLL/QZXing.h"
 
 
-OpencvUtility* OpencvUtility::instance = NULL;
+OpencvUtility* OpencvUtility::pInstance = NULL;
 
 OpencvUtility::OpencvUtility()
 {
@@ -17,16 +17,23 @@ OpencvUtility::~OpencvUtility()
     cvDestroyWindow("Capture");
 }
 
-OpencvUtility* OpencvUtility::getInstance()
+OpencvUtility* OpencvUtility::GetInstance()
 {
-    if(instance == NULL)
+    if(pInstance == NULL)
     {
-        instance = new OpencvUtility();
+        pInstance = new OpencvUtility();
 
     }
-    return instance;
+    return pInstance;
 }
 
+/**
+ * @brief OpenVideo
+ * 打开摄像头
+ * @param
+ *
+ * @return
+ */
 bool OpencvUtility::OpenVideo()
 {
     if(!this->GetVideoCapture().isOpened())
@@ -48,11 +55,11 @@ bool OpencvUtility::OpenVideo()
             return false;
         }
         qDebug()<<"init camera...";
-        QTime oldTime = QTime::currentTime();
+        QTime qOldTime = QTime::currentTime();
         while(1)
         {
-            int seconds = oldTime.secsTo(QTime::currentTime());
-            if(seconds > 5)
+            int iSeconds = qOldTime.secsTo(QTime::currentTime());
+            if(iSeconds > 5)
             {
                 break;
             }
@@ -63,23 +70,30 @@ bool OpencvUtility::OpenVideo()
     return true;
 }
 
+/**
+ * @brief GetVideo
+ * 录像
+ * @param
+ *
+ * @return
+ */
 bool OpencvUtility::GetVideo()
 {
     if(OpenVideo() == true)
     {
-        const QString strDir = QCoreApplication::applicationDirPath() + "/camera";
+        const QString kstrDir = QCoreApplication::applicationDirPath() + "/camera";
         QDir qDir;
-        if(!qDir.exists(strDir))
+        if(!qDir.exists(kstrDir))
         {
-            qDir.mkdir(strDir);
+            qDir.mkdir(kstrDir);
         }
         //视频写入对象
         VideoWriter Videowrite;
         //写入视频文件名
-        QString strOutFlie = strDir + "/camera.avi";
+        QString strOutFlie = kstrDir + "/camera.avi";
         //获得帧的宽高
-        int iCaptureWidth = static_cast<int>(this->GetVideoCapture().get(CV_CAP_PROP_FRAME_WIDTH));
-        int iCaptureHeight = static_cast<int>(this->GetVideoCapture().get(CV_CAP_PROP_FRAME_HEIGHT));
+        int iCaptureWidth = static_cast <int> (this->GetVideoCapture().get(CV_CAP_PROP_FRAME_WIDTH));
+        int iCaptureHeight = static_cast <int> (this->GetVideoCapture().get(CV_CAP_PROP_FRAME_HEIGHT));
         Size sCaptureSize(iCaptureWidth, iCaptureHeight);
         //获得帧率
         //double r = cap.get(CV_CAP_PROP_FPS);
@@ -101,8 +115,11 @@ bool OpencvUtility::GetVideo()
                 imshow( "Capture",mframe);
                 Videowrite.write(mframe);
             }
-            if(cvWaitKey(80)>0)
+            if(cvWaitKey(80) > 0)
+            {
                 break;
+            }
+
         }
         Videowrite.release();
         cvDestroyWindow("Capture");
@@ -111,20 +128,26 @@ bool OpencvUtility::GetVideo()
     return false;
 }
 
-//截屏
-bool OpencvUtility::GetVideoCapture(QString *strImagePath)
+/**
+ * @brief GetVideoCapture
+ * 拍照
+ * @param strImagePath 输出图片保存的路径
+ *
+ * @return
+ */
+bool OpencvUtility::GetVideoCapture(QString *pImagePath)
 {
     if(OpenVideo() == true)
     {
-        const QString strDir = QCoreApplication::applicationDirPath() + "/camera";
+        const QString kstrDir = QCoreApplication::applicationDirPath() + "/camera";
         QDir qDir;
-        if(!qDir.exists(strDir))
+        if(!qDir.exists(kstrDir))
         {
-            qDir.mkdir(strDir);
+            qDir.mkdir(kstrDir);
         }
-        static int iImgIndex = 0;
+        static int s_iImgIndex = 0;
 
-        *strImagePath = strDir + "/QrCapture%1.png";
+        *pImagePath = kstrDir + "/QrCapture%1.png";
         std::vector<int>compression_params;
         compression_params.push_back(CV_IMWRITE_JPEG_QUALITY);
         compression_params.push_back(100);
@@ -137,8 +160,8 @@ bool OpencvUtility::GetVideoCapture(QString *strImagePath)
         {
             //imshow( "Capture",frame);
             //cvWaitKey(10);
-            *strImagePath = (*strImagePath).arg(iImgIndex);
-            imwrite((*strImagePath).toLatin1().data(),mframe,compression_params);
+            *pImagePath = (*pImagePath).arg(s_iImgIndex);
+            imwrite((*pImagePath).toLatin1().data(),mframe,compression_params);
 /*
             //RBG转YUV
             Mat yuvImg;
@@ -158,7 +181,7 @@ bool OpencvUtility::GetVideoCapture(QString *strImagePath)
             fwrite(pYuvBuf, bufLen*sizeof(unsigned char), 1, pFileOut);
             fclose(pFileOut);
 */
-            iImgIndex++;
+            s_iImgIndex++;
             return true;
         }
     }

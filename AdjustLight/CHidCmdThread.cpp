@@ -1,11 +1,11 @@
-#include "CHidCmdThread.h"
+﻿#include "CHidCmdThread.h"
 #include <QApplication>
 #include <QTime>
 #include "HidOpertaionUtility.h"
 #include "ProtocolUtility.h"
 #include <QDebug>
 
-CHidCmdThread* CHidCmdThread::s_hidCmdThreadInstance = NULL;
+CHidCmdThread* CHidCmdThread::sm_pHidCmdThreadInstance = NULL;
 
 CHidCmdThread::CHidCmdThread(QObject *parent):QThread(parent)
 {
@@ -13,7 +13,7 @@ CHidCmdThread::CHidCmdThread(QObject *parent):QThread(parent)
     connect(HIDOpertaionUtility::GetInstance(), SIGNAL(SignalOperationComplete(quint16,bool)),this,
             SLOT(_SlotHIDCmdComplete(quint16,bool)));
 
-    m_curHIDCmdData.cmdType = ProtocolUtility::s_iCmdDevClose;
+    m_curHIDCmdData.iCmdType = ProtocolUtility::sm_kiCmdDevClose;
 }
 
 CHidCmdThread::~CHidCmdThread()
@@ -24,13 +24,13 @@ CHidCmdThread::~CHidCmdThread()
 
 CHidCmdThread *CHidCmdThread::GetInstance()
 {
-    if(NULL == s_hidCmdThreadInstance)
+    if(NULL == sm_pHidCmdThreadInstance)
     {
-        s_hidCmdThreadInstance = new CHidCmdThread();
+        sm_pHidCmdThreadInstance = new CHidCmdThread();
         //connect(s_hidCmdThreadInstance, SIGNAL(finished()), s_hidCmdThreadInstance, SLOT(deleteLater()));
     }
 
-    return  s_hidCmdThreadInstance;
+    return  sm_pHidCmdThreadInstance;
 }
 
 void CHidCmdThread::ClearCmd()
@@ -40,137 +40,138 @@ void CHidCmdThread::ClearCmd()
     m_qCmdMutex.unlock();
 }
 
-void CHidCmdThread::AddCmd(HIDCmdData hidCmdData)
+void CHidCmdThread::AddCmd(HIDCmdData sHidCmdData)
 {
     m_qCmdMutex.lock();
     //停止命令需要插队执行,其他命令清空
-    if(ProtocolUtility::s_iCmdDevClose == hidCmdData.cmdType)
+    if(ProtocolUtility::sm_kiCmdDevClose == sHidCmdData.iCmdType)
     {
         HIDOpertaionUtility::GetInstance()->HIDClose();
         SetStopped(true);
         m_hidCmdDataQueue.clear();
-        m_curHIDCmdData = hidCmdData;
+        m_curHIDCmdData = sHidCmdData;
     }
     else
     {
-        m_hidCmdDataQueue.enqueue(hidCmdData);
+        m_hidCmdDataQueue.enqueue(sHidCmdData);
     }
 
     m_qCmdMutex.unlock();
 }
 
-void CHidCmdThread::AddResetMotorCmd(quint16 resetSpeed)
+void CHidCmdThread::AddResetMotorCmd(quint16 iResetSpeed)
 {
     //添加马达复位命令
-    HIDCmdData hidCmdData;
-    hidCmdData.cmdType = ProtocolUtility::s_iCmdResetMotor;
-    hidCmdData.byteArrayVect.push_back(ProtocolUtility::GetMotorResetCmd(resetSpeed));
-    AddCmd(hidCmdData);
+    HIDCmdData sHidCmdData;
+    sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdResetMotor;
+    sHidCmdData.byteArrayVect.push_back(ProtocolUtility::GetMotorResetCmd(iResetSpeed));
+    AddCmd(sHidCmdData);
 }
 
-void CHidCmdThread::AddRotateMotorCmd(quint16 speed, quint16 step, quint16 direction)
+void CHidCmdThread::AddRotateMotorCmd(quint16 iSpeed, quint16 iStep, quint16 iDirection)
 {
     //添加马达转动命令
-    HIDCmdData hidCmdData;
-    hidCmdData.cmdType = ProtocolUtility::s_iCmdRotateMotor;
-    hidCmdData.byteArrayVect.push_back(ProtocolUtility::GetMotorRotateCmd(direction, step, speed));
-    AddCmd(hidCmdData);
+    HIDCmdData sHidCmdData;
+    sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdRotateMotor;
+    sHidCmdData.byteArrayVect.push_back(ProtocolUtility::GetMotorRotateCmd(iDirection, iStep, iSpeed));
+    AddCmd(sHidCmdData);
 }
 
 
 void CHidCmdThread::AddCloseHIDCmd()
 {
     //添加关闭HID通信命令，杀死HID读线程
-    HIDCmdData hidCmdData;
-    hidCmdData.cmdType = ProtocolUtility::s_iCmdDevClose;
-    AddCmd(hidCmdData);
+    HIDCmdData sHidCmdData;
+    sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdDevClose;
+    AddCmd(sHidCmdData);
 }
 
 void CHidCmdThread::AddOpenLedCmd(int iLedIndex, quint16 iBrightness)
 {
     //添加开灯命令
-    HIDCmdData hidCmdData;
-    hidCmdData.byteArrayVect.push_back(ProtocolUtility::GetLEDCmd(iLedIndex,iBrightness));
-    hidCmdData.cmdType = ProtocolUtility::s_iCmdOpenOrCloseLed;
-    CHidCmdThread::GetInstance()->AddCmd(hidCmdData);
+    HIDCmdData sHidCmdData;
+    sHidCmdData.byteArrayVect.push_back(ProtocolUtility::GetLEDCmd(iLedIndex,iBrightness));
+    sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdOpenOrCloseLed;
+    CHidCmdThread::GetInstance()->AddCmd(sHidCmdData);
 }
 
-void CHidCmdThread::AddWriteDevParamsCmd(DevConfigParams devConfigParams)
+void CHidCmdThread::AddWriteDevParamsCmd(DevConfigParams sDevConfigParams)
 {
+    //添加写取设备参数命令
     m_qCmdMutex.lock();
-    m_devConfigParams = devConfigParams;
+    m_devConfigParams = sDevConfigParams;
     m_qCmdMutex.unlock();
-    AddCmdWithoutCmdData(ProtocolUtility::s_iCmdWriteParamToDev);
+    AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdWriteParamToDev);
 }
 
 
-void CHidCmdThread::AddCmdWithoutCmdData(quint16 qCmdType)
+void CHidCmdThread::AddCmdWithoutCmdData(quint16 iCmdType)
 {
     //添加不带命令数据的命令
-    HIDCmdData hidCmdData;
-    switch(qCmdType)
+    HIDCmdData sHidCmdData;
+    switch(iCmdType)
     {
-        case ProtocolUtility::s_iCmdCloseAllLed://添加关灯命令
+        case ProtocolUtility::sm_kiCmdCloseAllLed://添加关灯命令
         {
-            hidCmdData.cmdType = ProtocolUtility::s_iCmdCloseAllLed;
-            hidCmdData.byteArrayVect.push_back(ProtocolUtility::GetCloseAllLEDCmd());
-            AddCmd(hidCmdData);
+            sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdCloseAllLed;
+            sHidCmdData.byteArrayVect.push_back(ProtocolUtility::GetCloseAllLEDCmd());
+            AddCmd(sHidCmdData);
             break;
         }
-        case ProtocolUtility::s_iCmdCloseAllLedAndStopMotor://添加关灯关马达命令
+        case ProtocolUtility::sm_kiCmdCloseAllLedAndStopMotor://添加关灯关马达命令
         {
-            hidCmdData.byteArrayVect.push_back(ProtocolUtility::GetCloseAllLEDAndStopMotorCmd());
-            hidCmdData.cmdType = ProtocolUtility::s_iCmdCloseAllLedAndStopMotor;
-            AddCmd(hidCmdData);
+            sHidCmdData.byteArrayVect.push_back(ProtocolUtility::GetCloseAllLEDAndStopMotorCmd());
+            sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdCloseAllLedAndStopMotor;
+            AddCmd(sHidCmdData);
             break;
         }
-        case ProtocolUtility::s_iCmdReadDevVersion://添加读下位机版本命令
+        case ProtocolUtility::sm_kiCmdReadDevVersion://添加读下位机版本命令
         {
-            hidCmdData.cmdType = ProtocolUtility::s_iCmdReadDevVersion;
-            hidCmdData.byteArrayVect.push_back(ProtocolUtility::GetReadVersionCmd());
-            AddCmd(hidCmdData);
+            sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdReadDevVersion;
+            sHidCmdData.byteArrayVect.push_back(ProtocolUtility::GetReadVersionCmd());
+            AddCmd(sHidCmdData);
             break;
         }
-        case ProtocolUtility::s_iCmdReadParamFromDev://读取仪器参数
+        case ProtocolUtility::sm_kiCmdReadParamFromDev://读取仪器参数
         {
-            hidCmdData.cmdType = ProtocolUtility::s_iCmdReadParamFromDev;
-            hidCmdData.byteArrayVect.clear();
-            AddCmd(hidCmdData);
+            sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdReadParamFromDev;
+            sHidCmdData.byteArrayVect.clear();
+            AddCmd(sHidCmdData);
             break;
         }
-        case ProtocolUtility::s_iCmdWriteParamToDev://写仪器参数到设备
+        case ProtocolUtility::sm_kiCmdWriteParamToDev://写仪器参数到设备
         {
-            hidCmdData.cmdType = ProtocolUtility::s_iCmdWriteParamToDev;
-            hidCmdData.byteArrayVect.clear();
-            AddCmd(hidCmdData);
+            sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdWriteParamToDev;
+            sHidCmdData.byteArrayVect.clear();
+            AddCmd(sHidCmdData);
             break;
         }
-        case ProtocolUtility::s_iCmdAddTestCount://仪器测量次数加1
+        case ProtocolUtility::sm_kiCmdAddTestCount://仪器测量次数加1
         {
-            hidCmdData.cmdType = ProtocolUtility::s_iCmdAddTestCount;
-            hidCmdData.byteArrayVect.push_back(ProtocolUtility::GetAddTestCountCmd());
-            AddCmd(hidCmdData);
+            sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdAddTestCount;
+            sHidCmdData.byteArrayVect.push_back(ProtocolUtility::GetAddTestCountCmd());
+            AddCmd(sHidCmdData);
             break;
         }
-        case ProtocolUtility::s_iCmdReadTestCount://读取仪器测量次数
+        case ProtocolUtility::sm_kiCmdReadTestCount://读取仪器测量次数
         {
-            hidCmdData.cmdType = ProtocolUtility::s_iCmdReadTestCount;
-            hidCmdData.byteArrayVect.push_back(ProtocolUtility::GetReadTestCountCmd());
-            AddCmd(hidCmdData);
+            sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdReadTestCount;
+            sHidCmdData.byteArrayVect.push_back(ProtocolUtility::GetReadTestCountCmd());
+            AddCmd(sHidCmdData);
             break;
         }
-        case ProtocolUtility::s_iCmdClearTestCount://仪器测量次数清零
+        case ProtocolUtility::sm_kiCmdClearTestCount://仪器测量次数清零
         {
-            hidCmdData.cmdType = ProtocolUtility::s_iCmdClearTestCount;
-            hidCmdData.byteArrayVect.push_back(ProtocolUtility::GetClearTestCountCmd());
-            AddCmd(hidCmdData);
+            sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdClearTestCount;
+            sHidCmdData.byteArrayVect.push_back(ProtocolUtility::GetClearTestCountCmd());
+            AddCmd(sHidCmdData);
             break;
         }
-        case ProtocolUtility::s_iCmdUpgradeAppStart://
+        case ProtocolUtility::sm_kiCmdUpgradeAppStart://仪器下位机程序升级开始
         {
-            hidCmdData.cmdType = ProtocolUtility::s_iCmdUpgradeAppStart;
-            hidCmdData.byteArrayVect.clear();
-            AddCmd(hidCmdData);
+            sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdUpgradeAppStart;
+            sHidCmdData.byteArrayVect.clear();
+            AddCmd(sHidCmdData);
             break;
         }
 
@@ -179,12 +180,12 @@ void CHidCmdThread::AddCmdWithoutCmdData(quint16 qCmdType)
     }
 }
 
-void CHidCmdThread::AddUpgradeSubControlCmd(QString qFilePathStr)
+void CHidCmdThread::AddUpgradeSubControlCmd(QString strFilePath)
 {
     m_qCmdMutex.lock();
-    m_qFilePathStr = qFilePathStr;
+    m_strFilePath = strFilePath;
     m_qCmdMutex.unlock();
-    AddCmdWithoutCmdData(ProtocolUtility::s_iCmdUpgradeAppStart);
+    AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdUpgradeAppStart);
 }
 
 void CHidCmdThread::SetStopped(bool bStopped)
@@ -218,24 +219,24 @@ void CHidCmdThread::run()
             }
             else
             {
-                if(ProtocolUtility::s_iCmdReadParamFromDev == m_curHIDCmdData.cmdType)
+                if(ProtocolUtility::sm_kiCmdReadParamFromDev == m_curHIDCmdData.iCmdType)
                 {
                     HIDOpertaionUtility::GetInstance()->HIDReadDevParams();
                 }
-                else if(ProtocolUtility::s_iCmdWriteParamToDev == m_curHIDCmdData.cmdType)
+                else if(ProtocolUtility::sm_kiCmdWriteParamToDev == m_curHIDCmdData.iCmdType)
                 {
                     HIDOpertaionUtility::GetInstance()->HIDWriteDevParams(m_devConfigParams);
                 }
-                else if(ProtocolUtility::s_iCmdUpgradeAppStart == m_curHIDCmdData.cmdType)
+                else if(ProtocolUtility::sm_kiCmdUpgradeAppStart == m_curHIDCmdData.iCmdType)
                 {
-                    HIDOpertaionUtility::GetInstance()->HIDUpgradeSubControl(m_qFilePathStr);
+                    HIDOpertaionUtility::GetInstance()->HIDUpgradeSubControl(m_strFilePath);
                 }
             }
-            QTime oldTime=QTime::currentTime();
+            QTime oldTime = QTime::currentTime();
             while(!m_bCmdCompleted)//等待命令完成
             {
-                int iMsecs=oldTime.msecsTo(QTime::currentTime());
-                if(iMsecs>CMD_WAIT_TIME)
+                int iMsecs = oldTime.msecsTo(QTime::currentTime());
+                if(iMsecs > s_kiCmdWaitTime)
                 {
                     break;
                 }
@@ -244,7 +245,6 @@ void CHidCmdThread::run()
         qApp->processEvents();
         msleep(5);
     }
-    qDebug() << "_________" <<__FUNCTION__;
 
 }
 
@@ -255,9 +255,9 @@ void CHidCmdThread::_SetCmdCompleted(bool bCmdCompleted)
     m_qCmdCompleteMutex.unlock();
 }
 
-void CHidCmdThread::_SlotHIDCmdComplete(quint16 cmdType, bool /*result*/)
+void CHidCmdThread::_SlotHIDCmdComplete(quint16 iCmdType, bool /*bResult*/)
 {
-    if(cmdType == m_curHIDCmdData.cmdType)
+    if(iCmdType == m_curHIDCmdData.iCmdType)
     {
         _SetCmdCompleted(true);
     }

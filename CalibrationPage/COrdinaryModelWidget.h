@@ -31,9 +31,9 @@ public:
 
 signals:
 public slots:
-    void SlotGetImportValue(BrightnessOrdinaryValue brightnessValue);// 获得本地配置数据
-    void SlotGetCalibrationValue(BrightnessOrdinaryValue brightnessValue);// 获得计算数据
-    void SlotGetReadValue(BrightnessOrdinaryValue brightnessValue);// 读取本地数据
+    void SlotGetImportValue(BrightnessOrdinaryValue sBrightnessValueStruct);// 获得本地配置数据
+    void SlotGetCalibrationValue(BrightnessOrdinaryValue sBrightnessValueStruct);// 获得计算数据
+    void SlotGetReadValue(BrightnessOrdinaryValue sBbrightnessValueStruct);// 读取本地数据
     void SlotGetErrorValue(EnumTypeErr eTypeError);// 获得错误类型
 private:
     QGroupBox *_CreateStandardGroup();// 标准机型组件

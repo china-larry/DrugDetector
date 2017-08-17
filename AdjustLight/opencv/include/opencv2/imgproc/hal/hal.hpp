@@ -1,4 +1,4 @@
-#ifndef CV_IMGPROC_HAL_HPP
+﻿#ifndef CV_IMGPROC_HAL_HPP
 #define CV_IMGPROC_HAL_HPP
 
 #include "opencv2/core/cvdef.h"

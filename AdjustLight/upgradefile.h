@@ -1,4 +1,4 @@
-#ifndef UPGRADEFILEPARSER_H
+﻿#ifndef UPGRADEFILEPARSER_H
 #define UPGRADEFILEPARSER_H
 
 #include <QString>
@@ -31,8 +31,8 @@ enum {
 /*****************************************************/
 //版本信息
 typedef struct{
-    quint8 machinetype;
-    quint8 machineNo;
+    quint8 machinetype;      //仪器类型
+    quint8 machineNo;        //仪器序号
     quint8 hwVersionMajor;
     quint8 hwVersionMinor;
     quint16 stuff;

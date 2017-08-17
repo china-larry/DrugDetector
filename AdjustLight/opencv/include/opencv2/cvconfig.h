@@ -1,4 +1,4 @@
-/* OpenCV compiled as static or dynamic libs */
+﻿/* OpenCV compiled as static or dynamic libs */
 #define BUILD_SHARED_LIBS
 
 /* Compile for 'real' NVIDIA GPU architectures */

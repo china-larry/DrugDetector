@@ -1,4 +1,4 @@
-#include "crc16.h"
+﻿#include "crc16.h"
 
 static unsigned short ccitt_table[256] = {
     0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
@@ -42,12 +42,14 @@ static unsigned short ccitt_table[256] = {
      * @param oldCRC16  上一个CRC16的值，用于循环计算大文件的CRC16。第一个数据的CRC16则传入0x0。
      * @return
      */
-unsigned short getCRC16(const char *data, unsigned long len, unsigned long oldCRC16)
+unsigned short getCRC16(const char *pData, unsigned long iLen, unsigned long iOldCRC16)
 {
-    unsigned short crc16 = oldCRC16;
+    unsigned short iCrc16 = static_cast <unsigned short> (iOldCRC16);
 
-    while (len-- > 0)
-        crc16 = ccitt_table[(crc16 >> 8 ^ *data++) & 0xff] ^ (crc16 << 8);
-    return crc16;
+    while (iLen-- > 0)
+    {
+        iCrc16 = ccitt_table[(iCrc16 >> 8 ^ *pData++) & 0xff] ^ (iCrc16 << 8);
+    }
 
+    return iCrc16;
 }

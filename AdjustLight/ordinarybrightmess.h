@@ -17,6 +17,7 @@
 #include <QObject>
 #include <QPoint>
 
+//普通机型亮度结构体
 struct BrightnessOrdinaryValue
 {
     int iBrightNo1; //上绿灯
@@ -44,17 +45,32 @@ class OrdinaryBrightmess : public QObject
 {
     Q_OBJECT
 
+public:
+    explicit OrdinaryBrightmess();
+    ~OrdinaryBrightmess();
+
 signals:
     //发送参数到UI更新
-    void SignalImportValueToUI(BrightnessOrdinaryValue brightnessValue);
-    void SignalCalibrationValueToUI(BrightnessOrdinaryValue brightnessValue);
-    void SignalReadValueToUI(BrightnessOrdinaryValue brightnessValue);
+    //发送导入的亮度参数到UI显示
+    void SignalImportValueToUI(BrightnessOrdinaryValue sBrightnessValue);
+
+     //发送校准后的亮度参数到UI显示
+    void SignalCalibrationValueToUI(BrightnessOrdinaryValue sBrightnessValue);
+
+    //发送从取配置文件读取的亮度参数到UI显示
+    void SignalReadValueToUI(BrightnessOrdinaryValue sBrightnessValue);
 public slots:
     //接收UI信息
+    //接收UI Calibration按钮槽
      void SlotOrdinaryCalibration();
+
+     //接收UI Import按钮槽
      void SlotOrdinaryImport();
-     //
+
+     //接收UI Save 按钮槽
      void SlotOrdinarySave();
+
+     //接收UI Read按钮槽
      void SlotOrdinaryRead();
     /**
      * @brief GetLightValue
@@ -75,20 +91,20 @@ public slots:
      *
      * @return
      */
-    bool SaveBrightnessValueParams(QString strFileName,QString ParamsType,BrightnessOrdinaryValue brightnessValue);
+    bool SaveBrightnessValueParams(QString strFileName,QString ParamsType,BrightnessOrdinaryValue sBrightnessValue);
 
     /**
      * @brief ReadBrightnessValueParams
-     * 保存到配置文件
+     * 读取配置文件
      * @param brightnessValue 灯光值结构体
      *
      * @return
      */
-    bool ReadBrightnessValueParams(QString strFileName,QString ParamsType,BrightnessOrdinaryValue &brightnessValue);
+    bool ReadBrightnessValueParams(QString strFileName,QString ParamsType,BrightnessOrdinaryValue &sBrightnessValue);
 
     BrightnessOrdinaryValue GetBrightnessValue();
 
-    void SetBrightnessValue(BrightnessOrdinaryValue brightnessValue);
+    void SetBrightnessValue(BrightnessOrdinaryValue sBrightnessValue);
 
     /**
      * @brief ReadBrightnessValueParams
@@ -97,14 +113,14 @@ public slots:
      *
      * @return
      */
-    bool InitMachine(QPoint &CenterPoint);
+    bool InitMachine(QPoint &qCenterPoint);
 
     /**
     * @brief  OrdinaryCalibration 对目标机型进行亮度校准
     * @param  brightnessValue  目标机型亮度结构体
     * @return
     */
-    void OrdinaryCalibration(BrightnessOrdinaryValue &brightnessValue);
+    void OrdinaryCalibration(BrightnessOrdinaryValue &sBrightnessValue);
 
     /**
     * @brief  findCenterPoint
@@ -114,13 +130,11 @@ public slots:
     */
     QPoint findCenterPoint(QString strImagePath);
 
-public:
-    explicit OrdinaryBrightmess();
-    ~OrdinaryBrightmess();
+
 
 private:
-    BrightnessOrdinaryValue m_OrdinarybrightnessValue;        //目标机型亮度结构体
-    BrightnessOrdinaryValue m_StandardMachinebrightnessValue; //标准机型亮度结构体
+    BrightnessOrdinaryValue m_sOrdinarybrightnessValue;        //目标机型亮度结构体
+    BrightnessOrdinaryValue m_sStandardMachinebrightnessValue; //标准机型亮度结构体
 };
 
 #endif // ORDINARYBRIGHTMESS_H

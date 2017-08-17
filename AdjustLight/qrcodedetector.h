@@ -77,18 +77,21 @@ class QRCodeDetector : public QObject
 {
     Q_OBJECT
 
+public:
+    explicit QRCodeDetector();
+    ~QRCodeDetector();
+
 signals:
-    void SignalQRCodeLocation(QString strPathPic);     //定位二维码过程中，每次拍照都要发送该照片的路径
-    void SignalQRCodeInfo(QRCodeInfo info);         //定位二维码后，发送二维码信息
+    void SignalQRCodeLocation(QString strPathPic);  //定位二维码过程中，每次拍照都要发送该照片的路径
+    void SignalQRCodeInfo(QRCodeInfo sInfo);         //定位二维码后，发送二维码信息
     void SignalErrInfo(EnumTypeErr eErr);           //错误信号
     void SignalGetQRCode();                         //开始获取二维码信号
 
 private slots:
+    //开始获取二维码槽
     void _SlotGetQRcode();                           //
     //void SlotGetOperationResult(quint16 mCmdType,bool OperatorResult);  //USB命令返回 mCmdType命令类型，result 命令执行结果
 public:
-    explicit QRCodeDetector();
-    ~QRCodeDetector();
 
     //初始化设备位置和灯光
     bool InitDevice();
@@ -133,7 +136,7 @@ public:
      *         qrCodeInfo  输出解析后的二维码信息
      * @return
      */
-    bool DecodeQrcode(const QString strdecode,QRCodeInfo &qrCodeInfo);
+    bool DecodeQrcode(const QString strdecode,QRCodeInfo &sQrCodeInfo);
 
     /**
      * @brief DecodeQrcode
@@ -142,7 +145,7 @@ public:
      *
      * @return
      */
-    bool FindQRcodeLocationRect(IplImage *dstImg);
+    bool FindQRcodeLocationRect(IplImage *pDstImg);
 
     /**
     * @brief    TestLightUp
@@ -151,7 +154,7 @@ public:
     * @param
     * @return   成功 0 失败-1
     */
-    int TestLightUp(EnumTypeLight TypeLight);
+    int TestLightUp(EnumTypeLight sTypeLight);
 
     //关灯 成功 0 失败-1
     int TestLightDown();
@@ -166,7 +169,7 @@ public:
     * @param    strCupType                    //杯型
     * @param    strAllCount                   //总子条数
     * @param    strVersion                    //版本
-    * @param    qv_strListitem                //项目信息
+    * @param    strListitemVector                //项目信息
     * @return   QRCodeInfo                    //二维码信息结构体
     */
     QRCodeInfo PackageQRCodeInfo(QString strBatchNumber,
@@ -175,12 +178,19 @@ public:
                                  QString strCupType,
                                  QString strAllCount,
                                  QString strVersion,
-                                 QVector<QStringList> qv_strListitem);
+                                 QVector<QStringList> strListitemVector);
 
+    /**
+     * @brief GetProjectName
+     * 项目序号转化为项目名称
+     * @param   iIndex 项目序号）
+
+     * @return  QString 项目名称
+     */
     QString GetProjectName(const int iIndex);
     //void SetOperatorResult(bool OperatorResult);
     //bool GetOperatorResult();
-    void SetQRCodePosition(int QRCodePosition);
+    void SetQRCodePosition(int iQRCodePosition);
     int GetQRCodePosition();
 
     /**

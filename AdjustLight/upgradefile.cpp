@@ -1,4 +1,4 @@
-#include <QFile>
+﻿#include <QFile>
 #include <QDebug>
 #include <QDataStream>
 
@@ -15,70 +15,70 @@ UpgradeFile::UpgradeFile()
  * @param upgradeFile
  * @return
  */
-quint8 UpgradeFile::parseUpgradeFile(const QString &upgradeFile)
+quint8 UpgradeFile::parseUpgradeFile(const QString &strUpgradeFile)
 {
-    QFile srcFile(upgradeFile);
-    QDataStream in;
-    in.setByteOrder(QDataStream::LittleEndian);  //设置小端格式
+    QFile qSrcFile(strUpgradeFile);
+    QDataStream qInDataStream;
+    qInDataStream.setByteOrder(QDataStream::LittleEndian);  //设置小端格式
 
-    if ( !srcFile.open(QFile::ReadOnly) )
+    if (!qSrcFile.open(QFile::ReadOnly) )
     {
         qDebug()<<"parseUpgradeFile open file fails!";
         return ENUM_UPGRADE_ERR_FILE_CANNOT_OPEN;
     }
 
     /********************   判断CRC16  START  ********************/
-    quint32 szFileData=srcFile.size();
-    if(szFileData<1000)
+    quint32 szFileData = qSrcFile.size();
+    if(szFileData < 1000)
     {
         return ENUM_UPGRADE_ERR_FILE_CANNOT_OPEN;
     }
-    char *fileData=new char[szFileData];
-    srcFile.seek(0);
-    srcFile.read(fileData,szFileData);   //读出整个文件的数据
+    char *pFileData = new char[szFileData];
+    qSrcFile.seek(0);
+    qSrcFile.read(pFileData ,szFileData);   //读出整个文件的数据
 
-    srcFile.seek(szFileData-2);   //定位到末尾CRC16的位置
-    in.setDevice(&srcFile);
-    quint16 crc16;
-    in>>crc16;
-    if(crc16!=(quint16)getCRC16(fileData,szFileData-2,0))
+    qSrcFile.seek(szFileData - 2);   //定位到末尾CRC16的位置
+    qInDataStream.setDevice(&qSrcFile);
+    quint16 iCrc16;
+    qInDataStream >> iCrc16;
+    if(iCrc16 != static_cast <quint16> (getCRC16(pFileData ,szFileData - 2,0)))
     {
         qDebug()<<"CRC16  fail!";
         return ENUM_UPGRADE_ERR_CRC;
     }
     /********************   判断CRC16  END  ********************/
 
-    srcFile.seek(0);   //定位到文件开头的位置
-    in.setDevice(&srcFile);
+    qSrcFile.seek(0);   //定位到文件开头的位置
+    qInDataStream.setDevice(&qSrcFile);
 
     /********************   判断sign  START  ********************/
-    char signByte1,signByte2,signByte3,signByte4;
-    in.readRawData(&signByte1,1);
-    in.readRawData(&signByte2,1);
-    in.readRawData(&signByte3,1);
-    in.readRawData(&signByte4,1);
+    char cSignByte1,cSignByte2,cSignByte3,cSignByte4;
+    qInDataStream.readRawData(&cSignByte1,1);
+    qInDataStream.readRawData(&cSignByte2,1);
+    qInDataStream.readRawData(&cSignByte3,1);
+    qInDataStream.readRawData(&cSignByte4,1);
 
-    if('W'!=signByte1||'F'!=signByte2||'U'!=signByte3||'G'!=signByte4)
+    if('W' != cSignByte1 || 'F' != cSignByte2 || 'U' != cSignByte3 || 'G' != cSignByte4)
     {
         qDebug()<<"Check sign fails!";
         return ENUM_UPGRADE_ERR_SIGN_HEAD;
     }
     /********************   判断sign  END  ********************/
 
-    in >> m_iodelCode >> m_imageCode >> m_ihwVersionMajor >> m_ihwVersionMinor >> m_iswVersionMajor >> m_iswVersionMinor
+    qInDataStream >> m_iodelCode >> m_imageCode >> m_ihwVersionMajor >> m_ihwVersionMinor >> m_iswVersionMajor >> m_iswVersionMinor
             >> m_iswVersionIncre >> m_iswVersionBuild >> m_icreateTime >> m_idataLen;
     qDebug()<<"File data" << m_iodelCode << m_imageCode << m_ihwVersionMajor << m_ihwVersionMinor << m_iswVersionMajor
            << m_iswVersionMinor << m_iswVersionIncre << m_iswVersionBuild << m_icreateTime << m_idataLen;
-    char *data=new char[m_idataLen];
-    in.readRawData(data,m_idataLen);
+    char *pData = new char[m_idataLen];
+    qInDataStream.readRawData(pData ,m_idataLen);
     m_brealDataByteArry.clear();
-    m_brealDataByteArry.append(data,m_idataLen);
+    m_brealDataByteArry.append(pData ,m_idataLen);
 
-    m_idataCrc16=(quint16)getCRC16(data,m_idataLen,0);
+    m_idataCrc16 = static_cast <quint16>(getCRC16(pData ,m_idataLen,0));
 
-    delete []data;
+    delete []pData ;
 
-    srcFile.close();
+    qSrcFile.close();
 
     return ENUM_UPGRADE_ERR_OK;
 }

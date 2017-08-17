@@ -153,3 +153,10 @@ QPushButton
     color: white;
     background-color: rgb(230, 139, 49);
 }
+QPushButton:disabled {
+    background-color:#D5D5D5;
+    color: rgb(60, 60, 60);
+}
+QPushButton:enabled {
+    background-color: rgb(230, 139, 49);
+}

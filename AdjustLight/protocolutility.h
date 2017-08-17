@@ -31,10 +31,10 @@
 
 
 
-static const quint8 DATA_START_INDEX = 9;
-static const quint8 PARAM_PACKAGE_DATA_LEN = 50;//根据之前代码定的,具体原因不明
-static const quint8 PARAM_PACKAGE_SIZE = 10;//目前确定是把设备配置参数分为10个包传输
-static const quint8 UPGRAGE_PACKAGE_DATA_LEN = 50;//
+static const quint8 kiDataStartIndex = 9;
+static const quint8 kiParamPackageDataLen = 50;//根据之前代码定的,具体原因不明
+static const quint8 kiParamPackageSize = 10;//目前确定是把设备配置参数分为10个包传输
+static const quint8 kiUpgragePackageDataLen = 50;//
 enum Direction
 {
     DIRECTION_FORWARD = 0,//正转
@@ -57,7 +57,7 @@ public:
      * @param brightness
      * @return
      */
-    static QByteArray GetLEDCmd(quint16 ledIndex, quint16 brightness);
+    static QByteArray GetLEDCmd(quint16 iLedIndex, quint16 iBrightness);
 
     /**
      * @brief GetMotorRotateCmd 电机转动命令
@@ -67,7 +67,7 @@ public:
      * @param speed 运动速度
      * @return
      */
-    static QByteArray GetMotorRotateCmd(quint16 direction, quint16 step, quint16 speed);
+    static QByteArray GetMotorRotateCmd(quint16 iDirection, quint16 iStep, quint16 iSpeed);
 
 
     /**
@@ -75,7 +75,7 @@ public:
      * @param speed
      * @return
      */
-    static QByteArray GetMotorResetCmd(quint16 speed);
+    static QByteArray GetMotorResetCmd(quint16 iSpeed);
 
     /**
      * @brief GetCloseAllLEDCmd
@@ -104,7 +104,7 @@ public:
      * 写仪器参数到设备(总共包含10个包)
      * @return
      */
-    static QVector<QByteArray> GetWriteParamFromDevCmd(DevConfigParams devConfigParams);
+    static QVector<QByteArray> GetWriteParamFromDevCmd(DevConfigParams sDevConfigParams);
 
     /**
      * @brief GetReadVersionCmd
@@ -152,7 +152,7 @@ public:
      * 仪器下位机程序升级数据接收(包的总数根据升级文件大小而定)
      * @return
      */
-    static QVector<QByteArray> GetUpgradeAppCmd(QString filePath);
+    static QVector<QByteArray> GetUpgradeAppCmd(QString strFilePath);
 
 private:
     static void SetCmdLength(QByteArray& dataByteArray);
@@ -162,13 +162,13 @@ private:
      * @param dataByteArray
      * @param out
      */
-    static void DealWithCmdEnding(QByteArray& dataByteArray, QDataStream& out);
+    static void DealWithCmdEnding(QByteArray& dataByteArray, QDataStream& qOutDataStream);
     /**
      * @brief DealWithCmdHead
      * 填充命令公共头部
      * @param out
      */
-    static void DealWithCmdHead(QDataStream& out);
+    static void DealWithCmdHead(QDataStream& qOutDataStream);
 
     /**
      * @brief GetCmdByteArrayWithoutCmdData
@@ -180,31 +180,31 @@ private:
 
 public:
     //上位机设备地址：0x0100
-    static const int s_iPcAddrHigh = 0x01;
-    static const int s_iPcAddrLow = 0x00;
+    static const int sm_kiPcAddrHigh = 0x01;
+    static const int sm_kiPcAddrLow = 0x00;
     //下位机设备地址：0x0101
-    static const int s_iDevAddrHigh = 0x01;
-    static const int s_iDevAddrLow = 0x00;
+    static const int sm_kiDevAddrHigh = 0x01;
+    static const int sm_kiDevAddrLow = 0x00;
 
     //命令类型
-    static const int s_iCmdDevClose = 0x0000;//关闭设备HID通信
-    static const int s_iCmdOpenOrCloseLed = 0x0001;//LED灯开关命令
-    static const int s_iCmdRotateMotor = 0x0002;//电机转动命令
-    static const int s_iCmdResetMotor = 0x0003;//电机复位指令
-    static const int s_iCmdCloseAllLed = 0x0004;//关闭所有灯指令
-    static const int s_iCmdCloseAllLedAndStopMotor = 0x0005;//关闭所有灯与电机立刻停止
-    static const int s_iCmdWriteParamToDev = 0x0006;//写仪器参数
-    static const int s_iCmdReadParamFromDev = 0x0007;//读取仪器参数
-    static const int s_iCmdReadDevVersion = 0x0008;//读取仪器下位机软件版本
-    static const int s_iCmdAddTestCount = 0x0009;//仪器测量次数加1
-    static const int s_iCmdReadTestCount = 0x000A;//仪器测量次数读取
-    static const int s_iCmdClearTestCount = 0x000B;//仪器测量次数清零
-    static const int s_iCmdUpgradeAppStart = 0x000C;//仪器下位机程序升级开始
-    static const int s_iCmdUpgradeAppData = 0x000D;//仪器下位机程序升级数据
-    static const int s_iCmdUpgradeAppEnd = 0x000E;//仪器下位机程序升级结束
+    static const int sm_kiCmdDevClose = 0x0000;//关闭设备HID通信
+    static const int sm_kiCmdOpenOrCloseLed = 0x0001;//LED灯开关命令
+    static const int sm_kiCmdRotateMotor = 0x0002;//电机转动命令
+    static const int sm_kiCmdResetMotor = 0x0003;//电机复位指令
+    static const int sm_kiCmdCloseAllLed = 0x0004;//关闭所有灯指令
+    static const int sm_kiCmdCloseAllLedAndStopMotor = 0x0005;//关闭所有灯与电机立刻停止
+    static const int sm_kiCmdWriteParamToDev = 0x0006;//写仪器参数
+    static const int sm_kiCmdReadParamFromDev = 0x0007;//读取仪器参数
+    static const int sm_kiCmdReadDevVersion = 0x0008;//读取仪器下位机软件版本
+    static const int sm_kiCmdAddTestCount = 0x0009;//仪器测量次数加1
+    static const int sm_kiCmdReadTestCount = 0x000A;//仪器测量次数读取
+    static const int sm_kiCmdClearTestCount = 0x000B;//仪器测量次数清零
+    static const int sm_kiCmdUpgradeAppStart = 0x000C;//仪器下位机程序升级开始
+    static const int sm_kiCmdUpgradeAppData = 0x000D;//仪器下位机程序升级数据
+    static const int sm_kiCmdUpgradeAppEnd = 0x000E;//仪器下位机程序升级结束
     //命令参数
-    static const int s_iCommonParamHigh = 0x00;
-    static const int s_iCommonParamLow = 0x01;
+    static const int sm_kiCommonParamHigh = 0x00;
+    static const int sm_kiCommonParamLow = 0x01;
 
 };
 

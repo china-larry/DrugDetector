@@ -38,10 +38,14 @@ public:
     ~CDetectorPage();
 
 signals:
-    void SignalEndTest();// 流程测试结束，数据传输main
     void SignalStartTest();// 开始测试
+    void SignalStartQRCode();// 开始获取二维码
+    void SignalHaveQRCodeInfo(int iProgramCount);// 获得二维码，告知主界面，项目总数，进度条进度
+    void SignalTestProgramIndex(int iProgramIndex);// 测试结果Index，用于主界面状态栏显示
+    void SignalEndTest();// 流程测试结束，数据传输main
     void SignalStopTest();// 主动停止测试
 public slots:
+    void SlotStartQRCode();// 开始查找二维码
     void SlotReceiveQRCodeImage(QString strImagePath);// 接受二维码图片数据
     void SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfoStruct);// 接受二维码信息
     void SlotReceiveTestResultData(TestResultData sTestResultDataStruct);// 接受每条测试结果数据
@@ -57,6 +61,7 @@ public:
     QList<TestResultData*> GetTestResultData();// 获得测试结果
     DetectorPageUserData GetUserData(); // 获得被测者信息
     void SetCupType(QStringList strCupTypeList);// 设置杯类型
+    void StopTest();// 主动停止测试，关闭UI
 
 private:
     void _LoadQss();

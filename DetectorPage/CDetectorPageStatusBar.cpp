@@ -61,8 +61,7 @@ void CDetectorPageStatusBar::_InitWidget()
     m_pTestProgressBar->setFixedSize(420, 30);
     m_pTestProgressBar->setTextVisible(false);
     m_pTestProgressBar->setRange(0, 100);
-    m_pTestProgressBar->setValue(30);
-
+    //m_pTestProgressBar->setValue(1);
 }
 
 void CDetectorPageStatusBar::_InitLayout()

@@ -1,8 +1,4 @@
-#ifndef CALIBRATIONALOGRITHM_H
-#define CALIBRATIONALOGRITHM_H
-#include "StandardMachineCalibrateDialog.h"
-
-/*******************************************************************
+﻿/*******************************************************************
  **
  ** Copyright:万孚生物
  ** Author: maggie
@@ -27,6 +23,10 @@
  **-----------------------------------------------------------
  **
  ********************************************************************/
+#ifndef CALIBRATIONALOGRITHM_H
+#define CALIBRATIONALOGRITHM_H
+#include "StandardMachineCalibrateDialog.h"
+
 
 //标准机灯光校准值
 struct StandardMachineCalibrateLight
@@ -44,6 +44,7 @@ class CalibrationAlogrithm
 {
 public:
     CalibrationAlogrithm();
+    ~CalibrationAlogrithm();
 
     /**
      * @brief TraverseLedLight
@@ -57,7 +58,7 @@ public:
      */
     //
     void TraverseLedLight(StandardMachineCalibrateParams mParams,
-                          StandardMachineCalibrateLight &mStandardMachineCalibrateLight);
+                          StandardMachineCalibrateLight &sStandardMachineCalibrateLight);
 
     /**
      * @brief GetResult
@@ -88,23 +89,23 @@ public:
      * @brief SaveLedLightParams
      * 保存标准机灯光参数到配置文件
      * @param strFileName 文件名
-     *        ParamsType  参数类型
+     *        strParamsType  参数类型
      *        mStandardMachineCalibrateLight    标准机灯光校准值结构体
      * @return 成功 true  失败   false
      */
-    bool SaveLedLightParams(QString strFileName,QString ParamsType,
-                                  StandardMachineCalibrateLight mStandardMachineCalibrateLight);
+    bool SaveLedLightParams(QString strFileName,QString strParamsType,
+                                  StandardMachineCalibrateLight sStandardMachineCalibrateLight);
 
     /**
      * @brief ReadLedLightParams
      * 从配置文件读取标准机灯光参数
      * @param strFileName 文件名
-     *        ParamsType  参数类型
+     *        strParamsType  参数类型
      *        mStandardMachineCalibrateLight    标准机灯光校准值结构体
      * @return 成功 true  失败   false
      */
-    bool ReadLedLightParams(QString strFileName,QString ParamsType,
-                            StandardMachineCalibrateLight *mStandardMachineCalibrateLight);
+    bool ReadLedLightParams(QString strFileName,QString strParamsType,
+                            StandardMachineCalibrateLight *pStandardMachineCalibrateLight);
 };
 
 #endif // CALIBRATIONALOGRITHM_H

@@ -43,19 +43,22 @@ MainWindow::MainWindow(QWidget *parent) :
     //
     m_kiTitleHeight = 50;// title高度
     m_kiStatusBarHeight = 30;// 状态栏高度
+    m_iProgramCount = 0;
     // 读取配置文件
     _ReadConfigFile();
 }
 
 MainWindow::~MainWindow()
 {
+    qDebug() << "stop test";
+    m_pDetectorPage->StopTest();
     delete ui;
     CHidCmdThread::GetInstance()->AddCloseHIDCmd();
     QThread::sleep(2);// 结束UI，sleep2秒后可执行
     qDebug() << "delete ui";
 }
 
-void MainWindow::resizeEvent(QResizeEvent *event)
+void MainWindow::resizeEvent(QResizeEvent *)
 {
     // 固定位置
     m_iWidgetRect = this->rect();
@@ -163,7 +166,37 @@ void MainWindow::SlotCheckHistoryItem()
 void MainWindow::SlotDetectorPageStartTest()
 {
     m_pDetectorPageStatusBar->SetLineStartColor();
-    m_pDetectorPageStatusBar->SetLineText(tr("Start QR code"));
+    m_pDetectorPageStatusBar->SetLineText(tr("Start Test"));
+    m_pDetectorPageStatusBar->SetProgressValue(3);
+}
+
+void MainWindow::SlotStartQRCode()
+{
+    m_pDetectorPageStatusBar->SetLineText(tr("Start QR Code"));
+    m_pDetectorPageStatusBar->SetProgressValue(5);
+}
+
+void MainWindow::SlotHaveQRCodeInfo(int iProgramCount)
+{
+    m_pDetectorPageStatusBar->SetLineText(tr("Get QR Code"));
+    m_pDetectorPageStatusBar->SetProgressValue(10);
+    m_iProgramCount = iProgramCount;
+}
+
+void MainWindow::SlotTestProgramIndex(int iProgramIndex)
+{
+    if(m_iProgramCount == iProgramIndex)
+    {
+        m_pDetectorPageStatusBar->SetProgressValue(100);
+    }
+    else
+    {
+        int iIndex = 90 * iProgramIndex / m_iProgramCount + 10;
+        qDebug() <<"num : " << iIndex;
+        m_pDetectorPageStatusBar->SetProgressValue(iIndex);// 二维码进度为10%，故此为90
+        QString strText = tr("Get Analysis Image: ") + QString::number(iProgramIndex);
+        m_pDetectorPageStatusBar->SetLineText(strText);
+    }
 }
 // 状态栏显示结束
 void MainWindow::SlotDetectorPageStopTest()
@@ -179,9 +212,11 @@ void MainWindow::SlotDetectorPageEndTest()
     qDebug() << "get test size: " << m_pTestResultDataList.count();
     qDebug() << "user data: " << m_sDetectorPageUserDataStruct.strOtherReasonComments;
     //
+    m_pDetectorPageStatusBar->SetLineText(tr("Finish Test"));
     m_pHistoryPage->SetTestResultDataList(m_pTestResultDataList);
     m_pHistoryPage->SetTestUserData(m_sDetectorPageUserDataStruct);
     m_pHistoryPage->InsertToDatabase();
+
 }
 /**
   * @brief 初始化控件
@@ -211,6 +246,10 @@ void MainWindow::_InitWidget()
     // 测试页
     m_pDetectorPage = new CDetectorPage(this);
     connect(m_pDetectorPage, SIGNAL(SignalStartTest()), this, SLOT(SlotDetectorPageStartTest()));
+    connect(m_pDetectorPage, SIGNAL(SignalStartQRCode()), this, SLOT(SlotStartQRCode()));
+    connect(m_pDetectorPage, SIGNAL(SignalHaveQRCodeInfo(int)), this, SLOT(SlotHaveQRCodeInfo(int)));
+    connect(m_pDetectorPage, SIGNAL(SignalTestProgramIndex(int)), this, SLOT(SlotTestProgramIndex(int)));
+
     connect(m_pDetectorPage, SIGNAL(SignalStopTest()), this, SLOT(SlotDetectorPageStopTest()));
     connect(m_pDetectorPage, SIGNAL(SignalEndTest()), this, SLOT(SlotDetectorPageEndTest()));
     // 校正

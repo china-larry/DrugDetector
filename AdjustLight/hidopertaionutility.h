@@ -1,6 +1,18 @@
-﻿#ifndef HIDOPERTAIONUTILITY_H
+﻿/*******************************************************************
+ **
+ ** Copyright:万孚生物
+ ** Author: MF Lin
+ ** Date:2017-06-30
+ ** Description:
+ ** USB通信读操作线程类和写操作线程类
+ ** ----------------------------------------------------------
+ ** History:
+ **   1.Author:
+ **-----------------------------------------------------------
+ **
+ ********************************************************************/
+#ifndef HIDOPERTAIONUTILITY_H
 #define HIDOPERTAIONUTILITY_H
-
 
 #include<QLibrary>
 #include<QThread>
@@ -10,13 +22,55 @@
 #include "Common.h"
 #include "IP_HID.h"
 
+static const quint8  kiCmdLen = 64;//下位机配置HID每个收/发包数据都是64字节
+static const quint16 kiUsbVid = 0x0483;
+static const quint16 kiUsbPid = 0x5750;
+
+
 /*******************************************************************
  **
  ** Copyright:万孚生物
  ** Author: MF Lin
  ** Date:2017-06-30
  ** Description:
- **    USB通信写操作线程类，和USB通信读操作线程类
+ ** USB通信读操作线程类
+ ** ----------------------------------------------------------
+ ** History:
+ **   1.Author:
+ **-----------------------------------------------------------
+ **
+ ********************************************************************/
+class HIDReadThread : public QThread
+{
+    Q_OBJECT
+
+signals:
+    //从设备读取到新消息
+    void SignalReceiveNewCmd(QByteArray qDataByteArray);
+    void SignalReceiveNewCmd();
+
+public:
+    //获取命令
+    QByteArray GetCmd();
+    explicit HIDReadThread(QObject *parent = 0);
+
+protected:
+    void run();
+private:
+    //设备数据
+    QQueue<QByteArray> m_ReceiveDatas;
+    //锁
+    QMutex m_DataMutex;
+};
+
+
+/*******************************************************************
+ **
+ ** Copyright:万孚生物
+ ** Author: MF Lin
+ ** Date:2017-06-30
+ ** Description:
+ **    USB通信写操作线程类
  ** ----------------------------------------------------------
  ** History:
  **   1.Author:
@@ -24,58 +78,44 @@
  **
  ********************************************************************/
 
-
-static const quint8  CMD_LEN = 64;//下位机配置HID每个收/发包数据都是64字节
-static const quint16 USB_VID = 0x0483;
-static const quint16 USB_PID = 0x5750;
-
-
-class HIDReadThread : public QThread
-{
-    Q_OBJECT
-
-signals:
-    //从设备读取到新消息
-    void SignalReceiveNewCmd(QByteArray data);
-    void SignalReceiveNewCmd();
-
-public:
-    QByteArray GetCmd();
-    explicit HIDReadThread(QObject *parent = 0);
-
-protected:
-    void run();
-private:
-    QQueue<QByteArray> m_ReceiveDatas;
-    QMutex m_DataMutex;
-};
-
-
 class HIDOpertaionUtility:public QObject
 {
     Q_OBJECT
 
+public:
+    HIDOpertaionUtility();
+    ~HIDOpertaionUtility();
+
 signals:
+    //打开设备
     void SignalHIDOpen();
 
+    //关闭设备
     void SignalHIDClose();
 
+    //写入数据
     void SignalHIDWrite(QByteArray writeByteArray);
 
-    void SignalReceiveDevVersion(QString devVersion);
+    //读取设备版本
+    void SignalReceiveDevVersion(QString strDevVersion);
 
+    //读取设备参数
     void SignalReadDevParams();
 
+    //写入设备参数
     void SignalWriteDevParams(DevConfigParams devConfigParams);
 
+    //接收数据参数
     void SignalReceiveDevParams(DevConfigParams devConfigParams);
 
-    void SignalOperationComplete(quint16 m_iCmdType,bool result);
+    //设备操作完成
+    void SignalOperationComplete(quint16 iCmdType,bool bResult);
 
-    void SignalReceiveTestCount(quint32 qTestCount);
+    //读取仪器测试次数
+    void SignalReceiveTestCount(quint32 iTestCount);
 
     //升级下位机信号，以把执行放置到后台线程，filePath为升级文件路径
-    void SignalHIDUpgradeSubControl(QString filePath);
+    void SignalHIDUpgradeSubControl(QString strFilePath);
 
     //升级完成信号
     void SignalUpgradeFinish();
@@ -83,7 +123,7 @@ signals:
     //升级进度信号
     void SignalUpgradeValue(int);
     //升级错误信号
-    void SignalUpgradeError(QString qErrorMsgStr);
+    void SignalUpgradeError(QString strErrorMsgStr);
 
     //发送HID状态信号
     void SignalErrInfo(EnumTypeErr qErrorMsg);
@@ -95,6 +135,10 @@ private slots:
      */
     void _SlotLoadDll();
 
+    /**
+     * @brief _SlotUnloadDll
+     * 释放DLL函数
+     */
     void _SlotUnloadDll();
     /**
      * @brief Open
@@ -137,10 +181,13 @@ private slots:
      * @param filePath 升级文件路径
      * @return
      */
-    bool _SlotUpgradeSubControl(QString filePath);
+    bool _SlotUpgradeSubControl(QString strFilePath);
 
 public:
+    //类对象
     static HIDOpertaionUtility* instance;
+
+    //获取类对象
     static HIDOpertaionUtility* GetInstance();
 
     /**
@@ -164,7 +211,8 @@ public:
      */
     void HIDClose();
 
-    bool HIDRead(quint8* recvDataBuf, int delaytime);
+    //HID读取数据
+    bool HIDRead(quint8 *pRecvDataBuf, int iDelaytime);
 
     /**
      * @brief IsDeviceOpen
@@ -178,7 +226,7 @@ public:
      * 处理从设备接收到的命令数据，处理在读取线程中
      * @param data
      */
-    void ReceiveNewCmdFromDev(QByteArray data);
+    void ReceiveNewCmdFromDev(QByteArray qDataByteArray);
 
     /**
      * @brief GetVersion
@@ -211,12 +259,10 @@ public:
      * @param filePath
      * @return
      */
-    void HIDUpgradeSubControl(QString filePath);
+    void HIDUpgradeSubControl(QString strFilePath);
 
 private:
 
-    HIDOpertaionUtility();
-    ~HIDOpertaionUtility();
     //---------------------各命令只跑在后台线程-----------------------------//
 
     bool _RotateMotor(QByteArray writeByteArray);
@@ -239,7 +285,7 @@ private:
     //获取命令返回时间
     bool _GetCmdReturn(int delayTime);
     //发送数据、等待应答、等待返回时间
-    bool _ExecuteCmdWithAckAndReturn(QByteArray writeByteArray, int delaySeconds);
+    bool _ExecuteCmdWithAckAndReturn(QByteArray writeByteArray, int iDelaySeconds);
     //发送数据、等待应答
     bool _ExecuteCmdWithAck(QByteArray writeByteArray);
     //发送数据、等待返回时间
@@ -251,7 +297,7 @@ private:
     QThread m_WorkThread;//工作线程，构造函数内使用moveToThread转到后台线程操作
     Qt::HANDLE m_WorkHandle;//工作线程句柄
     volatile bool m_IsDeviceOpened;//设备是否已打开
-    HIDReadThread* m_ReadThread;//设备读线程
+    HIDReadThread* m_pReadThread;//设备读线程
     bool m_AckResult;//ACK结果
     bool m_IsWaitForAck;//是否正在等待ACK,用于读写两个线程的信号同步
     bool m_ReturnResult;//结果
@@ -261,10 +307,10 @@ private:
     QMutex m_ResultMutex;
     QString m_DevVersion;//设备版本
     DevConfigParams m_Params;//设备参数
-    quint8* m_DevConfigParamsByte;//配置信息字节数组，用于每次从设备读取配置参数时临时存储数据
+    quint8* m_pDevConfigParamsByte;//配置信息字节数组，用于每次从设备读取配置参数时临时存储数据
     quint32 m_qTestCount;//仪器测试次数
     QMutex m_DeviceOperateMutex;
-    bool m_bIsDeviceOperate;
+    bool m_bIsDeviceOperate;//仪器是否在操作
 };
 
 

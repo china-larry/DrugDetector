@@ -1,4 +1,16 @@
-﻿#ifndef MESSAGEBOX2_H
+﻿/*******************************************************************
+ **
+ ** Copyright:万孚生物
+ ** Author: wwl
+ ** Date:2017-07-17
+ ** Description: 自定义MessageBox
+ ** ----------------------------------------------------------
+ ** History:
+ **   1.Author:
+ **-----------------------------------------------------------
+ **
+ **/
+#ifndef MESSAGEBOX2_H
 #define MESSAGEBOX2_H
 
 #include <QDialog>
@@ -14,6 +26,8 @@ class MessageBox2 : public QDialog
 public:
     explicit MessageBox2(QWidget *parent = 0);
     ~MessageBox2();
+
+    //设置警告标题和信息
     void warning ( const QString & title, const QString & text );
 
 private:

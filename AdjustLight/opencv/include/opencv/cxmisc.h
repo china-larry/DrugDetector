@@ -1,4 +1,4 @@
-#ifndef OPENCV_OLD_CXMISC_H
+﻿#ifndef OPENCV_OLD_CXMISC_H
 #define OPENCV_OLD_CXMISC_H
 
 #ifdef __cplusplus

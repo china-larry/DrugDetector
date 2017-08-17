@@ -17,7 +17,8 @@ MessageBox2::MessageBox2(QWidget *parent) :
     setPalette(bgPallte);
     this->setAttribute(Qt::WA_TranslucentBackground, true);
     ui->bgLabel->setObjectName("tabBackStyle2");
-    ui->bgLabel->setStyleSheet("QWidget#tabBackStyle2{background-color:white;border-top-left-radius:10px;border-top-right-radius:10px;}");
+    ui->bgLabel->setStyleSheet("QWidget#tabBackStyle2{background-color:white;"
+                               "border-top-left-radius:10px;border-top-right-radius:10px;}");
 
 }
 

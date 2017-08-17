@@ -34,21 +34,24 @@ UpgradeProgress::UpgradeProgress(QWidget *parent) :
     ui->setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_DeleteOnClose);  //关闭时自动销毁内存
-    QDesktopWidget *desk = QApplication::desktop();
-    int iWidth=desk->width();
-    int iHeight=desk->height();
-    move((iWidth-this->width())/2,(iHeight-this->height())/2);
+    QDesktopWidget *pDesk = QApplication::desktop();
+    int iWidth = pDesk->width();
+    int iHeight = pDesk->height();
+    move((iWidth-this->width()) / 2,(iHeight-this->height()) / 2);
     this->setAutoFillBackground(true);
-    QPalette bgPallte;
-    bgPallte.setColor(QPalette::Background,QColor(255,255,255));
-    setPalette(bgPallte);
+    QPalette qBgPallte;
+    qBgPallte.setColor(QPalette::Background,QColor(255,255,255));
+    setPalette(qBgPallte);
 
     ui->label_2->setText(tr("升级"));
     ui->messageLabel->setText(tr("确定升级软件?"));
     ui->progressBar->hide();
-    connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalUpgradeValue(int)),this,SLOT(_SlotSetProcessValue(int)));
-    connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalUpgradeError(QString)),this,SLOT(_SlotUpgradeError(QString)));
-    connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalUpgradeFinish()),this,SLOT(_SlotUpdataFinish()));
+    connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalUpgradeValue(int)),
+            this,SLOT(_SlotSetProcessValue(int)));
+    connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalUpgradeError(QString)),
+            this,SLOT(_SlotUpgradeError(QString)));
+    connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalUpgradeFinish()),
+            this,SLOT(_SlotUpdataFinish()));
     connect(ui->okButton,SIGNAL(clicked(bool)),this,SLOT(_SlotOkButtonClick()));
     connect(ui->cancelButton,SIGNAL(clicked(bool)),this,SLOT(_SlotCancelButton()));
 }
@@ -89,11 +92,13 @@ void UpgradeProgress::_SlotCancelButton()
     reject();
 }
 
+//设置进度条
 void UpgradeProgress::_SlotSetProcessValue(int iValue)
 {
     ui->progressBar->setValue(iValue);
 }
 
+//设置升级错误信息
 void UpgradeProgress::_SlotUpgradeError(QString strError)
 {
     qDebug()<< strError;
@@ -102,6 +107,7 @@ void UpgradeProgress::_SlotUpgradeError(QString strError)
     this->close();
 }
 
+//设置升级完成信息
 void UpgradeProgress::_SlotUpdataFinish()
 {
     //MessageBox::warning("升级成功");

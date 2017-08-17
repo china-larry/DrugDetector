@@ -48,7 +48,7 @@ private slots:
     // 点击数据库操作按钮
     void _SlotCheckQuery();// 查询
     void _SlotCheckSelectAll();// 选择全部
-    void _SlotCheckDeselectAll();// 删除全部
+    void _SlotCheckDeselectAll();// 取消选择全部
     void _SlotCheckDelete();// 删除选中
     void _SlotCheckExport();// 导出
     // Table选择改变

@@ -35,7 +35,7 @@ void CStandardModelWidget::SlotGetPictureToUI(QString strPicturePath, QList<int>
     //
     qDebug() << strPicturePath << "a LIS " << iGreenComponuntList.count() << "  Y value :" << iGreenComponuntList;
     // 画曲线 测试代码
-    int iGreenComponuntListCount = iGreenComponuntList.count();
+//    int iGreenComponuntListCount = iGreenComponuntList.count();
 //    for(int i = 0; i < iGreenComponuntListCount - 1; ++i)
 //    {
 //        m_pGraphicsScene->addLine(i, iGreenComponuntList.at(i), i + 1, iGreenComponuntList.at(i + 1));
@@ -148,8 +148,10 @@ void CStandardModelWidget::_InitWidget()
     LoadQss(this, ":/qss/CalibrationPage/CalibrationPage.qss");
     // 校准接口类
     m_pStandardBrightness = new StandardBrightness;
-    connect(this, SIGNAL(SignalSetBrightValue(BrightnessValue)), m_pStandardBrightness, SLOT(SlotGetBrightValue(BrightnessValue)));
-    connect(m_pStandardBrightness, SIGNAL(SignalSendPictureToUI(QString,QList<int>)), this, SLOT(SlotGetPictureToUI(QString,QList<int>)));
+    connect(this, SIGNAL(SignalSetBrightValue(BrightnessValue)),
+            m_pStandardBrightness, SLOT(SlotGetBrightValue(BrightnessValue)));
+    connect(m_pStandardBrightness, SIGNAL(SignalSendPictureToUI(QString,QList<int>)),
+            this, SLOT(SlotGetPictureToUI(QString,QList<int>)));
     connect(this, SIGNAL(SingalCheckDeriveButton()), m_pStandardBrightness, SLOT(SlotSaveBrightnessValue()));
 }
 

@@ -35,7 +35,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *);
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -51,6 +51,12 @@ public slots:
     void SlotCheckHistoryItem();// 前往历史页
     // 测试开始，更改状态栏
     void SlotDetectorPageStartTest();
+    // 开始获取二维码
+    void SlotStartQRCode();
+    // 获得二维码数据
+    void SlotHaveQRCodeInfo(int iProgramCount);
+    // 测试结果Index，状态栏显示
+    void SlotTestProgramIndex(int iProgramIndex);
     // 主动停止测试
     void SlotDetectorPageStopTest();
     // 流程测试结束，非主动停止
@@ -82,6 +88,7 @@ private:
     CSettingPage *m_pSettingPage;
     // 状态栏
     CDetectorPageStatusBar *m_pDetectorPageStatusBar;
+    int m_iProgramCount;// 当前测试项目总数，用于进度条进度显示
 
     // m_Move标题栏移动变量
     bool m_bLeftButtonCheck;

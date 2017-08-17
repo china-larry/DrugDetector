@@ -38,19 +38,19 @@ public:
   * @param dStandardSD 绿色分量标准值
   * @return
   */
-    bool GetGreenComponentSDAvg(QString imagePath,QPoint point,int iRectR,int iRectD,int iPos,double dStandardValue,
+    bool GetGreenComponentSDAvg(QString strImagePath,QPoint qPoint,int iRectR,int iRectD,int iPos,double dStandardValue,
                         double &dAvg,double &dStandardSD);
 
     /**
   * @brief drawRect 画出选取的矩形区域
-  * @param  imagePath 图片路径
+  * @param  imagePath 图片
   * @param  qPoint中心坐标
   * @param iRectR 矩形区域高度和宽度
   * @param iRectD 矩形区域与中心点的距离
   * @param iPos   第几个矩形区域
   * @return
   */
-    void drawRect(cv::Mat &imagePath,QPoint qPoint,int iRectR,int iRectD,int iPos);
+    void drawRect(cv::Mat &Mimage,QPoint qPoint,int iRectR,int iRectD,int iPos);
 
     /**
   * @brief GetRect 把输入坐标点，矩形大小，第几个矩形区域转化成CvRect

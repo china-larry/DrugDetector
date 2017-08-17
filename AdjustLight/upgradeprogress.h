@@ -1,4 +1,4 @@
-#ifndef UPGRADEPROGRESS_H
+﻿#ifndef UPGRADEPROGRESS_H
 #define UPGRADEPROGRESS_H
 
 #include <QDialog>
@@ -24,15 +24,24 @@ public:
     void SetUpgradeFilePath(QString strUpgradeFilePath);
 
 private slots:
+    // Ok按钮槽
     void _SlotOkButtonClick();
+
+    // Cancel按钮槽
     void _SlotCancelButton();
+
+    // 进度条槽
     void _SlotSetProcessValue(int iValue);
+
+    // 升级错误信息槽
     void _SlotUpgradeError(QString);
+
+    // 升级完成
     void _SlotUpdataFinish();
 
 private:
     Ui::UpgradeProgress *ui;
-    QProcess *m_pProcess;
+    QProcess *m_pProcess;         //进程
     QString m_qUpgradeFilePathStr;//升级文件路径
 };
 

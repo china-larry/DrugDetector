@@ -35,7 +35,8 @@ QGroupBox *CTestModeWidget::_CreateModeGroup()
     //
     m_pStandardModeRButton = new QRadioButton(tr("Standard Mode"), this);
     m_pStandardModeRButton->setChecked(true);
-    m_pIncubatingTimeLineEditWidget = new CHLabelLineEditWidget(tr("Incubating time "), "", this);
+    m_pIncubatingTimeLineEditWidget =
+            new CHLabelLineEditWidget(tr("Incubating time "), "", this);
     m_pIncubatingTimeLineEditWidget->SetLineEditFixSize(50, 20);
     m_pMinutesLabel = new QLabel(tr("Minutes"));
     //

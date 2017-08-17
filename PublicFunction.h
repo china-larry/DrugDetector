@@ -19,6 +19,8 @@
 #include <QTableWidget>
 #include <QPushButton>
 #include <QLabel>
+#include "AdjustLight/common.h"
+#include "AdjustLight/testing/ThreadTesting.h"
 // 测试页所有非结果数据(用户)结构体，便于数据传送
 struct DetectorPageUserData
 {
@@ -111,4 +113,11 @@ bool InsertOneLine(QTableWidget *pTableWidget, QStringList strContentList);
   * @return true：添加成功；false：添加失败
   */
 bool InsertOneItem(QTableWidget *pTableWidget, int iRow, int iColumn, QString strContent);
+/**
+  * @brief 错误类型弹框提示
+  * @param eTypeError:错误类型
+  * @return
+  */
+void TipErrorInfomation(EnumTypeErr eTypeError);
+void TipErrorInfomation(ENUM_ERR eTestError);
 #endif // PUBLICFUNCTION_H

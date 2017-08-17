@@ -17,11 +17,14 @@
 COrdinaryModelWidget::COrdinaryModelWidget(QWidget *parent) : QWidget(parent)
 {
     m_pOrdinaryBrightmess = new OrdinaryBrightmess;
-    connect(m_pOrdinaryBrightmess, SIGNAL(SignalImportValueToUI(BrightnessOrdinaryValue)), this, SLOT(SlotGetImportValue(BrightnessOrdinaryValue)));
-    connect(m_pOrdinaryBrightmess, SIGNAL(SignalCalibrationValueToUI(BrightnessOrdinaryValue)), this, SLOT(SlotGetCalibrationValue(BrightnessOrdinaryValue)));
-    connect(m_pOrdinaryBrightmess, SIGNAL(SignalReadValueToUI(BrightnessOrdinaryValue)), this, SLOT(SlotGetReadValue(BrightnessOrdinaryValue)));
+    connect(m_pOrdinaryBrightmess, SIGNAL(SignalImportValueToUI(BrightnessOrdinaryValue)),
+            this, SLOT(SlotGetImportValue(BrightnessOrdinaryValue)));
+    connect(m_pOrdinaryBrightmess, SIGNAL(SignalCalibrationValueToUI(BrightnessOrdinaryValue)),
+            this, SLOT(SlotGetCalibrationValue(BrightnessOrdinaryValue)));
+    connect(m_pOrdinaryBrightmess, SIGNAL(SignalReadValueToUI(BrightnessOrdinaryValue)), this,
+            SLOT(SlotGetReadValue(BrightnessOrdinaryValue)));
     connect(HIDOpertaionUtility::GetInstance(), SIGNAL(SignalErrInfo(EnumTypeErr)), this, SLOT(SlotGetErrorValue(EnumTypeErr)));
-    connect(OpencvUtility::getInstance(), SIGNAL(SignalErrInfo(EnumTypeErr)), this, SLOT(SlotGetErrorValue(EnumTypeErr)));
+    connect(OpencvUtility::GetInstance(), SIGNAL(SignalErrInfo(EnumTypeErr)), this, SLOT(SlotGetErrorValue(EnumTypeErr)));
     _InitLayout();
 }
 
@@ -38,103 +41,80 @@ COrdinaryModelWidget::~COrdinaryModelWidget()
   * @param
   * @return
   */
-void COrdinaryModelWidget::SlotGetImportValue(BrightnessOrdinaryValue brightnessValue)
+void COrdinaryModelWidget::SlotGetImportValue(BrightnessOrdinaryValue sBrightnessValueStruct)
 {
-    m_pSNo1HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo1));
-    m_pSNo2HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo2));
-    m_pSNo3HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo3));
-    m_pSNo4HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo4));
-    m_pSNo5HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo5));
-    m_pSNo6HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo6));
-    m_pSNo7HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo7));
-    m_pSNo8HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo8));
+    m_pSNo1HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo1));
+    m_pSNo2HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo2));
+    m_pSNo3HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo3));
+    m_pSNo4HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo4));
+    m_pSNo5HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo5));
+    m_pSNo6HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo6));
+    m_pSNo7HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo7));
+    m_pSNo8HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo8));
     //
-    m_pSNo1LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo1));
-    m_pSNo2LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo2));
-    m_pSNo3LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo3));
-    m_pSNo4LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo4));
-    m_pSNo5LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo5));
-    m_pSNo6LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo6));
-    m_pSNo7LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo7));
-    m_pSNo8LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo8));
+    m_pSNo1LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo1));
+    m_pSNo2LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo2));
+    m_pSNo3LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo3));
+    m_pSNo4LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo4));
+    m_pSNo5LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo5));
+    m_pSNo6LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo6));
+    m_pSNo7LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo7));
+    m_pSNo8LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo8));
 }
 /**
   * @brief
   * @param 获得calibration值
   * @return
   */
-void COrdinaryModelWidget::SlotGetCalibrationValue(BrightnessOrdinaryValue brightnessValue)
+void COrdinaryModelWidget::SlotGetCalibrationValue(BrightnessOrdinaryValue sBrightnessValueStruct)
 {
-    m_pONo1HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo1));
-    m_pONo2HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo2));
-    m_pONo3HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo3));
-    m_pONo4HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo4));
-    m_pONo5HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo5));
-    m_pONo6HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo6));
-    m_pONo7HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo7));
-    m_pONo8HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo8));
+    m_pONo1HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo1));
+    m_pONo2HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo2));
+    m_pONo3HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo3));
+    m_pONo4HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo4));
+    m_pONo5HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo5));
+    m_pONo6HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo6));
+    m_pONo7HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo7));
+    m_pONo8HLineEditWidget->SetLineText(QString::number(sBrightnessValueStruct.iBrightNo8));
     //
-    m_pONo1LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo1));
-    m_pONo2LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo2));
-    m_pONo3LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo3));
-    m_pONo4LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo4));
-    m_pONo5LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo5));
-    m_pONo6LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo6));
-    m_pONo7LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo7));
-    m_pONo8LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo8));
+    m_pONo1LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo1));
+    m_pONo2LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo2));
+    m_pONo3LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo3));
+    m_pONo4LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo4));
+    m_pONo5LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo5));
+    m_pONo6LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo6));
+    m_pONo7LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo7));
+    m_pONo8LineEditWidget->setText(QString::number(sBrightnessValueStruct.iGreenComponentNo8));
 }
 
-void COrdinaryModelWidget::SlotGetReadValue(BrightnessOrdinaryValue brightnessValue)
+void COrdinaryModelWidget::SlotGetReadValue(BrightnessOrdinaryValue sBbrightnessValueStruct)
 {
-    m_pONo1HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo1));
-    m_pONo2HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo2));
-    m_pONo3HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo3));
-    m_pONo4HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo4));
-    m_pONo5HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo5));
-    m_pONo6HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo6));
-    m_pONo7HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo7));
-    m_pONo8HLineEditWidget->SetLineText(QString::number(brightnessValue.iBrightNo8));
+    m_pONo1HLineEditWidget->SetLineText(QString::number(sBbrightnessValueStruct.iBrightNo1));
+    m_pONo2HLineEditWidget->SetLineText(QString::number(sBbrightnessValueStruct.iBrightNo2));
+    m_pONo3HLineEditWidget->SetLineText(QString::number(sBbrightnessValueStruct.iBrightNo3));
+    m_pONo4HLineEditWidget->SetLineText(QString::number(sBbrightnessValueStruct.iBrightNo4));
+    m_pONo5HLineEditWidget->SetLineText(QString::number(sBbrightnessValueStruct.iBrightNo5));
+    m_pONo6HLineEditWidget->SetLineText(QString::number(sBbrightnessValueStruct.iBrightNo6));
+    m_pONo7HLineEditWidget->SetLineText(QString::number(sBbrightnessValueStruct.iBrightNo7));
+    m_pONo8HLineEditWidget->SetLineText(QString::number(sBbrightnessValueStruct.iBrightNo8));
     //
-    m_pONo1LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo1));
-    m_pONo2LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo2));
-    m_pONo3LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo3));
-    m_pONo4LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo4));
-    m_pONo5LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo5));
-    m_pONo6LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo6));
-    m_pONo7LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo7));
-    m_pONo8LineEditWidget->setText(QString::number(brightnessValue.iGreenComponentNo8));
+    m_pONo1LineEditWidget->setText(QString::number(sBbrightnessValueStruct.iGreenComponentNo1));
+    m_pONo2LineEditWidget->setText(QString::number(sBbrightnessValueStruct.iGreenComponentNo2));
+    m_pONo3LineEditWidget->setText(QString::number(sBbrightnessValueStruct.iGreenComponentNo3));
+    m_pONo4LineEditWidget->setText(QString::number(sBbrightnessValueStruct.iGreenComponentNo4));
+    m_pONo5LineEditWidget->setText(QString::number(sBbrightnessValueStruct.iGreenComponentNo5));
+    m_pONo6LineEditWidget->setText(QString::number(sBbrightnessValueStruct.iGreenComponentNo6));
+    m_pONo7LineEditWidget->setText(QString::number(sBbrightnessValueStruct.iGreenComponentNo7));
+    m_pONo8LineEditWidget->setText(QString::number(sBbrightnessValueStruct.iGreenComponentNo8));
 }
-
+/**
+  * @brief 错误类型提示
+  * @param
+  * @return
+  */
 void COrdinaryModelWidget::SlotGetErrorValue(EnumTypeErr eTypeError)
 {// 错误信号处理
-    switch (eTypeError)
-    {
-        case ErrNoFoundQR:
-        {
-            QMessageBox::critical(NULL, "Error", "QR Code Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-            break;
-        }
-        case ErrDecodeQR:
-        {
-            QMessageBox::critical(NULL, "Error", "QR Decode Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-            break;
-        }
-        case ErrNoConnectUSB:
-        {
-            QMessageBox::critical(NULL, "Error", "USB Connect Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-            break;
-        }
-        case ErrNoOpenVideo:
-        {
-            QMessageBox::critical(NULL, "Error", "Video Open Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-            break;
-        }
-        default:
-        {
-            QMessageBox::critical(NULL, "Error", "Other Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-            break;
-        }
-    }
+   TipErrorInfomation(eTypeError);
 }
 /**
   * @brief 创建Standary组

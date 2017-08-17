@@ -1,4 +1,4 @@
-/*******************************************************************
+﻿/*******************************************************************
  **
  ** Copyright:万孚生物
  ** Author: wwl
@@ -23,7 +23,9 @@ class ParamsConfiguration
 public:
     explicit ParamsConfiguration();
     ~ParamsConfiguration();
-    static ParamsConfiguration* getInstance();
+
+    //获取静态类对象指针
+    static ParamsConfiguration* GetInstance();
     /**
      * @brief SaveParamsToConfigFile
      * 保存参数到配置文件
@@ -42,7 +44,7 @@ public:
      *        QMap<QString,QVariant> ParamsMap  一个QMap容器 key：参数名 ， value：参数值
      * @return
      */
-    bool ReadParamsFromConfigFile(QString strConfigFileName,QString strParamsType,QMap<QString,QVariant> *ParamsMap);
+    bool ReadParamsFromConfigFile(QString strConfigFileName,QString strParamsType,QMap<QString,QVariant> *pParamsMap);
 
     /**
      * @brief SaveParamsToConfigFile
@@ -71,7 +73,7 @@ public:
     */
     bool ImportPatamsConfigFile(QString strImportFileName);
 private:
-    static ParamsConfiguration* sm_Pinstance;  //类对象指针
+    static ParamsConfiguration* sm_pInstance;  //类对象指针
 };
 
 #endif // PARAMSCONFIGURATION_H

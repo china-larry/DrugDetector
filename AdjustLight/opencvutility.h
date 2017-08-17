@@ -1,4 +1,4 @@
-/*******************************************************************
+﻿/*******************************************************************
  **
  ** Copyright:万孚生物
  ** Author: wwl
@@ -29,13 +29,19 @@ class OpencvUtility : public QObject
 {
     Q_OBJECT
 
+public:
+    explicit OpencvUtility();
+    ~OpencvUtility();
+
 signals:
-    void SignalErrInfo(EnumTypeErr eErr);           //错误信号
+    //错误信号
+    void SignalErrInfo(EnumTypeErr eErr);
 
 public:
-
-    static OpencvUtility* instance;
-    static OpencvUtility* getInstance();
+    //OpencvUtility对象指针
+    static OpencvUtility* pInstance;
+    //获取OpencvUtility对象指针
+    static OpencvUtility* GetInstance();
     /**
      * @brief OpenVideo
      * 打开摄像头
@@ -61,16 +67,13 @@ public:
      *
      * @return
      */
-    bool GetVideoCapture(QString *strImagePath);
+    bool GetVideoCapture(QString *pImagePath);
 
     void SetVideoCapture(VideoCapture videocapture);
     VideoCapture GetVideoCapture();
 
-private:
-    explicit OpencvUtility();
-    ~OpencvUtility();
-
 private:    
+    //视频类对象
     VideoCapture m_VideoCapture;
 };
 

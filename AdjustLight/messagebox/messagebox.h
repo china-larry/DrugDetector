@@ -1,4 +1,16 @@
-﻿#ifndef MESSAGEBOX_H
+﻿/*******************************************************************
+ **
+ ** Copyright:万孚生物
+ ** Author: wwl
+ ** Date:2017-07-17
+ ** Description: 自定义MessageBox
+ ** ----------------------------------------------------------
+ ** History:
+ **   1.Author:
+ **-----------------------------------------------------------
+ **
+ **/
+#ifndef MESSAGEBOX_H
 #define MESSAGEBOX_H
 
 #include <QDialog>
@@ -18,18 +30,25 @@ class MessageBox : public QDialog
 public:
     explicit MessageBox(QWidget *parent = 0);
     ~MessageBox();
-    void SetTitleStr(QString str);
-    void SetContent(QString str);
+    //设置标题
+    void SetTitleStr(QString strTitle);
 
-    void warning ( const QString & title, const QString & text );
-    static void warning (  const QString & text );
+    //设置提示内容
+    void SetContent(QString strContent);
 
-   void setButtonVisible(bool vis);
+    //设置警告标题和信息
+    void warning (const QString &strTitle, const QString &strText);
+
+    //设置警告信息
+    static void warning (const QString &strText);
+
+    //设置按钮可见性
+   void setButtonVisible(bool bVis);
 private:
     Ui::MessageBox *ui;
 protected:
-    void showEvent(QShowEvent*);
-    void hideEvent ( QHideEvent * event );
+    void showEvent(QShowEvent *qEvent);
+    void hideEvent ( QHideEvent *qEvent);
 };
 
 #endif // MESSAGEBOX_H

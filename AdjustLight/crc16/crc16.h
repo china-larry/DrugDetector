@@ -1,4 +1,4 @@
-#ifndef __CRC16_H__
+﻿#ifndef __CRC16_H__
 #define __CRC16_H__
 
 
@@ -9,7 +9,7 @@
  * @param oldCRC16  上一个CRC16的值，用于循环计算大文件的CRC16。第一个数据的CRC16则传入0x0。
  * @return
  */
-unsigned short getCRC16(const char *data, unsigned long len,unsigned long oldCRC16 = 0);
+unsigned short getCRC16(const char *pData, unsigned long iLen, unsigned long iOldCRC16);
 
 
 #endif /* __CRC16_H__ */

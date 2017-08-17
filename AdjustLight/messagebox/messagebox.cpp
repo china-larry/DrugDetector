@@ -18,9 +18,9 @@ MessageBox::MessageBox(QWidget *parent) :
     connect(ui->okButton, SIGNAL(clicked()), this, SLOT(accept()));
 
     QDesktopWidget *desk=QApplication::desktop();
-    int wd=desk->width();
-    int ht=desk->height();
-    move((wd-this->width())/2,(ht-this->height())/2);
+    int iWidth = desk->width();
+    int iHeihth = desk->height();
+    move((iWidth - this->width())/2,(iHeihth - this->height())/2);
 
     this->setAutoFillBackground(false);
 
@@ -32,50 +32,49 @@ MessageBox::~MessageBox()
     delete ui;
 }
 
-void MessageBox::SetTitleStr(QString str)
+void MessageBox::SetTitleStr(QString strTitle)
 {
-    ui->titleLabel->setText(str);
+    ui->titleLabel->setText(strTitle);
 
 }
 
-void MessageBox::SetContent(QString str)
+void MessageBox::SetContent(QString strContent)
 {
-    ui->messageLabel->setText(str);
+    ui->messageLabel->setText(strContent);
 }
-void MessageBox::setButtonVisible(bool vis)
+void MessageBox::setButtonVisible(bool bVis)
 {
-    ui->okButton->setVisible(vis);
-    if(false == vis)
+    ui->okButton->setVisible(bVis);
+    if(false == bVis)
     {
         ui->messageLabel->setGeometry(0,88,524,153);
     }
 }
 
-void MessageBox::showEvent(QShowEvent *e)
+void MessageBox::showEvent(QShowEvent *qEvent)
 {
-    QDialog::showEvent(e);
+    QDialog::showEvent(qEvent);
 }
 
-void MessageBox::hideEvent(QHideEvent *event)
+void MessageBox::hideEvent(QHideEvent *qEvent)
 {
-    QDialog::hideEvent(event);
+    QDialog::hideEvent(qEvent);
 
 }
 
-void MessageBox::warning(const QString &title, const QString &text)
+void MessageBox::warning(const QString &strTitle, const QString &strText)
 {
 
-    ui->titleLabel->setText(title);
-    ui->messageLabel->setText(text);
+    ui->titleLabel->setText(strTitle);
+    ui->messageLabel->setText(strText);
     show();
 }
 
-void MessageBox::warning(const QString &text)
+void MessageBox::warning(const QString &strText)
 {
-    MessageBox* box;
-    box=new MessageBox;
-    box->SetTitleStr(tr("警告"));
-    box->SetContent(text);
-    box->exec();
-
+    MessageBox *pBox;
+    pBox = new MessageBox;
+    pBox->SetTitleStr(tr("警告"));
+    pBox->SetContent(strText);
+    pBox->exec();
 }

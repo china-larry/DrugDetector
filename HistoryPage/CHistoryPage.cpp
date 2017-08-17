@@ -61,15 +61,18 @@ void CHistoryPage::_SlotCheckQuery()
 
     if(m_pDonorIDWidget->GetLineText() != "")
     {
-        strSelect += QString(" AND DonorID = '") + m_pDonorIDWidget->GetLineText() + QString("'");
+        strSelect += QString(" AND DonorID = '") +
+                m_pDonorIDWidget->GetLineText() + QString("'");
     }
     if(m_pProductDefinitionWidget->GetCurrentSelectText() != "")
     {
-        strSelect += QString(" AND ProductDefinition = '") + m_pProductDefinitionWidget->GetCurrentSelectText() + QString("'");
+        strSelect += QString(" AND ProductDefinition = '") +
+                m_pProductDefinitionWidget->GetCurrentSelectText() + QString("'");
     }
     if(m_pProductLotWidget->GetLineText() != "")
     {
-        strSelect += QString(" AND ProductLot = '") + m_pProductLotWidget->GetLineText() + QString("'");
+        strSelect += QString(" AND ProductLot = '") +
+                m_pProductLotWidget->GetLineText() + QString("'");
     }
 
     qDebug() << "query " << strSelect;
@@ -83,7 +86,8 @@ void CHistoryPage::_SlotCheckQuery()
         // id
         strLineDataList.push_back(qSqlQuery.value(0).toString());
         // Name
-        strLineDataList.push_back(qSqlQuery.value(1).toString() + " " + qSqlQuery.value(2).toString());
+        strLineDataList.push_back(qSqlQuery.value(1).toString() + " "
+                                  + qSqlQuery.value(2).toString());
         // DonorID
         strLineDataList.push_back(qSqlQuery.value(3).toString());
         // TestTime
@@ -108,8 +112,8 @@ void CHistoryPage::_SlotCheckSelectAll()
 }
 
 void CHistoryPage::_SlotCheckDeselectAll()
-{
-
+{   
+    m_pHistoryDataTableWidget->setCurrentItem(NULL, QItemSelectionModel::Clear);
 }
 /**
   * @brief 删除选中
@@ -121,6 +125,7 @@ void CHistoryPage::_SlotCheckDelete()
     int iRow = m_pHistoryDataTableWidget->currentRow();
     if(iRow < 0 || iRow >= m_pHistoryDataTableWidget->rowCount())
     {
+        QMessageBox::information(NULL, tr("Tip"), tr("Please Select Item!"), QMessageBox::Ok , QMessageBox::Ok);
         return;
     }
     QTableWidgetItem *pIDItem = m_pHistoryDataTableWidget->item(iRow, 0);
@@ -344,9 +349,10 @@ void CHistoryPage::InsertToDatabase()
 
     if (ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
     {
-        QString strInsert = "INSERT INTO drugdata (DonorFirstName, DonorLastName, TestTime, BirthDate, DonorID, TestSite, Operator, "
-                            "PreEmployment, Random, ReasonSuspicionCause, PostAccident, ReturnToDuty, FollowUp, Comments, "
-                            "TemperatureNormal, ProductDefinition, ExpirationDate, ProductLot, ProductID, ProgramsNumber";
+        QString strInsert =
+                "INSERT INTO drugdata (DonorFirstName, DonorLastName, TestTime, BirthDate, DonorID, TestSite, Operator, "
+                 "PreEmployment, Random, ReasonSuspicionCause, PostAccident, ReturnToDuty, FollowUp, Comments, "
+                  "TemperatureNormal, ProductDefinition, ExpirationDate, ProductLot, ProductID, ProgramsNumber";
         for(int i = 0; i < 16; ++i)
         {
             strInsert += QString(", ") + QString("ProgramName") + QString::number(i);
@@ -421,17 +427,17 @@ void CHistoryPage::InsertToDatabase()
         if (!qSqlQuery.exec())
         {
             qDebug() << qSqlQuery.lastError();
-            QMessageBox::critical(0, QObject::tr("Database Error"),
+            QMessageBox::warning(0, QObject::tr("Database Error"),
                                   qSqlQuery.lastError().text());
         }
         qSqlQuery.finish();
-        // 测试查询
-        qSqlQuery.exec("SELECT id, DonorFirstName FROM drugdata");
-        while (qSqlQuery.next()) {
-            int name = qSqlQuery.value(0).toInt();
-            QString age = qSqlQuery.value(1).toString();
-            qDebug() << name << ": " << age;
-        }
+//        // 测试查询
+//        qSqlQuery.exec("SELECT id, DonorFirstName FROM drugdata");
+//        while (qSqlQuery.next()) {
+//            int name = qSqlQuery.value(0).toInt();
+//            QString age = qSqlQuery.value(1).toString();
+//            qDebug() << name << ": " << age;
+//        }
     }
 //    else
 //    {
@@ -550,7 +556,8 @@ void CHistoryPage::_InitHistoryTableWidget()
     // 显示格子线
     m_pHistoryDataTableWidget->setShowGrid(true);
      //
-     connect(m_pHistoryDataTableWidget, SIGNAL(currentCellChanged(int,int,int,int)), this, SLOT(_SlotHistoryDataSelectChange(int,int,int,int)));
+     connect(m_pHistoryDataTableWidget, SIGNAL(currentCellChanged(int,int,int,int)),
+             this, SLOT(_SlotHistoryDataSelectChange(int,int,int,int)));
 }
 /**
   * @brief 初始化测试数据显示控件，每行详细数据
@@ -670,7 +677,7 @@ bool CHistoryPage::_DeleteDatabase(QString strID)
         if (!qSqlQuery.exec(strDelete))
         {
             qDebug() << qSqlQuery.lastError();
-            QMessageBox::critical(0, QObject::tr("Delete Database Error"),
+            QMessageBox::warning(0, QObject::tr("Delete Database Error"),
                                   qSqlQuery.lastError().text());
             qSqlQuery.finish();
             return false;

@@ -30,17 +30,26 @@ void QRCodeDetector::SetZxingDecoder(QZXing *pZxingDecoder)
 {
     m_pZxingDecoder = pZxingDecoder;
 }
-//获取二维码信息
+
+
+/**
+ * @brief TestGetQRCode
+ * 获取二维码信息，发送获取二维码信号
+ * @param
+ * @return
+ */
 void QRCodeDetector::TestGetQRCode()
 {
     emit SignalGetQRCode();
 }
 
+
+//开始获取二维码槽
 void QRCodeDetector::_SlotGetQRcode()
 {
     QString strQRCode = "";
     qint32 iQRCodePosition = 0;
-    QRCodeInfo qrcodeinfo;
+    QRCodeInfo sQrcodeinfo;
      //定位二维码
 
     if(locationQRCode(strQRCode,iQRCodePosition) == false)
@@ -49,22 +58,22 @@ void QRCodeDetector::_SlotGetQRcode()
     }
     else
     {
-
-        if(DecodeQrcode(strQRCode,qrcodeinfo) == false)
+        //解析二维码
+        if(DecodeQrcode(strQRCode,sQrcodeinfo) == false)
         {
             emit SignalErrInfo(EnumTypeErr::ErrDecodeQR);
         }
         else
         {
-            qrcodeinfo.iQRCodePosition = iQRCodePosition;
+            sQrcodeinfo.iQRCodePosition = iQRCodePosition;
 
-            qDebug() << "qrcodeinfo.strProductID " << qrcodeinfo.strProductID;
-            qDebug() << "strProjectName" << qrcodeinfo.listProject.at(0).strProjectName;
-            qDebug() << "dSensitivityDown" << qrcodeinfo.listProject.at(0).dSensitivityDown;
-            qDebug() << "dSensitivityUp" << qrcodeinfo.listProject.at(0).dSensitivityUp;
-            qDebug() << "dThresholdDown" << qrcodeinfo.listProject.at(0).dThresholdDown;
-            qDebug() << "dThresholdUp" << qrcodeinfo.listProject.at(0).dThresholdUp;
-            emit SignalQRCodeInfo(qrcodeinfo);         //定位二维码后，发送二维码信息
+            qDebug() << "qrcodeinfo.strProductID " << sQrcodeinfo.strProductID;
+            qDebug() << "strProjectName" << sQrcodeinfo.listProject.at(0).strProjectName;
+            qDebug() << "dSensitivityDown" << sQrcodeinfo.listProject.at(0).dSensitivityDown;
+            qDebug() << "dSensitivityUp" << sQrcodeinfo.listProject.at(0).dSensitivityUp;
+            qDebug() << "dThresholdDown" << sQrcodeinfo.listProject.at(0).dThresholdDown;
+            qDebug() << "dThresholdUp" << sQrcodeinfo.listProject.at(0).dThresholdUp;
+            emit SignalQRCodeInfo(sQrcodeinfo);         //定位二维码后，发送二维码信息
             qDebug() << "SlotGetQRcode end";
         }
     }
@@ -88,7 +97,7 @@ bool QRCodeDetector::InitDevice()
         CHidCmdThread::GetInstance()->start();
     }
     //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::s_iCmdCloseAllLed);
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
     {
@@ -124,7 +133,13 @@ bool QRCodeDetector::InitDevice()
     return true;
 }
 
-//定位二维码
+/**
+ * @brief locationQRCode
+ * 定位和识别二维码
+ * @param strQRCodeInfo 返回识别到的二维码字符串
+ *        iQRCodePosition 二维码距离复位位置的距离
+ * @return
+ */
 bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 &iQRCodePosition)
 {
     QString strImageSavePath = "";
@@ -141,7 +156,7 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 &iQRCodePositi
     /*从原始图片中提取二维码图片*/
     if(ExtractQRCode(strImageSavePath,strDesImage) == true)
     {
-        emit SignalQRCodeLocation(strDesImage);
+        emit SignalQRCodeLocation(strImageSavePath);
         /*获取二维码字符串信息*/
         if(GetQRCodeImageInfo(strDesImage,strQRCodeInfo) == true)
         {
@@ -153,7 +168,7 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 &iQRCodePositi
     }
 
     //顺时针转 15 * 10 步
-    for(qint16 step1 = 0;step1 < 15;step1++)
+    for(qint16 iStep1 = 0;iStep1 < 15;iStep1++)
     {
         HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
         CHidCmdThread::GetInstance()->AddRotateMotorCmd(10,20,0);
@@ -172,10 +187,10 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 &iQRCodePositi
         {
             continue;
         }
-        emit SignalQRCodeLocation(strDesImage);
+        emit SignalQRCodeLocation(strImageSavePath);
         if(GetQRCodeImageInfo(strDesImage,strQRCodeInfo) == true)
         {
-            this->SetQRCodePosition(4096 - step1 * 10);
+            this->SetQRCodePosition(4096 - iStep1 * 10);
             iQRCodePosition = GetQRCodePosition();
             qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
             qDebug() << "QRCodePosition = " << iQRCodePosition;
@@ -183,7 +198,7 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 &iQRCodePositi
         }
     }
     //逆时针转 30 * 10 步
-    for(qint16 step2 = 0;step2 < 30;step2++)
+    for(qint16 iStep2 = 0;iStep2 < 30;iStep2++)
     {
 		HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
         CHidCmdThread::GetInstance()->AddRotateMotorCmd(10,20,1);
@@ -202,10 +217,10 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 &iQRCodePositi
         {
             continue;
         }
-        emit SignalQRCodeLocation(strDesImage);
+        emit SignalQRCodeLocation(strImageSavePath);
         if(GetQRCodeImageInfo(strDesImage,strQRCodeInfo) == true)
         {
-            this->SetQRCodePosition(step2 * 10);
+            this->SetQRCodePosition(iStep2 * 10);
             iQRCodePosition = GetQRCodePosition();
             qDebug() << "strQRCodeInfo = " << strQRCodeInfo;
             qDebug() << "QRCodePosition = " << iQRCodePosition;
@@ -216,31 +231,46 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 &iQRCodePositi
     return false;
 }
 
+
+/**
+ * @brief GetQRCodeImage
+ * 获取二维码照片
+ * @param  strImagePath 输出照片保存的路径
+ * @return
+ */
 bool QRCodeDetector::GetQRCodeImage(QString &strImagePath)
 {
-    bool bIsGetImage = OpencvUtility::getInstance()->GetVideoCapture(&strImagePath);
+    bool bIsGetImage = OpencvUtility::GetInstance()->GetVideoCapture(&strImagePath);
     return bIsGetImage;
 }
 
+
+/**
+ * @brief GetQRCodeImageInfo
+ * 识别二维码
+ * @param  strImagePath 输入照片保存的路径
+ *         strQRCodeInfo 输出解析到的二维码字符串
+ * @return
+ */
 bool QRCodeDetector::GetQRCodeImageInfo(const QString strImagePath,QString &strQRCodeInfo)
 {
     if(strImagePath.isEmpty())
     {
         return false;
     }
-    QImage img;
+    QImage qImage;
     QString strImageDecodePath =  strImagePath;
 
-    if(img.load(strImageDecodePath) == true)
+    if(qImage.load(strImageDecodePath) == true)
     {
-        if((img.width() > 400) && (img.height() > 400) && (img.width() < 800) && (img.height() < 800))
+        if((qImage.width() > 400) && (qImage.height() > 400) && (qImage.width() < 800) && (qImage.height() < 800))
         {
             QZXing *pZXing = GetZxingDecoder();
             if(pZXing != NULL)
             {
                 try
                 {
-                    strQRCodeInfo = pZXing->decodeImage(img,img.width(),img.height(),false);
+                    strQRCodeInfo = pZXing->decodeImage(qImage,qImage.width(),qImage.height(),false);
                 }
                 catch(...) {}
 
@@ -257,43 +287,49 @@ bool QRCodeDetector::GetQRCodeImageInfo(const QString strImagePath,QString &strQ
     return false;
 }
 
-//提取二维码
+/**
+ * @brief ExtractQRCode
+ * 提取二维码
+ * @param  strSrcImage 输入照片的路径
+ *         strDesImage  输出二维码图片
+ * @return
+ */
 bool QRCodeDetector::ExtractQRCode(QString strSrcImage,QString &strDesImage)
 {
     //加载原图
-    IplImage *srcImage = cvLoadImage(strSrcImage.toLatin1().data(),1);
+    IplImage *pSrcImage = cvLoadImage(strSrcImage.toLatin1().data(),1);
     //转变为灰度图
-    IplImage *Grayimage = cvCreateImage(cvGetSize(srcImage),IPL_DEPTH_8U, 1);
-    cvCvtColor(srcImage,Grayimage,CV_BGR2GRAY);
+    IplImage *pGrayimage = cvCreateImage(cvGetSize(pSrcImage),IPL_DEPTH_8U, 1);
+    cvCvtColor(pSrcImage,pGrayimage,CV_BGR2GRAY);
 
     //通过sobel来对图片进行竖向边缘检测,输入图像是8位时，输出必须是16位，然后再将图像转变成8位深
-    IplImage *sobel = cvCreateImage(cvGetSize(Grayimage),IPL_DEPTH_16S,1);
-    cvSobel(Grayimage,sobel,2,0,7);
+    IplImage *pSobel = cvCreateImage(cvGetSize(pGrayimage),IPL_DEPTH_16S,1);
+    cvSobel(pGrayimage,pSobel,2,0,7);
 
-    IplImage *temp = cvCreateImage(cvGetSize(sobel),IPL_DEPTH_8U,1);
-    cvConvertScale(sobel,temp,0.002,0);
+    IplImage *pTemp = cvCreateImage(cvGetSize(pSobel),IPL_DEPTH_8U,1);
+    cvConvertScale(pSobel,pTemp,0.002,0);
 
     //对图像进行二值化处理
-    IplImage *threshold1 = cvCreateImage(cvGetSize(temp),IPL_DEPTH_8U,1);
+    IplImage *pThreshold1 = cvCreateImage(cvGetSize(pTemp),IPL_DEPTH_8U,1);
     //cvThreshold(temp,threshold1,20,100,CV_THRESH_BINARY/*| CV_THRESH_OTSU*/);
-    cvThreshold(temp,threshold1,10,80,CV_THRESH_BINARY/*| CV_THRESH_OTSU*/);
+    cvThreshold(pTemp,pThreshold1,10,80,CV_THRESH_BINARY/*| CV_THRESH_OTSU*/);
 
 //    cv::namedWindow( "1", cv::WINDOW_NORMAL );
 //    cvShowImage("1", threshold1);
 //    cvWaitKey(0);
 
     //自定义1*3的核进行X方向的膨胀腐蚀
-    IplImage *erode_dilate=cvCreateImage(cvGetSize(threshold1),IPL_DEPTH_8U,1);
-    IplConvKernel* kernal = cvCreateStructuringElementEx(3,1, 1, 0, CV_SHAPE_RECT);
-    cvDilate(threshold1, erode_dilate, kernal, 18/*15*/);//X方向膨胀连通数字
-    cvErode(erode_dilate, erode_dilate, kernal, 2/*6*/);//X方向腐蚀去除碎片
-    cvDilate(erode_dilate, erode_dilate, kernal, 1);//X方向膨胀回复形态
+    IplImage *pErode_dilate=cvCreateImage(cvGetSize(pThreshold1),IPL_DEPTH_8U,1);
+    IplConvKernel* pKernal = cvCreateStructuringElementEx(3,1, 1, 0, CV_SHAPE_RECT);
+    cvDilate(pThreshold1, pErode_dilate, pKernal, 18/*15*/);//X方向膨胀连通数字
+    cvErode(pErode_dilate, pErode_dilate, pKernal, 2/*6*/);//X方向腐蚀去除碎片
+    cvDilate(pErode_dilate, pErode_dilate, pKernal, 1);//X方向膨胀回复形态
 
 
     //自定义3*1的核进行Y方向的膨胀腐蚀
-    kernal = cvCreateStructuringElementEx(1,3, 0, 1, CV_SHAPE_RECT);
-    cvErode(erode_dilate, erode_dilate, kernal, 2);// Y方向腐蚀去除碎片
-    cvDilate(erode_dilate, erode_dilate, kernal, 6);//回复形态
+    pKernal = cvCreateStructuringElementEx(1,3, 0, 1, CV_SHAPE_RECT);
+    cvErode(pErode_dilate, pErode_dilate, pKernal, 2);// Y方向腐蚀去除碎片
+    cvDilate(pErode_dilate, pErode_dilate, pKernal, 6);//回复形态
 
 
 //    cv::namedWindow( "1", cv::WINDOW_NORMAL );
@@ -301,15 +337,15 @@ bool QRCodeDetector::ExtractQRCode(QString strSrcImage,QString &strDesImage)
 //    cvWaitKey(0);
 
     //图形检测
-    IplImage* copy = cvCloneImage(erode_dilate);//直接把erode_dilate的数据复制给copy
-    IplImage* copy1 = cvCloneImage(srcImage);//直接把image的数据复制给copy1
-    CvMemStorage* storage = cvCreateMemStorage();
-    CvSeq* contours;
-    cvFindContours(copy, storage, &contours);  //寻找轮廓
+    IplImage *pCopy = cvCloneImage(pErode_dilate);//直接把erode_dilate的数据复制给copy
+    IplImage *pCopy1 = cvCloneImage(pSrcImage);//直接把image的数据复制给copy1
+    CvMemStorage *pStorage = cvCreateMemStorage();
+    CvSeq *pContoursSeq;
+    cvFindContours(pCopy, pStorage, &pContoursSeq);  //寻找轮廓
 
     QVector<CvRect> qRECTVector;
     QVector<CvRect> qRectVector;
-    while(contours != NULL)
+    while(pContoursSeq != NULL)
     {
         //绘制轮廓的最小外接矩形
         /*
@@ -318,98 +354,105 @@ bool QRCodeDetector::ExtractQRCode(QString strSrcImage,QString &strDesImage)
                2.面积大于图像的 1/20000
                3.y轴的位置在图像高度减去50以下
         */
-        CvRect rect = cvBoundingRect( contours, 1 );  //cvBoundingRect计算点集的最外面（up-right）矩形边界。
-        if(rect.width / rect.height > 0.8
-            &&rect.width / rect.height < 1.5
-            &&rect.height * rect.height * 15 > copy1->height * copy1->width
-            &&rect.y < copy1->height - 50
-            &&((rect.x + rect.width) < (copy->width-100) && (rect.y + rect.height) < (copy->height-100))
+        CvRect cvRect = cvBoundingRect( pContoursSeq, 1 );  //cvBoundingRect计算点集的最外面（up-right）矩形边界。
+        if(cvRect.width / cvRect.height > 0.8
+            &&cvRect.width / cvRect.height < 1.5
+            &&cvRect.height * cvRect.height * 15 > pCopy1->height * pCopy1->width
+            &&cvRect.y < pCopy1->height - 50
+            &&((cvRect.x + cvRect.width) < (pCopy->width-100) && (cvRect.y + cvRect.height) < (pCopy->height-100))
             )
         {
-            qDebug("rect.x = %d  rect.y = %d  rect.width = %d  rect.height = %d\n",rect.x,rect.y,rect.width,rect.height);
-            rect.x -= 30;
-            rect.y -= 30;
-            rect.width += 60;
-            rect.height += 60;
-            qRECTVector.append(rect);
+            qDebug("rect.x = %d  rect.y = %d  rect.width = %d  rect.height = %d\n",cvRect.x,cvRect.y,cvRect.width,cvRect.height);
+            cvRect.x -= 30;
+            cvRect.y -= 30;
+            cvRect.width += 60;
+            cvRect.height += 60;
+            qRECTVector.append(cvRect);
         }
-        contours = contours->h_next;
+        pContoursSeq = pContoursSeq->h_next;
     }
     qDebug("Find the rect %d!\n",qRECTVector.count());
-    for(int j = 0;j < qRECTVector.count();j++)
+    for(int iPos = 0; iPos < qRECTVector.count(); iPos++)
     {
-        if(j==0)
+        if(iPos == 0)
         {
             //cvRectangleR(copy1,qRECTVector.at(j),CV_RGB(255,0,0),3);
-            qRectVector.append(qRECTVector.at(j));
+            qRectVector.append(qRECTVector.at(iPos));
         }
-        else if((qRECTVector.at(j-1).y - qRECTVector.at(j).y > 100)
-                || (qRECTVector.at(j-1).x - qRECTVector.at(j).x > 200)
-                || (qRECTVector.at(j).x - qRECTVector.at(j-1).x > 200))
+        else if((qRECTVector.at(iPos - 1).y - qRECTVector.at(iPos).y > 100)
+                || (qRECTVector.at(iPos - 1).x - qRECTVector.at(iPos).x > 200)
+                || (qRECTVector.at(iPos).x - qRECTVector.at(iPos - 1).x > 200))
         {
               //cvRectangleR(copy1,qRECTVector.at(j),CV_RGB(255,0,0),3);
-              qRectVector.append(qRECTVector.at(j));
+              qRectVector.append(qRECTVector.at(iPos));
         }
     }
 
     if(!qRectVector.isEmpty())
     {
-        IplImage *dstImg;
-        for(int i = 0;i < qRectVector.count();i++)
+        IplImage *pDstImg;
+        for(int iPos = 0;iPos < qRectVector.count();iPos++)
         {
             //创建图像空间
-            if(srcImage->width < qRectVector.at(i).width || srcImage->height < qRectVector.at(i).height)
+            if(pSrcImage->width < qRectVector.at(iPos).width || pSrcImage->height < qRectVector.at(iPos).height)
             {
                 continue;
             }
-            qDebug("srcImage->width = %d  srcImage->height = %d  qRectVector.at(i).width = %d  qRectVector.at(i).height = %d\n",srcImage->width,srcImage->height,
-                   qRectVector.at(i).width,qRectVector.at(i).height);
-            dstImg = cvCreateImage(cvSize(qRectVector.at(i).width,qRectVector.at(i).height),
-                                   srcImage->depth,
-                                   srcImage->nChannels);
+            qDebug("srcImage->width = %d  srcImage->height = %d  qRectVector.at(i).width = %d  "
+                   "qRectVector.at(i).height = %d\n",pSrcImage->width,pSrcImage->height,
+                   qRectVector.at(iPos).width,qRectVector.at(iPos).height);
+            pDstImg = cvCreateImage(cvSize(qRectVector.at(iPos).width,qRectVector.at(iPos).height),
+                                   pSrcImage->depth,
+                                   pSrcImage->nChannels);
 
             //设置ROI区域
-            cvSetImageROI(srcImage,qRectVector.at(i));
+            cvSetImageROI(pSrcImage,qRectVector.at(iPos));
 
            //提取ROI
-            cvCopy(srcImage,dstImg);
+            cvCopy(pSrcImage,pDstImg);
 
            //取消设置
-            cvResetImageROI(srcImage);
+            cvResetImageROI(pSrcImage);
             //寻找定位矩形
-            if(FindQRcodeLocationRect(dstImg) == false)
+            if(FindQRcodeLocationRect(pDstImg) == false)
             {
                 continue;
             }
 
-            qint16 pos = strSrcImage.indexOf(".",1);
-            QString strDesImage1 = strSrcImage.insert(pos,"QR");
-            cvSaveImage(strDesImage1.toLatin1().data(),dstImg);
+            qint16 iPos1 = strSrcImage.indexOf(".",1);
+            QString strDesImage1 = strSrcImage.insert(iPos1,"QR");
+            cvSaveImage(strDesImage1.toLatin1().data(),pDstImg);
             strDesImage = strDesImage1;
             break;
         }
-        cvReleaseImage(&dstImg);
+        cvReleaseImage(&pDstImg);
     }
 
-    cvReleaseMemStorage(&storage);
-    cvReleaseImage(&srcImage);
-    cvReleaseImage(&Grayimage);
-    cvReleaseImage(&sobel);
-    cvReleaseImage(&temp);
-    cvReleaseImage(&threshold1);
-    cvReleaseImage(&erode_dilate);
-    cvReleaseImage(&copy);
-    cvReleaseImage(&copy1);
+    cvReleaseMemStorage(&pStorage);
+    cvReleaseImage(&pSrcImage);
+    cvReleaseImage(&pGrayimage);
+    cvReleaseImage(&pSobel);
+    cvReleaseImage(&pTemp);
+    cvReleaseImage(&pThreshold1);
+    cvReleaseImage(&pErode_dilate);
+    cvReleaseImage(&pCopy);
+    cvReleaseImage(&pCopy1);
 
     return true;
 }
 
-//定位二维码三个矩形定位框
-bool QRCodeDetector::FindQRcodeLocationRect(IplImage *dstImg)
+/**
+ * @brief DecodeQrcode
+ * 寻找二维码定位矩形
+ * @param  dstImg  输入照片保存的路径
+ *
+ * @return
+ */
+bool QRCodeDetector::FindQRcodeLocationRect(IplImage *pDstImg)
 { 
-    Mat myMat = cv::cvarrToMat(dstImg);
-    Mat image = myMat;
-    if (myMat.empty())
+    Mat mMyMat = cv::cvarrToMat(pDstImg);
+    Mat mImage = mMyMat;
+    if (mMyMat.empty())
     {
         cout << "Could not read image file" << endl;
         return false;
@@ -417,36 +460,36 @@ bool QRCodeDetector::FindQRcodeLocationRect(IplImage *dstImg)
     //************************************************************
     //1. Get the three position patterns
     //************************************************************
-    cvtColor(myMat, image, CV_BGR2GRAY);
-    threshold(image, image, 100, 255, THRESH_BINARY);
-    medianBlur(image, image, 3);
+    cvtColor(mMyMat, mImage, CV_BGR2GRAY);
+    threshold(mImage, mImage, 100, 255, THRESH_BINARY);
+    medianBlur(mImage, mImage, 3);
     //imshow("new", image);
     //waitKey(0);
-    Mat edges = image;
+    Mat mEdges = mImage;
     //边缘检测
-    Canny(image, edges, 100, 255, 3);
+    Canny(mImage, mEdges, 100, 255, 3);
     //imshow("edges", edges);
     //waitKey(0);
-    vector<vector<Point>> contours;
-    vector<Vec4i> hierarchy;
-    vector<int> index;
+    vector<vector<Point>> contoursVector;
+    vector<Vec4i> hierarchyVector;
+    vector<int> indexVector;
     //寻找轮廓
-    findContours(edges, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
-    for (size_t i = 0; i < contours.size(); i++)
+    findContours(mEdges, contoursVector, hierarchyVector, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
+    for (size_t sIter = 0; sIter < contoursVector.size(); sIter++)
     {
-        int k = i;
-        int c = 0;
-        while (hierarchy[k][2] != -1)
+        int iPos = sIter;
+        int iCos = 0;
+        while (hierarchyVector[iPos][2] != -1)
         {
-            k = hierarchy[k][2];
-            c++;
+            iPos = hierarchyVector[iPos][2];
+            iCos++;
         }
-        if (c >= 5)
+        if (iCos >= 5)
         {
-            index.push_back(i);
+            indexVector.push_back(sIter);
         }
     }
-    if (index.size() < 3)
+    if (indexVector.size() < 3)
     {
         cout << "No valid QRcode in the picture. Check if part of the QRcode is missing..." << endl;
         return false;
@@ -456,16 +499,16 @@ bool QRCodeDetector::FindQRcodeLocationRect(IplImage *dstImg)
 //      cout << "There is more than one QRcode in the picture. " << endl;
 //      continue;
 //  }
-    for (size_t i = 0; i < index.size(); i++)
+    for (size_t siter = 0; siter < indexVector.size(); siter++)
     {
-        drawContours(myMat, contours, index[i], Scalar(0, 0, 255), 2, 8);
+        drawContours(mMyMat, contoursVector, indexVector[siter], Scalar(0, 0, 255), 2, 8);
     }
     QString strPath = QCoreApplication::applicationDirPath() + "/result.png";
-    imwrite(strPath.toLatin1().data(), myMat);
+    imwrite(strPath.toLatin1().data(), mMyMat);
 
-    myMat.release();
-    image.release();
-    edges.release();
+    mMyMat.release();
+    mImage.release();
+    mEdges.release();
 
     return true;
 }
@@ -478,9 +521,9 @@ bool QRCodeDetector::FindQRcodeLocationRect(IplImage *dstImg)
 * Return:           bool 解码成功返回 true 失败返回 false
 * Others:
 *************************************************/
-bool QRCodeDetector::DecodeQrcode(const QString strdecode,QRCodeInfo &qrCodeInfo)//解析二维码
+bool QRCodeDetector::DecodeQrcode(const QString strDecode,QRCodeInfo &sQrCodeInfo)//解析二维码
 {
-    QStringList strListQrcode = strdecode.split(";");
+    QStringList strListQrcode = strDecode.split(";");
     QString strQrcode = "";
     QStringList strListQrcodeSection;
     QString strAllCount = "";             //总子条数
@@ -490,7 +533,7 @@ bool QRCodeDetector::DecodeQrcode(const QString strdecode,QRCodeInfo &qrCodeInfo
     QString strBatchNumber = "";          //项目批号
     QString strValidityData = "";         //有效期
     QStringList strListitem;
-    QVector<QStringList> qv_strListitem;  //项目信息
+    QVector<QStringList> strListitemVector;  //项目信息
     for(int i = 0;i < strListQrcode.count();i++)
     {
         strListitem.clear();
@@ -510,8 +553,8 @@ bool QRCodeDetector::DecodeQrcode(const QString strdecode,QRCodeInfo &qrCodeInfo
         {
             if(strListQrcodeSection.count() == 3) //V2、V4版本
             {
-                 QString AllCount = strListQrcodeSection.at(0);
-                 int iAllCount = AllCount.toInt();
+                 strAllCount = strListQrcodeSection.at(0);
+                 int iAllCount = strAllCount.toInt();
                  strAllCount = QString::number(iAllCount,16);
                  qDebug() << "strAllCount = " << strAllCount;
                  strCupType = strListQrcodeSection.at(1);
@@ -537,7 +580,7 @@ bool QRCodeDetector::DecodeQrcode(const QString strdecode,QRCodeInfo &qrCodeInfo
                 if(strListQrcodeSection.count() == 1) //卡序号
                 {
                     bool isOK = false;
-                    if((strListQrcodeSection.at(0) != "") && (qv_strListitem.count() == strAllCount.toInt(&isOK,16)))
+                    if((strListQrcodeSection.at(0) != "") && (strListitemVector.count() == strAllCount.toInt(&isOK,16)))
                     {
                         strCardNumber = strListQrcodeSection.at(0);
                         qDebug() << "strCardNumber = " << strCardNumber;
@@ -548,7 +591,7 @@ bool QRCodeDetector::DecodeQrcode(const QString strdecode,QRCodeInfo &qrCodeInfo
                     strListitem.append(strListQrcodeSection.at(0));
                     strListitem.append(strListQrcodeSection.at(1));
                     strListitem.append(strListQrcodeSection.at(2));
-                    qv_strListitem.append(strListitem);
+                    strListitemVector.append(strListitem);
                 }
                 else if(strListQrcodeSection.count() == 5) //项目（25 - 34）
                 {
@@ -557,131 +600,150 @@ bool QRCodeDetector::DecodeQrcode(const QString strdecode,QRCodeInfo &qrCodeInfo
                     strListitem.append(strListQrcodeSection.at(2));
                     strListitem.append(strListQrcodeSection.at(3));
                     strListitem.append(strListQrcodeSection.at(4));
-                    qv_strListitem.append(strListitem);
+                    strListitemVector.append(strListitem);
                 }
             }
             else if(strVersion == "V5") //V5版本
             {
-                QString qs_item = "";
+                QString strItem = "";
                 int iItem = -1;
-                qs_item = strListQrcodeSection.at(0);
-                bool ok = false;
-                int iAllCount = strAllCount.toInt(&ok,16);
-                if(qv_strListitem.count() < iAllCount)
+                strItem = strListQrcodeSection.at(0);
+                bool bOk = false;
+                int iAllCount = strAllCount.toInt(&bOk,16);
+                if(strListitemVector.count() < iAllCount)
                 {
-                    iItem = qs_item.mid(0,2).toInt(&ok,16);
+                    iItem = strItem.mid(0,2).toInt(&bOk,16);
 
                     if(iItem >= 25 && iItem <= 34)  //项目（25 - 34）
                     {                        
-                        QString qs_FirstItem = strListQrcodeSection.at(0);
-                        strListitem.append(qs_FirstItem.mid(0,2));
-                        strListitem.append(qs_FirstItem.mid(2,1));
-                        strListitem.append(qs_FirstItem.mid(3,qs_FirstItem.length() - 3));
-                        QString qs_SecondItem = strListQrcodeSection.at(1);
-                        strListitem.append(qs_SecondItem.mid(0,1));
-                        strListitem.append(qs_SecondItem.mid(1,qs_SecondItem.length() - 1));
-                        qv_strListitem.append(strListitem);
+                        QString strFirstItem = strListQrcodeSection.at(0);
+                        strListitem.append(strFirstItem.mid(0,2));
+                        strListitem.append(strFirstItem.mid(2,1));
+                        strListitem.append(strFirstItem.mid(3,strFirstItem.length() - 3));
+                        QString strSecondItem = strListQrcodeSection.at(1);
+                        strListitem.append(strSecondItem.mid(0,1));
+                        strListitem.append(strSecondItem.mid(1,strSecondItem.length() - 1));
+                        strListitemVector.append(strListitem);
                     }
                     else   //项目（0 - 24）
                     {
-                        strListitem.append(qs_item.mid(0,2));
-                        strListitem.append(qs_item.mid(2,1));
-                        strListitem.append(qs_item.mid(3,qs_item.length() - 3));
-                        qv_strListitem.append(strListitem);
+                        strListitem.append(strItem.mid(0,2));
+                        strListitem.append(strItem.mid(2,1));
+                        strListitem.append(strItem.mid(3,strItem.length() - 3));
+                        strListitemVector.append(strListitem);
                     }
                 }
                 else if(i == (strListQrcode.count() - 3)) //批号
                 {
-                    strBatchNumber = qs_item;
+                    strBatchNumber = strItem;
                 }
                 else if(i == (strListQrcode.count() - 2)) //有效期 + 序号
                 {
-                    strValidityData = qs_item.mid(0,6);
-                    strCardNumber = qs_item.mid(6,qs_item.length() - 6);
+                    strValidityData = strItem.mid(0,6);
+                    strCardNumber = strItem.mid(6,strItem.length() - 6);
                 }
             }
         }
     }
 
-    qrCodeInfo =  PackageQRCodeInfo(strBatchNumber,strValidityData,strCardNumber,
-                                    strCupType,strAllCount,strVersion,qv_strListitem);
+    sQrCodeInfo =  PackageQRCodeInfo(strBatchNumber,strValidityData,strCardNumber,
+                                    strCupType,strAllCount,strVersion,strListitemVector);
     return true;
 }
 
-//封装二维码信息
-QRCodeInfo QRCodeDetector::PackageQRCodeInfo(QString strBatchNumber,                 //项目批号
-                                             QString strValidityData,                //有效期
-                                             QString strCardNumber,                  //卡序列号
-                                             QString strCupType,                     //杯型
-                                             QString strAllCount,                    //总子条数
-                                             QString strVersion,                     //版本
-                                             QVector<QStringList> qv_strListitem)    //项目信息
+/**
+* @brief    PackageQRCodeInfo
+* 封装二维码信息
+* @param    strBatchNumber                //项目批号
+* @param    strValidityData               //有效期
+* @param    strCardNumber                 //卡序列号
+* @param    strCupType                    //杯型
+* @param    strAllCount                   //总子条数
+* @param    strVersion                    //版本
+* @param    qv_strListitem                //项目信息
+* @return   QRCodeInfo                    //二维码信息结构体
+*/
+QRCodeInfo QRCodeDetector::PackageQRCodeInfo(QString strBatchNumber,
+                                             QString strValidityData,
+                                             QString strCardNumber,
+                                             QString strCupType,
+                                             QString strAllCount,
+                                             QString strVersion,
+                                             QVector<QStringList> strListitemVector)
 {
-    QRCodeInfo qrCodeInfo;
-    qrCodeInfo.iProductLot = strBatchNumber;
-    qrCodeInfo.qExprationDate = QDate::fromString(strValidityData, "yyMMdd");
-    qrCodeInfo.strProductID = strCardNumber;
+    QRCodeInfo sQrCodeInfo;
+    sQrCodeInfo.iProductLot = strBatchNumber;
+    sQrCodeInfo.qExprationDate = QDate::fromString(strValidityData, "yyMMdd");
+    sQrCodeInfo.strProductID = strCardNumber;
 
-    bool ok = false;
-    switch (strCupType.toInt(&ok,16))
+    bool bOk = false;
+    switch (strCupType.toInt(&bOk,16))
     {
     case 0:
-        qrCodeInfo.eTypeCup = EnumTypeCup::TypeTCup;
+        sQrCodeInfo.eTypeCup = EnumTypeCup::TypeTCup;
         break;
     case 1:
-        qrCodeInfo.eTypeCup = EnumTypeCup::TypeKCup5;
+        sQrCodeInfo.eTypeCup = EnumTypeCup::TypeKCup5;
         break;
     case 4:
-        qrCodeInfo.eTypeCup = EnumTypeCup::TypeSCup10;
+        sQrCodeInfo.eTypeCup = EnumTypeCup::TypeSCup10;
         break;
     case 6:
-        qrCodeInfo.eTypeCup = EnumTypeCup::TypeKCup6;
+        sQrCodeInfo.eTypeCup = EnumTypeCup::TypeKCup6;
         break;
     default:
-        qrCodeInfo.eTypeCup = EnumTypeCup::TypeTCup;
+        sQrCodeInfo.eTypeCup = EnumTypeCup::TypeTCup;
         break;
     }
-    qrCodeInfo.iProgramCount = strAllCount.toInt(&ok,16);
-    qrCodeInfo.strVerson = strVersion;
+    sQrCodeInfo.iProgramCount = strAllCount.toInt(&bOk,16);
+    sQrCodeInfo.strVerson = strVersion;
 
-    InfoProject iInfoProject;
-    QList<InfoProject> listProjectTemp;
+    InfoProject sInfoProject;
+    QList<InfoProject> infoProjectTempList;
     QString strIndexProgram = "";       //项目序号
     QString dThresholdUp = "";          //上阈值
     QString dSensitivityUp = "";        //上灵敏度
     QString dThresholdDown = "";        //下阈值
     QString dSensitivityDown = "";      //下灵敏度
-    for(int pos = 0;pos < qv_strListitem.count();pos++)
+    for(int iPos = 0;iPos < strListitemVector.count();iPos++)
     {
-        if(qv_strListitem.at(pos).count() >= 3)
+        if(strListitemVector.at(iPos).count() >= 3)
         {
-            strIndexProgram = qv_strListitem.at(pos).at(0);
-            dThresholdUp = qv_strListitem.at(pos).at(1);
-            dSensitivityUp = qv_strListitem.at(pos).at(2);
-            iInfoProject.iIndexProgram = strIndexProgram.toInt(&ok,16);
-            iInfoProject.strProjectName = GetProjectName(iInfoProject.iIndexProgram);
-            iInfoProject.dThresholdUp = dThresholdUp.toInt(&ok,16);
-            iInfoProject.dSensitivityUp = dSensitivityUp.toDouble();
-            if(qv_strListitem.at(pos).count() >= 5)
+            strIndexProgram = strListitemVector.at(iPos).at(0);
+            dThresholdUp = strListitemVector.at(iPos).at(1);
+            dSensitivityUp = strListitemVector.at(iPos).at(2);
+            sInfoProject.iIndexProgram = strIndexProgram.toInt(&bOk,16);
+            sInfoProject.strProjectName = GetProjectName(sInfoProject.iIndexProgram);
+            sInfoProject.dThresholdUp = dThresholdUp.toInt(&bOk,16);
+            sInfoProject.dSensitivityUp = dSensitivityUp.toDouble();
+            if(strListitemVector.at(iPos).count() >= 5)
             {
-                dThresholdDown = qv_strListitem.at(pos).at(3);
-                dSensitivityDown = qv_strListitem.at(pos).at(4);
-                iInfoProject.dThresholdDown = dThresholdDown.toInt(&ok,16);
-                iInfoProject.dSensitivityDown = dSensitivityDown.toDouble();
+                dThresholdDown = strListitemVector.at(iPos).at(3);
+                dSensitivityDown = strListitemVector.at(iPos).at(4);
+                sInfoProject.dThresholdDown = dThresholdDown.toInt(&bOk,16);
+                sInfoProject.dSensitivityDown = dSensitivityDown.toDouble();
             }
             else
             {
                 //没有下阈值 下灵敏度 则填 0.0
-                iInfoProject.dThresholdDown = 0;
-                iInfoProject.dSensitivityDown = 0.0;
+                sInfoProject.dThresholdDown = 0;
+                sInfoProject.dSensitivityDown = 0.0;
             }
         }
-        listProjectTemp.append(iInfoProject);
+        infoProjectTempList.append(sInfoProject);
     }
-    qrCodeInfo.listProject = listProjectTemp;
-    return qrCodeInfo;
+    sQrCodeInfo.listProject = infoProjectTempList;
+    return sQrCodeInfo;
 }
 
+
+/**
+ * @brief GetProjectName
+ * 项目序号转化为项目名称
+ * @param   iIndex 项目序号）
+
+ * @return  QString 项目名称
+ */
 QString QRCodeDetector::GetProjectName(const int iIndex)
 {
     QString strProjectName = "";
@@ -802,47 +864,53 @@ QString QRCodeDetector::GetProjectName(const int iIndex)
     return strProjectName;
 }
 
-//开灯
-int QRCodeDetector::TestLightUp(EnumTypeLight TypeLight)
+/**
+* @brief    TestLightUp
+* 开灯
+* @param    TypeLight   灯类型
+* @param
+* @return   成功 0 失败-1
+*/
+int QRCodeDetector::TestLightUp(EnumTypeLight eTypeLight)
 {
-    BrightnessOrdinaryValue brightnessOrdinaryValue = GetOrdinaryBrightmess();
-    int BrightnessValue = 0;
-    switch (TypeLight)
+    BrightnessOrdinaryValue sBrightnessOrdinaryValue = GetOrdinaryBrightmess();
+    int iBrightnessValue = 0;
+    switch (eTypeLight)
     {
     case DownLightGreen:
-        BrightnessValue = brightnessOrdinaryValue.iBrightNo1;
+        iBrightnessValue = sBrightnessOrdinaryValue.iBrightNo1;
         break;
     case DownLightWhite:
-        BrightnessValue = brightnessOrdinaryValue.iBrightNo2;
+        iBrightnessValue = sBrightnessOrdinaryValue.iBrightNo2;
         break;
     case UpLightGreen:
-        BrightnessValue = brightnessOrdinaryValue.iBrightNo3;
+        iBrightnessValue = sBrightnessOrdinaryValue.iBrightNo3;
         break;
     case UpLightWhite:
-        BrightnessValue = brightnessOrdinaryValue.iBrightNo4;
+        iBrightnessValue = sBrightnessOrdinaryValue.iBrightNo4;
         break;
     case LeftLightGreen:
-        BrightnessValue = brightnessOrdinaryValue.iBrightNo5;
+        iBrightnessValue = sBrightnessOrdinaryValue.iBrightNo5;
         break;
     case LeftLightWhite:
-        BrightnessValue = brightnessOrdinaryValue.iBrightNo6;
+        iBrightnessValue = sBrightnessOrdinaryValue.iBrightNo6;
         break;
     case RightLightGreen:
-        BrightnessValue = brightnessOrdinaryValue.iBrightNo7;
+        iBrightnessValue = sBrightnessOrdinaryValue.iBrightNo7;
         break;
     case RightLightWhite:
-        BrightnessValue = brightnessOrdinaryValue.iBrightNo8;
+        iBrightnessValue = sBrightnessOrdinaryValue.iBrightNo8;
         break;
     default:
         break;
     }
-    CHidCmdThread::GetInstance()->AddOpenLedCmd(TypeLight, BrightnessValue);
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(eTypeLight, iBrightnessValue);
     return 0;
 }
 
 int QRCodeDetector::TestLightDown()                    //关灯
 {
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::s_iCmdCloseAllLed);
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
     return 0;
 }
 /*
@@ -865,22 +933,29 @@ bool QRCodeDetector::GetOperatorResult()
     return m_bOperatorResult;
 }
 */
-void QRCodeDetector::SetQRCodePosition(int QRCodePosition)
+void QRCodeDetector::SetQRCodePosition(int iQRCodePosition)
 {
-    m_iQRCodePosition = QRCodePosition;
+    m_iQRCodePosition = iQRCodePosition;
 }
 int QRCodeDetector::GetQRCodePosition()
 {
     return m_iQRCodePosition;
 }
 
+/**
+ * @brief mSleep
+ * 延时
+ * @param   msec 延时的时间（毫秒）
+
+ * @return
+ */
 void QRCodeDetector::mSleep(qint32 iMsec)
 {
-    QTime oldTime=QTime::currentTime();
+    QTime qOldTime = QTime::currentTime();
     qint16 iSeconds = 0;
     while(1)
     {
-        iSeconds = oldTime.msecsTo(QTime::currentTime());
+        iSeconds = qOldTime.msecsTo(QTime::currentTime());
         if(iSeconds > iMsec)
         {
             break;
@@ -889,14 +964,21 @@ void QRCodeDetector::mSleep(qint32 iMsec)
     }
 }
 
+/**
+* @brief    GetOrdinaryBrightmess
+* 读取校准后的灯光
+* @param
+* @param
+* @return   BrightnessOrdinaryValue 普通机型灯光
+*/
 BrightnessOrdinaryValue QRCodeDetector::GetOrdinaryBrightmess()
 {
     //读取参数
     const QString strFileName = QCoreApplication::applicationDirPath() + "/Resources/DrugDetectionMachineParams.json";
     const QString strParamsType = "OrdinaryMachinebrightnesCalibrate";
 
-    BrightnessOrdinaryValue brightnessOrdinaryValue;
-    OrdinaryBrightmess ordinaryBrightmess;
-    ordinaryBrightmess.ReadBrightnessValueParams(strFileName,strParamsType, brightnessOrdinaryValue);
-    return brightnessOrdinaryValue;
+    BrightnessOrdinaryValue sBrightnessOrdinaryValue;
+    OrdinaryBrightmess sOrdinaryBrightmess;
+    sOrdinaryBrightmess.ReadBrightnessValueParams(strFileName,strParamsType, sBrightnessOrdinaryValue);
+    return sBrightnessOrdinaryValue;
 }

@@ -40,13 +40,13 @@ public:
     ~LineFinder();
 
     // 设置最小投票数
-    void setMinVote(int minv);
+    void setMinVote(int iMinv);
 
     // 设置最小线段长度和线段间距容忍度
-    void setLineLengthAndGap(double length, double gap);
+    void setLineLengthAndGap(double dLength, double dGap);
 
     //寻找线段
-    std::vector<cv::Vec4i> findLines(cv::Mat& binary);
+    std::vector<cv::Vec4i> findLines(cv::Mat& mBinary);
 
     /**
     * @brief   findCrossPoints  查找直线集合的所有交点
@@ -62,7 +62,7 @@ public:
     * @param   color               颜色
     * @return
     */
-    void drawDetectedLines(cv::Mat &image, cv::Scalar color=cv::Scalar(255,255,255));
+    void drawDetectedLines(cv::Mat &mImage, cv::Scalar sColor=cv::Scalar(255,255,255));
 
     /**
      * @brief getCenterPoint
@@ -90,7 +90,7 @@ private:
      * @param pt 交点坐标
      * @return 是否有交点
      */
-    bool _crossPoint(cv::Vec4i line1, cv::Vec4i line2, cv::Point2d &pt);
+    bool _crossPoint(cv::Vec4i vLine1Vec, cv::Vec4i vLine2Vec, cv::Point2d &qPoint);
 
     /**
     * @brief cutImage

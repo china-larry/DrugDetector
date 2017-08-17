@@ -1,0 +1,9 @@
+
+//杯类型
+enum EnumTypeCup
+{
+    TypeTCup = 0,        //圆杯（尿液）// 当前有
+    TypeKCup5 = 1,       //5联旋钮杯（尿液）
+    TypeSCup10 = 4,      //10联唾液方杯（唾液）// 当前有
+    TypeKCup6 = 6        //6联旋钮杯（尿液）
+};

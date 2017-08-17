@@ -53,6 +53,11 @@ CDetectorPage::~CDetectorPage()
     }
 
 }
+
+void CDetectorPage::SlotStartQRCode()
+{
+    emit SignalStartQRCode();
+}
 /**
   * @brief 二维码图片显示
   * @param
@@ -60,6 +65,7 @@ CDetectorPage::~CDetectorPage()
   */
 void CDetectorPage::SlotReceiveQRCodeImage(QString strImagePath)
 {
+    qDebug() << "__QR Image _ " << strImagePath;
     if(strImagePath != "")
     {
         _SetCamaraImage(strImagePath);
@@ -74,11 +80,13 @@ void CDetectorPage::SlotReceiveQRCodeImage(QString strImagePath)
 void CDetectorPage::SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfoStruct)
 {
     m_sQRCodeInfoStruct = sQRCodeInfoStruct;
-    qDebug() << "接受二维码code info" << m_sQRCodeInfoStruct.strProductID;
+    qDebug() << "__code info" << m_sQRCodeInfoStruct.strProductID;
     // 更新控件
     m_pProductLotWidget->SetLineText(m_sQRCodeInfoStruct.iProductLot);
     m_pExpirationDateWidget->SetDate(m_sQRCodeInfoStruct.qExprationDate);
     m_pProductIDWidget->SetLineText(m_sQRCodeInfoStruct.strProductID);
+    // 发送主界面
+    emit SignalHaveQRCodeInfo(m_sQRCodeInfoStruct.iProgramCount);
 }
 /**
   * @brief 接收每次测试结果数据
@@ -90,7 +98,7 @@ void CDetectorPage::SlotReceiveTestResultData(TestResultData sTestResultDataStru
     TestResultData sTestResultDataTemp = sTestResultDataStruct;
     TestResultData *pTestRsultData = new TestResultData(sTestResultDataTemp);
     m_pTestResultDataList.push_back(pTestRsultData);
-    qDebug() << "test " << sTestResultDataTemp.strProgramName;
+    qDebug() << "___every one test " << sTestResultDataTemp.strProgramName;
     // 更新Label图片
     if(sTestResultDataStruct.strPicturePath != "")
     {
@@ -101,14 +109,17 @@ void CDetectorPage::SlotReceiveTestResultData(TestResultData sTestResultDataStru
     strItemList << sTestResultDataTemp.strProgramName << sTestResultDataTemp.strResult
                 << QString::number(sTestResultDataTemp.iCutoffValue);
     InsertOneLine(m_pResultsTableWidget, strItemList);
+    //
+    emit SignalTestProgramIndex(m_pTestResultDataList.count());
 }
 // 结束测试
 void CDetectorPage::SlotEndTest()
 {
-    qDebug() << "end test";
+    qDebug() << "___end test";
     // 告知main，传送数据
     emit SignalEndTest();
-    //
+    m_pReadTestDeviceButton->setEnabled(true);
+    m_pPrintPriviewButton->setEnabled(true);
 }
 /**
   * @brief 获得错误类型，弹窗提示
@@ -117,58 +128,17 @@ void CDetectorPage::SlotEndTest()
   */
 void CDetectorPage::SlotReceiveTestError(ENUM_ERR eTestError)
 {
-    switch (eTestError)
-    {
-    case ERR_VIDEO_CAPTURE:
-    {
-        QMessageBox::critical(NULL, "Error", "Get Video Capture Failure", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        break;
-    }
-    case ERR_STEP_MOTOR:
-    {
-        QMessageBox::critical(NULL, "Error", "Step Motor Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        break;
-    }
-    case ERR_LIGHT:
-    {
-        QMessageBox::critical(NULL, "Error", "Open Light Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        break;
-    }
-    case ERR_DATA:
-    {
-        QMessageBox::critical(NULL, "Error", "Get Data Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        break;
-    }
-    case ERR_NO_FOUND:
-    {
-        QMessageBox::critical(NULL, "Error", "QR Code Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        break;
-    }
-    case ERR_DECODE:
-    {
-        QMessageBox::critical(NULL, "Error", "QR Decode Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        break;
-    }
-    case ERR_DISCONNECT_USB:
-    {
-        QMessageBox::critical(NULL, "Error", "USB Connect Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        break;
-    }
-    case ERR_VIDEOOPENFAILED:
-    {
-        QMessageBox::critical(NULL, "Error", "Video Open Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        break;
-    }
-    default:
-    {
-        QMessageBox::critical(NULL, "Error", "Other Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        break;
-    }
-    }
+       TipErrorInfomation(eTestError);
+       // 控件状态
+       m_pReadTestDeviceButton->setEnabled(true);
+       m_pPrintPriviewButton->setEnabled(true);
 }
 // 用户点击开始测试按钮，开始测试
 void CDetectorPage::_SlotCheckReadTestDevice()
 {
+    // 控件状态
+    m_pReadTestDeviceButton->setEnabled(false);
+    m_pPrintPriviewButton->setEnabled(false);
     // 发送到main
     emit SignalStartTest();// 更改状态栏
     // 进程开始测试
@@ -184,12 +154,18 @@ void CDetectorPage::_SlotCheckReadTestDevice()
     m_pResultsTableWidget->setRowCount(0);
     //m_pResultsTableWidget->clearContents();
 
+
+
 }
 
 void CDetectorPage::_SlotStopTest()
 {
-    qDebug() << "stop test";
+    qDebug() << "___stop test";
     emit SignalStopTest();
+    m_pThreadTesting->StopTest();
+    // 控件状态
+    m_pReadTestDeviceButton->setEnabled(true);
+    m_pPrintPriviewButton->setEnabled(true);
 }
 /**
   * @brief 连接打印机打印
@@ -271,6 +247,11 @@ void CDetectorPage::SetCupType(QStringList strCupTypeList)
 {
     m_strCupTypeList = strCupTypeList;
     m_pProductDefinitionWidget->SetCupType(strCupTypeList);
+}
+
+void CDetectorPage::StopTest()
+{
+    m_pThreadTesting->StopTest();
 }
 /**
   * @brief 创建DonorDetail组合控件
@@ -518,11 +499,16 @@ void CDetectorPage::_InitLayout()
 void CDetectorPage::_InitThreadTesting()
 {
     m_pThreadTesting = new ThreadTesting();
-    connect(m_pThreadTesting, SIGNAL(SignalSendCodeInfo(QRCodeInfo)), this, SLOT(SlotReceiveQRCodeInfo(QRCodeInfo)));
-    connect(m_pThreadTesting, SIGNAL(SignalSendQRCodePic(QString)), this, SLOT(SlotReceiveQRCodeImage(QString)));
-    connect(m_pThreadTesting, SIGNAL(SignalTestResult(TestResultData)), this, SLOT(SlotReceiveTestResultData(TestResultData)));
-    connect(m_pThreadTesting, SIGNAL(SignalTestComplete()), this, SLOT(SlotEndTest()));
-    connect(m_pThreadTesting, SIGNAL(SignalTestErr(ENUM_ERR)), this, SLOT(SlotReceiveTestError(ENUM_ERR)));
+    connect(m_pThreadTesting, SIGNAL(SignalSendCodeInfo(QRCodeInfo)),
+            this, SLOT(SlotReceiveQRCodeInfo(QRCodeInfo)));
+    connect(m_pThreadTesting, SIGNAL(SignalSendQRCodePic(QString)),
+            this, SLOT(SlotReceiveQRCodeImage(QString)));
+    connect(m_pThreadTesting, SIGNAL(SignalTestResult(TestResultData)),
+            this, SLOT(SlotReceiveTestResultData(TestResultData)));
+    connect(m_pThreadTesting, SIGNAL(SignalTestComplete()),
+            this, SLOT(SlotEndTest()));
+    connect(m_pThreadTesting, SIGNAL(SignalTestErr(ENUM_ERR)),
+            this, SLOT(SlotReceiveTestError(ENUM_ERR)));
 }
 
 void CDetectorPage::_SetCamaraImage(QString strImagePath)
@@ -605,13 +591,16 @@ void CDetectorPage::_ReplaceCubeHtmlData(QString &strHtml)
                               strFindWord.count(), m_pTestTimeWidget->GetDateTime().time().toString());
     // donor id
     strFindWord = "${DonorID}";
-    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), m_pDonorIDWidget->GetLineText());
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pDonorIDWidget->GetLineText());
     // email address
     strFindWord = "${EmailAddress}";
-    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), m_pEmailAddressWidget->GetLineText());
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pEmailAddressWidget->GetLineText());
     // Testing Site
     strFindWord = "${TestingSite}";
-    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), m_pTestingSiteWidget->GetLineText());
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pTestingSiteWidget->GetLineText());
     // Specimen Type
     strFindWord = "${UrineCheck}";
     if(m_pProductDefinitionWidget->GetCurrentSelectText() == "T Cup")
@@ -647,13 +636,16 @@ void CDetectorPage::_ReplaceCubeHtmlData(QString &strHtml)
                               strFindWord.count(), m_pOtherReasonForTestCBox->isChecked() ? "checked" : "");
     // other
     strFindWord = "${Other}";
-    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), m_pOtherReasonCommentsLineEdit->text());
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pOtherReasonCommentsLineEdit->text());
     // ProductID
     strFindWord = "${ProductID}";
-    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), m_pProductIDWidget->GetLineText());
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pProductIDWidget->GetLineText());
     // ProductLot
     strFindWord = "${ProductLot}";
-    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), m_pProductLotWidget->GetLineText());
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pProductLotWidget->GetLineText());
     // ExpirationDate
     strFindWord = "${ExpirationDate}";
     strHtml = strHtml.replace(strHtml.indexOf(strFindWord),

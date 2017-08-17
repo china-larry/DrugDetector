@@ -12,23 +12,35 @@ CalculateGreenComponent::~CalculateGreenComponent()
 
 }
 
-//获取pos个矩形的平均绿色分量和标准差
-bool CalculateGreenComponent::GetGreenComponentSDAvg(QString imagePath,QPoint qPoint,int iRectR,int iRectD,int iPos,
-                                                double dStandardValue,double &dAvg,double &dStandardSD)
+/**
+* @brief GetGreenComponentSDAvg 获取pos个矩形区域的平均绿色分量和标准差
+* @param imagePath 图片路径
+* @param point 中心点坐标
+* @param iRectR 矩形区域高度和宽度
+* @param iRectD 矩形区域与中心点的距离
+* @param iPos   第几个矩形区域
+* @param dStandardValue 标准机型绿色分量值
+* @param dAvg   绿色分量平均值
+* @param dStandardSD 绿色分量标准值
+* @return
+*/
+bool CalculateGreenComponent::GetGreenComponentSDAvg(QString strImagePath,QPoint qPoint,int iRectR,
+                                                     int iRectD,int iPos,double dStandardValue,
+                                                     double &dAvg,double &dStandardSD)
 {        
-    IplImage* srcImg = cvLoadImage( imagePath.toLatin1().data(), -1 );
-    IplImage *dstImg;
-    CvRect rect = GetRect(qPoint,iRectR,iRectD,iPos);
-    dstImg=cvCreateImage(cvSize(rect.width,rect.height),srcImg->depth,srcImg->nChannels);//创建图像空间
+    IplImage *plSrcImg = cvLoadImage( strImagePath.toLatin1().data(), -1 );
+    IplImage *plDstImg = NULL;
+    CvRect cvRect = GetRect(qPoint,iRectR,iRectD,iPos);
+    plDstImg = cvCreateImage(cvSize(cvRect.width,cvRect.height),plSrcImg->depth,plSrcImg->nChannels);//创建图像空间
 
     //设置ROI区域
-    cvSetImageROI(srcImg,rect);
+    cvSetImageROI(plSrcImg,cvRect);
 
     //提取ROI
-    cvCopy(srcImg,dstImg);
+    cvCopy(plSrcImg,plDstImg);
 
     //取消设置
-    cvResetImageROI(srcImg);
+    cvResetImageROI(plSrcImg);
 
     //   CvScalar ScalarAvg,ScalarSdv;
     //   cvAvgSdv(dstImg,&ScalarAvg,&ScalarSdv);
@@ -36,45 +48,66 @@ bool CalculateGreenComponent::GetGreenComponentSDAvg(QString imagePath,QPoint qP
     //   dSdv = ScalarSdv.val[1];
 
     //获取绿色分量
-    QVector<int> Vintensity;
-    uchar* g_pixel;
-    for (int row = 0; row < dstImg->height; row++)
+    QVector<int> iIntensityVector;
+    uchar* pPixel;
+    for (int iRow = 0; iRow < plDstImg->height; iRow++)
     {
-       for (int cols = 0; cols < dstImg->width; cols++)
+       for (int iCols = 0; iCols < plDstImg->width; iCols++)
        {
-           g_pixel = reinterpret_cast<uchar*>(dstImg->imageData + row*dstImg->widthStep + (cols*dstImg->nChannels + 1));
-           Vintensity.append(*g_pixel);
+           pPixel = reinterpret_cast <uchar*> (plDstImg->imageData + iRow * plDstImg->widthStep
+                                              + (iCols * plDstImg->nChannels + 1));
+           iIntensityVector.append(*pPixel);
        }
     }
-    double accum  = 0.0;
+    double dAccum  = 0.0;
     double dIntensity = 0.0;
 
-    foreach (int value, Vintensity)
+    foreach (int iValue, iIntensityVector)
     {
-        accum  += (value - dStandardValue) * (value - dStandardValue);
-        dIntensity += value;
+        //取方差
+        dAccum  += (iValue - dStandardValue) * (iValue - dStandardValue);
+        //取和
+        dIntensity += iValue;
     }
 
     //均值
-
-    Q_ASSERT(Vintensity.count());
-    dAvg = dIntensity / Vintensity.count();
+    Q_ASSERT(iIntensityVector.count());
+    dAvg = dIntensity / iIntensityVector.count();
     //标准差
-    Q_ASSERT(Vintensity.count() > 1);
-    dStandardSD = sqrt(accum/(Vintensity.count()-1)); //标准差
+    Q_ASSERT(iIntensityVector.count() > 1);
+    dStandardSD = sqrt(dAccum/(iIntensityVector.count()-1)); //标准差
 
-    cvReleaseImage(&srcImg);
-    cvReleaseImage(&dstImg);
+    cvReleaseImage(&plSrcImg);
+    cvReleaseImage(&plDstImg);
     return true;
 }
 
 
-void CalculateGreenComponent::drawRect(Mat &matImage,QPoint qPoint,int iRectR,int iRectD,int iPos)
+/**
+* @brief drawRect 画出选取的矩形区域
+* @param  imagePath 图片
+* @param  qPoint中心坐标
+* @param iRectR 矩形区域高度和宽度
+* @param iRectD 矩形区域与中心点的距离
+* @param iPos   第几个矩形区域
+* @return
+*/
+void CalculateGreenComponent::drawRect(Mat &Mimage,QPoint qPoint,int iRectR,int iRectD,int iPos)
 {
-    CvRect rect = GetRect(qPoint,iRectR,iRectD,iPos);
-    cv::rectangle(matImage,rect,Scalar(255,0,0),1,1,0);
+    //获取矩形大小和位置
+    CvRect cvRect = GetRect(qPoint,iRectR,iRectD,iPos);
+    //画矩形
+    cv::rectangle(Mimage,cvRect,Scalar(255,0,0),1,1,0);
 }
 
+/**
+* @brief GetRect 把输入坐标点，矩形大小，第几个矩形区域转化成CvRect
+* @param  qPoint中心坐标
+* @param iRectR 矩形区域高度和宽度
+* @param iRectD 矩形区域与中心点的距离
+* @param iPos   第几个矩形区域
+* @return CvRect
+*/
 CvRect CalculateGreenComponent::GetRect(QPoint qPoint,int iRectR,int iRectD,int iPos)
 {
     int iRowBegin = 0;
@@ -102,7 +135,7 @@ CvRect CalculateGreenComponent::GetRect(QPoint qPoint,int iRectR,int iRectD,int 
         iColsBegin = qPoint.x() - iRectR - iRectD;
         break;
     }
-    CvRect rect;
-    rect.x = iRowBegin,rect.y = iColsBegin,rect.width = iRectR,rect.height = iRectR;
-    return rect;
+    CvRect cvRect;
+    cvRect.x = iRowBegin,cvRect.y = iColsBegin,cvRect.width = iRectR,cvRect.height = iRectR;
+    return cvRect;
 }

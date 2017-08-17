@@ -1,4 +1,4 @@
-/*******************************************************************
+﻿/*******************************************************************
  **
  ** Copyright:万孚生物
  ** Author: wwl
@@ -14,6 +14,8 @@
 #define STANDARDBRIGHTNESS_H
 #include <QObject>
 
+
+//标准机型亮度结构体
 struct BrightnessValue
 {
     int  iNo1;   // 上绿灯
@@ -32,6 +34,10 @@ class StandardBrightness : public QObject
 {
     Q_OBJECT
 
+public:
+    StandardBrightness();
+    ~StandardBrightness();
+
 signals:
     /**
      * @brief SignalSendPictureToUI
@@ -43,6 +49,7 @@ signals:
     void SignalSendPictureToUI(QString strPicturePath,QList<int> iGreenComponuntList);
 
 public slots:
+    //接收UI界面 Save 按钮槽
     void SlotSaveBrightnessValue();
 
 protected slots:
@@ -53,11 +60,10 @@ protected slots:
      *
      * @return
      */
-    void SlotGetBrightValue(BrightnessValue brightnessValue);
+    void SlotGetBrightValue(BrightnessValue sBrightnessValue);
 
 public:
-    StandardBrightness();
-    ~StandardBrightness();
+
     /**
      * @brief SetBrightness
      * 设置灯光值
@@ -65,7 +71,7 @@ public:
 
      * @return
      */
-    bool SetBrightnessValue(BrightnessValue brightnessValue);
+    bool SetBrightnessValue(BrightnessValue sBrightnessValue);
 
     /**
      * @brief GetGreenComponunt
@@ -85,7 +91,7 @@ public:
      *        dGreenComponuntList 绿色分量数据
      * @return
      */
-    bool SaveStandardParams(QString strFileName,QString ParamsType,BrightnessValue brightnessValue,
+    bool SaveStandardParams(QString strFileName,QString strParamsType,BrightnessValue sBrightnessValue,
                             QList<int> iGreenComponuntList);
 
     /**
@@ -95,16 +101,16 @@ public:
      *        dGreenComponuntList 绿色分量数据
      * @return
      */
-    bool ReadStandardParams(QString strFileName,QString ParamsType,BrightnessValue &brightnessValue,
+    bool ReadStandardParams(QString strFileName,QString strParamsType,BrightnessValue &sBrightnessValue,
                             QList<int> &iGreenComponuntList);
 
-    void SetBrightness(BrightnessValue brightnessValue);
+    void SetBrightness(BrightnessValue sBrightnessValue);
     BrightnessValue GetBrightness();
 
 private:
 
-    BrightnessValue m_brightnessValue;
-    QList<int> m_iGreenComponuntList;
+    BrightnessValue m_brightnessValue;  //标准灯光
+    QList<int> m_iGreenComponuntList;   // 存放绿色分量
 };
 
 #endif // STANDARDBRIGHTNESS_H
