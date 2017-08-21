@@ -40,7 +40,7 @@ signals:
 public slots:
     void SlotAddUserWidget(QString strUserName, QString strPassWord);
     void SlotDeleteUserWidget();
-    void SlotModifyUserWidget(QString strPassWord);
+    void SlotModifyUserWidget(QString strUserName, QString strPassWord);
 private slots:
     void _SlotAddUser();// 添加用户
     void _SlotDeleteUser();// 删除用户
@@ -133,6 +133,7 @@ private slots:
     void _SlotCheckCancleButton();
 public:
     void ShowWidget();
+    void SetUserName(QString strUserName);
     void SetOldPassWord(QString strOldPassWord);
 private:
     void _InitWidget();

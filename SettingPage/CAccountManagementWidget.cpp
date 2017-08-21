@@ -31,8 +31,9 @@ CAccountManagementWidget::CAccountManagementWidget(QWidget *parent) : QWidget(pa
     m_pAddWidget = new CUserAddWidget;
     connect(m_pAddWidget, SIGNAL(SignalAddUser(QString,QString)), this, SLOT(SlotAddUserWidget(QString,QString)));
     m_pDeleteWidget = new CUserDeleteWidget;
-
+    connect(m_pDeleteWidget, &CUserDeleteWidget::SignalDeleteUser, this, &CAccountManagementWidget::SlotDeleteUserWidget);
     m_pModifyWiget = new CUserModifyWidget;
+    connect(m_pModifyWiget, &CUserModifyWidget::SignalModifyUser, this, &CAccountManagementWidget::SlotModifyUserWidget);
 }
 
 CAccountManagementWidget::~CAccountManagementWidget()
@@ -104,12 +105,28 @@ void CAccountManagementWidget::SlotAddUserWidget(QString strUserName, QString st
 
 void CAccountManagementWidget::SlotDeleteUserWidget()
 {
-
+    int iRow = m_pUserTableWidget->currentRow();
+    if(iRow < 0 || iRow >= m_pUserTableWidget->rowCount())
+    {
+        QMessageBox::information(NULL, tr("Tip"), tr("Please Select Item!"), QMessageBox::Ok , QMessageBox::Ok);
+        return;
+    }
+    QTableWidgetItem *pIDItem = m_pUserTableWidget->item(iRow, 0);
+    if(pIDItem == NULL)
+    {
+        return;
+    }
+    QString strDatabaseID = pIDItem->text();
+    qDebug()<<"str DatabaseID: " << strDatabaseID;
+    // 数据库删除
+    _DeleteDatabase(strDatabaseID);
+    // 控件删除
+    m_pUserTableWidget->removeRow(iRow);
 }
 
-void CAccountManagementWidget::SlotModifyUserWidget(QString strPassWord)
+void CAccountManagementWidget::SlotModifyUserWidget(QString strUserName, QString strPassWord)
 {
-
+    qDebug() <<"new pass " << strUserName << strPassWord;
 }
 
 void CAccountManagementWidget::_SlotAddUser()
@@ -120,24 +137,6 @@ void CAccountManagementWidget::_SlotAddUser()
 void CAccountManagementWidget::_SlotDeleteUser()
 {
     m_pDeleteWidget->ShowWidget();
-    //
-//    int iRow = m_pUserTableWidget->currentRow();
-//    if(iRow < 0 || iRow >= m_pUserTableWidget->rowCount())
-//    {
-//        QMessageBox::information(NULL, tr("Tip"), tr("Please Select Item!"), QMessageBox::Ok , QMessageBox::Ok);
-//        return;
-//    }
-//    QTableWidgetItem *pIDItem = m_pUserTableWidget->item(iRow, 0);
-//    if(pIDItem == NULL)
-//    {
-//        return;
-//    }
-//    QString strDatabaseID = pIDItem->text();
-//    qDebug()<<"str DatabaseID: " << strDatabaseID;
-//    // 数据库删除
-//    _DeleteDatabase(strDatabaseID);
-//    // 控件删除
-//    m_pUserTableWidget->removeRow(iRow);
 }
 
 void CAccountManagementWidget::_SlotModifyUser()
@@ -475,6 +474,11 @@ void CUserModifyWidget::ShowWidget()
     m_pUserNameLineEditWidget->SetLineText("");
     m_pOldPassWordLineEditWidget->SetLineText("");
     m_pPassWordLineEditWidget->SetLineText("");
+}
+
+void CUserModifyWidget::SetUserName(QString strUserName)
+{
+    m_pUserNameLineEditWidget->SetLineText(strUserName);
 }
 
 void CUserModifyWidget::SetOldPassWord(QString strOldPassWord)
