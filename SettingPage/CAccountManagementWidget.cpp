@@ -119,28 +119,30 @@ void CAccountManagementWidget::_SlotAddUser()
 
 void CAccountManagementWidget::_SlotDeleteUser()
 {
-    int iRow = m_pUserTableWidget->currentRow();
-    if(iRow < 0 || iRow >= m_pUserTableWidget->rowCount())
-    {
-        QMessageBox::information(NULL, tr("Tip"), tr("Please Select Item!"), QMessageBox::Ok , QMessageBox::Ok);
-        return;
-    }
-    QTableWidgetItem *pIDItem = m_pUserTableWidget->item(iRow, 0);
-    if(pIDItem == NULL)
-    {
-        return;
-    }
-    QString strDatabaseID = pIDItem->text();
-    qDebug()<<"str DatabaseID: " << strDatabaseID;
-    // 数据库删除
-    _DeleteDatabase(strDatabaseID);
-    // 控件删除
-    m_pUserTableWidget->removeRow(iRow);
+    m_pDeleteWidget->ShowWidget();
+    //
+//    int iRow = m_pUserTableWidget->currentRow();
+//    if(iRow < 0 || iRow >= m_pUserTableWidget->rowCount())
+//    {
+//        QMessageBox::information(NULL, tr("Tip"), tr("Please Select Item!"), QMessageBox::Ok , QMessageBox::Ok);
+//        return;
+//    }
+//    QTableWidgetItem *pIDItem = m_pUserTableWidget->item(iRow, 0);
+//    if(pIDItem == NULL)
+//    {
+//        return;
+//    }
+//    QString strDatabaseID = pIDItem->text();
+//    qDebug()<<"str DatabaseID: " << strDatabaseID;
+//    // 数据库删除
+//    _DeleteDatabase(strDatabaseID);
+//    // 控件删除
+//    m_pUserTableWidget->removeRow(iRow);
 }
 
 void CAccountManagementWidget::_SlotModifyUser()
 {
-
+    m_pModifyWiget->ShowWidget();
 }
 /**
   * @brief 初始化控件
@@ -156,7 +158,7 @@ void CAccountManagementWidget::_InitWidget()
     m_pUserTableWidget->setFocusPolicy(Qt::NoFocus);
     // 表单样式
     m_pUserTableWidget->setColumnCount(3);// 3列，id， user， password
-    m_pUserTableWidget->setColumnHidden(0, true);// 首列为ID数据，隐藏不显示
+    //m_pUserTableWidget->setColumnHidden(0, true);// 首列为ID数据，隐藏不显示
     // 不显示行号
     QHeaderView *pVerticalHeader = m_pUserTableWidget->verticalHeader();
     pVerticalHeader->setHidden(true);
@@ -300,10 +302,15 @@ bool CAccountManagementWidget::_FindUserData(QString strUserName)
     }
     if (ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
     {
-        QString strSelect = QString("SELECT * FROM userdata WHERE Users = ") + strUserName.toLocal8Bit();
+        QString strSelect = QString("SELECT * FROM userdata WHERE Users = '")
+                + strUserName + "'";
+        //QString strSelect = QString("SELECT * FROM userdata WHERE id = 10");
+        qDebug() << "find same " << strSelect;
         QSqlQuery qSqlQuery(strSelect);//
         while(qSqlQuery.next())
         {
+            QString iD = qSqlQuery.value(0).toString();
+            QString strNmae = qSqlQuery.value(1).toString();
             return true;
         }
     }
@@ -323,7 +330,8 @@ int CAccountManagementWidget::_FindUserID(QString strUserName)
     }
     if (ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
     {
-        QString strSelect = QString("SELECT * FROM userdata WHERE Users = ") + strUserName.toLocal8Bit();
+        QString strSelect = QString("SELECT * FROM userdata WHERE Users = '")
+                + strUserName + "'";
         QSqlQuery qSqlQuery(strSelect);//
         while(qSqlQuery.next())
         {
@@ -340,42 +348,42 @@ CUserAddWidget::CUserAddWidget(QWidget *parent) : QWidget(parent)
     _InitLayout();
 }
 
-void CUserAddWidget::mousePressEvent(QMouseEvent *event)
-{
-    if( event->button() == Qt::LeftButton &&
-                m_pTitleLabel->rect().contains(event->globalPos() - this->frameGeometry().topLeft()))
-    {
-        m_qPressPoint = event->globalPos();
-        m_bLeftButtonCheck = true;
-    }
-    if( event->button() == Qt::LeftButton &&
-                m_pTitleLabel->rect().contains(event->globalPos() - this->frameGeometry().topLeft()))
-    {
-        m_qPressPoint = event->globalPos();
-        m_bLeftButtonCheck = true;
-    }
-    event->ignore();//表示继续向下传递事件，其他的控件还可以去获取
-}
+//void CUserAddWidget::mousePressEvent(QMouseEvent *event)
+//{
+//    if( event->button() == Qt::LeftButton &&
+//                m_pTitleLabel->rect().contains(event->globalPos() - this->frameGeometry().topLeft()))
+//    {
+//        m_qPressPoint = event->globalPos();
+//        m_bLeftButtonCheck = true;
+//    }
+//    if( event->button() == Qt::LeftButton &&
+//                m_pTitleLabel->rect().contains(event->globalPos() - this->frameGeometry().topLeft()))
+//    {
+//        m_qPressPoint = event->globalPos();
+//        m_bLeftButtonCheck = true;
+//    }
+//    event->ignore();//表示继续向下传递事件，其他的控件还可以去获取
+//}
 
-void CUserAddWidget::mouseReleaseEvent(QMouseEvent *event)
-{
-    if( event->button() == Qt::LeftButton )
-    {
-        m_bLeftButtonCheck = false;
-    }
-    event->ignore();
-}
+//void CUserAddWidget::mouseReleaseEvent(QMouseEvent *event)
+//{
+//    if( event->button() == Qt::LeftButton )
+//    {
+//        m_bLeftButtonCheck = false;
+//    }
+//    event->ignore();
+//}
 
-void CUserAddWidget::mouseMoveEvent(QMouseEvent *event)
-{
-    if( m_bLeftButtonCheck )
-    {
-        m_qMovePoint = event->globalPos();
-        this->move( this->pos() + m_qMovePoint - m_qPressPoint );
-        m_qPressPoint = m_qMovePoint;
-    }
-    event->ignore();
-}
+//void CUserAddWidget::mouseMoveEvent(QMouseEvent *event)
+//{
+//    if( m_bLeftButtonCheck )
+//    {
+//        m_qMovePoint = event->globalPos();
+//        this->move( this->pos() + m_qMovePoint - m_qPressPoint );
+//        m_qPressPoint = m_qMovePoint;
+//    }
+//    event->ignore();
+//}
 
 void CUserAddWidget::_SlotCheckOkButton()
 {
@@ -450,15 +458,82 @@ CUserModifyWidget::CUserModifyWidget(QWidget *parent) : QWidget(parent)
     _InitLayout();
 }
 
+void CUserModifyWidget::_SlotCheckOkButton()
+{
+    emit SignalModifyUser(m_pUserNameLineEditWidget->GetLineText(), m_pPassWordLineEditWidget->GetLineText());
+    this->close();
+}
+
+void CUserModifyWidget::_SlotCheckCancleButton()
+{
+    this->close();
+}
+
+void CUserModifyWidget::ShowWidget()
+{
+    this->show();
+    m_pUserNameLineEditWidget->SetLineText("");
+    m_pOldPassWordLineEditWidget->SetLineText("");
+    m_pPassWordLineEditWidget->SetLineText("");
+}
+
+void CUserModifyWidget::SetOldPassWord(QString strOldPassWord)
+{
+    m_strOldPassWord = strOldPassWord;
+}
+
 void CUserModifyWidget::_InitWidget()
 {
-
+    this->setFixedSize(450, 350);
+    this->setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+    m_pTitleLabel = new QLabel(tr("Modify"), this);
+    m_pTitleLabel->setObjectName("m_pTitleLabel");
+    m_pTitleLabel->setFixedSize(450, 40);
+    m_pTitleLabel->setAlignment(Qt::AlignCenter);
+    m_pUserNameLineEditWidget = new CLabelLineEditWidget(tr("Username"), "", this);
+    m_pUserNameLineEditWidget->SetLabelObjectName("LineLabel");
+    m_pUserNameLineEditWidget->SetLineEditFixSize(200, 25);
+    m_pOldPassWordLineEditWidget = new CLabelLineEditWidget(tr("Old Password"), "", this);
+    m_pOldPassWordLineEditWidget->SetLabelObjectName("LineLabel");
+    m_pOldPassWordLineEditWidget->SetLineEditFixSize(200, 25);
+    m_pPassWordLineEditWidget = new CLabelLineEditWidget(tr("New Password"), "", this);
+    m_pPassWordLineEditWidget->SetLabelObjectName("LineLabel");
+    m_pPassWordLineEditWidget->SetLineEditFixSize(200, 25);
+    //
+    m_pOkButton = new QPushButton(tr("OK"), this);
+    connect(m_pOkButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckOkButton()));
+    m_pOkButton->setFixedSize(130, 35);
+    m_pCancleButton = new QPushButton(tr("Cancle"), this);
+    connect(m_pCancleButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckCancleButton()));
+    m_pCancleButton->setFixedSize(130, 35);
 }
 
 void CUserModifyWidget::_InitLayout()
 {
     // qss
     LoadQss(this, ":/qss/SettingPage/SettingPageUserData.qss");
+    QVBoxLayout *pLayout = new QVBoxLayout;
+    pLayout->setMargin(0);
+    pLayout->addWidget(m_pTitleLabel);
+    pLayout->addSpacing(20);
+    pLayout->addWidget(m_pUserNameLineEditWidget, 0, Qt::AlignHCenter);
+    pLayout->addSpacing(20);
+    pLayout->addWidget(m_pOldPassWordLineEditWidget, 0, Qt::AlignHCenter);
+    pLayout->addSpacing(20);
+    pLayout->addWidget(m_pPassWordLineEditWidget, 0, Qt::AlignHCenter);
+    pLayout->addStretch(20);
+    //
+    QHBoxLayout *pButtonLayout = new QHBoxLayout;
+    pButtonLayout->addStretch(10);
+    pButtonLayout->addWidget(m_pOkButton);
+    pButtonLayout->addSpacing(20);
+    pButtonLayout->addWidget(m_pCancleButton);
+    pButtonLayout->addStretch(10);
+    //
+    pLayout->addLayout(pButtonLayout);
+    pLayout->addSpacing(30);
+
+    this->setLayout(pLayout);
 }
 
 CUserDeleteWidget::CUserDeleteWidget(QWidget *parent) : QWidget(parent)
@@ -467,13 +542,64 @@ CUserDeleteWidget::CUserDeleteWidget(QWidget *parent) : QWidget(parent)
     _InitLayout();
 }
 
+void CUserDeleteWidget::_SlotCheckOkButton()
+{
+    emit SignalDeleteUser();
+    this->close();
+}
+
+void CUserDeleteWidget::_SlotCheckCancleButton()
+{
+    this->close();
+}
+
+void CUserDeleteWidget::ShowWidget()
+{
+    this->show();
+}
+
 void CUserDeleteWidget::_InitWidget()
 {
-
+    this->setFixedSize(490, 230);
+    this->setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+    m_pTitleLabel = new QLabel(tr("Modify"), this);
+    m_pTitleLabel->setObjectName("m_pTitleLabel");
+    m_pTitleLabel->setFixedSize(490, 40);
+    m_pTitleLabel->setAlignment(Qt::AlignCenter);
+    //
+    m_pSureLabel = new QLabel(tr("Are you sure to delete this?"), this);
+    m_pSureLabel->setObjectName("LineLabel");
+    m_pSureLabel->setFixedSize(490, 40);
+    m_pSureLabel->setAlignment(Qt::AlignCenter);
+    //
+    m_pOkButton = new QPushButton(tr("OK"), this);
+    connect(m_pOkButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckOkButton()));
+    m_pOkButton->setFixedSize(130, 35);
+    m_pCancleButton = new QPushButton(tr("Cancle"), this);
+    connect(m_pCancleButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckCancleButton()));
+    m_pCancleButton->setFixedSize(130, 35);
 }
 
 void CUserDeleteWidget::_InitLayout()
 {
     // qss
     LoadQss(this, ":/qss/SettingPage/SettingPageUserData.qss");
+    QVBoxLayout *pLayout = new QVBoxLayout;
+    pLayout->setMargin(0);
+    pLayout->addWidget(m_pTitleLabel);
+    pLayout->addSpacing(20);
+    pLayout->addWidget(m_pSureLabel, 0, Qt::AlignHCenter);
+    pLayout->addStretch(20);
+    //
+    QHBoxLayout *pButtonLayout = new QHBoxLayout;
+    pButtonLayout->addStretch(10);
+    pButtonLayout->addWidget(m_pOkButton);
+    pButtonLayout->addSpacing(20);
+    pButtonLayout->addWidget(m_pCancleButton);
+    pButtonLayout->addStretch(10);
+    //
+    pLayout->addLayout(pButtonLayout);
+    pLayout->addSpacing(30);
+
+    this->setLayout(pLayout);
 }

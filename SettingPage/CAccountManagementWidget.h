@@ -80,9 +80,9 @@ class CUserAddWidget : public QWidget
     Q_OBJECT
 public:
     explicit CUserAddWidget(QWidget *parent = nullptr);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+//    void mousePressEvent(QMouseEvent *event);
+//    void mouseReleaseEvent(QMouseEvent *event);
+//    void mouseMoveEvent(QMouseEvent *event);
 signals:
     void SignalAddUser(QString strUserName, QString strPassWord);
 public slots:
@@ -126,14 +126,26 @@ public:
     explicit CUserModifyWidget(QWidget *parent = nullptr);
 
 signals:
-
+    void SignalModifyUser(QString strUserName, QString strPassWord);
 public slots:
-
+private slots:
+    void _SlotCheckOkButton();
+    void _SlotCheckCancleButton();
+public:
+    void ShowWidget();
+    void SetOldPassWord(QString strOldPassWord);
 private:
     void _InitWidget();
     void _InitLayout();
 private:
-
+    QLabel *m_pTitleLabel;
+    CLabelLineEditWidget *m_pUserNameLineEditWidget;
+    CLabelLineEditWidget *m_pOldPassWordLineEditWidget;
+    CLabelLineEditWidget *m_pPassWordLineEditWidget;
+    QPushButton *m_pOkButton;
+    QPushButton *m_pCancleButton;
+    //
+    QString m_strOldPassWord;
 };
 
 /*****************************************************
@@ -150,14 +162,21 @@ public:
     explicit CUserDeleteWidget(QWidget *parent = nullptr);
 
 signals:
-
+    void SignalDeleteUser();
 public slots:
-
+private slots:
+    void _SlotCheckOkButton();
+    void _SlotCheckCancleButton();
+public:
+    void ShowWidget();
 private:
     void _InitWidget();
     void _InitLayout();
 private:
-
+    QLabel *m_pTitleLabel;
+    QLabel *m_pSureLabel;
+    QPushButton *m_pOkButton;
+    QPushButton *m_pCancleButton;
 };
 
 #endif // CACCOUNTMANAGEMENTWIDGET_H
