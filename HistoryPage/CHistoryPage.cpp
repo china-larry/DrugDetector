@@ -21,6 +21,9 @@
 #include <QMessageBox>
 #include <QPixmap>
 #include <QPainter>
+#include <QtSql>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 #include "PublicFunction.h"
 CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
 {

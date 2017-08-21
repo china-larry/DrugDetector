@@ -24,9 +24,6 @@
 #include <QDateTimeEdit>
 #include <QComboBox>
 #include <QTableWidget>
-#include <QtSql>
-#include <QSqlDatabase>
-#include <QSqlQuery>
 #include <QTextEdit>
 #include "CommonDataWidget/CLabelLineEditWidget.h"
 #include "CommonDataWidget/CLabelDateWidget.h"

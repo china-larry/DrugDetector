@@ -1,0 +1,23 @@
+QPushButton
+{
+    font-size: 17px;
+    font-family:"Arial";
+    font-weight:bold;
+    border: 0px solid #0068b7;
+    border-radius: 3px;
+    color: white;
+    background-color: rgb(230, 139, 49);
+}
+QLabel#LineLabel
+{
+        font-family: "Arial";
+        font-size: 18px;
+}
+QLabel#m_pTitleLabel
+{
+        font-family: "Arial";
+        font-size: 20px;
+        color: white;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+            stop: 0 #0069b9, stop: 1 #1b8ee6);
+}

@@ -40,7 +40,8 @@ void QRCodeDetector::SetZxingDecoder(QZXing *pZxingDecoder)
  */
 void QRCodeDetector::TestGetQRCode()
 {
-    emit SignalGetQRCode();
+    //emit SignalGetQRCode();
+    _SlotGetQRcode();
 }
 
 
