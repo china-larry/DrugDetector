@@ -120,4 +120,20 @@ bool InsertOneItem(QTableWidget *pTableWidget, int iRow, int iColumn, QString st
   */
 void TipErrorInfomation(EnumTypeErr eTypeError);
 void TipErrorInfomation(ENUM_ERR eTestError);
+
+
+
+class FuseImage:public  QWidget
+{
+Q_OBJECT
+
+public :
+    FuseImage();
+    void setfilename( QString filename );
+    virtual ~FuseImage();
+protected:
+    virtual void paintEvent(QPaintEvent *event);
+private:
+    GroupImage  tt;
+};
 #endif // PUBLICFUNCTION_H
