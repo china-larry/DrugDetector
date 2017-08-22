@@ -68,18 +68,23 @@ void CAccountManagementWidget::SlotAddUserWidget(QString strUserName, QString st
     if (ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
     {
         // 查找是否已经存在
-        if(_FindUserData(strUserName))
-        {// 当前数据库已经存在
+        QString strSelect = QString("SELECT * FROM userdata WHERE username = '")
+                + strUserName + "'";
+        QSqlQuery qSqlQuery;//
+        qSqlQuery.exec(strSelect);
+        //int temp = 0;
+        while(qSqlQuery.next())
+        {
+            //temp = qSqlQuery.value(0).toInt();
             QMessageBox::warning(0, QObject::tr("Warning!"),
-                                  QObject::tr("Database Has Same UserName!"));
+                             QObject::tr("Database Has Same UserName!"));
             return;
         }
         // 数据库插入
-        QString strInsert = "INSERT INTO userdata (Users, Password) VALUES (?, ?)";
-        QSqlQuery qSqlQuery;
-        qSqlQuery.prepare(strInsert);
-        qSqlQuery.addBindValue(strUserName.toLocal8Bit());
-        qSqlQuery.addBindValue(strPassWord.toLocal8Bit());
+        qSqlQuery.prepare("INSERT INTO userdata (username, password) "
+                          "VALUES (?, ?)");
+        qSqlQuery.addBindValue(strUserName);
+        qSqlQuery.addBindValue(strPassWord);
         //
         if (!qSqlQuery.exec())
         {
@@ -215,13 +220,13 @@ void CAccountManagementWidget::_InitLayout()
 
 void CAccountManagementWidget::_InitDataBase()
 {
-    m_strDatabaseName = "\\user.db";
+    m_strDatabaseName = "\\drug.db";
     if (ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
     {
         QString strCreateTable  = "CREATE TABLE userdata ("
                                   "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                                  "Users VARCHAR,"
-                                  "Password VARCHAR)";
+                                  "username VARCHAR,"
+                                  "password VARCHAR)";
 
         // 创建
         QSqlQuery qSqlQuery;
@@ -301,7 +306,7 @@ bool CAccountManagementWidget::_FindUserData(QString strUserName)
     }
     if (ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
     {
-        QString strSelect = QString("SELECT * FROM userdata WHERE Users = '")
+        QString strSelect = QString("SELECT * FROM userdata WHERE username = '")
                 + strUserName + "'";
         //QString strSelect = QString("SELECT * FROM userdata WHERE id = 10");
         qDebug() << "find same " << strSelect;
@@ -329,7 +334,7 @@ int CAccountManagementWidget::_FindUserID(QString strUserName)
     }
     if (ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
     {
-        QString strSelect = QString("SELECT * FROM userdata WHERE Users = '")
+        QString strSelect = QString("SELECT * FROM userdata WHERE username = '")
                 + strUserName + "'";
         QSqlQuery qSqlQuery(strSelect);//
         while(qSqlQuery.next())
