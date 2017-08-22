@@ -129,9 +129,40 @@ void CAccountManagementWidget::SlotDeleteUserWidget()
     m_pUserTableWidget->removeRow(iRow);
 }
 
-void CAccountManagementWidget::SlotModifyUserWidget(QString strUserName, QString strPassWord)
+void CAccountManagementWidget::SlotModifyUserWidget(int iID, QString strPassWord)
 {
-    qDebug() <<"new pass " << strUserName << strPassWord;
+    qDebug() <<"new pass " << iID << strPassWord;
+    if(iID < 0 || strPassWord.isEmpty())
+    {
+        return;
+    }
+    if (ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
+    {
+        // 查找是否已经存在
+        QSqlQuery qSqlQuery;//
+
+        // 数据库插入
+        qSqlQuery.prepare("UPDATE userdata SET password = '" + strPassWord +
+                          "' WHERE id = " + QString::number(iID));
+        //
+        if (!qSqlQuery.exec())
+        {
+            qDebug() << qSqlQuery.lastError();
+            QMessageBox::warning(0, QObject::tr("Database Error"),
+                                  qSqlQuery.lastError().text());
+        }
+        qSqlQuery.finish();
+        // 修改控件表格
+        int iRow = m_pUserTableWidget->currentRow();
+        // id
+        QTableWidgetItem *pIDItem = m_pUserTableWidget->item(iRow, 2);
+        if(pIDItem == NULL)
+        {
+            return;
+        }
+        pIDItem->setText(strPassWord);
+        m_pUserTableWidget->update();
+    }
 }
 
 void CAccountManagementWidget::_SlotAddUser()
@@ -146,6 +177,34 @@ void CAccountManagementWidget::_SlotDeleteUser()
 
 void CAccountManagementWidget::_SlotModifyUser()
 {
+    // 获得当前选中行
+    int iRow = m_pUserTableWidget->currentRow();
+    if(iRow < 0 || iRow >= m_pUserTableWidget->rowCount())
+    {
+        QMessageBox::information(NULL, tr("Tip"), tr("Please Select Item!"), QMessageBox::Ok , QMessageBox::Ok);
+        return;
+    }
+    // id
+    QTableWidgetItem *pIDItem = m_pUserTableWidget->item(iRow, 0);
+    if(pIDItem == NULL)
+    {
+        return;
+    }
+    m_pModifyWiget->SetUserID(pIDItem->text().toInt());
+    // username
+    pIDItem = m_pUserTableWidget->item(iRow, 1);
+    if(pIDItem == NULL)
+    {
+        return;
+    }
+    m_pModifyWiget->SetUserName(pIDItem->text());
+    // password
+    pIDItem = m_pUserTableWidget->item(iRow, 2);
+    if(pIDItem == NULL)
+    {
+        return;
+    }
+    m_pModifyWiget->SetOldPassWord(pIDItem->text());
     m_pModifyWiget->ShowWidget();
 }
 /**
@@ -162,7 +221,7 @@ void CAccountManagementWidget::_InitWidget()
     m_pUserTableWidget->setFocusPolicy(Qt::NoFocus);
     // 表单样式
     m_pUserTableWidget->setColumnCount(3);// 3列，id， user， password
-    //m_pUserTableWidget->setColumnHidden(0, true);// 首列为ID数据，隐藏不显示
+    m_pUserTableWidget->setColumnHidden(0, true);// 首列为ID数据，隐藏不显示
     // 不显示行号
     QHeaderView *pVerticalHeader = m_pUserTableWidget->verticalHeader();
     pVerticalHeader->setHidden(true);
@@ -464,7 +523,17 @@ CUserModifyWidget::CUserModifyWidget(QWidget *parent) : QWidget(parent)
 
 void CUserModifyWidget::_SlotCheckOkButton()
 {
-    emit SignalModifyUser(m_pUserNameLineEditWidget->GetLineText(), m_pPassWordLineEditWidget->GetLineText());
+    if(m_pOldPassWordLineEditWidget->GetLineText() != m_strOldPassWord)
+    {
+        QMessageBox::critical(NULL, tr("Error"), tr("Please Input Right Old Password!"), QMessageBox::Ok , QMessageBox::Ok);
+        return;
+    }
+    if(m_pPassWordLineEditWidget->GetLineText().isEmpty())
+    {
+        QMessageBox::information(NULL, tr("Tip"), tr("Please Input New Password!"), QMessageBox::Ok , QMessageBox::Ok);
+        return;
+    }
+    emit SignalModifyUser(m_iUserID, m_pPassWordLineEditWidget->GetLineText());
     this->close();
 }
 
@@ -476,9 +545,13 @@ void CUserModifyWidget::_SlotCheckCancleButton()
 void CUserModifyWidget::ShowWidget()
 {
     this->show();
-    m_pUserNameLineEditWidget->SetLineText("");
     m_pOldPassWordLineEditWidget->SetLineText("");
     m_pPassWordLineEditWidget->SetLineText("");
+}
+
+void CUserModifyWidget::SetUserID(int iID)
+{
+    m_iUserID = iID;
 }
 
 void CUserModifyWidget::SetUserName(QString strUserName)
