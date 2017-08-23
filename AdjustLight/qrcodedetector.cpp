@@ -12,7 +12,6 @@ QRCodeDetector::QRCodeDetector()
     qRegisterMetaType<EnumTypeErr>("EnumTypeErr");
 
     this->SetQRCodePosition(0);
-    //connect(this,SIGNAL(SignalGetQRCode()),this,SLOT(_SlotGetQRcode()));
     //connect(HIDOpertaionUtility::getInstance(),SIGNAL(SignalOperationComplete(quint16,bool)),this,
     //        SLOT(SlotGetOperationResult(quint16,bool)),Qt::DirectConnection);
     m_pZxingDecoder = new QZXing(QZXing::DecoderFormat_MAXICODE);
@@ -57,6 +56,7 @@ void QRCodeDetector::TestGetQRCode()
 //开始获取二维码槽
 void QRCodeDetector::_SlotGetQRcode()
 {
+    qDebug() << "_SlotGetQRcode ";
     QString strQRCode = "";
     qint32 iQRCodePosition = 0;
     QRCodeInfo sQrcodeinfo;
@@ -729,6 +729,7 @@ QRCodeInfo QRCodeDetector::PackageQRCodeInfo(QString strBatchNumber,
     {
     case 0:
         sQrCodeInfo.eTypeCup = EnumTypeCup::TypeTCup;
+ //       sQrCodeInfo.eTypeCup = EnumTypeCup::TypeSCup10;
         break;
     case 1:
         sQrCodeInfo.eTypeCup = EnumTypeCup::TypeKCup5;

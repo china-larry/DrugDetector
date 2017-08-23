@@ -65,7 +65,6 @@ public:
     DetectorPageUserData GetUserData(); // 获得被测者信息
     QString GetTestPrintImagePath();// 获取需要打印的图片路径
     void SetCupType(QStringList strCupTypeList);// 设置杯类型
-    QStringList GetCupType();
     void StopTest();// 主动停止测试，关闭UI
 private:
     void _LoadQss();

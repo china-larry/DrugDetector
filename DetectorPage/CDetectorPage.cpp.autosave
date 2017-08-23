@@ -331,11 +331,6 @@ void CDetectorPage::SetCupType(QStringList strCupTypeList)
     m_pProductDefinitionWidget->SetCupType(strCupTypeList);
 }
 
-QStringList CDetectorPage::GetCupType()
-{
-    return m_strCupTypeList;
-}
-
 void CDetectorPage::StopTest()
 {
     m_pThreadTesting->StopTest();

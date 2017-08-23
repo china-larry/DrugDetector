@@ -51,8 +51,8 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     qDebug() << "stop test";
-    m_pDetectorPage->StopTest();
     delete ui;
+    m_pDetectorPage->StopTest();
     CHidCmdThread::GetInstance()->AddCloseHIDCmd();
     QThread::sleep(2);// 结束UI，sleep2秒后可执行
     qDebug() << "delete ui";
@@ -213,7 +213,7 @@ void MainWindow::SlotDetectorPageEndTest()
     qDebug() << "user data: " << m_sDetectorPageUserDataStruct.strOtherReasonComments;
     //
     m_pDetectorPageStatusBar->SetLineText(tr("Finish Test"));
-    m_pHistoryPage->SetTestResultDataList(m_pTestResultDataList);
+    m_pHistoryPage->SetTestResultDataList(m_pTestResultDataList, m_pDetectorPage->GetTestPrintImagePath());
     m_pHistoryPage->SetTestUserData(m_sDetectorPageUserDataStruct);
     m_pHistoryPage->InsertToDatabase();
 
@@ -337,6 +337,7 @@ void MainWindow::_ReadConfigFile()
             qDebug() << " cup type " << strCupList;
             // 设置控件
             m_pDetectorPage->SetCupType(strCupList);
+            m_pHistoryPage->SetCupType(strCupList);
         }
         else
         {

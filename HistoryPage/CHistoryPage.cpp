@@ -244,9 +244,9 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
                 for(int i = 0; i < m_iCurrentDataProgramNumber; ++i)
                 {
                     QStringList strDataList;
-                    strDataList.push_back(qSqlQuery.value(21 + i * 3).toString());
-                    strDataList.push_back(qSqlQuery.value(22 + i * 3).toString());
-                    strDataList.push_back(qSqlQuery.value(23 + i * 3).toString());
+                    strDataList.push_back(qSqlQuery.value(21 + i * 5).toString());
+                    strDataList.push_back(qSqlQuery.value(22 + i * 5).toString());
+                    strDataList.push_back(qSqlQuery.value(23 + i * 5).toString());
                     //
                     m_qTestDataList.push_back(strDataList);
                 }
@@ -282,16 +282,22 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
     m_pCurrentTestDataTableWidget->update();
 }
 
-void CHistoryPage::SetTestResultDataList(QList<TestResultData *> pTestResultDataList)
+void CHistoryPage::SetTestResultDataList(QList<TestResultData *> pTestResultDataList, QString strPrintImagePath)
 {
     m_pTestResultDataList = pTestResultDataList;
-    qDebug() << "get history  test size: " << m_pTestResultDataList.count();
+    m_strTestPrintImagePath = strPrintImagePath;
+    qDebug() << "get history  test size: " << m_pTestResultDataList.count() << m_strTestPrintImagePath;
 }
 
 void CHistoryPage::SetTestUserData(DetectorPageUserData sDetectorPageUserDataStruct)
 {
     m_sDetectorPageUserDataStruct = sDetectorPageUserDataStruct;
     qDebug() << "user histroyt  data: " << m_sDetectorPageUserDataStruct.strOtherReasonComments;
+}
+
+void CHistoryPage::SetCupType(QStringList strCupTypeList)
+{
+    m_pProductDefinitionWidget->SetCupType(strCupTypeList);
 }
 /**
   * @brief 显示当天测试结果数据至Table控件
@@ -361,11 +367,14 @@ void CHistoryPage::InsertToDatabase()
             strInsert += QString(", ") + QString("ProgramName") + QString::number(i);
             strInsert += QString(", ") + QString("Result") + QString::number(i);
             strInsert += QString(", ") + QString("Cutoff") + QString::number(i);
+            strInsert += QString(", ") + QString("T") + QString::number(i);
+            strInsert += QString(", ") + QString("C") + QString::number(i);
         }
+        strInsert += QString(", ") + QString("PrintImagePath");
         //
         strInsert += QString(") VALUES (?");
-        for(int i = 0; i < 67; ++i)// 共计68列
-        {// 67个
+        for(int i = 0; i < 100; ++i)// 共计101列
+        {// 100个
             strInsert += QString(", ?");
         }
         strInsert += QString(")");
@@ -419,14 +428,18 @@ void CHistoryPage::InsertToDatabase()
             qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->strProgramName.toLocal8Bit());
             qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->strResult.toLocal8Bit());
             qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->iCutoffValue);
+            qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->iTValue);
+            qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->iCValue);
         }
         for(int i = iTestResultDataCount; i < 16; ++i)
         {
             qSqlQuery.addBindValue("");
             qSqlQuery.addBindValue("");
             qSqlQuery.addBindValue(0);
+            qSqlQuery.addBindValue(0);
+            qSqlQuery.addBindValue(0);
         }
-
+        qSqlQuery.addBindValue(m_strTestPrintImagePath.toLocal8Bit());
         if (!qSqlQuery.exec())
         {
             qDebug() << qSqlQuery.lastError();
@@ -730,15 +743,18 @@ void CHistoryPage::_InitDataBase()
                                   "ProductDefinition VARCHAR,"
                                   "ExpirationDate VARCHAR,"
                                   "ProductLot VARCHAR,"
-                                  "ProductID VARCHAR,"
+                                  "ProductID VARCHAR,"                                  
                                   "ProgramsNumber INT,";
         for(int i = 0; i < 16; ++i)
         {
             strCreateTable += QString("ProgramName") + QString::number(i) + QString(" VARCHAR,");
             strCreateTable += QString("Result") + QString::number(i) + QString(" VARCHAR,");
             strCreateTable += QString("Cutoff") + QString::number(i) + QString(" INT,");
+            strCreateTable += QString("T") + QString::number(i) + QString(" INT,");
+            strCreateTable += QString("C") + QString::number(i) + QString(" INT,");
         }
-        strCreateTable.replace(strCreateTable.count()-1, 1, ")");// 替换最后“,”为“)”
+        strCreateTable += "PrintImagePath VARCHAR)";
+        //strCreateTable.replace(strCreateTable.count()-1, 1, ")");// 替换最后“,”为“)”
         // 创建
         QSqlQuery qSqlQuery;
         if (!qSqlQuery.exec(strCreateTable))

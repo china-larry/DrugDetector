@@ -68,6 +68,8 @@ public:
 
     bool GetStopped();
 
+    void AddStopHIDCmd();
+
 protected:
     virtual void run();
 

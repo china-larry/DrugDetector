@@ -53,8 +53,9 @@ private slots:
             int iCurrentRow, int iCurrentColumn, int iPreviousRow, int iPreviousColumn);
 public:
     // Main窗口设置测试结果
-    void SetTestResultDataList(QList<TestResultData*> pTestResultDataList);
+    void SetTestResultDataList(QList<TestResultData*> pTestResultDataList, QString strPrintImagePath);
     void SetTestUserData(DetectorPageUserData sDetectorPageUserDataStruct);
+    void SetCupType(QStringList strCupTypeList);
     // 切换到历史数据，显示当天测试数据
     void ShowCurrentDateTest();
     // 将测试页获取的数据插入数据库
@@ -111,6 +112,8 @@ private:
     // PIS/POCT服务器
     QString m_strPisServer;
     QString m_strPoctServer;
+    // 当前测试结果打印图片保存至数据库
+    QString m_strTestPrintImagePath;
 };
 
 #endif // CHISTORYPAGE_H

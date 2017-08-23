@@ -136,6 +136,8 @@ public :
     virtual ~CFuseImage();
 protected:
     virtual void run();
+signals:
+    void SignalFuseOk();// 拼接完成
 
 public:
     void SetImagePaths(QStringList strImagePathList, QString strSaveImagePath);// 待拼接的图片

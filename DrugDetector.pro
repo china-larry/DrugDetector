@@ -62,7 +62,8 @@ SOURCES += \
     AdjustLight/ProtocolUtility.cpp \
     AdjustLight/UpgradeFile.cpp \
     AdjustLight/UpgradeProgress.cpp \
-    AdjustLight/CalculateGreenComponent.cpp
+    AdjustLight/CalculateGreenComponent.cpp \
+    AdjustLight/VideoThread.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -103,7 +104,8 @@ HEADERS += \
     AdjustLight/QrcodeDetector.h \
     AdjustLight/UpgradeFile.h \
     AdjustLight/UpgradeProgress.h \
-    AdjustLight/CalculateGreenComponent.h
+    AdjustLight/CalculateGreenComponent.h \
+    AdjustLight/VideoThread.h
 
 FORMS += \
         mainwindow.ui \

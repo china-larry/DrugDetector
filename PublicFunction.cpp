@@ -316,6 +316,7 @@ void CFuseImage::run()
         painter.drawPixmap(i * iImageWidth, 0, iImageWidth, m_iImageHeigth, QPixmap(m_strImagePathList.at(i)));
     }
     m_pPixmap->save(m_strSaveImagePath);
+    emit SignalFuseOk();
 }
 
 

@@ -51,6 +51,8 @@ public:
      */
     bool OpenVideo();
 
+    bool CloseVideo();
+
     /**
      * @brief GetVideo
      * 录像

@@ -70,6 +70,15 @@ bool OpencvUtility::OpenVideo()
     return true;
 }
 
+bool OpencvUtility::CloseVideo()
+{
+    if(this->GetVideoCapture().isOpened())
+    {
+        this->GetVideoCapture().release();
+    }
+    return true;
+}
+
 /**
  * @brief GetVideo
  * 录像

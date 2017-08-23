@@ -86,6 +86,11 @@ void CHidCmdThread::AddCloseHIDCmd()
     AddCmd(sHidCmdData);
 }
 
+void CHidCmdThread::AddStopHIDCmd()
+{
+    m_hidCmdDataQueue.clear();
+}
+
 void CHidCmdThread::AddOpenLedCmd(int iLedIndex, quint16 iBrightness)
 {
     //添加开灯命令
