@@ -36,6 +36,9 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
     _InitWidget();
       // 布局
     _InitLayout();
+    //
+    m_pFuseImage = new CFuseImage;
+    m_strTestPrintImagePath = "";
 }
 
 CDetectorPage::~CDetectorPage()
@@ -51,6 +54,12 @@ CDetectorPage::~CDetectorPage()
         delete m_pThreadTesting;
         m_pThreadTesting = NULL;
     }
+    if(m_pFuseImage != NULL)
+    {
+        delete m_pFuseImage;
+        m_pFuseImage = NULL;
+    }
+
 
 }
 
@@ -95,10 +104,11 @@ void CDetectorPage::SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfoStruct)
   */
 void CDetectorPage::SlotReceiveTestResultData(TestResultData sTestResultDataStruct)
 {
+    qDebug() << "test image " << sTestResultDataStruct.strPicturePath;
     TestResultData sTestResultDataTemp = sTestResultDataStruct;
     TestResultData *pTestRsultData = new TestResultData(sTestResultDataTemp);
     m_pTestResultDataList.push_back(pTestRsultData);
-    qDebug() << "___every one test " << sTestResultDataTemp.strProgramName;
+    qDebug() << "___every one test " << sTestResultDataTemp.strProgramName << pTestRsultData->strPicturePath;
     // 更新Label图片
     if(sTestResultDataStruct.strPicturePath != "")
     {
@@ -112,10 +122,27 @@ void CDetectorPage::SlotReceiveTestResultData(TestResultData sTestResultDataStru
     //
     emit SignalTestProgramIndex(m_pTestResultDataList.count());
 }
+
+void CDetectorPage::SlotReceiveSCupImagePath(QString strImagePath)
+{
+    qDebug() <<"SCup Image Path";
+}
 // 结束测试
 void CDetectorPage::SlotEndTest()
 {
-    qDebug() << "___end test";
+    qDebug() << "___end test" << m_pTestResultDataList.at(0)->strPicturePath;
+    // 拼接图片
+    QStringList strImagePathList;
+    int iTestResultCount = m_pTestResultDataList.count();
+    for(int i = 0; i < iTestResultCount; ++i)
+    {
+        strImagePathList.push_back(m_pTestResultDataList.at(i)->strPicturePath);
+    }
+    m_strTestPrintImagePath = QCoreApplication::applicationDirPath()  +"\\result_image\\print_image_"
+            + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss_z")// 当前时间
+            + ".jpg";
+    m_pFuseImage->SetImagePaths(strImagePathList, m_strTestPrintImagePath);
+    m_pFuseImage->start();
     // 告知main，传送数据
     emit SignalEndTest();
     m_pReadTestDeviceButton->setEnabled(true);
@@ -152,14 +179,12 @@ void CDetectorPage::_SlotCheckReadTestDevice()
         qDebug() << "clear test result data list";
     }
     m_pResultsTableWidget->setRowCount(0);
-    //m_pResultsTableWidget->clearContents();
-
-
-
+    m_strTestPrintImagePath = "";// 当前打印图片
 }
 
 void CDetectorPage::_SlotStopTest()
 {
+//    //////////////////
     qDebug() << "___stop test";
     emit SignalStopTest();
     m_pThreadTesting->StopTest();
@@ -174,6 +199,11 @@ void CDetectorPage::_SlotStopTest()
   */
 void CDetectorPage::_SlotPrintToPDF()
 {
+    if(m_strTestPrintImagePath.isEmpty())
+    {
+        QMessageBox::information(NULL, tr("Tip"), tr("Please Wait Print Image!"), QMessageBox::Ok , QMessageBox::Ok);
+        return;
+    }
     // 资源文件
     QString strHtmlFile = QCoreApplication::applicationDirPath() + "/Resources/"
             + m_pProductDefinitionWidget->GetCurrentSelectText() + ".html";
@@ -188,11 +218,11 @@ void CDetectorPage::_SlotPrintToPDF()
     qFile.close();
     // 替换数据
     if(m_pProductDefinitionWidget->GetCurrentSelectText() == "TCube")
-    {
+    {// 方杯
         _ReplaceCubeHtmlData(strHtml);
     }
     else
-    {
+    {// 圆杯
         _ReplaceCupHtmlData(strHtml);
     }
     // 打印
@@ -238,6 +268,10 @@ DetectorPageUserData CDetectorPage::GetUserData()
     return m_sDetectorPageUserDataStruct;
 }
 
+QString CDetectorPage::GetTestPrintImagePath()
+{
+    return m_strTestPrintImagePath;
+}
 void CDetectorPage::_LoadQss()
 {
     LoadQss(this, ":/qss/DetectorPage/DetectorPage.qss");
@@ -253,6 +287,8 @@ void CDetectorPage::StopTest()
 {
     m_pThreadTesting->StopTest();
 }
+
+
 /**
   * @brief 创建DonorDetail组合控件
   * @param
@@ -499,12 +535,14 @@ void CDetectorPage::_InitLayout()
 void CDetectorPage::_InitThreadTesting()
 {
     m_pThreadTesting = new ThreadTesting();
+    connect(m_pThreadTesting, &ThreadTesting::SignalStartQRCode, this, &CDetectorPage::SlotStartQRCode);
     connect(m_pThreadTesting, SIGNAL(SignalSendCodeInfo(QRCodeInfo)),
             this, SLOT(SlotReceiveQRCodeInfo(QRCodeInfo)));
     connect(m_pThreadTesting, SIGNAL(SignalSendQRCodePic(QString)),
             this, SLOT(SlotReceiveQRCodeImage(QString)));
     connect(m_pThreadTesting, SIGNAL(SignalTestResult(TestResultData)),
             this, SLOT(SlotReceiveTestResultData(TestResultData)));
+    connect(m_pThreadTesting, &ThreadTesting::SignalSCupPicPath, this, &CDetectorPage::SlotReceiveSCupImagePath);
     connect(m_pThreadTesting, SIGNAL(SignalTestComplete()),
             this, SLOT(SlotEndTest()));
     connect(m_pThreadTesting, SIGNAL(SignalTestErr(ENUM_ERR)),
@@ -603,12 +641,12 @@ void CDetectorPage::_ReplaceCubeHtmlData(QString &strHtml)
                               strFindWord.count(), m_pTestingSiteWidget->GetLineText());
     // Specimen Type
     strFindWord = "${UrineCheck}";
-    if(m_pProductDefinitionWidget->GetCurrentSelectText() == "T Cup")
+    if(m_pProductDefinitionWidget->GetCurrentSelectText() == "TCup")
     {
         strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), "checked");
     }
     strFindWord = "${SalivaCheck}";
-    if(m_pProductDefinitionWidget->GetCurrentSelectText() == "T Cupa")
+    if(m_pProductDefinitionWidget->GetCurrentSelectText() == "TCube")
     {
         strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), "checked");
     }
@@ -661,11 +699,8 @@ void CDetectorPage::_ReplaceCubeHtmlData(QString &strHtml)
     strFindWord = "${ResultData}";
     strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), _GetResultsDataHtml());
     // 图片Image
-    QString strImageByte = GetImagePngBase64("E:/test.png");
+    QString strImageByte = GetImagePngBase64(m_strTestPrintImagePath);
     strFindWord = "${test_image_01}";
-    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), strImageByte);
-    //
-    strFindWord = "${test_image_02}";
     strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), strImageByte);
 }
 

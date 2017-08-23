@@ -9,12 +9,13 @@
 
 #include "ProtocolUtility.h"
 
-Q_DECLARE_METATYPE(DevConfigParams)
+//Q_DECLARE_METATYPE(DevConfigParams)
 #define ACK_TIME_OUT_SECOND 20
 HIDOpertaionUtility* HIDOpertaionUtility::instance = NULL;
 
 HIDOpertaionUtility *HIDOpertaionUtility::GetInstance()
 {
+    qRegisterMetaType<DevConfigParams>("DevConfigParams");
     if(instance == NULL)
     {
         instance = new HIDOpertaionUtility();
@@ -475,7 +476,7 @@ bool HIDOpertaionUtility::_GetCmdACK()
             break;
         }
     }
-    qDebug()<<"ACK result:"<<m_AckResult;
+//    qDebug()<<"ACK result:"<<m_AckResult;
     return m_AckResult;
 }
 

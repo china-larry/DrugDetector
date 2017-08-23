@@ -49,6 +49,7 @@ public slots:
     void SlotReceiveQRCodeImage(QString strImagePath);// 接受二维码图片数据
     void SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfoStruct);// 接受二维码信息
     void SlotReceiveTestResultData(TestResultData sTestResultDataStruct);// 接受每条测试结果数据
+    void SlotReceiveSCupImagePath(QString strImagePath);// 方杯两个图片数据
     void SlotEndTest();// 流程测试结束
     void SlotReceiveTestError(ENUM_ERR eTestError);// 错误信号
 private slots:
@@ -60,8 +61,10 @@ private slots:
 public:
     QList<TestResultData*> GetTestResultData();// 获得测试结果
     DetectorPageUserData GetUserData(); // 获得被测者信息
+    QString GetTestPrintImagePath();// 获取需要打印的图片路径
     void SetCupType(QStringList strCupTypeList);// 设置杯类型
     void StopTest();// 主动停止测试，关闭UI
+
 
 private:
     void _LoadQss();
@@ -76,8 +79,8 @@ private:
     // 打印
     bool _PrintToPage(QString strHtml);
     // 打印
-    void _ReplaceCubeHtmlData(QString &strHtml);// 替换html中数据位测试数据, cube杯型
-    void _ReplaceCupHtmlData(QString &strHtml);// 替换html中数据位测试数据, cup杯型
+    void _ReplaceCubeHtmlData(QString &strHtml);// 替换html中数据位测试数据, cube杯型，方杯
+    void _ReplaceCupHtmlData(QString &strHtml);// 替换html中数据位测试数据, cup杯型， 圆杯
     // 测试结果打印格式（动态数量）
     QString _GetResultsDataHtml();
 
@@ -123,13 +126,14 @@ private:
     // results
     QLabel *m_pCamaraLabel;// 摄像头
     QTableWidget *m_pResultsTableWidget;// 表格数据
-    // 状态栏
-
     // 获取数据
     ThreadTesting *m_pThreadTesting; // 测试线程
     QRCodeInfo m_sQRCodeInfoStruct;       // 二维码数据，项目总数
     QList<TestResultData*> m_pTestResultDataList;// 下位机的测试结果列表
     DetectorPageUserData m_sDetectorPageUserDataStruct;// 用户列表数据
+    // 拼接图片
+    CFuseImage *m_pFuseImage;
+    QString m_strTestPrintImagePath;// 保存打印所需的测试过程图片，拼接合成，为当前时间，保存路径为result_image
 };
 
 #endif // CDETECTORPAGE_H

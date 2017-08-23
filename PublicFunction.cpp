@@ -21,6 +21,7 @@
 #include <QSqlDatabase>
 #include <QMessageBox>
 #include <QSqlError>
+#include <QPainter>
 /**
   * @brief 设置控件背景图片
   * @param pWidget：控件名称
@@ -285,3 +286,43 @@ void TipErrorInfomation(ENUM_ERR eTestError)
     }
     }
 }
+
+CFuseImage::CFuseImage()
+{
+    m_iImageWidth = 600;
+    m_iImageHeigth = 180;
+    m_pPixmap = new QPixmap(m_iImageWidth, m_iImageHeigth);
+}
+
+CFuseImage::~CFuseImage()
+{
+    if(m_pPixmap != NULL)
+    {
+        delete m_pPixmap;
+        m_pPixmap = NULL;
+    }
+}
+
+void CFuseImage::run()
+{
+    QPainter painter;
+    painter.begin(m_pPixmap);
+    painter.eraseRect(QRect(0, 0, m_iImageWidth, m_iImageHeigth));
+    //
+    int iImageCount = m_strImagePathList.count();
+    int iImageWidth = m_iImageWidth / iImageCount;
+    for(int i = 0; i < iImageCount; ++i)
+    {
+        painter.drawPixmap(i * iImageWidth, 0, iImageWidth, m_iImageHeigth, QPixmap(m_strImagePathList.at(i)));
+    }
+    m_pPixmap->save(m_strSaveImagePath);
+}
+
+
+void CFuseImage::SetImagePaths(QStringList strImagePathList, QString strSaveImagePath)
+{
+    m_strImagePathList = strImagePathList;
+    m_strSaveImagePath = strSaveImagePath;
+    qDebug() << "fuse image  " << m_strImagePathList;
+}
+

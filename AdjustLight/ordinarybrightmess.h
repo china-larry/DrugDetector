@@ -39,7 +39,7 @@ struct BrightnessOrdinaryValue
     double  iGreenComponentNo8; //右白灯绿色分量
 };
 //注册结构体
-Q_DECLARE_METATYPE(BrightnessOrdinaryValue);
+Q_DECLARE_METATYPE(BrightnessOrdinaryValue)
 
 class OrdinaryBrightmess : public QObject
 {

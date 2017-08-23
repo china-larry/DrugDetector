@@ -19,6 +19,7 @@
 #include <QVariant>
 #include <QMetaType>
 #include <QObject>
+#include <QThread>
 #include "HidOpertaionUtility.h"
 #include "ProtocolUtility.h"
 #include "OpencvUtility.h"
@@ -71,9 +72,9 @@ struct QRCodeInfo
     QList<InfoProject> listProject; //项目信息
     qint32 iQRCodePosition;         //二维码位置（距离复位需要顺时针转的步数）
 };
-Q_DECLARE_METATYPE(QRCodeInfo)      //注册结构体
+//Q_DECLARE_METATYPE(QRCodeInfo)      //注册结构体
 
-class QRCodeDetector : public QObject
+class QRCodeDetector : public QThread
 {
     Q_OBJECT
 
@@ -183,11 +184,21 @@ public:
     /**
      * @brief GetProjectName
      * 项目序号转化为项目名称
-     * @param   iIndex 项目序号）
+     * @param   iIndex 项目序号
 
      * @return  QString 项目名称
      */
     QString GetProjectName(const int iIndex);
+
+    /**
+     * @brief GetProjectName
+     * v5版本二维码 项目灵敏度 = 默认灵敏度 + 二维码的灵敏度差值
+     * @param   iCupType 杯类型
+     * @param   iIndex 项目序号
+     * @return  int 项目灵敏度
+     */
+    int GetV5CutOffValue(const int iCupType,const int iIndex,const int iCutOff);
+
     //void SetOperatorResult(bool OperatorResult);
     //bool GetOperatorResult();
     void SetQRCodePosition(int iQRCodePosition);
@@ -222,6 +233,9 @@ public:
     * @return   BrightnessOrdinaryValue 普通机型灯光
     */
     BrightnessOrdinaryValue GetOrdinaryBrightmess();
+
+protected:
+    void run();
 
 private:
     //bool m_bOperatorResult;

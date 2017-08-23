@@ -21,6 +21,13 @@
 #ifndef THREADTESTING_H
 #define THREADTESTING_H
 
+enum ENUM_INVALID_RESULT        //测试结果非法
+{
+    INVALID_NONE = 0,           //none
+    INVALID_CLINE,              //C线 无效
+    INCOMPLETE_CLINE,           //C线 有效，显带不全
+    INCOMPLETE_TLINE,           //阳性，T 线显带不全
+};
 
 enum ENUM_STATUS_TEST       //枚举：运行状态
 {
@@ -37,8 +44,8 @@ enum ENUM_ERR               //枚举：错误信息
     ERR_STEP_MOTOR,         //转动电机失败
     ERR_LIGHT,              //开关灯失败
     ERR_DATA,               //参数错误
-    ERR_NO_FOUND,            //未找到二维码
-    ERR_DECODE,              //二维码解码失败
+    ERR_NO_FOUND,           //未找到二维码
+    ERR_DECODE,             //二维码解码失败
     ERR_DISCONNECT_USB,     //USB链接失败
     ERR_VIDEOOPENFAILED     //摄像头打开失败
 };
@@ -55,6 +62,7 @@ struct TestResultData       //测试结果
     QString strResult;      // 结果
     QString strControlLine; // if control line valid
     QString strPicturePath; // 目标区截图路径
+    ENUM_INVALID_RESULT eInvalidType;   //结果无效类型
 };
 
 Q_DECLARE_METATYPE(TestResultData);
@@ -69,8 +77,10 @@ signals:
     void SignalTestErr(ENUM_ERR eErr);                      //报错 错误信息
     void SignalTestResult(TestResultData sResultTestData);  //每条测试结果
     void SignalTestComplete();                              //测试完成
-    void SignalSendQRCodePic(QString strPath);              //二维码照片路径
-    void SignalSendCodeInfo(QRCodeInfo sInfoQRCodeStruct);  //二维码信息
+    void SignalSendQRCodePic(QString strPath);              //定位二维码过程中，二维码照片路径
+    void SignalSendCodeInfo(QRCodeInfo sInfoQRCodeStruct);  //收到二维码信息
+    void SignalStartQRCode();                               //开始获取二维码
+    void SignalSCupPicPath(QString strPath);                //测试过程中，方杯目标区图片路径
     void SignalStartMotor();
 private slots:
     void _SlotMotorComplete(quint16 iCmdType, bool bResult);
@@ -90,23 +100,25 @@ private:
                     int iBackGround4, int iBackGround5, int iBackGround6, int iPicWide);        //最小二乘法 去除背景
     int _GetTLineLoction(const int *kpDataArr, int iOrgCenterxLocation);
     int _GetMinLocation(const int *kpSumLineWidth, int iArrLength);
-    int _GetValueTC(const QList<int> &kiHorizontalProjectionList, TestResultData &sResultTestDataStruct);
+    int _GetValueTC(const QList<int> &kiHorizontalProjectionList, TestResultData &sResultTestDataStruct);   //获取C线位置
     int _FindCLine(QList<int> iHorizontalProjectionList);
-    int _FindProjectMid(QList<int> iUprightProjectionList, int iPixelLevel, int iPixelSustain);
+    int _FindProjectMid(QList<int> iUprightProjectionList, int iPixelLevel, int iPixelSustain);             //定位项目中心点
 
     void _InitStatus();
-    void _ReceivePicPathSCup(QString strPath);
-    TestResultData _ReceivePicPathTCup(QString strPath);
-    void _ModifNextStep(int iStep, int iPixel);
+    void _ReceivePicPathSCup(QString strPath);      //方杯目标区图片分析
+    TestResultData _ReceivePicPathTCup(QString strPath);          //圆杯目标区图片分析
+    void _ModifNextStep(int iStep, int iPixel);         //校准电机步数
     void _StatusHandler(bool bResult, ENUM_STATUS_TEST eTestStatus);
     void _GetTestResult(const InfoProject &ksProjectDataStruct, TestResultData &sResultDataStruct);
     void _GetTestResult(const double kdConcentration, const InfoProject &ksProjectDataStruct, TestResultData &sResultDataStruct);
+    void _CheckInValid(QString strPathTarget, QList<int> &iHorizontalProjectionList, TestResultData &sResultDataStruct);        //结果有效性检验
+    double _UnderLineProportion(QString strImgPath, int iPosition);         //求显带不全比例
     double _GetConcentration(const InfoProject &kprojectDataStruct, const TestResultData &ksResultDataStruct);
     QList<int> _FindProjectSCup(QList<int> iUprightProjectionList);
-    QList<int> _UprightProjection(QString strImgPath);
-    QList<int> _HorizontalProjection(QString strImgPath);
+    QList<int> _UprightProjection(QString strImgPath);      //垂直投影
+    QList<int> _HorizontalProjection(QString strImgPath);   //水平投影
     bool _GetRealLine(int *pDataArr, int iLineCenterX, int iPicWide);
-    void _SmoothData(QList<int> &iResultList, int iSmoothValue);
+    void _SmoothData(QList<int> &iResultList, int iSmoothValue);        //滤波
 private:
     int                 m_iIndexMovement;
     int                 m_iStepsMoveMotor;
@@ -116,6 +128,8 @@ private:
     QRCodeDetector      m_CodeDetoector ;
     ENUM_STATUS_TEST    m_eCurrentStatus;
 
+    void test();
+    int _FindFirstItem(QString strPath);
 };
 
 #endif // THREADTESTING_H

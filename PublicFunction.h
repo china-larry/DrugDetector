@@ -122,18 +122,28 @@ void TipErrorInfomation(EnumTypeErr eTypeError);
 void TipErrorInfomation(ENUM_ERR eTestError);
 
 
-
-class FuseImage:public  QWidget
+/**
+  * @brief 拼接图片类，当前为内部使用类，处理侧四结果拼接为打印图片，宽高固定
+  * @param
+  * @return
+  */
+class CFuseImage:public  QThread
 {
-Q_OBJECT
+    Q_OBJECT
 
 public :
-    FuseImage();
-    void setfilename( QString filename );
-    virtual ~FuseImage();
+    explicit CFuseImage();
+    virtual ~CFuseImage();
 protected:
-    virtual void paintEvent(QPaintEvent *event);
+    virtual void run();
+
+public:
+    void SetImagePaths(QStringList strImagePathList, QString strSaveImagePath);// 待拼接的图片
 private:
-    GroupImage  tt;
+    QStringList m_strImagePathList;
+    QString m_strSaveImagePath;
+    QPixmap *m_pPixmap;
+    int m_iImageWidth;
+    int m_iImageHeigth;
 };
 #endif // PUBLICFUNCTION_H
