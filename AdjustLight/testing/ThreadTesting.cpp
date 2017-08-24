@@ -10,6 +10,7 @@
     #include "protocolutility.h"
     #include "opencvutility.h"
 #endif
+#include <QApplication>
 #define MOVE_FORWARD    0           //向前移动电机
 #define MOVE_REVERSE    1           //向后移动电机
 #define SPEED_MOTOR     20          //电机移动速度
@@ -122,9 +123,15 @@ void ThreadTesting::StartTest()
 void ThreadTesting::StopTest()
 {
     m_eCurrentStatus = ENUM_STATUS_TEST::STATUS_NONE;
+    //CHidCmdThread::GetInstance()->ClearCmd();
     CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLedAndStopMotor);
-    m_CodeDetoector.terminate();
+
+    if(m_CodeDetoector.isRunning())
+    {
+        m_CodeDetoector.terminate();
+    }
 }
+
 
 /**
  * @brief ThreadTesting::_SLotReceiveQRCode 接收二维码信息 槽函数
@@ -265,14 +272,19 @@ void ThreadTesting::_StatusHandler(bool bResult, ENUM_STATUS_TEST eTestStatus)
             else
             {
                 qDebug() << "Test Complete!";
-                emit SignalTestComplete();
-                for(int i=1;i<5;i++)
-                {
-                    CHidCmdThread::GetInstance()->AddOpenLedCmd(i, 0);
-                }
+//                emit SignalTestComplete();
+//                for(int i=1;i<5;i++)
+//                {
+//                    CHidCmdThread::GetInstance()->AddOpenLedCmd(i, 0);
+//                }
+                CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLedAndStopMotor);
                 _InitStatus();
-                m_CodeDetoector.terminate();
                 m_eCurrentStatus = ENUM_STATUS_TEST::STATUS_NONE;
+                if(m_CodeDetoector.isRunning())
+                {
+                    m_CodeDetoector.terminate();
+                }
+				emit SignalTestComplete();
             }
             break;
         default:
@@ -386,6 +398,11 @@ void ThreadTesting::_InitStatus()
     }
 
     CHidCmdThread::GetInstance()->AddResetMotorCmd(RESET_MOTOR);
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
 }
 
 /**
@@ -440,8 +457,6 @@ TestResultData ThreadTesting::_ReceivePicPathTCup(QString strPath)
 
     QPixmap::fromImage(pImg->copy(pImg->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP_PRO, PIXEL_TOP_MARJIN_TCUP, PIXEL_HALF_OF_WIGHT_TCUP_PRO*2,
                                  pImg->height()-PIXEL_TOP_MARJIN_TCUP-PIXEL_BOTTOM_MARJIN_TCUP)).save(strPathProject);
-    sResultDataStruct.strPicturePath = strPathProject;
-
 
     QList<int> iUprightProjectionList;
     iUprightProjectionList = _UprightProjection(strPathProject);
@@ -477,6 +492,8 @@ TestResultData ThreadTesting::_ReceivePicPathTCup(QString strPath)
     {
         return sResultDataStruct;
     }
+
+    sResultDataStruct.strPicturePath = strPathProject;
 
 //    double concentration =_GetConcentration(sProjectDataStruct,sResultDataStruct);
 

@@ -25,6 +25,7 @@
 #include <QComboBox>
 #include <QTableWidget>
 #include <QTextEdit>
+#include <QAxObject>
 #include "CommonDataWidget/CLabelLineEditWidget.h"
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
@@ -36,7 +37,7 @@ class CHistoryPage : public QWidget
     Q_OBJECT
 public:
     explicit CHistoryPage(QWidget *parent = nullptr);
-
+    ~CHistoryPage();
 signals:
 
 public slots:
@@ -71,9 +72,19 @@ private:
     void _InitTestDataWidget();// 测试明细数据
     void _InitButtonWidget();
     void _InitLayout();
+    // 删除一行数据，控件，数据库均删除
+    bool _DeleteOneRow(int iRow);
+    // 获取当前选中行
+    bool _GetCurrentSelectRows(QSet<int> &qSelectSet);
     // 数据库
     void _InitDataBase();// 初始化数据库
     bool _DeleteDatabase(QString strID);// 删除指定ID的数据
+    // execl导出
+    void _InitExcel();
+    void _NewExcel();
+    void _SetExcelCellValue(int iRow, int iColumn, const QString &kstrValue);
+    void _SaveExcel(const QString &kstrFileName);
+    void _FreeExcel();
     // 上传服务器
     void _UpdateToPisServer();
     void _UpdateToPoctServer();
@@ -114,6 +125,12 @@ private:
     QString m_strPoctServer;
     // 当前测试结果打印图片保存至数据库
     QString m_strTestPrintImagePath;
+    // 导出execl
+    QAxObject *m_pApplication;
+    QAxObject *m_pWorkBooks;
+    QAxObject *m_pWorkBook;
+    QAxObject *m_pSheets;
+    QAxObject *m_pSheet;
 };
 
 #endif // CHISTORYPAGE_H

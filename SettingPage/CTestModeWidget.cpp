@@ -23,6 +23,18 @@ void CTestModeWidget::_SlotConfirm()
 {
 
 }
+
+bool CTestModeWidget::GetAutoTestFlag()
+{
+    if(m_pAutoRunTestCButton->isChecked())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 /**
   * @brief 创建控件组
   * @param
@@ -41,6 +53,8 @@ QGroupBox *CTestModeWidget::_CreateModeGroup()
     m_pMinutesLabel = new QLabel(tr("Minutes"));
     //
     m_pExpressModeRButton = new QRadioButton(tr("Express Mode"), this);
+    //
+    m_pAutoRunTestCButton = new QCheckBox(tr("Auto Test"), this);
 
     // standard
     QHBoxLayout *pStandardLayout = new QHBoxLayout;
@@ -58,14 +72,21 @@ QGroupBox *CTestModeWidget::_CreateModeGroup()
     pExpressLayout->addSpacing(150);
     pExpressLayout->addWidget(m_pExpressModeRButton);
     pExpressLayout->addStretch(100);
+    // auto
+    QHBoxLayout *pAutoLayout = new QHBoxLayout;
+    pAutoLayout->addSpacing(150);
+    pAutoLayout->addWidget(m_pAutoRunTestCButton);
+    pAutoLayout->addStretch(100);
     // layout
     QVBoxLayout *pLayout = new QVBoxLayout;
     pLayout->addStretch(10);
     pLayout->addLayout(pStandardLayout);
     pLayout->addSpacing(15);
     pLayout->addLayout(pTimeLayout);
-    pLayout->addSpacing(50);
+    pLayout->addSpacing(20);
     pLayout->addLayout(pExpressLayout);
+    pLayout->addSpacing(20);
+    pLayout->addLayout(pAutoLayout);
     pLayout->addStretch(10);
 
     pGroupBox->setLayout(pLayout);

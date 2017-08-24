@@ -65,8 +65,8 @@ public:
     DetectorPageUserData GetUserData(); // 获得被测者信息
     QString GetTestPrintImagePath();// 获取需要打印的图片路径
     void SetCupType(QStringList strCupTypeList);// 设置杯类型
-    QStringList GetCupType();
     void StopTest();// 主动停止测试，关闭UI
+    void SetAutoTest(bool bAutoTest);
 private:
     void _LoadQss();
     QGroupBox *_CreateDonorDetailsGroup();
@@ -141,6 +141,8 @@ private:
     QString m_strTestPrintImagePath;// 保存打印所需的测试过程图片，拼接合成，为当前时间，保存路径为result_image
     // 初始化摄像头
     VideoThread *m_pVideoThread;
+    // 自动测试
+    bool m_bAutoTest;// 是否不停的测试
 };
 
 #endif // CDETECTORPAGE_H

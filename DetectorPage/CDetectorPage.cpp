@@ -43,6 +43,8 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
     // 初始化摄像头
     m_pVideoThread = new VideoThread;
     m_pVideoThread->start();
+    //
+    m_bAutoTest = false;
 }
 
 CDetectorPage::~CDetectorPage()
@@ -175,12 +177,12 @@ void CDetectorPage::SlotEndTest()
     // 拼接图片
     if(m_sQRCodeInfoStruct.eTypeCup == EnumTypeCup::TypeSCup10)
     {// 方杯
-        qDebug() << "___end test _FuseTCupImage" ;
+        qDebug() << "___end test _FuseTCubeImage" ;
         _FuseTCubeImage();
     }
     else
     {// 圆杯处理
-        qDebug() << "___end test _FuseTCubeImage" ;
+        qDebug() << "___end test _FuseTCupImage" ;
         _FuseTCupImage();
     }
     // 告知main，传送数据
@@ -188,6 +190,12 @@ void CDetectorPage::SlotEndTest()
     m_pReadTestDeviceButton->setEnabled(true);
     m_pCamaraLabel->clear();
     //m_pPrintPriviewButton->setEnabled(true);
+    if(m_bAutoTest)
+    {// 循环测试
+        qDebug() << "auto test begin";
+        qDebug() << "auto test begin go";
+        _SlotCheckReadTestDevice();
+    }
 }
 /**
   * @brief 获得错误类型，弹窗提示
@@ -210,6 +218,7 @@ void CDetectorPage::SlotFuseImageOK()
 // 用户点击开始测试按钮，开始测试
 void CDetectorPage::_SlotCheckReadTestDevice()
 {
+    qDebug() <<"_SlotCheckReadTestDevice";
     // 控件状态
     m_pReadTestDeviceButton->setEnabled(false);
     m_pPrintPriviewButton->setEnabled(false);
@@ -331,14 +340,14 @@ void CDetectorPage::SetCupType(QStringList strCupTypeList)
     m_pProductDefinitionWidget->SetCupType(strCupTypeList);
 }
 
-QStringList CDetectorPage::GetCupType()
-{
-    return m_strCupTypeList;
-}
-
 void CDetectorPage::StopTest()
 {
     m_pThreadTesting->StopTest();
+}
+
+void CDetectorPage::SetAutoTest(bool bAutoTest)
+{
+    m_bAutoTest = bAutoTest;
 }
 
 

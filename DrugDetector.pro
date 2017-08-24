@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql webenginewidgets printsupport
+QT       += core gui sql webenginewidgets printsupport axcontainer
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

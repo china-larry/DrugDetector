@@ -50,11 +50,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    qDebug() << "stop test";
-    delete ui;
+    qDebug() << "stop test";    
     m_pDetectorPage->StopTest();
     CHidCmdThread::GetInstance()->AddCloseHIDCmd();
     QThread::sleep(2);// 结束UI，sleep2秒后可执行
+    delete ui;
     qDebug() << "delete ui";
 }
 
@@ -102,8 +102,9 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     if( m_bLeftButtonCheck )
-    {
+    {        
         m_qMovePoint = event->globalPos();
+        //qDebug() << "move point " << m_qMovePoint << m_qPressPoint;
         this->move( this->pos() + m_qMovePoint - m_qPressPoint );
         m_qPressPoint = m_qMovePoint;
     }
@@ -298,6 +299,9 @@ void MainWindow::_GoHistoryPageLayout()
 
 void MainWindow::_GoTestPageLayout()
 {
+    // 是否自动测试
+    m_pDetectorPage->SetAutoTest(m_pSettingPage->GetAutoTestFalg());
+    //
     m_pMainLayout->removeWidget(m_pHistoryPageTitleWidget);
     m_pMainLayout->removeWidget(m_pStackedWidget);
     //

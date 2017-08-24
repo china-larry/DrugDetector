@@ -24,6 +24,8 @@
 #include <QtSql>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QFileDialog>
+#include <QDesktopServices>
 #include "PublicFunction.h"
 CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
 {
@@ -34,6 +36,13 @@ CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
     _InitLayout();
     // 初始化数据库
     _InitDataBase();
+    // 初始化excel
+    _InitExcel();
+}
+
+CHistoryPage::~CHistoryPage()
+{
+    _FreeExcel();// 是否excel
 }
 /**
   * @brief 条件数据查找
@@ -125,28 +134,40 @@ void CHistoryPage::_SlotCheckDeselectAll()
   */
 void CHistoryPage::_SlotCheckDelete()
 {
-    int iRow = m_pHistoryDataTableWidget->currentRow();
-    if(iRow < 0 || iRow >= m_pHistoryDataTableWidget->rowCount())
+    QSet<int> qCurrentSelectSet;
+    _GetCurrentSelectRows(qCurrentSelectSet);
+    int iCurrentSelectSetCount = qCurrentSelectSet.count();
+    if(iCurrentSelectSetCount <= 0)
     {
-        QMessageBox::information(NULL, tr("Tip"), tr("Please Select Item!"), QMessageBox::Ok , QMessageBox::Ok);
+        QMessageBox::information(NULL, tr("Tip"), tr("Please Select Item!"),
+                                 QMessageBox::Ok , QMessageBox::Ok);
         return;
     }
-    QTableWidgetItem *pIDItem = m_pHistoryDataTableWidget->item(iRow, 0);
-    if(pIDItem == NULL)
+    // 删除提示
+    int iRet = QMessageBox::question(NULL, tr("Tip"), tr("Are You sure Delete!"),
+                                     QMessageBox::Yes | QMessageBox::No , QMessageBox::Yes);
+    if(iRet == QMessageBox::No)
     {
         return;
     }
-    QString strDatabaseID = pIDItem->text();
-    qDebug()<<"str DatabaseID: " << strDatabaseID;
-    // 数据库删除
-    _DeleteDatabase(strDatabaseID);
-    // 控件删除
-    m_pHistoryDataTableWidget->removeRow(iRow);
+    // 删除
+    QSetIterator<int> iter(qCurrentSelectSet);
+    while (iter.hasNext())
+    {
+        int iRow = iter.next();
+        qDebug() << "delete row " << iRow;
+        _DeleteOneRow(iRow);
+    }
 }
 
 void CHistoryPage::_SlotCheckExport()
 {
-
+    _NewExcel();
+    _SetExcelCellValue(2, 2, "test");
+    QString strFile = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                               QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
+                                               "Excel (*.xls *.xlsx)");
+    _SaveExcel(strFile);
 }
 /**
   * @brief 当前选择cell改变，只处理行改变
@@ -540,7 +561,7 @@ void CHistoryPage::_InitHistoryTableWidget()
 {
     // table
     m_pHistoryDataTableWidget = new QTableWidget(this);
-    m_pHistoryDataTableWidget->setMinimumSize(550, 350);
+    m_pHistoryDataTableWidget->setMinimumSize(659, 350);
     m_pHistoryDataTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_pHistoryDataTableWidget->setFocusPolicy(Qt::NoFocus);
     m_iTableColumnCount = 6;
@@ -553,7 +574,13 @@ void CHistoryPage::_InitHistoryTableWidget()
     pVerticalHeader->setHighlightSections(false);
     // 表单样式    
     QHeaderView *pHeaderView = m_pHistoryDataTableWidget->horizontalHeader();
-    pHeaderView->setDefaultSectionSize(110);
+    //pHeaderView->setDefaultSectionSize(110);
+    pHeaderView->resizeSection(0, 10);
+    pHeaderView->resizeSection(1, 150);
+    pHeaderView->resizeSection(2, 180);
+    pHeaderView->resizeSection(3, 80);
+    pHeaderView->resizeSection(4, 120);
+    //pHeaderView->resizeSection(5, 120);
     pHeaderView->setHighlightSections(false);
     pHeaderView->setDisabled(true);
     // 充满表格
@@ -583,11 +610,11 @@ void CHistoryPage::_InitHistoryTableWidget()
 void CHistoryPage::_InitTestDataWidget()
 {
     m_pTestDataTextEdit = new QTextEdit(this);
-    m_pTestDataTextEdit->setFixedSize(409, 100);
+    m_pTestDataTextEdit->setFixedSize(300, 100);
     //m_pTestDataTextEdit->setEnabled(false);
 
     m_pCurrentTestDataTableWidget = new QTableWidget(this);
-    m_pCurrentTestDataTableWidget->setFixedWidth(409);
+    m_pCurrentTestDataTableWidget->setFixedWidth(300);
     m_pCurrentTestDataTableWidget->setColumnCount(3);
     m_pCurrentTestDataTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_pCurrentTestDataTableWidget->setFocusPolicy(Qt::NoFocus);
@@ -599,7 +626,7 @@ void CHistoryPage::_InitTestDataWidget()
     pVerticalHeader->setHidden(true);
     pVerticalHeader->setHighlightSections(false);
     QHeaderView *pHeaderView = m_pCurrentTestDataTableWidget->horizontalHeader();
-    pHeaderView->setDefaultSectionSize(120);
+    pHeaderView->setDefaultSectionSize(90);
     pHeaderView->setDisabled(true);
     pHeaderView->setHighlightSections(false);
     // 充满表格
@@ -667,6 +694,47 @@ void CHistoryPage::_InitLayout()
     this->setLayout(pLayout);
 }
 
+bool CHistoryPage::_DeleteOneRow(int iRow)
+{
+    if(iRow < 0 || iRow >= m_pHistoryDataTableWidget->rowCount())
+    {
+        return false;
+    }
+    QTableWidgetItem *pIDItem = m_pHistoryDataTableWidget->item(iRow, 0);
+    if(pIDItem == NULL)
+    {
+        return false;
+    }
+    QString strDatabaseID = pIDItem->text();
+    qDebug()<<"str DatabaseID: " << strDatabaseID;
+    // 数据库删除
+    _DeleteDatabase(strDatabaseID);
+    // 控件删除
+    m_pHistoryDataTableWidget->removeRow(iRow);
+    return true;
+}
+/**
+  * @brief 获取当前选中行
+  * @param
+  * @return
+  */
+bool CHistoryPage::_GetCurrentSelectRows(QSet<int> &qSelectSet)
+{
+    QList<QTableWidgetItem* > qItemsList = m_pHistoryDataTableWidget->selectedItems();
+    int iItemCount = qItemsList.count();
+    if(iItemCount <= 0)
+    {
+        return false;
+    }
+    for(int i=0; i < iItemCount; ++i)
+    {
+        //获取选中的行
+        int iItemRow = m_pHistoryDataTableWidget->row(qItemsList.at(i));
+        qSelectSet.insert(iItemRow);
+    }
+    return  true;
+}
+
 /**
   * @brief 删除指定ID的数据
   * @param
@@ -702,6 +770,47 @@ bool CHistoryPage::_DeleteDatabase(QString strID)
     }
     return true;
 }
+void CHistoryPage::_InitExcel()
+{
+    m_pApplication = new QAxObject();
+    bool bCon =  m_pApplication->setControl("Excel.Application");//连接Excel控件
+    qDebug() <<"conn " << bCon;
+    m_pApplication->dynamicCall("SetVisible(bool)", false);//false不显示窗体
+    m_pApplication->setProperty("DisplayAlerts", false);//不显示任何警告信息。
+    m_pWorkBooks = m_pApplication->querySubObject("Workbooks");
+}
+
+void CHistoryPage::_NewExcel()
+{
+    m_pWorkBooks->dynamicCall("Add");
+    m_pWorkBook = m_pApplication->querySubObject("ActiveWorkBook");
+    m_pSheets = m_pWorkBook->querySubObject("Sheets");
+    m_pSheet = m_pSheets->querySubObject("Item(int)", 1);
+}
+
+void CHistoryPage::_SetExcelCellValue(int iRow, int iColumn, const QString &kstrValue)
+{
+    QAxObject *pRange = m_pSheet->querySubObject("Cells(int,int)", iRow, iColumn);
+    pRange->dynamicCall("Value", kstrValue);
+}
+
+void CHistoryPage::_SaveExcel(const QString &kstrFileName)
+{
+    m_pWorkBook->dynamicCall("SaveAs(const QString &)",
+                               QDir::toNativeSeparators(kstrFileName));
+}
+
+void CHistoryPage::_FreeExcel()
+{
+    if (m_pApplication != NULL)
+    {
+        m_pApplication->dynamicCall("Quit()");
+        delete m_pApplication;
+        m_pApplication = NULL;
+    }
+}
+
+
 
 void CHistoryPage::_UpdateToPisServer()
 {

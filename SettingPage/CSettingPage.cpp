@@ -21,7 +21,12 @@ CSettingPage::CSettingPage(QWidget *parent) : QWidget(parent)
     _InitWidget();
     _InitLayout();
     //应用样式 apply the qss style
-     _LoadQss();
+    _LoadQss();
+}
+
+bool CSettingPage::GetAutoTestFalg()
+{
+    return m_pTestModeWidget->GetAutoTestFlag();
 }
 
 void CSettingPage::_LoadQss()

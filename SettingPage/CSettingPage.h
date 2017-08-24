@@ -28,7 +28,8 @@ public:
 signals:
 
 public slots:
-
+public:
+    bool GetAutoTestFalg();
 private:
     void _LoadQss();
     void _InitWidget();

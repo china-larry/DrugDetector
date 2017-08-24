@@ -15,6 +15,7 @@
 
 #include <QWidget>
 #include <QRadioButton>
+#include <QCheckBox>
 #include <QLabel>
 #include <QGroupBox>
 #include <QPushButton>
@@ -33,6 +34,9 @@ public slots:
 private slots:
     void _SlotConfirm();// 设置测试模式
 
+public:
+    bool GetAutoTestFlag();
+
 private:
     QGroupBox *_CreateModeGroup();
     void _InitWiget();
@@ -45,6 +49,7 @@ private:
     //
     QPushButton *m_pConfirmButton;
     QPushButton *m_pCancelButton;
+    QCheckBox *m_pAutoRunTestCButton;
 };
 
 #endif // CTESTMODEWIGET_H
