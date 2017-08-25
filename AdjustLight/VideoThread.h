@@ -8,7 +8,7 @@ class VideoThread : public QThread
     Q_OBJECT
 
 public:
-    explicit VideoThread(QObject *parent = Q_NULLPTR);
+    explicit VideoThread();
     ~VideoThread();
     bool OpenVideo();
     bool CloseVideo();

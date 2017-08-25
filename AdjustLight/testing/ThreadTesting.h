@@ -12,6 +12,7 @@
   ****************************************************/
 
 #include <QObject>
+#include <QThread>
 #define PRO_DRUG_DETECTOR
 #ifdef PRO_DRUG_DETECTOR
     #include "AdjustLight/qrcodedetector.h"
@@ -20,6 +21,14 @@
 #endif
 #ifndef THREADTESTING_H
 #define THREADTESTING_H
+
+enum ENUM_LOCATION_TYPE
+{
+    TYPE_FIRST_WRITE = 0,
+    TYPE_FIRST_ITEM,
+    TYPE_FIRST_LOCATE
+};
+
 
 enum ENUM_INVALID_RESULT        //测试结果非法
 {
@@ -36,7 +45,7 @@ enum ENUM_STATUS_TEST       //枚举：运行状态
     MOVE_THE_MORTOR,        //状态-转动电机
     TAKE_PHOTO,             //状态-拍照
 };
-Q_DECLARE_METATYPE(ENUM_STATUS_TEST);
+Q_DECLARE_METATYPE(ENUM_STATUS_TEST)
 
 enum ENUM_ERR               //枚举：错误信息
 {
@@ -49,7 +58,7 @@ enum ENUM_ERR               //枚举：错误信息
     ERR_DISCONNECT_USB,     //USB链接失败
     ERR_VIDEOOPENFAILED     //摄像头打开失败
 };
-Q_DECLARE_METATYPE(ENUM_ERR);
+Q_DECLARE_METATYPE(ENUM_ERR)
 
 struct TestResultData       //测试结果
 {
@@ -63,9 +72,10 @@ struct TestResultData       //测试结果
     QString strControlLine; // if control line valid
     QString strPicturePath; // 目标区截图路径
     ENUM_INVALID_RESULT eInvalidType;   //结果无效类型
+    QRect qPictureRedRect;// 目标区域红色提示框位置
 };
 
-Q_DECLARE_METATYPE(TestResultData);
+Q_DECLARE_METATYPE(TestResultData)
 
 class ThreadTesting : public QObject
 {
@@ -86,14 +96,17 @@ private slots:
     void _SlotMotorComplete(quint16 iCmdType, bool bResult);
     void _SlotTakePhoto();
     void _SlotMoveStepperMotor();
+    void _SlotLocateFirstItem();
     void _SLotReceiveQRCodeInfo(QRCodeInfo sInfoQRCodeStruct);
     void _SlotReceiveErr(EnumTypeErr eErr);
     void _SlotReceiveQRcodePic(QString strPath);
 public:
-    void StartTest();                                   //启动测试
+    void StartTest(int iSeconds);                                   //启动测试
     void StopTest();                                    //停止测试
     QList<int> GetComponentGreenTCup(QString strPath);  //获取目标区域绿色分量数据 圆杯
     QList<int> GetComponentGreenSCup(QString strPath);  //获取目标区域绿色分量数据 方杯
+
+
 private:
     int _ImageAnalysisProcess(int *pDataArr, int iOrgLineCenterX, int iPicWide);                       //获取目标线（C线或者T线）的面积积分
     int _ErCMethod2(int *pData, int iBackGround1, int iBackGround2, int iBackGround3,
@@ -106,7 +119,7 @@ private:
 
     void _InitStatus();
     void _ReceivePicPathSCup(QString strPath);      //方杯目标区图片分析
-    TestResultData _ReceivePicPathTCup(QString strPath);          //圆杯目标区图片分析
+    TestResultData _ReceivePicPathTCup(QString strPath, bool &bExist);          //圆杯目标区图片分析
     void _ModifNextStep(int iStep, int iPixel);         //校准电机步数
     void _StatusHandler(bool bResult, ENUM_STATUS_TEST eTestStatus);
     void _GetTestResult(const InfoProject &ksProjectDataStruct, TestResultData &sResultDataStruct);
@@ -120,6 +133,7 @@ private:
     bool _GetRealLine(int *pDataArr, int iLineCenterX, int iPicWide);
     void _SmoothData(QList<int> &iResultList, int iSmoothValue);        //滤波
 private:
+    int                 m_MsecToTest;
     int                 m_iIndexMovement;
     int                 m_iStepsMoveMotor;
     QThread             m_qTestThread;
@@ -127,9 +141,11 @@ private:
     QRCodeInfo          m_QRCodeInfo;
     QRCodeDetector      m_CodeDetoector ;
     ENUM_STATUS_TEST    m_eCurrentStatus;
+    bool                m_bFoundFirstWrite;
 
     void test();
-    int _FindFirstItem(QString strPath);
+    int _FindFirstItem(QString strPath, ENUM_LOCATION_TYPE type);
+    int _FindFirstWrite(QList<int> iUprightProjectionList);
 };
 
 #endif // THREADTESTING_H

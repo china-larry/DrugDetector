@@ -17,7 +17,7 @@ OrdinaryBrightmess::OrdinaryBrightmess()
 
 OrdinaryBrightmess::~OrdinaryBrightmess()
 {
-
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
 }
 
 void OrdinaryBrightmess::SlotOrdinaryCalibration()
@@ -26,8 +26,12 @@ void OrdinaryBrightmess::SlotOrdinaryCalibration()
     SetBrightnessValue(m_sStandardMachinebrightnessValue);
     //目标机灯光校准
     OrdinaryCalibration(m_sOrdinarybrightnessValue);
+
     //发送信号到UI更新
     emit SignalCalibrationValueToUI(m_sOrdinarybrightnessValue);
+
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
+
 }
 
 void OrdinaryBrightmess::SlotOrdinaryImport()

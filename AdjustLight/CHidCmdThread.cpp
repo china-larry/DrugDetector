@@ -7,7 +7,7 @@
 
 CHidCmdThread* CHidCmdThread::sm_pHidCmdThreadInstance = NULL;
 
-CHidCmdThread::CHidCmdThread(QObject *parent):QThread(parent)
+CHidCmdThread::CHidCmdThread()
 {
     m_bStopped = true;
     connect(HIDOpertaionUtility::GetInstance(), SIGNAL(SignalOperationComplete(quint16,bool)),this,
@@ -20,6 +20,10 @@ CHidCmdThread::~CHidCmdThread()
 {
     disconnect(HIDOpertaionUtility::GetInstance(), SIGNAL(SignalOperationComplete(quint16,bool)),this,
                                                        SLOT(_SlotHIDCmdComplete(quint16,bool)));
+    if(NULL != sm_pHidCmdThreadInstance)
+    {
+        delete sm_pHidCmdThreadInstance;
+    }
 }
 
 CHidCmdThread *CHidCmdThread::GetInstance()
@@ -27,7 +31,6 @@ CHidCmdThread *CHidCmdThread::GetInstance()
     if(NULL == sm_pHidCmdThreadInstance)
     {
         sm_pHidCmdThreadInstance = new CHidCmdThread();
-        //connect(s_hidCmdThreadInstance, SIGNAL(finished()), s_hidCmdThreadInstance, SLOT(deleteLater()));
     }
 
     return  sm_pHidCmdThreadInstance;
@@ -84,11 +87,6 @@ void CHidCmdThread::AddCloseHIDCmd()
     HIDCmdData sHidCmdData;
     sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdDevClose;
     AddCmd(sHidCmdData);
-}
-
-void CHidCmdThread::AddStopHIDCmd()
-{
-    m_hidCmdDataQueue.clear();
 }
 
 void CHidCmdThread::AddOpenLedCmd(int iLedIndex, quint16 iBrightness)

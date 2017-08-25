@@ -75,7 +75,7 @@ private:
     // 删除一行数据，控件，数据库均删除
     bool _DeleteOneRow(int iRow);
     // 获取当前选中行
-    bool _GetCurrentSelectRows(QSet<int> &qSelectSet);
+    bool _GetCurrentSelectRows(QSet<int> &iSelectSet);
     // 数据库
     void _InitDataBase();// 初始化数据库
     bool _DeleteDatabase(QString strID);// 删除指定ID的数据
@@ -120,6 +120,7 @@ private:
     QList<QStringList> m_strTableLineDataList;// 每行数据
     // 数据库
     QString m_strDatabaseName;
+    int m_iDatabaseColumnCount;// 数据库项列数
     // PIS/POCT服务器
     QString m_strPisServer;
     QString m_strPoctServer;
@@ -131,6 +132,8 @@ private:
     QAxObject *m_pWorkBook;
     QAxObject *m_pSheets;
     QAxObject *m_pSheet;
+    QStringList m_strCharNumberList;
+    QStringList m_strTitleNameList;
 };
 
 #endif // CHISTORYPAGE_H

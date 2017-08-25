@@ -74,6 +74,8 @@ private:
     QGroupBox *_CreateResultsGroup();
     void _InitWidget();
     void _InitLayout();
+    // 数据输入判定
+    bool _GetValidData();
     void _InitThreadTesting();// 初始化测试线程
     // 更新摄像头图片
     void _SetCamaraImage(QString strImagePath);
@@ -119,7 +121,7 @@ private:
     CLabelCommoBoxWidget *m_pProductDefinitionWidget;
     CLabelLineEditWidget *m_pProductLotWidget;
     // expiration date
-    CLabelDateWidget *m_pExpirationDateWidget;
+    CLabelLineEditWidget *m_pExpirationWidget;
     CLabelLineEditWidget *m_pProductIDWidget;
     //////////////////////////////////////
     // push button

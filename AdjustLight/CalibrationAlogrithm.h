@@ -106,6 +106,9 @@ public:
      */
     bool ReadLedLightParams(QString strFileName,QString strParamsType,
                             StandardMachineCalibrateLight *pStandardMachineCalibrateLight);
+
+private:
+    const int m_iMaxLightValue = 25000;
 };
 
 #endif // CALIBRATIONALOGRITHM_H

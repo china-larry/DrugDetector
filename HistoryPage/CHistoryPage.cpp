@@ -105,9 +105,9 @@ void CHistoryPage::_SlotCheckQuery()
         // TestTime
         strLineDataList.push_back(qSqlQuery.value(5).toString());
         // Product Lot
-        strLineDataList.push_back(qSqlQuery.value(18).toString());
+        strLineDataList.push_back(qSqlQuery.value(19).toString());
         // Product Difinition
-        strLineDataList.push_back(qSqlQuery.value(16).toString());
+        strLineDataList.push_back(qSqlQuery.value(17).toString());
         // 数据
         qDebug() << "list " << strLineDataList;
         m_strTableLineDataList.push_back(strLineDataList);
@@ -134,9 +134,9 @@ void CHistoryPage::_SlotCheckDeselectAll()
   */
 void CHistoryPage::_SlotCheckDelete()
 {
-    QSet<int> qCurrentSelectSet;
-    _GetCurrentSelectRows(qCurrentSelectSet);
-    int iCurrentSelectSetCount = qCurrentSelectSet.count();
+    QSet<int> iCurrentSelectSet;
+    _GetCurrentSelectRows(iCurrentSelectSet);
+    int iCurrentSelectSetCount = iCurrentSelectSet.count();
     if(iCurrentSelectSetCount <= 0)
     {
         QMessageBox::information(NULL, tr("Tip"), tr("Please Select Item!"),
@@ -151,10 +151,10 @@ void CHistoryPage::_SlotCheckDelete()
         return;
     }
     // 删除
-    QSetIterator<int> iter(qCurrentSelectSet);
-    while (iter.hasNext())
+    QSetIterator<int> qIter(iCurrentSelectSet);
+    while (qIter.hasNext())
     {
-        int iRow = iter.next();
+        int iRow = qIter.next();
         qDebug() << "delete row " << iRow;
         _DeleteOneRow(iRow);
     }
@@ -163,11 +163,52 @@ void CHistoryPage::_SlotCheckDelete()
 void CHistoryPage::_SlotCheckExport()
 {
     _NewExcel();
-    _SetExcelCellValue(2, 2, "test");
+    QSet<int> iCurrentSelectRowSet;
+    _GetCurrentSelectRows(iCurrentSelectRowSet);
+    //遍历
+    QSetIterator<int> qIter(iCurrentSelectRowSet);
+    int iExcelRowIndex = 2;// 递增行,execl单元格为2行2列开始
+    QAxObject *pColumnAxObject = NULL;
+    while (qIter.hasNext())
+    {
+        int iRow = qIter.next();
+        // 获取ID
+        QTableWidgetItem *pItem = m_pHistoryDataTableWidget->item(iRow, 0);
+        if(pItem == NULL)
+        {// 无选择行
+            return;
+        }
+        QString strID = pItem->text();
+        bool bOk = false;
+        int iCurrentID = strID.toInt(&bOk, 10);
+        if(bOk && iCurrentID >= 0)// 有效ID判断
+        {
+            QString strSelect = QString("SELECT * FROM drugdata WHERE id = ");
+            strSelect += strID;
+            qDebug() << "slel " << strSelect;
+            QSqlQuery qSqlQuery(strSelect);// 数据库中存放103列(id)
+            if(qSqlQuery.next())
+            {
+                for(int i = 1; i < m_iDatabaseColumnCount; ++i)// i=0为ID，不导出
+                {
+                    _SetExcelCellValue(iExcelRowIndex, i + 1, qSqlQuery.value(i).toString());// execl单元格为2行2列开始
+                }
+                // 列号
+                pColumnAxObject = m_pSheet->querySubObject("Range(QVariant, QVariant)",
+                                                           "A" + QString::number(iExcelRowIndex));//获取单元格
+                pColumnAxObject->dynamicCall("SetValue(const QVariant&)", QVariant(QString::number(iExcelRowIndex-1)));//设置单元格的值
+                ++iExcelRowIndex;
+                qDebug() <<"excel one row sucess " << iExcelRowIndex;
+            }
+
+        }
+    }
+    // 保存
     QString strFile = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
                                                "Excel (*.xls *.xlsx)");
     _SaveExcel(strFile);
+    qDebug() <<"save excel sucess";
 }
 /**
   * @brief 当前选择cell改变，只处理行改变
@@ -242,32 +283,36 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
             {// Follow Up
                 strTestReason += tr("Follow Up  ");
             }
+            if(qSqlQuery.value(14).toString() == "true")
+            {// Follow Up
+                strTestReason += tr("Other Reason  ");
+            }
            // Comment
-            strTestReason += qSqlQuery.value(14).toString();
+            strTestReason += qSqlQuery.value(15).toString();
             m_strCurrentTestInfoList.push_back(QString("Reason for Test: ") + strTestReason);
             // Temperature normal#
-            m_strCurrentTestInfoList.push_back(QString("Temperature normal: ")  + qSqlQuery.value(15).toString());
+            m_strCurrentTestInfoList.push_back(QString("Temperature normal: ")  + qSqlQuery.value(16).toString());
             // Expiration Date
-            m_strCurrentTestInfoList.push_back(QString("Expiration Date: ") + qSqlQuery.value(17).toString());
+            m_strCurrentTestInfoList.push_back(QString("Expiration Date: ") + qSqlQuery.value(18).toString());
             // Product ID
-            m_strCurrentTestInfoList.push_back(QString("Product ID:") + qSqlQuery.value(19).toString());
+            m_strCurrentTestInfoList.push_back(QString("Product ID:") + qSqlQuery.value(20).toString());
             // Number of Programs
             bool bProgramNumOk = false;
-            m_iCurrentDataProgramNumber = qSqlQuery.value(20).toInt(&bProgramNumOk);
+            m_iCurrentDataProgramNumber = qSqlQuery.value(21).toInt(&bProgramNumOk);
             if(m_iCurrentDataProgramNumber > 16)
             {
                 m_iCurrentDataProgramNumber = 16;// 最大结果数据位16个0-15
             }
             if(bProgramNumOk)
             {
-                m_strCurrentTestInfoList.push_back(QString("Programs Number: ") + qSqlQuery.value(20).toString());
+                m_strCurrentTestInfoList.push_back(QString("Programs Number: ") + qSqlQuery.value(21).toString());
                 // name result cutoff
                 for(int i = 0; i < m_iCurrentDataProgramNumber; ++i)
                 {
                     QStringList strDataList;
-                    strDataList.push_back(qSqlQuery.value(21 + i * 5).toString());
                     strDataList.push_back(qSqlQuery.value(22 + i * 5).toString());
                     strDataList.push_back(qSqlQuery.value(23 + i * 5).toString());
+                    strDataList.push_back(qSqlQuery.value(24 + i * 5).toString());
                     //
                     m_qTestDataList.push_back(strDataList);
                 }
@@ -356,9 +401,9 @@ void CHistoryPage::ShowCurrentDateTest()
         // TestTime
         strLineDataList.push_back(qSqlQuery.value(5).toString());
         // Product Lot
-        strLineDataList.push_back(qSqlQuery.value(18).toString());
+        strLineDataList.push_back(qSqlQuery.value(19).toString());
         // Product Difinition
-        strLineDataList.push_back(qSqlQuery.value(16).toString());
+        strLineDataList.push_back(qSqlQuery.value(17).toString());
         // 数据
         qDebug() << "list " << strLineDataList;
         m_strTableLineDataList.push_back(strLineDataList);
@@ -381,7 +426,7 @@ void CHistoryPage::InsertToDatabase()
     {
         QString strInsert =
                 "INSERT INTO drugdata (DonorFirstName, DonorLastName, TestTime, BirthDate, DonorID, TestSite, Operator, "
-                 "PreEmployment, Random, ReasonSuspicionCause, PostAccident, ReturnToDuty, FollowUp, Comments, "
+                 "PreEmployment, Random, ReasonSuspicionCause, PostAccident, ReturnToDuty, FollowUp, OtherReason, Comments, "
                   "TemperatureNormal, ProductDefinition, ExpirationDate, ProductLot, ProductID, ProgramsNumber";
         for(int i = 0; i < 16; ++i)
         {
@@ -394,7 +439,7 @@ void CHistoryPage::InsertToDatabase()
         strInsert += QString(", ") + QString("PrintImagePath");
         //
         strInsert += QString(") VALUES (?");
-        for(int i = 0; i < 100; ++i)// 共计101列
+        for(int i = 0; i < 101; ++i)// 共计102列
         {// 100个
             strInsert += QString(", ?");
         }
@@ -430,6 +475,9 @@ void CHistoryPage::InsertToDatabase()
         //
         strFlag = m_sDetectorPageUserDataStruct.bFollowUp ? "true" : "false";
         qSqlQuery.addBindValue(strFlag);
+        //
+        strFlag = m_sDetectorPageUserDataStruct.bOtherReason ? "true" : "false";
+        qSqlQuery.addBindValue(strFlag);
         // commets
         qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strOtherReasonComments);
         //
@@ -437,7 +485,7 @@ void CHistoryPage::InsertToDatabase()
         qSqlQuery.addBindValue(strFlag);
         // product details
         qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strProductDefinition);
-        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.qExpriationDate);
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strExpriationDate);
         qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strProductLot);
         qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strProductID);
         // program and picture
@@ -511,8 +559,8 @@ QGroupBox *CHistoryPage::_CreateQueryConditionGroup()
     m_pDonorIDWidget->SetLabelObjectName("m_pDonorIDWidget");
     m_pProductLotWidget = new CLabelLineEditWidget(tr("Product Lot"), "", this);
     //
-    m_pBeginDataWidget = new CLabelDateWidget(tr("Begin Time"), QDate::currentDate(), this);
-    m_pEndDataWidget = new CLabelDateWidget(tr("End Time"), QDate::currentDate(), this);
+    m_pBeginDataWidget = new CLabelDateWidget(tr("Begin Date"), QDate::currentDate(), this);
+    m_pEndDataWidget = new CLabelDateWidget(tr("End Date"), QDate::currentDate(), this);
     // 中划线
     m_pBeginToEndLabel = new QLabel(this);
     m_pBeginToEndLabel->setFixedSize(32, 41);
@@ -718,7 +766,7 @@ bool CHistoryPage::_DeleteOneRow(int iRow)
   * @param
   * @return
   */
-bool CHistoryPage::_GetCurrentSelectRows(QSet<int> &qSelectSet)
+bool CHistoryPage::_GetCurrentSelectRows(QSet<int> &iSelectSet)
 {
     QList<QTableWidgetItem* > qItemsList = m_pHistoryDataTableWidget->selectedItems();
     int iItemCount = qItemsList.count();
@@ -730,7 +778,7 @@ bool CHistoryPage::_GetCurrentSelectRows(QSet<int> &qSelectSet)
     {
         //获取选中的行
         int iItemRow = m_pHistoryDataTableWidget->row(qItemsList.at(i));
-        qSelectSet.insert(iItemRow);
+        iSelectSet.insert(iItemRow);
     }
     return  true;
 }
@@ -778,6 +826,38 @@ void CHistoryPage::_InitExcel()
     m_pApplication->dynamicCall("SetVisible(bool)", false);//false不显示窗体
     m_pApplication->setProperty("DisplayAlerts", false);//不显示任何警告信息。
     m_pWorkBooks = m_pApplication->querySubObject("Workbooks");
+    m_strCharNumberList << "A1" << "B1" << "C1" << "D1" << "E1" << "F1" << "G1" << "H1" << "I1" <<
+                         "J1" << "K1" << "L1" << "M1" << "N1" << "O1" << "P1" << "Q1" << "R1" << "S1" <<
+                         "T1" << "U1" << "V1" << "W1" << "X1" << "Y1" << "Z1";
+    for(int i = 0; i <26; ++i)
+    {
+        m_strCharNumberList << QString("A") + m_strCharNumberList.at(i);
+    }
+    for(int i = 0; i <26; ++i)
+    {
+        m_strCharNumberList << QString("B") + m_strCharNumberList.at(i);
+    }
+    for(int i = 0; i <26; ++i)
+    {
+        m_strCharNumberList << QString("C") + m_strCharNumberList.at(i);
+    }
+    // 初始化title名称
+    m_strTitleNameList << "ID" << "DonorFirstName" << "DonorLastName" << "TestTime"
+                         << "BirthDate" << "DonorID" << "TestSite" << "Operator"
+                         << "PreEmployment" << "Random" << "ReasonSuspicionCause" << "PostAccident"
+                         << "ReturnToDuty" << "FollowUp" << "OtherReason" << "Comments"
+                         << "TemperatureNormal" << "ProductDefinition" << "ExpirationDate"
+                         << "ProductLot" << "ProductID" << "ProgramsNumber";
+
+    for(int i = 0; i < 16; ++i)
+    {
+        m_strTitleNameList << QString("ProgramName") + QString::number(i);
+        m_strTitleNameList << QString("Result") + QString::number(i);
+        m_strTitleNameList << QString("Cutoff") + QString::number(i);
+        m_strTitleNameList << QString("T") + QString::number(i);
+        m_strTitleNameList << QString("C") + QString::number(i);
+    }
+    m_strTitleNameList << "PrintImagePath";
 }
 
 void CHistoryPage::_NewExcel()
@@ -786,6 +866,16 @@ void CHistoryPage::_NewExcel()
     m_pWorkBook = m_pApplication->querySubObject("ActiveWorkBook");
     m_pSheets = m_pWorkBook->querySubObject("Sheets");
     m_pSheet = m_pSheets->querySubObject("Item(int)", 1);
+    // 设置标题
+
+    qDebug() << "count " << m_iDatabaseColumnCount;
+
+    QAxObject *pTitleAxObject = NULL;
+    for(int i = 0; i < m_iDatabaseColumnCount; ++i)
+    {
+        pTitleAxObject = m_pSheet->querySubObject("Range(QVariant, QVariant)", m_strCharNumberList.at(i));//获取单元格
+        pTitleAxObject->dynamicCall("SetValue(const QVariant&)", QVariant(m_strTitleNameList.at(i)));//设置单元格的值
+    }
 }
 
 void CHistoryPage::_SetExcelCellValue(int iRow, int iColumn, const QString &kstrValue)
@@ -830,6 +920,7 @@ void CHistoryPage::_UpdateToPoctServer()
 void CHistoryPage::_InitDataBase()
 {
     m_strDatabaseName = "\\drug.db";
+    m_iDatabaseColumnCount = 103;// 当前列数
     if (ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
     {
         QString strCreateTable  = "CREATE TABLE drugdata ("
@@ -841,12 +932,13 @@ void CHistoryPage::_InitDataBase()
                                   "DonorID VARCHAR,"
                                   "TestSite VARCHAR,"
                                   "Operator VARCHAR,"
-                                 "PreEmployment VARCHAR,"
+                                  "PreEmployment VARCHAR,"
                                   "Random VARCHAR,"
                                   "ReasonSuspicionCause VARCHAR,"
                                   "PostAccident VARCHAR,"
                                   "ReturnToDuty VARCHAR,"
                                   "FollowUp VARCHAR,"
+                                  "OtherReason VARCHAR,"
                                   "Comments VARCHAR,"
                                   "TemperatureNormal VARCHAR,"
                                   "ProductDefinition VARCHAR,"

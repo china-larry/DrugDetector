@@ -45,7 +45,7 @@ struct DetectorPageUserData
     // product details
     bool bTemperatureNormal;
     QString strProductDefinition;
-    QDate qExpriationDate;
+    QString strExpriationDate;
     QString strProductLot;
     QString strProductID;
     int iProgramsNumber;//
@@ -79,6 +79,12 @@ void SetButtonBackImage(QPushButton *pButton, QString strImagePath);
   * @return
   */
 void SetLabelBackImage(QLabel *pLabel, QString strImagePath);
+/**
+  * @brief 设置Label背景图片,绘制红色提示区域框，只为测试结果使用
+  * @param
+  * @return
+  */
+void SetLabelBackImageEx(QLabel *pLabel, QString strImagePath, QRect qRedRect);
 /**
   * @brief 设置控件QSS样式
   * @param pWidget：控件

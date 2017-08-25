@@ -52,8 +52,8 @@ MainWindow::~MainWindow()
 {
     qDebug() << "stop test";    
     m_pDetectorPage->StopTest();
-    CHidCmdThread::GetInstance()->AddCloseHIDCmd();
-    QThread::sleep(2);// 结束UI，sleep2秒后可执行
+//    CHidCmdThread::GetInstance()->AddCloseHIDCmd();
+//    QThread::sleep(2);// 结束UI，sleep2秒后可执行
     delete ui;
     qDebug() << "delete ui";
 }
@@ -105,7 +105,17 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     {        
         m_qMovePoint = event->globalPos();
         //qDebug() << "move point " << m_qMovePoint << m_qPressPoint;
-        this->move( this->pos() + m_qMovePoint - m_qPressPoint );
+        // 防止闪现
+        QPoint qMovePointTemp = m_qMovePoint - m_qPressPoint;
+        if(qMovePointTemp.x() > 100)
+        {
+            qMovePointTemp.setX(100);
+        }
+        if(qMovePointTemp.y() > 100)
+        {
+            qMovePointTemp.setY(100);
+        }
+        this->move( this->pos() + qMovePointTemp);
         m_qPressPoint = m_qMovePoint;
     }
     event->ignore();

@@ -34,7 +34,7 @@ class CHidCmdThread : public QThread
     Q_OBJECT
 
 public:
-    explicit CHidCmdThread(QObject *parent = Q_NULLPTR);
+    explicit CHidCmdThread();
     ~CHidCmdThread();
 
 private slots:
@@ -67,8 +67,6 @@ public:
     void SetStopped(bool bStopped);
 
     bool GetStopped();
-
-    void AddStopHIDCmd();
 
 protected:
     virtual void run();

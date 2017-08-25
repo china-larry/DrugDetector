@@ -71,12 +71,10 @@ public:
      */
     bool GetVideoCapture(QString *pImagePath);
 
-    void SetVideoCapture(VideoCapture videocapture);
-    VideoCapture GetVideoCapture();
 
 private:    
     //视频类对象
-    VideoCapture m_VideoCapture;
+    VideoCapture *m_VideoCapture;
 };
 
 

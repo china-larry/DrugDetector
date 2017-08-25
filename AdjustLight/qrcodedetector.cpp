@@ -20,7 +20,7 @@ QRCodeDetector::QRCodeDetector()
 
 QRCodeDetector::~QRCodeDetector()
 {
-    m_pZxingDecoder->deleteLater();
+    delete m_pZxingDecoder;
 }
 
 QZXing *QRCodeDetector::GetZxingDecoder()
@@ -77,12 +77,15 @@ void QRCodeDetector::_SlotGetQRcode()
         {
             sQrcodeinfo.iQRCodePosition = iQRCodePosition;
 
-//            qDebug() << "qrcodeinfo.strProductID " << sQrcodeinfo.strProductID;
-//            qDebug() << "strProjectName" << sQrcodeinfo.listProject.at(0).strProjectName;
-//            qDebug() << "dSensitivityDown" << sQrcodeinfo.listProject.at(0).dSensitivityDown;
-//            qDebug() << "dSensitivityUp" << sQrcodeinfo.listProject.at(0).dSensitivityUp;
-//            qDebug() << "dThresholdDown" << sQrcodeinfo.listProject.at(0).dThresholdDown;
-//            qDebug() << "dThresholdUp" << sQrcodeinfo.listProject.at(0).dThresholdUp;
+            qDebug() << "qrcodeinfo.strVerson " << sQrcodeinfo.strVerson;
+            qDebug() << "qrcodeinfo.strProductID " << sQrcodeinfo.strProductID;
+            qDebug() << "qrcodeinfo.eTypeCup " << sQrcodeinfo.eTypeCup;
+            qDebug() << "sQrcodeinfo.qExprationDate"  << sQrcodeinfo.qExprationDate;
+            qDebug() << "strProjectName" << sQrcodeinfo.listProject.at(0).strProjectName;
+            qDebug() << "dSensitivityDown" << sQrcodeinfo.listProject.at(0).dSensitivityDown;
+            qDebug() << "dSensitivityUp" << sQrcodeinfo.listProject.at(0).dSensitivityUp;
+            qDebug() << "dThresholdDown" << sQrcodeinfo.listProject.at(0).dThresholdDown;
+            qDebug() << "dThresholdUp" << sQrcodeinfo.listProject.at(0).dThresholdUp;
             qDebug() << "SlotGetQRcode end";
             emit SignalQRCodeInfo(sQrcodeinfo);         //定位二维码后，发送二维码信息
         }
@@ -125,7 +128,7 @@ bool QRCodeDetector::InitDevice()
     }
 
     //开下白灯
-    CHidCmdThread::GetInstance()->AddOpenLedCmd(2,3000);
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(2,8000);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
     {
@@ -139,6 +142,8 @@ bool QRCodeDetector::InitDevice()
     {
         QApplication::processEvents();
     }
+
+
 
     return true;
 }
@@ -159,7 +164,7 @@ bool QRCodeDetector::locationQRCode(QString &strQRCodeInfo,qint32 &iQRCodePositi
 
     this->SetQRCodePosition(0);
 
-    mSleep(500);
+    mSleep(1000);
     if(GetQRCodeImage(strImageSavePath) == false)
     {
         return false;
@@ -359,10 +364,12 @@ bool QRCodeDetector::ExtractQRCode(QString strSrcImage,QString &strDesImage)
     //对图像进行二值化处理
     IplImage *pThreshold1 = cvCreateImage(cvGetSize(pTemp),IPL_DEPTH_8U,1);
     //cvThreshold(temp,threshold1,20,100,CV_THRESH_BINARY/*| CV_THRESH_OTSU*/);
-    cvThreshold(pTemp,pThreshold1,10,80,CV_THRESH_BINARY/*| CV_THRESH_OTSU*/);
+//    cvThreshold(pTemp,pThreshold1,10,80,CV_THRESH_BINARY/*| CV_THRESH_OTSU*/);
+    //自适应阈值方法
+    cvAdaptiveThreshold( pTemp, pThreshold1 , 255, CV_THRESH_BINARY , CV_ADAPTIVE_THRESH_GAUSSIAN_C , 7, 3 );
 
 //    cv::namedWindow( "1", cv::WINDOW_NORMAL );
-//    cvShowImage("1", threshold1);
+//    cvShowImage("1", pThreshold1);
 //    cvWaitKey(0);
 
     //自定义1*3的核进行X方向的膨胀腐蚀
@@ -630,8 +637,12 @@ bool QRCodeDetector::DecodeQrcode(const QString strDecode,QRCodeInfo &sQrCodeInf
                     bool isOK = false;
                     if((strListQrcodeSection.at(0) != "") && (strListitemVector.count() == strAllCount.toInt(&isOK,16)))
                     {
-                        strCardNumber = strListQrcodeSection.at(0);
-                        qDebug() << "strCardNumber = " << strCardNumber;
+                        //strCardNumber = strListQrcodeSection.at(0);
+                        //qDebug() << "strCardNumber = " << strCardNumber;
+
+                        QString strItem = strListQrcodeSection.at(0);
+                        strValidityData = strItem.mid(0,6);
+                        strCardNumber = strItem.mid(6,strItem.length() - 6);
                     }
                 }
                 else if(strListQrcodeSection.count() == 3) //项目（0 - 24）
@@ -691,6 +702,10 @@ bool QRCodeDetector::DecodeQrcode(const QString strDecode,QRCodeInfo &sQrCodeInf
                     strCardNumber = strItem.mid(6,strItem.length() - 6);
                 }
             }
+            else
+            {
+                return false;
+            }
         }
     }
 
@@ -729,7 +744,6 @@ QRCodeInfo QRCodeDetector::PackageQRCodeInfo(QString strBatchNumber,
     {
     case 0:
         sQrCodeInfo.eTypeCup = EnumTypeCup::TypeTCup;
- //       sQrCodeInfo.eTypeCup = EnumTypeCup::TypeSCup10;
         break;
     case 1:
         sQrCodeInfo.eTypeCup = EnumTypeCup::TypeKCup5;
@@ -764,6 +778,7 @@ QRCodeInfo QRCodeDetector::PackageQRCodeInfo(QString strBatchNumber,
             dSensitivityUp = strListitemVector.at(iPos).at(2);
             sInfoProject.iIndexProgram = strIndexProgram.toInt(&bOk,16);
             sInfoProject.strProjectName = GetProjectName(sInfoProject.iIndexProgram);
+            //qDebug() << "strProjectName = " << sInfoProject.strProjectName;
             sInfoProject.dThresholdUp = dThresholdUp.toInt(&bOk,16);
             //sInfoProject.dSensitivityUp = dSensitivityUp.toDouble();
             sInfoProject.dSensitivityUp = GetV5CutOffValue(sQrCodeInfo.eTypeCup,

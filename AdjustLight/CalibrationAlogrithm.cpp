@@ -54,6 +54,21 @@ void CalibrationAlogrithm::TraverseLedLight(StandardMachineCalibrateParams sPara
     double dTestZMaxValue = 0.0;
     qint16 ipos = 0;
 
+    //打开设备
+    if(CHidCmdThread::GetInstance()->GetStopped())
+    {
+        CHidCmdThread::GetInstance()->start();
+    }
+    else
+    {
+        CHidCmdThread::GetInstance()->SetStopped(true);
+        while(CHidCmdThread::GetInstance()->isRunning())
+        {
+            continue;
+        }
+        CHidCmdThread::GetInstance()->start();
+    }
+
     // 1.机器复位
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     CHidCmdThread::GetInstance()->AddResetMotorCmd(10);
@@ -63,12 +78,11 @@ void CalibrationAlogrithm::TraverseLedLight(StandardMachineCalibrateParams sPara
         QApplication::processEvents();
     }
 
-
     if(sParams.iCapType == 1)
     {
         //唾液杯(Cube-Cup) 机器转到C6C8测试窗口位置
         HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
-        CHidCmdThread::GetInstance()->AddRotateMotorCmd(20,100,0);
+        CHidCmdThread::GetInstance()->AddRotateMotorCmd(10,100,0);
 
         while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
         {
@@ -82,39 +96,49 @@ void CalibrationAlogrithm::TraverseLedLight(StandardMachineCalibrateParams sPara
 //        CHidCmdThread::GetInstance()->AddRotateMotorCmd(20,100,0);
 //    }
 
+    double s_dCount = 0;
     for(qint16 iUpGreenLightValue = sParams.iUpGreenLightValueMin;iUpGreenLightValue < sParams.iUpGreenLightValueMax;
         iUpGreenLightValue += sParams.iUpGreenLightValueStep)                //上绿灯
     {
+        if(iUpGreenLightValue > m_iMaxLightValue)
+        {
+            break;
+        }
         HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
         CHidCmdThread::GetInstance()->AddOpenLedCmd(1,iUpGreenLightValue);
 
         while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
         {
-            QThread::msleep(50);
             QApplication::processEvents();
         }
         for(qint16 iDownGreenLightValue = sParams.iDownGreenLightValueMin;    //下绿灯
             iDownGreenLightValue < sParams.iDownGreenLightValueMax;
             iDownGreenLightValue += sParams.iDownGreenLightValueStep)
         {
+            if(iUpGreenLightValue + iDownGreenLightValue > m_iMaxLightValue)
+            {
+                break;
+            }
             HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
-            CHidCmdThread::GetInstance()->AddOpenLedCmd(2,iDownGreenLightValue);
+            CHidCmdThread::GetInstance()->AddOpenLedCmd(3,iDownGreenLightValue);
 
             while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
             {
-                QThread::msleep(50);
                 QApplication::processEvents();
             }
             for(qint16 iLeftGreenLightValue = sParams.iLeftGreenLightValueMin; //左绿灯
                 iLeftGreenLightValue < sParams.iLeftGreenLightValueMax;
                 iLeftGreenLightValue += sParams.iLeftGreenLightValueStep)
             {
+                if(iUpGreenLightValue + iDownGreenLightValue + iLeftGreenLightValue > m_iMaxLightValue)
+                {
+                    break;
+                }
                 HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
-                CHidCmdThread::GetInstance()->AddOpenLedCmd(3,iLeftGreenLightValue);
+                CHidCmdThread::GetInstance()->AddOpenLedCmd(5,iLeftGreenLightValue);
 
                 while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
                 {
-                    QThread::msleep(50);
                     QApplication::processEvents();
                 }
                 dTCValueC6Vector.clear();
@@ -124,8 +148,13 @@ void CalibrationAlogrithm::TraverseLedLight(StandardMachineCalibrateParams sPara
                     iRightGreenLightValue < sParams.iRightGreenLightValueMax;
                     iRightGreenLightValue += sParams.iRightGreenLightValueStep)
                 {
+                    if(iUpGreenLightValue + iDownGreenLightValue + iLeftGreenLightValue + iRightGreenLightValue
+                            > m_iMaxLightValue)
+                    {
+                        break;
+                    }
                     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
-                    CHidCmdThread::GetInstance()->AddOpenLedCmd(4,iRightGreenLightValue);
+                    CHidCmdThread::GetInstance()->AddOpenLedCmd(7,iRightGreenLightValue);
 
                     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
                     {
@@ -134,89 +163,93 @@ void CalibrationAlogrithm::TraverseLedLight(StandardMachineCalibrateParams sPara
                     }
 
 
-                    if(sParams.iCapType == 0)
-                    {
-                        //尿液杯(T-cup) 机器转到C6测试窗口位置
-                        HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
-                        CHidCmdThread::GetInstance()->AddRotateMotorCmd(20,100,0);
+                    s_dCount++;
+                    qDebug() << "s_dCount = " << s_dCount;
+                    continue;
+//                    if(sParams.iCapType == 0)
+//                    {
+//                        //尿液杯(T-cup) 机器转到C6测试窗口位置
+//                        HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+//                        CHidCmdThread::GetInstance()->AddRotateMotorCmd(20,100,0);
 
-                        while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
-                        {
-                            QThread::msleep(50);
-                            QApplication::processEvents();
-                        }
-                    }
+//                        while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+//                        {
+//                            QThread::msleep(50);
+//                            QApplication::processEvents();
+//                        }
+//                    }
 
-                    for(qint16 iSignalLightValueTestTimes = 0;
-                        iSignalLightValueTestTimes < sParams.iSignalLightValueTestCount;
-                        iSignalLightValueTestTimes++)
-                    {
-                        qTextOutStream << iUpGreenLightValue << ",";
-                        qTextOutStream << iDownGreenLightValue << ",";
-                        qTextOutStream << iLeftGreenLightValue << ",";
-                        qTextOutStream << iRightGreenLightValue << ",";
-                        if(sParams.iCapType == 0 || sParams.iCapType == 1)
-                        {
-                            //获取 C6 T/C的值
-                            GetTCResult(sParams.iCapType,0,dTCValueC6);
-                            dTCValueC6Vector.push_back(dTCValueC6);
-                            qTextOutStream << dTCValueC6 << ",";
-                        }
+//                    for(qint16 iSignalLightValueTestTimes = 0;
+//                        iSignalLightValueTestTimes < sParams.iSignalLightValueTestCount;
+//                        iSignalLightValueTestTimes++)
+//                    {
+//                        qTextOutStream << iUpGreenLightValue << ",";
+//                        qTextOutStream << iDownGreenLightValue << ",";
+//                        qTextOutStream << iLeftGreenLightValue << ",";
+//                        qTextOutStream << iRightGreenLightValue << ",";
+//                        if(sParams.iCapType == 0 || sParams.iCapType == 1)
+//                        {
+//                            //获取 C6 T/C的值
+//                            GetTCResult(sParams.iCapType,0,dTCValueC6);
+//                            dTCValueC6Vector.push_back(dTCValueC6);
+//                            qTextOutStream << dTCValueC6 << ",";
+//                        }
 
-                        if(sParams.iCapType == 1)
-                        {
-                            //获取 C8 T/C的值
-                            GetTCResult(sParams.iCapType,1,dTCValueC8);
-                            dTCValueC8Vector.push_back(dTCValueC8);
-                            qTextOutStream << dTCValueC8 << ",";
+//                        if(sParams.iCapType == 1)
+//                        {
+//                            //获取 C8 T/C的值
+//                            GetTCResult(sParams.iCapType,1,dTCValueC8);
+//                            dTCValueC8Vector.push_back(dTCValueC8);
+//                            qTextOutStream << dTCValueC8 << ",";
 
-                        }
-                    }
+//                        }
+//                    }
 
-                    if(sParams.iCapType == 0)
-                    {
-                        //机器转到C8拍照位置
-                        HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
-                        CHidCmdThread::GetInstance()->AddRotateMotorCmd(20,100,1);
+//                    if(sParams.iCapType == 0)
+//                    {
+//                        //机器转到C8拍照位置
+//                        HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+//                        CHidCmdThread::GetInstance()->AddRotateMotorCmd(20,100,1);
 
-                        while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
-                        {
-                            QThread::msleep(50);
-                            QApplication::processEvents();
-                        }
+//                        while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+//                        {
+//                            QThread::msleep(50);
+//                            QApplication::processEvents();
+//                        }
 
-                        for(qint16 iSignalLightValueTestTimes = 0;
-                            iSignalLightValueTestTimes < sParams.iSignalLightValueTestCount;
-                            iSignalLightValueTestTimes++)
-                        {
-                            //获取 C8 T/C的值
-                            GetTCResult(sParams.iCapType,1,dTCValueC8);
+//                        for(qint16 iSignalLightValueTestTimes = 0;
+//                            iSignalLightValueTestTimes < sParams.iSignalLightValueTestCount;
+//                            iSignalLightValueTestTimes++)
+//                        {
+//                            //获取 C8 T/C的值
+//                            GetTCResult(sParams.iCapType,1,dTCValueC8);
 
-                            dTCValueC8Vector.push_back(dTCValueC8);
-                        }
-                    }
+//                            dTCValueC8Vector.push_back(dTCValueC8);
+//                        }
+//                    }
 
-                    //计算Z值
-                    dZValue = CalculateZ(dTCValueC6Vector,dTCValueC8Vector);
-                    qTextOutStream << dZValue << ",";
-                    qTextOutStream <<  "\n";
-                    dZValueVector.push_back(dZValue);
+//                    //计算Z值
+//                    dZValue = CalculateZ(dTCValueC6Vector,dTCValueC8Vector);
+//                    qTextOutStream << dZValue << ",";
+//                    qTextOutStream <<  "\n";
+//                    dZValueVector.push_back(dZValue);
                 }
                 //返回Z最大值和最大值的下标
-                GetMaxValue(dZValueVector,dTestZMaxValue,ipos);
+//                GetMaxValue(dZValueVector,dTestZMaxValue,ipos);
 
-                if(dTestZMaxValue > sStandardMachineCalibrateLight.dZMaxValue)
-                {
-                    sStandardMachineCalibrateLight.dZMaxValue = dTestZMaxValue;
-                    sStandardMachineCalibrateLight.iUpGreenLightCalibrateValue = iUpGreenLightValue;
-                    sStandardMachineCalibrateLight.iDownGreenLightCalibrateValue = iDownGreenLightValue;
-                    sStandardMachineCalibrateLight.iLeftGreenLightCalibrateValue = iLeftGreenLightValue;
-                    sStandardMachineCalibrateLight.iRightGreenLightCalibrateValue = sParams.iRightGreenLightValueMin
-                                                                           + ipos * sParams.iRightGreenLightValueStep;
-                }
+//                if(dTestZMaxValue > sStandardMachineCalibrateLight.dZMaxValue)
+//                {
+//                    sStandardMachineCalibrateLight.dZMaxValue = dTestZMaxValue;
+//                    sStandardMachineCalibrateLight.iUpGreenLightCalibrateValue = iUpGreenLightValue;
+//                    sStandardMachineCalibrateLight.iDownGreenLightCalibrateValue = iDownGreenLightValue;
+//                    sStandardMachineCalibrateLight.iLeftGreenLightCalibrateValue = iLeftGreenLightValue;
+//                    sStandardMachineCalibrateLight.iRightGreenLightCalibrateValue = sParams.iRightGreenLightValueMin
+//                                                                           + ipos * sParams.iRightGreenLightValueStep;
+//                }
             }
         }
     }
+    qDebug() << "s_dCount = " << s_dCount;
     qFileName.close();
 }
 

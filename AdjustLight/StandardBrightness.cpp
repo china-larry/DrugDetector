@@ -14,7 +14,8 @@ StandardBrightness::StandardBrightness()
 
 StandardBrightness::~StandardBrightness()
 {
-
+    qDebug() << "~StandardBrightness()";
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
 }
 
 
@@ -41,6 +42,8 @@ void StandardBrightness::SlotGetBrightValue(BrightnessValue sBrightnessValue)
             {
                 //发送给UI显示
                 emit SignalSendPictureToUI(strSaveImagePath,m_iGreenComponuntList);
+                //关所有灯
+                CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
                 return;
             }
             //顺时针转 15 * 10 步
@@ -62,6 +65,8 @@ void StandardBrightness::SlotGetBrightValue(BrightnessValue sBrightnessValue)
                     {
                         //发送给UI显示
                         emit SignalSendPictureToUI(strSaveImagePath,m_iGreenComponuntList);
+                        //关所有灯
+                        CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
                         return;
                     }
                 }
@@ -87,6 +92,8 @@ void StandardBrightness::SlotGetBrightValue(BrightnessValue sBrightnessValue)
                     {
                         //发送给UI显示
                         emit SignalSendPictureToUI(strSaveImagePath,m_iGreenComponuntList);
+                        //关所有灯
+                        CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
                         return;
                     }
                 }

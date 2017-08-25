@@ -52,7 +52,8 @@ signals:
 public:
     //获取命令
     QByteArray GetCmd();
-    explicit HIDReadThread(QObject *parent = 0);
+    explicit HIDReadThread();
+    ~HIDReadThread();
 
 protected:
     void run();

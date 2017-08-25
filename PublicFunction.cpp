@@ -22,6 +22,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QPainter>
+#include <QColor>
 /**
   * @brief 设置控件背景图片
   * @param pWidget：控件名称
@@ -88,6 +89,35 @@ void SetLabelBackImage(QLabel *pLabel, QString strImagePath)
     QPixmap qPixmap(strImagePath);
     pLabel->setPixmap(qPixmap.scaled(pLabel->width(), pLabel->height(), Qt::KeepAspectRatio));
     pLabel->setAlignment(Qt::AlignCenter);
+}
+/**
+  * @brief 设置Label背景图片,绘制红色提示区域框，只为测试结果使用
+  * @param
+  * @return
+  */
+void SetLabelBackImageEx(QLabel *pLabel, QString strImagePath, QRect qRedRect)
+{
+    if(pLabel == NULL || strImagePath.isNull())
+    {
+        return;
+    }
+    QPixmap qPixmap(strImagePath);
+    //
+    //QPixmap *pPixmap = new QPixmap(qPixmap.width(), qPixmap.height());
+    QPainter painter;
+    painter.begin(&qPixmap);
+ //   painter.drawPixmap(0, 0, qPixmap.width(), qPixmap.height(), qPixmap);
+    painter.setPen(QPen(QBrush(QColor(255, 0, 0)), 2));
+    painter.setBrush(QColor(255, 255, 0));
+    //painter.drawRect(qRedRect);
+    qDebug() <<"width " << qPixmap.width() << qPixmap.height() <<"rect " <<qRedRect;
+//    pPixmap->save("E:\\s9.png");
+
+    pLabel->setPixmap(qPixmap.scaled(pLabel->width(), pLabel->height(), Qt::KeepAspectRatio));
+  //  pLabel->setPixmap(pPixmap->scaled(pLabel->width(), pLabel->height(), Qt::KeepAspectRatio));
+    pLabel->setAlignment(Qt::AlignCenter);
+
+    //delete pPixmap;
 }
 /**
   * @brief 设置Widget的QSS样式

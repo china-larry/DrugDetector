@@ -1,7 +1,7 @@
 #include "VideoThread.h"
 #include "AdjustLight/OpencvUtility.h"
 
-VideoThread::VideoThread(QObject *parent):QThread(parent)
+VideoThread::VideoThread()
 {
 
 }

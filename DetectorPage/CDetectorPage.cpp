@@ -40,10 +40,11 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
     m_pFuseImage = new CFuseImage;
     connect(m_pFuseImage, &CFuseImage::SignalFuseOk, this, &CDetectorPage::SlotFuseImageOK);
     m_strTestPrintImagePath = "";
+
     // 初始化摄像头
     m_pVideoThread = new VideoThread;
     m_pVideoThread->start();
-    //
+//    //
     m_bAutoTest = false;
 }
 
@@ -69,6 +70,7 @@ CDetectorPage::~CDetectorPage()
     // 初始化线程
     if(m_pVideoThread != NULL)
     {
+        qDebug() <<"delete m_pVideoThread";
         m_pVideoThread->CloseVideo();
         m_pVideoThread->terminate();
         delete m_pVideoThread;
@@ -102,7 +104,7 @@ void CDetectorPage::SlotReceiveQRCodeImage(QString strImagePath)
 void CDetectorPage::SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfoStruct)
 {
     m_sQRCodeInfoStruct = sQRCodeInfoStruct;
-    qDebug() << "__code info" << m_sQRCodeInfoStruct.strProductID;
+    qDebug() << "__code info" << m_sQRCodeInfoStruct.strProductID << m_sQRCodeInfoStruct.qExprationDate.toString("yyyy-MM-dd");
     // 检查杯型
     if(m_pProductDefinitionWidget->GetCurrentSelectText() == "TCup")
     {// 圆杯
@@ -130,7 +132,7 @@ void CDetectorPage::SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfoStruct)
     }
     // 更新控件
     m_pProductLotWidget->SetLineText(m_sQRCodeInfoStruct.iProductLot);
-    m_pExpirationDateWidget->SetDate(m_sQRCodeInfoStruct.qExprationDate);
+    m_pExpirationWidget->SetLineText(m_sQRCodeInfoStruct.qExprationDate.toString("yyyy-MM-dd"));
     m_pProductIDWidget->SetLineText(m_sQRCodeInfoStruct.strProductID);
     // 发送主界面
     emit SignalHaveQRCodeInfo(m_sQRCodeInfoStruct.iProgramCount);
@@ -150,7 +152,8 @@ void CDetectorPage::SlotReceiveTestResultData(TestResultData sTestResultDataStru
     // 更新Label图片
     if(sTestResultDataStruct.strPicturePath != "")
     {
-        _SetCamaraImage(sTestResultDataStruct.strPicturePath);
+        SetLabelBackImageEx(m_pCamaraLabel,
+                            sTestResultDataStruct.strPicturePath, sTestResultDataStruct.qPictureRedRect);
     }
     // 插入表格
     QStringList strItemList;
@@ -218,6 +221,11 @@ void CDetectorPage::SlotFuseImageOK()
 // 用户点击开始测试按钮，开始测试
 void CDetectorPage::_SlotCheckReadTestDevice()
 {
+    // 判定输入数据是否满足要求
+//    if(!_GetValidData())
+//    {
+//        return;
+//    }
     qDebug() <<"_SlotCheckReadTestDevice";
     // 控件状态
     m_pReadTestDeviceButton->setEnabled(false);
@@ -225,7 +233,7 @@ void CDetectorPage::_SlotCheckReadTestDevice()
     // 发送到main
     emit SignalStartTest();// 更改状态栏
     // 进程开始测试
-    m_pThreadTesting->StartTest();
+    m_pThreadTesting->StartTest(0);
     // 清空数据区
     // DataList清空，控件数据清空
     if(!m_pTestResultDataList.empty())
@@ -316,7 +324,7 @@ DetectorPageUserData CDetectorPage::GetUserData()
     m_sDetectorPageUserDataStruct.bTemperatureNormal = m_pTemperatureNormalCBox->isChecked();
     m_sDetectorPageUserDataStruct.strProductDefinition = m_pProductDefinitionWidget->GetCurrentSelectText();
     m_sDetectorPageUserDataStruct.strProductLot = m_pProductLotWidget->GetLineText();
-    m_sDetectorPageUserDataStruct.qExpriationDate = m_pExpirationDateWidget->GetDate();
+    m_sDetectorPageUserDataStruct.strExpriationDate = m_pExpirationWidget->GetLineText();
     m_sDetectorPageUserDataStruct.strProductID = m_pProductIDWidget->GetLineText();
     //
     m_sDetectorPageUserDataStruct.iProgramsNumber = m_sQRCodeInfoStruct.iProgramCount;
@@ -468,7 +476,8 @@ QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
     m_pProductLotWidget = new CLabelLineEditWidget(tr("Product Lot"), "", this);
     m_pProductLotWidget->SetLineTextEnable(false);
     //
-    m_pExpirationDateWidget = new CLabelDateWidget(tr("Expiration Date"), QDate::currentDate(), this);
+    m_pExpirationWidget = new CLabelLineEditWidget(tr("Expiration Date"), "", this);
+    m_pExpirationWidget->SetLineTextEnable(false);
     m_pProductIDWidget = new CLabelLineEditWidget(tr("Product ID"), "", this);
     m_pProductIDWidget->SetLineTextEnable(false);
     //
@@ -482,7 +491,7 @@ QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
     //
     QHBoxLayout *pExpirationLayout = new QHBoxLayout;
     pExpirationLayout->addSpacing(9);
-    pExpirationLayout->addWidget(m_pExpirationDateWidget);
+    pExpirationLayout->addWidget(m_pExpirationWidget);
     pExpirationLayout->addSpacing(56);
     pExpirationLayout->addWidget(m_pProductIDWidget);
     //
@@ -592,6 +601,34 @@ void CDetectorPage::_InitLayout()
     pTestLayout->addLayout(pLeftLayout);
     pTestLayout->addWidget(_CreateResultsGroup());
     this->setLayout(pTestLayout);
+}
+/**
+  * @brief 测试之前的数据前置条件判定
+  * @param
+  * @return 合法范围true，非法返回false
+  */
+bool CDetectorPage::_GetValidData()
+{
+    // 是否勾选temperature
+    if(!m_pTemperatureNormalCBox->isChecked())
+    {
+        QMessageBox::information(NULL, tr("Tip"), tr("Please Check Temperature!"), QMessageBox::Ok , QMessageBox::Ok);
+        return false;
+    }
+    // DonorID
+    if(m_pDonorIDWidget->GetLineText().isEmpty())
+    {
+        QMessageBox::information(NULL, tr("Tip"), tr("Please Input DonorID!"), QMessageBox::Ok , QMessageBox::Ok);
+        return false;
+    }
+    // Email是否包含@
+    if(!m_pEmailAddressWidget->GetLineText().contains(QChar('@')))
+    {
+        QMessageBox::information(NULL, tr("Tip"), tr("Please Input Valid Email Address!"), QMessageBox::Ok , QMessageBox::Ok);
+        return false;
+    }
+
+    return true;
 }
 
 void CDetectorPage::_InitThreadTesting()
@@ -749,7 +786,7 @@ void CDetectorPage::_ReplaceCubeHtmlData(QString &strHtml)
     // ExpirationDate
     strFindWord = "${ExpirationDate}";
     strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
-                              strFindWord.count(), m_pExpirationDateWidget->GetDate().toString("yyyy-MM-dd"));
+                              strFindWord.count(), m_pExpirationWidget->GetLineText());
     // temperature in range
     strFindWord = "${TemperatureinRangeYesCheck}";
     strHtml = strHtml.replace(strHtml.indexOf(strFindWord),

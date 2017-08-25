@@ -41,7 +41,7 @@ HIDOpertaionUtility::HIDOpertaionUtility()
     moveToThread(&m_WorkThread);
     connect(&m_WorkThread, SIGNAL(started()), this, SLOT(_SlotLoadDll()));
     connect(&m_WorkThread, SIGNAL(finished()), this, SLOT(_SlotUnloadDll()));
-    //connect(&mWorkThread, SIGNAL(finished()), this, SLOT(deleteLater()));
+
     m_WorkThread.start();
     m_DevVersion = "";
     m_pDevConfigParamsByte = new quint8[sizeof(DevConfigParams)];
@@ -50,13 +50,22 @@ HIDOpertaionUtility::HIDOpertaionUtility()
 HIDOpertaionUtility::~HIDOpertaionUtility()
 {
     delete m_pDevConfigParamsByte;
+    if(instance != NULL)
+    {
+        delete instance;
+    }
+
+    if(m_pReadThread != NULL)
+    {
+        delete m_pReadThread;
+    }
 }
 
 void HIDOpertaionUtility::_SlotLoadDll()
 {
     //导入dll,并获取dll包含的操作函数指针
     m_pReadThread = new HIDReadThread();
-    //connect(mReadThread, SIGNAL(finished()), mReadThread, SLOT(deleteLater()));
+
     m_WorkHandle = QThread::currentThreadId();
 }
 
@@ -730,8 +739,12 @@ void HIDOpertaionUtility::HIDUpgradeSubControl(QString strFilePath)
 
 }
 
-HIDReadThread::HIDReadThread(QObject *parent) :
-    QThread(parent)
+HIDReadThread::HIDReadThread()
+{
+
+}
+
+HIDReadThread::~HIDReadThread()
 {
 
 }
