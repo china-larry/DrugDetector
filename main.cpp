@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     CLoginInWidget *pLoginInWidget = new CLoginInWidget;
     pLoginInWidget->show();
     //
-    QObject::connect(pLoginInWidget, SIGNAL(SigShowMainWindow()), &w, SLOT(SlotReceiveLogin()));
+    QObject::connect(pLoginInWidget, &CLoginInWidget::SigShowMainWindow, &w, &MainWindow::SlotReceiveLogin);
 
     return a.exec();
 }

@@ -17,6 +17,8 @@
 #include <QBitmap>
 #include <QPalette>
 #include <QMouseEvent>
+#include <QMessageBox>
+#include <QSqlQuery>
 #include "PublicFunction.h"
 CLoginInWidget::CLoginInWidget(QWidget *parent) : QWidget(parent)
 {
@@ -30,7 +32,13 @@ CLoginInWidget::CLoginInWidget(QWidget *parent) : QWidget(parent)
     //
     _InitWidget();
     _InitLayout();
-
+    // 数据库
+    m_strDatabaseName = "\\drug.db";
+    m_iUserPower = 2;//
+    m_strAdminUserName = "admin";
+    m_strAdminPassWord = "123";
+    m_strModifyUserName = "wfip201";
+    m_strModifyPassWord = "3688";
 }
 
 void CLoginInWidget::mousePressEvent(QMouseEvent *event)
@@ -75,9 +83,24 @@ void CLoginInWidget::_SlotCheckCloseButton()
 
 void CLoginInWidget::_SlotCheckLoginButton()
 {
-    this->hide();
-    emit SigShowMainWindow();
+    // 检查用户名及权限
+    m_iUserPower = _CheckUserPower();
+    if(m_iUserPower >= 0)
+    {//
+        this->hide();
+        emit SigShowMainWindow(m_iUserPower, m_pUserNameLineEdit->text());
+    }
+    else
+    {
+        // do nothing
+    }
 }
+
+int CLoginInWidget::GetUserPower()
+{
+    return m_iUserPower;
+}
+
 /**
   * @brief 初始化控件
   * @param
@@ -169,4 +192,65 @@ void CLoginInWidget::_InitLayout()
     pVLayout->addStretch(100);
     //
     this->setLayout(pVLayout);
+}
+/**
+  * @brief 验证用户和权限
+  * @param
+  * @return -1：无效用户，0：普通用户，1：管理员，2：维护人员
+  */
+int CLoginInWidget::_CheckUserPower()
+{
+    QString strUserName = m_pUserNameLineEdit->text();
+    QString strPassWord = m_pPasswordLineEdit->text();
+    QString strDataPassWord = "";// 数据库中存储密码
+    if(strUserName.isEmpty() || strPassWord.isEmpty())
+    {
+        QMessageBox::critical(0, QObject::tr("Error!"),
+                         QObject::tr("Please Input Your UserName and Password!"));
+        return -1;
+    }
+    // 数据库查询
+    if (ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
+    {
+        QString strSelect = QString("SELECT * FROM userdata WHERE username = '")
+                + strUserName + "'";
+        QSqlQuery qSqlQuery;//
+        qSqlQuery.exec(strSelect);
+        if(qSqlQuery.next())
+        {
+            strDataPassWord = qSqlQuery.value(2).toString();
+            qDebug() << "find the pase" << strDataPassWord;
+            if(strPassWord == strDataPassWord)
+            {// 密码校验正确
+                if(strUserName == m_strAdminUserName && strPassWord == m_strAdminPassWord)
+                {
+                    qDebug() << "admin user";
+                    return 1;
+                }
+                else if(strUserName == m_strModifyUserName && strPassWord == m_strModifyPassWord)
+                {
+                    qDebug() << "modify user";
+                    return 2;
+                }
+                else
+                {
+                    qDebug() <<"normal user";
+                    return 0;
+                }
+            }
+            else
+            {// 密码错误
+                QMessageBox::critical(0, QObject::tr("Error!"),
+                                 QObject::tr("Please Input Valid Password!"));
+                return -1;
+            }
+        }
+    }
+    else
+    {
+        QMessageBox::critical(0, QObject::tr("Database Error!"),
+                         QObject::tr("Open Database File Error!"));
+        return -1;
+    }
+    return -1;
 }

@@ -28,6 +28,11 @@ void CDetectorPageTitleWidget::_SlotGoToHistoryPage()
 {
     emit SignalGoHistoryPage();
 }
+
+void CDetectorPageTitleWidget::SetUserName(QString strUserName)
+{
+    m_pOperatorIDLineEdit->setText("Operator ID: " + strUserName);
+}
 /**
   * @brief 初始化控件
   * @param

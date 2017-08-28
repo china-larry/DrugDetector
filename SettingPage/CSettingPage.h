@@ -30,6 +30,7 @@ signals:
 public slots:
 public:
     bool GetAutoTestFalg();
+    void SetAccountHide();// 隐藏账户管理
 private:
     void _LoadQss();
     void _InitWidget();

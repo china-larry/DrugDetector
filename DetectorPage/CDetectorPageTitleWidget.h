@@ -32,6 +32,8 @@ public slots:
 
 private slots:
     void _SlotGoToHistoryPage();
+public:
+    void SetUserName(QString strUserName);
 private:
     void _InitWidget();
     void _InitLayout();

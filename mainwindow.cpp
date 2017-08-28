@@ -121,9 +121,26 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     event->ignore();
 }
 // 登陆信号
-void MainWindow::SlotReceiveLogin()
+void MainWindow::SlotReceiveLogin(int iUserPower, QString strUserName)
 {
     this->show();
+    // 权限判定和显示
+    m_pDetectorPageTitleWidget->SetUserName(strUserName);
+    m_pHistoryPageTitleWidget->SetUserName(strUserName);
+    qDebug() << " user power" <<iUserPower;
+    if(iUserPower < 2)
+    {
+        m_pHistoryPageTitleWidget->SetCalibrationButtonHide(true);
+    }
+    if(iUserPower <  1)
+    {
+        qDebug() << " user pow33333er";
+        m_pSettingPage->SetAccountHide();
+    }
+    else
+    {
+        // do nothing
+    }
 }
 // 前往设置页
 void MainWindow::SlotGoSettingPage()

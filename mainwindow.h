@@ -41,7 +41,7 @@ public:
     void mouseMoveEvent(QMouseEvent *event);
 public slots:
     // 标题栏
-    void SlotReceiveLogin();// 登陆界面跳转
+    void SlotReceiveLogin(int iUserPower, QString strUserName);// 登陆界面跳转
     void SlotGoDetectorPage();// 标题栏发送来的跳转测试界面
     void SlotGoCalibrationPage();// 前往校准页面
     void SlotGoHistoryPage();// 前往历史页面

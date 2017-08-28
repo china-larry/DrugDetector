@@ -32,11 +32,14 @@ private slots:
     void _SlotCheckCloseButton();
     void _SlotCheckLoginButton();
 signals:
-    void SigShowMainWindow();// 显示主窗口
+    void SigShowMainWindow(int iUserPower, QString strUserName);// 显示主窗口
 public slots:
+public:
+    int GetUserPower();// 获取用户权限，0为普通，1为管理，2为维护人员
 private:
     void _InitWidget();
     void _InitLayout();
+    int _CheckUserPower();// 用户名和权限验证
 private:
     //
     QPushButton *m_pMinButton;
@@ -56,6 +59,13 @@ private:
     bool m_bLeftButtonCheck;
     QPoint m_iPressPoint;
     QPoint m_iMovePoint;
+    // 用户数据库
+    QString m_strDatabaseName;
+    int m_iUserPower; // 用户权限，0为普通，1为管理，2为维护人员
+    QString m_strAdminUserName;
+    QString m_strAdminPassWord;
+    QString m_strModifyUserName;
+    QString m_strModifyPassWord;
 };
 
 #endif // CLOGININWIDGET_H

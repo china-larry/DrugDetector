@@ -103,26 +103,32 @@ void SetLabelBackImageEx(QLabel *pLabel, QString strImagePath, QRect qRedRect)
     }
     QPixmap qPixmap(strImagePath);
     //
-    QPixmap *pPixmap = new QPixmap(qPixmap.width(), qPixmap.height());
     QPainter painter;
-    painter.begin(pPixmap);
-   // painter.begin(&qPixmap);
- //   painter.drawPixmap(0, 0, qPixmap.width(), qPixmap.height(), qPixmap);
-    painter.setPen(QPen(QBrush(QColor(255, 0, 0)), 2));
+    painter.begin(&qPixmap);
+    painter.setPen(QPen(QBrush(QColor(255, 0, 0)), 5));
     //painter.setBrush(QColor(255, 255, 0));
-    painter.drawRect(qRedRect);
-    painter.drawLine(qRedRect.topLeft(), qRedRect.topRight());
-    painter.drawLine(qRedRect.topRight(), qRedRect.bottomRight());
-    painter.drawLine(qRedRect.bottomRight(), qRedRect.bottomLeft());
-    painter.drawLine(qRedRect.bottomLeft(), qRedRect.topLeft());
-    qDebug() <<"width " << qPixmap.width() << qPixmap.height() <<"rect " <<qRedRect;
+   // painter.drawRect(qRedRect);
+    QPainterPath qPath;
+     // 暂时固定，不固定重绘时候线宽不一致
+     qPath.moveTo(80, 380);
+     qPath.lineTo(130, 380);
+     qPath.lineTo(130, 780);
+     qPath.lineTo(80, 780);
+     qPath.closeSubpath();
+     painter.drawPath(qPath);
+//     QPainterPath path;
+//      path.moveTo(qRedRect.topLeft());
+//      path.lineTo(qRedRect.topRight());
+//      path.lineTo(qRedRect.bottomRight());
+//      path.lineTo(qRedRect.bottomLeft());
+//      path.closeSubpath();
+//      painter.drawPath(path);
+//    qDebug() <<"width " << qRedRect.topLeft() <<  qRedRect.topRight()
+//            << qRedRect.bottomRight()  << qRedRect.bottomLeft() <<"rect " <<qRedRect;
 //    pPixmap->save("E:\\s9.png");
 
-   // pLabel->setPixmap(qPixmap.scaled(pLabel->width(), pLabel->height(), Qt::KeepAspectRatio));
-    pLabel->setPixmap(pPixmap->scaled(pLabel->width(), pLabel->height(), Qt::KeepAspectRatio));
+    pLabel->setPixmap(qPixmap.scaled(pLabel->width(), pLabel->height(), Qt::KeepAspectRatio));
     pLabel->setAlignment(Qt::AlignCenter);
-
-    //delete pPixmap;
 }
 /**
   * @brief 设置Widget的QSS样式

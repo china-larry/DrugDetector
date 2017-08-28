@@ -33,6 +33,27 @@ void CHistoryPageTitleWidget::_SlotGoToTestPage()
 {
     emit SignalGoDetectorPage();
 }
+
+void CHistoryPageTitleWidget::SetUserName(QString strUserName)
+{
+    m_pOperatorIDLineEdit->setText("Operator ID: " + strUserName);
+}
+/**
+  * @brief 是否显示校准按钮
+  * @param
+  * @return
+  */
+void CHistoryPageTitleWidget::SetCalibrationButtonHide(bool bHide)
+{
+    if(bHide)
+    {
+        m_pCalibrationPageButton->hide();
+    }
+    else
+    {
+        m_pCalibrationPageButton->show();
+    }
+}
 /**
   * @brief 初始化控件
   * @param
@@ -89,7 +110,8 @@ void CHistoryPageTitleWidget::_InitLayout()
     m_pLayout->addWidget(m_pSettingPageButton);
     m_pLayout->addWidget(m_pHistoryPageButton);
     m_pLayout->addWidget(m_pCalibrationPageButton);
-    m_pLayout->addSpacing(60);
+   // m_pLayout->addSpacing(60);
+    m_pLayout->addStretch(10);
     m_pLayout->addWidget(m_pMinWindowButton);
     m_pLayout->addWidget(m_pReturnWindowButton);
     m_pLayout->addSpacing(6);

@@ -35,6 +35,9 @@ public slots:
 private slots:
     void _SlotGoToHistoryPage();
     void _SlotGoToTestPage();
+public:
+    void SetUserName(QString strUserName);
+    void SetCalibrationButtonHide(bool bHide);// 隐藏校准按钮
 private:
     void _InitWidget();
     void _InitLayout();

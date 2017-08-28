@@ -29,6 +29,13 @@ bool CSettingPage::GetAutoTestFalg()
     return m_pTestModeWidget->GetAutoTestFlag();
 }
 
+void CSettingPage::SetAccountHide()
+{
+    qDebug() << "remov 1";
+    m_pSetTabWidget->removeTab(1);
+    this->update();
+}
+
 void CSettingPage::_LoadQss()
 {
     LoadQss(this, ":/qss/SettingPage/SettingPage.qss");
