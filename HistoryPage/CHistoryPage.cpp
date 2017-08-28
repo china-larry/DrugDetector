@@ -225,17 +225,52 @@ void CHistoryPage::_SlotCheckPrint()
     QTextStream qTextStream(&qFile);
     QString strHtml = qTextStream.readAll();
     qFile.close();
-    // 替换数据
-    if(m_pProductDefinitionWidget->GetCurrentSelectText() == "TCube")
-    {// 方杯
-        _ReplaceCubeHtmlData(strHtml);
+    // 杯型
+    QString strCupType = m_pProductDefinitionWidget->GetCurrentSelectText();
+    // 遍历选择行，逐行打印
+    QSet<int> iCurrentSelectRowSet;
+    _GetCurrentSelectRows(iCurrentSelectRowSet);
+    QSetIterator<int> qIter(iCurrentSelectRowSet);
+    while (qIter.hasNext())
+    {
+        int iRow = qIter.next();
+        // 获取ID
+        QTableWidgetItem *pItem = m_pHistoryDataTableWidget->item(iRow, 0);
+        if(pItem == NULL)
+        {// 无选择行
+            return;
+        }
+        QString strID = pItem->text();
+        bool bOk = false;
+        int iCurrentID = strID.toInt(&bOk, 10);
+        if(bOk && iCurrentID >= 0)// 有效ID判断
+        {
+            QString strSelect = QString("SELECT * FROM drugdata WHERE id = ");
+            strSelect += strID;
+            qDebug() << "slel " << strSelect;
+            QSqlQuery qSqlQuery(strSelect);// 数据库中存放103列(id)
+            if(qSqlQuery.next())
+            {
+                for(int i = 1; i < m_iDatabaseColumnCount; ++i)// i=0为ID，不导出
+                {
+                    //_SetExcelCellValue(iExcelRowIndex, i + 1, qSqlQuery.value(i).toString());// execl单元格为2行2列开始
+                    // 替换数据
+                    if(strCupType == "TCube")
+                    {// 方杯
+                        _ReplaceCubeHtmlData(strHtml);
+                    }
+                    else
+                    {// 圆杯
+                        _ReplaceCupHtmlData(strHtml);
+                    }
+                    // 打印
+                    PrintToPage(strHtml);
+                }
+            }
+
+        }
     }
-    else
-    {// 圆杯
-        _ReplaceCupHtmlData(strHtml);
-    }
-    // 打印
-    PrintToPage(strHtml);
+
 }
 /**
   * @brief 当前选择cell改变，只处理行改变
