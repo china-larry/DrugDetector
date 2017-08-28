@@ -12,6 +12,7 @@
   ****************************************************/
 #include "CLabelLineEditWidget.h"
 #include <QBoxLayout>
+#include <QIntValidator>
 CLabelLineEditWidget::CLabelLineEditWidget(QWidget *parent)
     : QWidget(parent),
       m_strLineText("")
@@ -82,6 +83,11 @@ CHLabelLineEditWidget::CHLabelLineEditWidget(QString strLabel, QString strLineTe
 void CHLabelLineEditWidget::SetLineEditEnable(bool bEnable)
 {
     m_pLineEdit->setEnabled(bEnable);
+}
+
+void CHLabelLineEditWidget::SetLineValidator(int iMin, int iMax)
+{
+    m_pLineEdit->setValidator(new QIntValidator(iMin, iMax, this));
 }
 
 void CHLabelLineEditWidget::_InitLayout()

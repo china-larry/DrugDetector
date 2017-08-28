@@ -26,11 +26,12 @@ public:
     explicit CSettingPage(QWidget *parent = nullptr);
 
 signals:
-
+    void SingalTestMode(int iTestDelayTime);
 public slots:
 public:
     bool GetAutoTestFalg();
     void SetAccountHide();// 隐藏账户管理
+    int GetTestDelayTime();// 获得延迟测试时间(秒)
 private:
     void _LoadQss();
     void _InitWidget();

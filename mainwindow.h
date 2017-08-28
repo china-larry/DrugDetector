@@ -61,6 +61,8 @@ public slots:
     void SlotDetectorPageStopTest();
     // 流程测试结束，非主动停止
     void SlotDetectorPageEndTest();
+    // 孵化时间确认，延迟测试
+    void SlotConfirmTestMode(int iDelayTime);
 
 private:
     void _InitWidget();

@@ -23,6 +23,10 @@
 #include <QSqlError>
 #include <QPainter>
 #include <QColor>
+#include <QtPrintSupport/QPrinter>
+#include <QWebEnginePage>
+#include <QPrinter>
+#include <QPrintDialog>
 /**
   * @brief 设置控件背景图片
   * @param pWidget：控件名称
@@ -368,3 +372,55 @@ void CFuseImage::SetImagePaths(QStringList strImagePathList, QString strSaveImag
     qDebug() << "fuse image  " << m_strImagePathList;
 }
 
+/**
+  * @brief 打印报告
+  * @param strHtml：html格式打印
+  * @return
+  */
+bool PrintToPage(QString strHtml)
+{
+    QPrinter * qPrinter = new QPrinter();
+    qPrinter->setPageSize(QPrinter::A4);
+    qPrinter->setFullPage(true);
+    // 输出到PDF
+    qPrinter->setOutputFormat(QPrinter::PdfFormat);
+    qPrinter->setOutputFileName("E:/b.pdf");
+    // 连接打印机
+//    QPrintDialog qPrintDialog(qPrinter, this);
+//    if (qPrintDialog.exec() != QDialog::Accepted) {
+//        return false;
+//    }
+    QWebEnginePage * pWebEnginePage = new QWebEnginePage;
+    pWebEnginePage->setHtml(strHtml);
+
+    QObject::connect(pWebEnginePage, &QWebEnginePage::loadFinished, [pWebEnginePage, qPrinter] (bool bOk)
+    {
+        if (!bOk)
+        {
+            qDebug() << "连接失败";
+            delete pWebEnginePage;
+            delete qPrinter;
+            return false;
+        }
+        pWebEnginePage->print(qPrinter, [pWebEnginePage, qPrinter](bool bPrintok)
+        {
+            if (bPrintok)
+            {
+                qDebug() << "print ok";
+                delete pWebEnginePage;// lambda 不可赋值为null
+                delete qPrinter;
+                return true;
+            }
+            else
+            {
+                qDebug() << "print error.";
+                delete pWebEnginePage;
+                delete qPrinter;
+                return false;
+            }
+
+        });
+        return false;
+    });
+    return false;
+}

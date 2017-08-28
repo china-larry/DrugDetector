@@ -49,6 +49,7 @@ private slots:
     void _SlotCheckDeselectAll();// 取消选择全部
     void _SlotCheckDelete();// 删除选中
     void _SlotCheckExport();// 导出
+    void _SlotCheckPrint();// 打印
     // Table选择改变
     void _SlotHistoryDataSelectChange(
             int iCurrentRow, int iCurrentColumn, int iPreviousRow, int iPreviousColumn);
@@ -85,6 +86,9 @@ private:
     void _SetExcelCellValue(int iRow, int iColumn, const QString &kstrValue);
     void _SaveExcel(const QString &kstrFileName);
     void _FreeExcel();
+    // 打印
+    void _ReplaceCubeHtmlData(QString &strHtml);// 替换html中数据位测试数据, cube杯型，方杯
+    void _ReplaceCupHtmlData(QString &strHtml);// 替换html中数据位测试数据, cup杯型， 圆杯
     // 上传服务器
     void _UpdateToPisServer();
     void _UpdateToPoctServer();
@@ -112,6 +116,7 @@ private:
     QPushButton *m_pDeselectAllButton;
     QPushButton *m_pDeleteButton;
     QPushButton *m_pExportButton;
+    QPushButton *m_pPrintButton;
 
     // 单次测试数据区
     QList<TestResultData*> m_pTestResultDataList;

@@ -84,15 +84,11 @@ void CLoginInWidget::_SlotCheckCloseButton()
 void CLoginInWidget::_SlotCheckLoginButton()
 {
     // 检查用户名及权限
-    m_iUserPower = _CheckUserPower();
-    if(m_iUserPower >= 0)
+    //m_iUserPower = _CheckUserPower();
+   // if(m_iUserPower >= 0)
     {//
-        this->hide();
         emit SigShowMainWindow(m_iUserPower, m_pUserNameLineEdit->text());
-    }
-    else
-    {
-        // do nothing
+         this->hide();
     }
 }
 

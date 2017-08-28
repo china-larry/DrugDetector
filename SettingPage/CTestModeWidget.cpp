@@ -12,16 +12,42 @@
   ****************************************************/
 #include "CTestModeWidget.h"
 #include <QBoxLayout>
+#include <QMessageBox>
 #include "PublicFunction.h"
 CTestModeWidget::CTestModeWidget(QWidget *parent) : QWidget(parent)
 {
     _InitWiget();
     _InitLayout();
+    m_iIncubatingTime = 0;
 }
 
 void CTestModeWidget::_SlotConfirm()
 {
+    if(m_pExpressModeRButton->isChecked())
+    {
+        m_iIncubatingTime = 0;
+    }
+    else
+    {
+        bool bOk = false;
+        int iMinutes = m_pIncubatingTimeLineEditWidget->GetLineText().toInt(&bOk);
+        if(!bOk)
+        {
+            QMessageBox::critical(0, QObject::tr("Error!"),
+                             QObject::tr("Please Input Right Time!"));
+        }
+        else
+        {
+            m_iIncubatingTime = iMinutes * 60;// 控件中为分钟
+        }
+    }
+    qDebug() <<"tset mode"  << m_iIncubatingTime;
+    emit SigConfirmTestMode(m_iIncubatingTime);
+}
 
+int CTestModeWidget::GetIncubatingTime()
+{
+    return m_iIncubatingTime;
 }
 
 bool CTestModeWidget::GetAutoTestFlag()
@@ -50,6 +76,8 @@ QGroupBox *CTestModeWidget::_CreateModeGroup()
     m_pIncubatingTimeLineEditWidget =
             new CHLabelLineEditWidget(tr("Incubating time "), "", this);
     m_pIncubatingTimeLineEditWidget->SetLineEditFixSize(50, 20);
+    m_pIncubatingTimeLineEditWidget->SetLineValidator(1, 30);
+    m_pIncubatingTimeLineEditWidget->SetLineText("5");// 默认5分钟
     m_pMinutesLabel = new QLabel(tr("Minutes"));
     //
     m_pExpressModeRButton = new QRadioButton(tr("Express Mode"), this);

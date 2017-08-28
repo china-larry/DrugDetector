@@ -21,8 +21,6 @@
 #include <QtPrintSupport/QPrinter>
 #include <QTextDocument>
 #include <QTextBlock>
-#include <QPrinter>
-#include <QPrintDialog>
 #include <QStringList>
 #include <QMessageBox>
 #include "PublicFunction.h"
@@ -46,6 +44,8 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
     m_pVideoThread->start();
 //    //
     m_bAutoTest = false;
+    m_strUserName = "user";
+    m_iTestDelayTime = 0;
 }
 
 CDetectorPage::~CDetectorPage()
@@ -226,14 +226,14 @@ void CDetectorPage::_SlotCheckReadTestDevice()
 //    {
 //        return;
 //    }
-    qDebug() <<"_SlotCheckReadTestDevice";
+    qDebug() <<"_SlotCheckReadTestDevice"  << m_iTestDelayTime;
     // 控件状态
     m_pReadTestDeviceButton->setEnabled(false);
     m_pPrintPriviewButton->setEnabled(false);
     // 发送到main
     emit SignalStartTest();// 更改状态栏
     // 进程开始测试
-    m_pThreadTesting->StartTest(0);
+    m_pThreadTesting->StartTest(m_iTestDelayTime);
     // 清空数据区
     // DataList清空，控件数据清空
     if(!m_pTestResultDataList.empty())
@@ -291,7 +291,7 @@ void CDetectorPage::_SlotPrintToPDF()
         _ReplaceCupHtmlData(strHtml);
     }
     // 打印
-    _PrintToPage(strHtml);
+    PrintToPage(strHtml);
 }
 
 QList<TestResultData *> CDetectorPage::GetTestResultData()
@@ -328,8 +328,8 @@ DetectorPageUserData CDetectorPage::GetUserData()
     m_sDetectorPageUserDataStruct.strProductID = m_pProductIDWidget->GetLineText();
     //
     m_sDetectorPageUserDataStruct.iProgramsNumber = m_sQRCodeInfoStruct.iProgramCount;
-    // admin
-    m_sDetectorPageUserDataStruct.strOperator = "admin";
+    // username
+    m_sDetectorPageUserDataStruct.strOperator = m_strUserName;
     return m_sDetectorPageUserDataStruct;
 }
 
@@ -356,6 +356,16 @@ void CDetectorPage::StopTest()
 void CDetectorPage::SetAutoTest(bool bAutoTest)
 {
     m_bAutoTest = bAutoTest;
+}
+
+void CDetectorPage::SetUserName(QString strUserName)
+{
+    m_strUserName = strUserName;
+}
+
+void CDetectorPage::SetTestDelayTime(int iTime)
+{
+    m_iTestDelayTime = iTime;
 }
 
 
@@ -655,58 +665,7 @@ void CDetectorPage::_SetCamaraImage(QString strImagePath)
         SetLabelBackImage(m_pCamaraLabel, strImagePath);
     }
 }
-/**
-  * @brief 打印
-  * @param
-  * @return
-  */
-bool CDetectorPage::_PrintToPage(QString strHtml)
-{
-    QPrinter * qPrinter = new QPrinter();
-    qPrinter->setPageSize(QPrinter::A4);
-    qPrinter->setFullPage(true);
-    // 输出到PDF
-    qPrinter->setOutputFormat(QPrinter::PdfFormat);
-    qPrinter->setOutputFileName("E:/b.pdf");
-    // 连接打印机
-//    QPrintDialog qPrintDialog(qPrinter, this);
-//    if (qPrintDialog.exec() != QDialog::Accepted) {
-//        return false;
-//    }
-    QWebEnginePage * pWebEnginePage = new QWebEnginePage;
-    pWebEnginePage->setHtml(strHtml);
 
-    connect(pWebEnginePage, &QWebEnginePage::loadFinished, [pWebEnginePage, qPrinter] (bool bOk)
-    {
-        if (!bOk)
-        {
-            qDebug() << "连接失败";
-            delete pWebEnginePage;
-            delete qPrinter;
-            return false;
-        }
-        pWebEnginePage->print(qPrinter, [pWebEnginePage, qPrinter](bool bPrintok)
-        {
-            if (bPrintok)
-            {
-                qDebug() << "print ok";
-                delete pWebEnginePage;// lambda 不可赋值为null
-                delete qPrinter;
-                return true;
-            }
-            else
-            {
-                qDebug() << "print error.";
-                delete pWebEnginePage;
-                delete qPrinter;
-                return false;
-            }
-
-        });
-        return false;
-    });
-    return false;
-}
 /**
   * @brief 替换html为控件数据,cube杯型
   * @param
@@ -717,7 +676,7 @@ void CDetectorPage::_ReplaceCubeHtmlData(QString &strHtml)
     QString strFindWord = "";
     // operator id
     strFindWord = "${OperatorID}";
-    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), "admin");
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), m_strUserName);
     // test date
     strFindWord = "${TestDate}";
     strHtml = strHtml.replace(strHtml.indexOf(strFindWord),

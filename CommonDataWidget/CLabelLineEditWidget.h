@@ -67,6 +67,7 @@ signals:
 public slots:
 public:
     void SetLineEditEnable(bool bEnable);
+    void SetLineValidator(int iMin, int iMax);// 设置输入范围
 protected:
     void _InitLayout();
 };

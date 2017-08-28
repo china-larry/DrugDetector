@@ -28,13 +28,14 @@ public:
     explicit CTestModeWidget(QWidget *parent = nullptr);
 
 signals:
-
+    void SigConfirmTestMode(int iIncubatingTime);
 public slots:
 
 private slots:
     void _SlotConfirm();// 设置测试模式
 
 public:
+    int GetIncubatingTime();// 获取孵化时间（秒）
     bool GetAutoTestFlag();
 
 private:
@@ -50,6 +51,8 @@ private:
     QPushButton *m_pConfirmButton;
     QPushButton *m_pCancelButton;
     QCheckBox *m_pAutoRunTestCButton;
+    //
+    int m_iIncubatingTime;// 孵化时间
 };
 
 #endif // CTESTMODEWIGET_H

@@ -36,6 +36,11 @@ void CSettingPage::SetAccountHide()
     this->update();
 }
 
+int CSettingPage::GetTestDelayTime()
+{
+    return m_pTestModeWidget->GetIncubatingTime();
+}
+
 void CSettingPage::_LoadQss()
 {
     LoadQss(this, ":/qss/SettingPage/SettingPage.qss");
@@ -54,6 +59,7 @@ void CSettingPage::_InitWidget()
     SetWidgetBackColor(m_pAccountManagementWidget, QColor(240, 240, 240));
     m_pTestModeWidget = new CTestModeWidget;
     SetWidgetBackColor(m_pTestModeWidget, QColor(240, 240, 240));
+    connect(m_pTestModeWidget, &CTestModeWidget::SigConfirmTestMode, this, &CSettingPage::SingalTestMode);
     m_pSetTabWidget = new QTabWidget(this);
     SetWidgetBackColor(m_pSetTabWidget, QColor(240, 240, 240));
     m_pSetTabWidget->addTab(m_pSetupWindosWidget, tr("Setup Window"));

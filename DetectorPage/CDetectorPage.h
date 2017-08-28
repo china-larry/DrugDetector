@@ -22,7 +22,6 @@
 #include <QComboBox>
 #include <QTableWidget>
 #include <QList>
-#include <QWebEnginePage>
 #include "CommonDataWidget/CLabelLineEditWidget.h"
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelDateTimeWidget.h"
@@ -67,6 +66,8 @@ public:
     void SetCupType(QStringList strCupTypeList);// 设置杯类型
     void StopTest();// 主动停止测试，关闭UI
     void SetAutoTest(bool bAutoTest);
+    void SetUserName(QString strUserName);
+    void SetTestDelayTime(int iTime);
 private:
     void _LoadQss();
     QGroupBox *_CreateDonorDetailsGroup();
@@ -79,8 +80,7 @@ private:
     void _InitThreadTesting();// 初始化测试线程
     // 更新摄像头图片
     void _SetCamaraImage(QString strImagePath);
-    // 打印
-    bool _PrintToPage(QString strHtml);
+
     // 打印
     void _ReplaceCubeHtmlData(QString &strHtml);// 替换html中数据位测试数据, cube杯型，方杯
     void _ReplaceCupHtmlData(QString &strHtml);// 替换html中数据位测试数据, cup杯型， 圆杯
@@ -137,6 +137,7 @@ private:
     QRCodeInfo m_sQRCodeInfoStruct;       // 二维码数据，项目总数
     QList<TestResultData*> m_pTestResultDataList;// 下位机的测试结果列表
     DetectorPageUserData m_sDetectorPageUserDataStruct;// 用户列表数据
+    QString m_strUserName;
     QStringList m_strSCupImagePathList;// 方杯的两个图片，单独发送拼接保存
     // 拼接图片
     CFuseImage *m_pFuseImage;
@@ -145,6 +146,7 @@ private:
     VideoThread *m_pVideoThread;
     // 自动测试
     bool m_bAutoTest;// 是否不停的测试
+    int m_iTestDelayTime;// 测试延迟/孵化时间（秒）
 };
 
 #endif // CDETECTORPAGE_H

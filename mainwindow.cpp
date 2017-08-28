@@ -125,6 +125,7 @@ void MainWindow::SlotReceiveLogin(int iUserPower, QString strUserName)
 {
     this->show();
     // 权限判定和显示
+    m_pDetectorPage->SetUserName(strUserName);
     m_pDetectorPageTitleWidget->SetUserName(strUserName);
     m_pHistoryPageTitleWidget->SetUserName(strUserName);
     qDebug() << " user power" <<iUserPower;
@@ -246,6 +247,12 @@ void MainWindow::SlotDetectorPageEndTest()
     m_pHistoryPage->InsertToDatabase();
 
 }
+
+void MainWindow::SlotConfirmTestMode(int iDelayTime)
+{
+    qDebug() <<"tset main"  << iDelayTime;
+    m_pDetectorPage->SetTestDelayTime(iDelayTime);
+}
 /**
   * @brief 初始化控件
   * @param
@@ -286,6 +293,7 @@ void MainWindow::_InitWidget()
     m_pHistoryPage = new CHistoryPage(this);
     // 设置页
     m_pSettingPage = new CSettingPage(this);
+    connect(m_pSettingPage, &CSettingPage::SingalTestMode, this, &MainWindow::SlotConfirmTestMode);
     // 布局
     m_pStackedWidget->addWidget(m_pDetectorPage);
     m_pStackedWidget->addWidget(m_pCalibrationPage);

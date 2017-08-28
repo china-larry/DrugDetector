@@ -126,8 +126,6 @@ bool InsertOneItem(QTableWidget *pTableWidget, int iRow, int iColumn, QString st
   */
 void TipErrorInfomation(EnumTypeErr eTypeError);
 void TipErrorInfomation(ENUM_ERR eTestError);
-
-
 /**
   * @brief 拼接图片类，当前为内部使用类，处理侧四结果拼接为打印图片，宽高固定
   * @param
@@ -154,4 +152,10 @@ private:
     int m_iImageWidth;
     int m_iImageHeigth;
 };
+/**
+  * @brief 打印报告
+  * @param
+  * @return
+  */
+bool PrintToPage(QString strHtml);
 #endif // PUBLICFUNCTION_H

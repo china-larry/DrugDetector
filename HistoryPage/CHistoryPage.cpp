@@ -210,6 +210,33 @@ void CHistoryPage::_SlotCheckExport()
     _SaveExcel(strFile);
     qDebug() <<"save excel sucess";
 }
+
+void CHistoryPage::_SlotCheckPrint()
+{
+    // 资源文件
+    QString strHtmlFile = QCoreApplication::applicationDirPath() + "/Resources/"
+            + m_pProductDefinitionWidget->GetCurrentSelectText() + ".html";
+    qDebug() << "html file " << strHtmlFile;
+    QFile qFile(strHtmlFile);
+    if(!qFile.open(QFile::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "open false";
+    }
+    QTextStream qTextStream(&qFile);
+    QString strHtml = qTextStream.readAll();
+    qFile.close();
+    // 替换数据
+    if(m_pProductDefinitionWidget->GetCurrentSelectText() == "TCube")
+    {// 方杯
+        _ReplaceCubeHtmlData(strHtml);
+    }
+    else
+    {// 圆杯
+        _ReplaceCupHtmlData(strHtml);
+    }
+    // 打印
+    PrintToPage(strHtml);
+}
 /**
   * @brief 当前选择cell改变，只处理行改变
   * @param
@@ -700,6 +727,8 @@ void CHistoryPage::_InitButtonWidget()
     connect(m_pDeleteButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckDelete()));
     m_pExportButton = new QPushButton(tr("Export"), this);
     connect(m_pExportButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckExport()));
+    m_pPrintButton = new QPushButton(tr("Print"), this);
+    connect(m_pPrintButton, &QPushButton::clicked, this, &CHistoryPage::_SlotCheckPrint);
 }
 
 void CHistoryPage::_InitLayout()
@@ -736,6 +765,8 @@ void CHistoryPage::_InitLayout()
     pButtonLayout->addWidget(m_pDeleteButton);
     pButtonLayout->addSpacing(30);
     pButtonLayout->addWidget(m_pExportButton);
+    pButtonLayout->addSpacing(30);
+    pButtonLayout->addWidget(m_pPrintButton);
     pButtonLayout->addStretch(10);
     //
     pLayout->addLayout(pButtonLayout);
@@ -898,6 +929,16 @@ void CHistoryPage::_FreeExcel()
         delete m_pApplication;
         m_pApplication = NULL;
     }
+}
+
+void CHistoryPage::_ReplaceCubeHtmlData(QString &strHtml)
+{
+
+}
+
+void CHistoryPage::_ReplaceCupHtmlData(QString &strHtml)
+{
+
 }
 
 
