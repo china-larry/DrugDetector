@@ -128,6 +128,7 @@ void ThreadTesting::StartTest(int iSeconds)
  */
 void ThreadTesting::StopTest()
 {
+    qDebug() << __FILE__ << __FUNCTION__;
     m_eCurrentStatus = ENUM_STATUS_TEST::STATUS_NONE;
     CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
 
@@ -217,7 +218,7 @@ void ThreadTesting::_SlotMoveStepperMotor()
 void ThreadTesting::_SlotMotorComplete(quint16 iCmdType, bool bResult)
 {
     Q_UNUSED(bResult);
-//    qDebug() << __FUNCTION__ << mCmdType << result;
+//    qDebug() << __FUNCTION__ << iCmdType << bResult;
     if(iCmdType == ProtocolUtility::sm_kiCmdRotateMotor)
     {
         _StatusHandler(true,m_eCurrentStatus);
@@ -267,6 +268,11 @@ void ThreadTesting::_SlotMotorComplete(quint16 iCmdType, bool bResult)
 void ThreadTesting::_StatusHandler(bool bResult, ENUM_STATUS_TEST eTestStatus)
 {
 //    qDebug()<< __FUNCTION__ << "result:"<< bResult << "status:" << eTestStatus << "m_iIndexProject:"<< m_iIndexMovement<< "m_iStepsMoveMotor:"<< m_iStepsMoveMotor;
+
+    if(m_eCurrentStatus == ENUM_STATUS_TEST::STATUS_NONE)
+    {
+        return;
+    }
     if(bResult)
     {
         switch (eTestStatus)

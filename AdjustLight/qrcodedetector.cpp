@@ -642,7 +642,8 @@ bool QRCodeDetector::DecodeQrcode(const QString strDecode,QRCodeInfo &sQrCodeInf
 
                         QString strItem = strListQrcodeSection.at(0);
                         strValidityData = strItem.mid(0,6);
-                        strCardNumber = strItem.mid(6,strItem.length() - 6);
+                        //strCardNumber = strItem.mid(6,strItem.length() - 6);
+                        strCardNumber = strItem;
                     }
                 }
                 else if(strListQrcodeSection.count() == 3) //项目（0 - 24）
@@ -776,7 +777,7 @@ QRCodeInfo QRCodeDetector::PackageQRCodeInfo(QString strBatchNumber,
             strIndexProgram = strListitemVector.at(iPos).at(0);
             dThresholdUp = strListitemVector.at(iPos).at(1);
             dSensitivityUp = strListitemVector.at(iPos).at(2);
-            sInfoProject.iIndexProgram = strIndexProgram.toInt(&bOk,16);
+            sInfoProject.iIndexProgram = strIndexProgram.toInt(&bOk,10);
             sInfoProject.strProjectName = GetProjectName(sInfoProject.iIndexProgram);
             //qDebug() << "strProjectName = " << sInfoProject.strProjectName;
             sInfoProject.dThresholdUp = dThresholdUp.toInt(&bOk,16);

@@ -103,18 +103,23 @@ void SetLabelBackImageEx(QLabel *pLabel, QString strImagePath, QRect qRedRect)
     }
     QPixmap qPixmap(strImagePath);
     //
-    //QPixmap *pPixmap = new QPixmap(qPixmap.width(), qPixmap.height());
+    QPixmap *pPixmap = new QPixmap(qPixmap.width(), qPixmap.height());
     QPainter painter;
-    painter.begin(&qPixmap);
+    painter.begin(pPixmap);
+   // painter.begin(&qPixmap);
  //   painter.drawPixmap(0, 0, qPixmap.width(), qPixmap.height(), qPixmap);
     painter.setPen(QPen(QBrush(QColor(255, 0, 0)), 2));
-    painter.setBrush(QColor(255, 255, 0));
-    //painter.drawRect(qRedRect);
+    //painter.setBrush(QColor(255, 255, 0));
+    painter.drawRect(qRedRect);
+    painter.drawLine(qRedRect.topLeft(), qRedRect.topRight());
+    painter.drawLine(qRedRect.topRight(), qRedRect.bottomRight());
+    painter.drawLine(qRedRect.bottomRight(), qRedRect.bottomLeft());
+    painter.drawLine(qRedRect.bottomLeft(), qRedRect.topLeft());
     qDebug() <<"width " << qPixmap.width() << qPixmap.height() <<"rect " <<qRedRect;
 //    pPixmap->save("E:\\s9.png");
 
-    pLabel->setPixmap(qPixmap.scaled(pLabel->width(), pLabel->height(), Qt::KeepAspectRatio));
-  //  pLabel->setPixmap(pPixmap->scaled(pLabel->width(), pLabel->height(), Qt::KeepAspectRatio));
+   // pLabel->setPixmap(qPixmap.scaled(pLabel->width(), pLabel->height(), Qt::KeepAspectRatio));
+    pLabel->setPixmap(pPixmap->scaled(pLabel->width(), pLabel->height(), Qt::KeepAspectRatio));
     pLabel->setAlignment(Qt::AlignCenter);
 
     //delete pPixmap;
