@@ -14,6 +14,7 @@
 #define STANDARDMACHINECALIBRATEDIALOG_H
 
 #include <QDialog>
+#include "testing/ThreadStandardTesting.h"
 
 namespace Ui {
 class StandardMachineCalibrateDialog;
@@ -35,7 +36,6 @@ struct StandardMachineCalibrateParams
     qint16  iRightGreenLightValueMax;   //右绿灯光最大值
     qint16  iRightGreenLightValueStep;  //右绿灯光步进亮度
     qint16  iCapType;                   //杯型
-    qint16  iTValueType;                //T值类型
     qint16  iSignalLightValueTestCount; //单个灯光测试次数
 };
 
@@ -46,6 +46,14 @@ class StandardMachineCalibrateDialog : public QDialog
 public:
     explicit StandardMachineCalibrateDialog(QWidget *parent = 0);
     ~StandardMachineCalibrateDialog();
+
+private slots:
+    void SlotConfirm();
+    void SlotGetZvalue(double dZvalue);
+    void _SlotStop();
+
+public:
+
     /**
      * @brief InitLightParas
      * 从界面上获取标准机灯光测试的信息
@@ -62,8 +70,30 @@ public:
      */
     StandardMachineCalibrateParams GetStandardMachineCalibrateParams();
 
+    void TraverseLedLight(StandardMachineCalibrateParams sParams);
+
+    //初始化设备位置和灯光
+    bool InitDevice();
+
+    void AddBrightness(StandardMachineCalibrateParams sParams);
+
 private:
     Ui::StandardMachineCalibrateDialog *ui;
+
+    ThreadStandardTesting *m_threadStandardTesting;
+    QVector<double>     m_dZValueVector;
+    const int m_iMaxLightValue = 25000;
+    bool m_bIsStop;
+    bool m_bIsFinish;
+
+    int iUpGreenLightValue;
+    int iDownGreenLightValue;
+    int iLeftGreenLightValue;
+    int iRightGreenLightValue;
+
+    QTextStream qTextOutStream;
+    QFile qFileName;
+    StandardMachineCalibrateParams sParams;
 };
 
 #endif // STANDARDMACHINECALIBRATEDIALOG_H

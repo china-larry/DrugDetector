@@ -28,7 +28,7 @@ struct BrightnessValue
     int  iNo8;   // 白右灯
     int  iCupType;
 };
-Q_DECLARE_METATYPE(BrightnessValue);//注册结构体
+Q_DECLARE_METATYPE(BrightnessValue)//注册结构体
 
 class StandardBrightness : public QObject
 {

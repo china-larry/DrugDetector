@@ -29,6 +29,11 @@
 #include "PublicFunction.h"
 CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
 {
+    m_strDatabaseName = "\\drug.db";
+    m_iDatabaseColumnCount = 120;// 当前列数，包括ID
+    m_iResultIndexCount = 6;
+    m_iMaxTestResult = 16;
+    //
     _InitHistoryTableWidget();
     _InitTestDataWidget();
     _InitButtonWidget();
@@ -37,7 +42,7 @@ CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
     // 初始化数据库
     _InitDataBase();
     // 初始化excel
-    _InitExcel();
+    _InitExcel();    
 }
 
 CHistoryPage::~CHistoryPage()
@@ -96,18 +101,18 @@ void CHistoryPage::_SlotCheckQuery()
     {
         QStringList strLineDataList;
         // id
-        strLineDataList.push_back(qSqlQuery.value(0).toString());
+        strLineDataList.push_back(qSqlQuery.value(ID_INDEX).toString());
         // Name
-        strLineDataList.push_back(qSqlQuery.value(1).toString() + " "
-                                  + qSqlQuery.value(2).toString());
-        // DonorID
-        strLineDataList.push_back(qSqlQuery.value(3).toString());
+        strLineDataList.push_back(qSqlQuery.value(DONOR_FIREST_NAME).toString() + " "
+                                  + qSqlQuery.value(DONOR_LASE_NAME).toString());
         // TestTime
-        strLineDataList.push_back(qSqlQuery.value(5).toString());
+        strLineDataList.push_back(qSqlQuery.value(TEST_TIME).toString());
+        // DonorID
+        strLineDataList.push_back(qSqlQuery.value(DONOR_ID).toString());
         // Product Lot
-        strLineDataList.push_back(qSqlQuery.value(19).toString());
+        strLineDataList.push_back(qSqlQuery.value(PRODUCT_LOT).toString());
         // Product Difinition
-        strLineDataList.push_back(qSqlQuery.value(17).toString());
+        strLineDataList.push_back(qSqlQuery.value(PRODUCT_DEFINITION).toString());
         // 数据
         qDebug() << "list " << strLineDataList;
         m_strTableLineDataList.push_back(strLineDataList);
@@ -165,6 +170,11 @@ void CHistoryPage::_SlotCheckExport()
     _NewExcel();
     QSet<int> iCurrentSelectRowSet;
     _GetCurrentSelectRows(iCurrentSelectRowSet);
+    if(iCurrentSelectRowSet.count() < 1)
+    {
+        QMessageBox::critical(NULL, "Error", "Please Select Item!", QMessageBox::Ok, QMessageBox::Ok);
+        return;
+    }
     //遍历
     QSetIterator<int> qIter(iCurrentSelectRowSet);
     int iExcelRowIndex = 2;// 递增行,execl单元格为2行2列开始
@@ -213,29 +223,40 @@ void CHistoryPage::_SlotCheckExport()
 
 void CHistoryPage::_SlotCheckPrint()
 {
-    // 资源文件
-    QString strHtmlFile = QCoreApplication::applicationDirPath() + "/Resources/"
-            + m_pProductDefinitionWidget->GetCurrentSelectText() + ".html";
-    qDebug() << "html file " << strHtmlFile;
-    QFile qFile(strHtmlFile);
-    if(!qFile.open(QFile::ReadOnly | QIODevice::Text))
-    {
-        qDebug() << "open false";
-    }
-    QTextStream qTextStream(&qFile);
-    QString strHtml = qTextStream.readAll();
-    qFile.close();
-    // 杯型
-    QString strCupType = m_pProductDefinitionWidget->GetCurrentSelectText();
     // 遍历选择行，逐行打印
     QSet<int> iCurrentSelectRowSet;
     _GetCurrentSelectRows(iCurrentSelectRowSet);
+    qDebug() << "select row count_" << iCurrentSelectRowSet.count();
+    if(iCurrentSelectRowSet.count() < 1)
+    {
+        QMessageBox::critical(NULL, "Error", "Please Select Item!", QMessageBox::Ok, QMessageBox::Ok);
+        return;
+    }
+
+    // 资源文件
+    QString strTCubeHtml = GetHtmlStream(QCoreApplication::applicationDirPath() + "/Resources/TCube.html");
+    QString strTCupHtml = GetHtmlStream(QCoreApplication::applicationDirPath() + "/Resources/TCup.html");
+    // 杯型
+    QString strCupType = "";
+    // 遍历
     QSetIterator<int> qIter(iCurrentSelectRowSet);
     while (qIter.hasNext())
     {
         int iRow = qIter.next();
+        // 获取杯型
+        QTableWidgetItem *pItem = m_pHistoryDataTableWidget->item(iRow, 5);
+        if(pItem != NULL)
+        {//
+            strCupType = pItem->text();
+            qDebug() << "cup type" << strCupType;
+            if(strCupType.isEmpty())// 此处杯型判定，根据杯型选择不同的打印模板，目前只简单判定是否为空，后面模板详细判定
+            {
+                QMessageBox::critical(NULL, "Error", "Wrong Cup Type!", QMessageBox::Ok, QMessageBox::Ok);
+                return;
+            }
+        }
         // 获取ID
-        QTableWidgetItem *pItem = m_pHistoryDataTableWidget->item(iRow, 0);
+        pItem = m_pHistoryDataTableWidget->item(iRow, 0);
         if(pItem == NULL)
         {// 无选择行
             return;
@@ -251,20 +272,20 @@ void CHistoryPage::_SlotCheckPrint()
             QSqlQuery qSqlQuery(strSelect);// 数据库中存放103列(id)
             if(qSqlQuery.next())
             {
-                for(int i = 1; i < m_iDatabaseColumnCount; ++i)// i=0为ID，不导出
-                {
-                    //_SetExcelCellValue(iExcelRowIndex, i + 1, qSqlQuery.value(i).toString());// execl单元格为2行2列开始
-                    // 替换数据
-                    if(strCupType == "TCube")
-                    {// 方杯
-                        _ReplaceCubeHtmlData(strHtml);
-                    }
-                    else
-                    {// 圆杯
-                        _ReplaceCupHtmlData(strHtml);
-                    }
-                    // 打印
-                    PrintToPage(strHtml);
+                // 替换数据
+                if(strCupType == "TCube")
+                {// 方杯
+                    _ReplaceCubeHtmlData(qSqlQuery, strTCubeHtml);
+                    qDebug() << "print to pdf";
+                    PrintToPdf(strTCubeHtml);
+                    //PrintToPage(strTCubeHtml);
+                }
+                else
+                {// 圆杯
+                    _ReplaceCupHtmlData(qSqlQuery, strTCupHtml);
+                    qDebug() << "print to pdf";
+                    PrintToPdf(strTCupHtml);
+                    //PrintToPage(strTCupHtml);
                 }
             }
 
@@ -307,74 +328,74 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
         QString strSelect = QString("SELECT * FROM drugdata WHERE id = ");
         strSelect += strID;
         qDebug() << "slel " << strSelect;
-        QSqlQuery qSqlQuery(strSelect);// 数据库中存放69列(id)
+        QSqlQuery qSqlQuery(strSelect);// 数据库中存放列(id)
         while(qSqlQuery.next())
         {
             // 清空数据
             m_strCurrentTestInfoList.clear();
             m_qTestDataList.clear();
             // birth data
-            m_strCurrentTestInfoList.push_back(QString("Birth Date: ") + qSqlQuery.value(4).toString());
+            m_strCurrentTestInfoList.push_back(QString("Birth Date: ") + qSqlQuery.value(BIRTH_DATE).toString());
             // test site
-            m_strCurrentTestInfoList.push_back(QString("Test Site: ") + qSqlQuery.value(6).toString());
+            m_strCurrentTestInfoList.push_back(QString("Test Site: ") + qSqlQuery.value(TEST_SITE).toString());
             // operator
-            m_strCurrentTestInfoList.push_back(QString("Operator: ") + qSqlQuery.value(7).toString());
+            m_strCurrentTestInfoList.push_back(QString("Operator: ") + qSqlQuery.value(OPERATOR).toString());
             // test reason
             QString strTestReason = "";
-            if(qSqlQuery.value(8).toString() == "true")
+            if(qSqlQuery.value(PRE_EMPLOYMENT).toString() == "true")
             {// pro-employment
                 strTestReason += tr("Pre-Employment  ");
             }
-            if(qSqlQuery.value(9).toString() == "true")
+            if(qSqlQuery.value(RANDOM).toString() == "true")
             {// Random
                 strTestReason += tr("Random  ");
             }
-            if(qSqlQuery.value(10).toString() == "true")
+            if(qSqlQuery.value(REASON_SUSPICION).toString() == "true")
             {// Reason suspicion cause
                 strTestReason += tr("Reason suspicion cause  ");
             }
-            if(qSqlQuery.value(11).toString() == "true")
+            if(qSqlQuery.value(POST_ACCIDENT).toString() == "true")
             {// Post Accident
                 strTestReason += tr("Post Accident  ");
             }
-            if(qSqlQuery.value(12).toString() == "true")
+            if(qSqlQuery.value(RETURN_TO_DUTY).toString() == "true")
             {// Return to Duty
                 strTestReason += tr("Return to Duty  ");
             }
-            if(qSqlQuery.value(13).toString() == "true")
+            if(qSqlQuery.value(FOLLW_UP).toString() == "true")
             {// Follow Up
                 strTestReason += tr("Follow Up  ");
             }
-            if(qSqlQuery.value(14).toString() == "true")
-            {// Follow Up
+            if(qSqlQuery.value(OTHER_REASON).toString() == "true")
+            {// Other Reason
                 strTestReason += tr("Other Reason  ");
             }
            // Comment
-            strTestReason += qSqlQuery.value(15).toString();
+            strTestReason += qSqlQuery.value(COMMENTS).toString();
             m_strCurrentTestInfoList.push_back(QString("Reason for Test: ") + strTestReason);
             // Temperature normal#
-            m_strCurrentTestInfoList.push_back(QString("Temperature normal: ")  + qSqlQuery.value(16).toString());
+            m_strCurrentTestInfoList.push_back(QString("Temperature normal: ")  + qSqlQuery.value(TEMPERATURE_NORMAL).toString());
             // Expiration Date
-            m_strCurrentTestInfoList.push_back(QString("Expiration Date: ") + qSqlQuery.value(18).toString());
+            m_strCurrentTestInfoList.push_back(QString("Expiration Date: ") + qSqlQuery.value(EXPIRATION_DATE).toString());
             // Product ID
-            m_strCurrentTestInfoList.push_back(QString("Product ID:") + qSqlQuery.value(20).toString());
+            m_strCurrentTestInfoList.push_back(QString("Product ID:") + qSqlQuery.value(PRODUCT_ID).toString());
             // Number of Programs
             bool bProgramNumOk = false;
-            m_iCurrentDataProgramNumber = qSqlQuery.value(21).toInt(&bProgramNumOk);
-            if(m_iCurrentDataProgramNumber > 16)
+            m_iCurrentDataProgramNumber = qSqlQuery.value(PROGRAM_NUMBER).toInt(&bProgramNumOk);
+            if(m_iCurrentDataProgramNumber > m_iMaxTestResult)
             {
-                m_iCurrentDataProgramNumber = 16;// 最大结果数据位16个0-15
+                m_iCurrentDataProgramNumber = m_iMaxTestResult;// 最大结果数据位16个0-15
             }
             if(bProgramNumOk)
             {
-                m_strCurrentTestInfoList.push_back(QString("Programs Number: ") + qSqlQuery.value(21).toString());
+                m_strCurrentTestInfoList.push_back(QString("Programs Number: ") + qSqlQuery.value(PROGRAM_NUMBER).toString());
                 // name result cutoff
                 for(int i = 0; i < m_iCurrentDataProgramNumber; ++i)
                 {
                     QStringList strDataList;
-                    strDataList.push_back(qSqlQuery.value(22 + i * 5).toString());
-                    strDataList.push_back(qSqlQuery.value(23 + i * 5).toString());
-                    strDataList.push_back(qSqlQuery.value(24 + i * 5).toString());
+                    strDataList.push_back(qSqlQuery.value(PROGRAM_NAME_BEGIN + i * m_iResultIndexCount).toString());
+                    strDataList.push_back(qSqlQuery.value(PROGRAM_NAME_BEGIN + 1 + i * m_iResultIndexCount).toString());
+                    strDataList.push_back(qSqlQuery.value(PROGRAM_NAME_BEGIN + 2 + i * m_iResultIndexCount).toString());
                     //
                     m_qTestDataList.push_back(strDataList);
                 }
@@ -425,7 +446,9 @@ void CHistoryPage::SetTestUserData(DetectorPageUserData sDetectorPageUserDataStr
 
 void CHistoryPage::SetCupType(QStringList strCupTypeList)
 {
-    m_pProductDefinitionWidget->SetCupType(strCupTypeList);
+    m_strCupTypeList = strCupTypeList;
+    m_strCupTypeList.insert(0, "");// 允许为空
+    m_pProductDefinitionWidget->SetCupType(m_strCupTypeList);
 }
 /**
   * @brief 显示当天测试结果数据至Table控件
@@ -455,17 +478,17 @@ void CHistoryPage::ShowCurrentDateTest()
     {
         QStringList strLineDataList;
         // id
-        strLineDataList.push_back(qSqlQuery.value(0).toString());
+        strLineDataList.push_back(qSqlQuery.value(ID_INDEX).toString());
         // Name
-        strLineDataList.push_back(qSqlQuery.value(1).toString() + " " + qSqlQuery.value(2).toString());
-        // DonorID
-        strLineDataList.push_back(qSqlQuery.value(3).toString());
+        strLineDataList.push_back(qSqlQuery.value(DONOR_FIREST_NAME).toString() + " " + qSqlQuery.value(DONOR_LASE_NAME).toString());
         // TestTime
-        strLineDataList.push_back(qSqlQuery.value(5).toString());
+        strLineDataList.push_back(qSqlQuery.value(TEST_TIME).toString());
+        // DonorID
+        strLineDataList.push_back(qSqlQuery.value(DONOR_ID).toString());
         // Product Lot
-        strLineDataList.push_back(qSqlQuery.value(19).toString());
+        strLineDataList.push_back(qSqlQuery.value(PRODUCT_LOT).toString());
         // Product Difinition
-        strLineDataList.push_back(qSqlQuery.value(17).toString());
+        strLineDataList.push_back(qSqlQuery.value(PRODUCT_DEFINITION).toString());
         // 数据
         qDebug() << "list " << strLineDataList;
         m_strTableLineDataList.push_back(strLineDataList);
@@ -489,7 +512,7 @@ void CHistoryPage::InsertToDatabase()
         QString strInsert =
                 "INSERT INTO drugdata (DonorFirstName, DonorLastName, TestTime, BirthDate, DonorID, TestSite, Operator, "
                  "PreEmployment, Random, ReasonSuspicionCause, PostAccident, ReturnToDuty, FollowUp, OtherReason, Comments, "
-                  "TemperatureNormal, ProductDefinition, ExpirationDate, ProductLot, ProductID, ProgramsNumber";
+                  "TemperatureNormal, Email, ProductDefinition, ExpirationDate, ProductLot, ProductID, ProgramsNumber";
         for(int i = 0; i < 16; ++i)
         {
             strInsert += QString(", ") + QString("ProgramName") + QString::number(i);
@@ -497,12 +520,13 @@ void CHistoryPage::InsertToDatabase()
             strInsert += QString(", ") + QString("Cutoff") + QString::number(i);
             strInsert += QString(", ") + QString("T") + QString::number(i);
             strInsert += QString(", ") + QString("C") + QString::number(i);
+            strInsert += QString(", ") + QString("ControlLine") + QString::number(i);
         }
         strInsert += QString(", ") + QString("PrintImagePath");
         //
         strInsert += QString(") VALUES (?");
-        for(int i = 0; i < 101; ++i)// 共计102列
-        {// 100个
+        for(int i = 0; i < m_iDatabaseColumnCount-2; ++i)// 共计m_iDatabaseColumnCount列,不包括ID，循环少前一个，共计2个
+        {//
             strInsert += QString(", ?");
         }
         strInsert += QString(")");
@@ -545,6 +569,8 @@ void CHistoryPage::InsertToDatabase()
         //
         strFlag = m_sDetectorPageUserDataStruct.bTemperatureNormal ? "true" : "false";
         qSqlQuery.addBindValue(strFlag);
+        // email
+        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strEmail.toLocal8Bit());
         // product details
         qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strProductDefinition);
         qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strExpriationDate);
@@ -561,6 +587,7 @@ void CHistoryPage::InsertToDatabase()
             qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->iCutoffValue);
             qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->iTValue);
             qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->iCValue);
+            qSqlQuery.addBindValue(m_pTestResultDataList.at(i)->strControlLine.toLocal8Bit());
         }
         for(int i = iTestResultDataCount; i < 16; ++i)
         {
@@ -569,6 +596,7 @@ void CHistoryPage::InsertToDatabase()
             qSqlQuery.addBindValue(0);
             qSqlQuery.addBindValue(0);
             qSqlQuery.addBindValue(0);
+            qSqlQuery.addBindValue("");
         }
         qSqlQuery.addBindValue(m_strTestPrintImagePath.toLocal8Bit());
         if (!qSqlQuery.exec())
@@ -907,6 +935,10 @@ void CHistoryPage::_InitExcel()
     {
         m_strCharNumberList << QString("C") + m_strCharNumberList.at(i);
     }
+    for(int i = 0; i <26; ++i)
+    {
+        m_strCharNumberList << QString("D") + m_strCharNumberList.at(i);
+    }
     // 初始化title名称
     m_strTitleNameList << "ID" << "DonorFirstName" << "DonorLastName" << "TestTime"
                          << "BirthDate" << "DonorID" << "TestSite" << "Operator"
@@ -922,6 +954,7 @@ void CHistoryPage::_InitExcel()
         m_strTitleNameList << QString("Cutoff") + QString::number(i);
         m_strTitleNameList << QString("T") + QString::number(i);
         m_strTitleNameList << QString("C") + QString::number(i);
+        m_strTitleNameList << QString("ControlLine") + QString::number(i);
     }
     m_strTitleNameList << "PrintImagePath";
 }
@@ -966,14 +999,226 @@ void CHistoryPage::_FreeExcel()
     }
 }
 
-void CHistoryPage::_ReplaceCubeHtmlData(QString &strHtml)
+void CHistoryPage::_ReplaceCubeHtmlData(QSqlQuery &qSqlQuery, QString &strTCubeHtml)
 {
-
+    QString strFindWord = "";
+    // operator id
+    strFindWord = "${OperatorID}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord), strFindWord.count(), qSqlQuery.value(OPERATOR).toString());
+    // test date
+    QDateTime qTestDateTime = QDateTime::fromString(qSqlQuery.value(TEST_TIME).toString());
+    strFindWord = "${TestDate}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qTestDateTime.date().toString("yyyy-MM-dd"));
+    // test time
+    strFindWord = "${TestTime}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qTestDateTime.time().toString());
+    // donor id
+    strFindWord = "${DonorID}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(DONOR_ID).toString());
+    // email address
+    strFindWord = "${EmailAddress}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), "");
+    // Testing Site
+    strFindWord = "${TestingSite}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(TEST_SITE).toString());
+    // Specimen Type
+    strFindWord = "${UrineCheck}";
+    if(qSqlQuery.value(PRODUCT_DEFINITION).toString() == "TCup")
+    {
+        strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord), strFindWord.count(), "checked");
+    }
+    strFindWord = "${SalivaCheck}";
+    if(qSqlQuery.value(PRODUCT_DEFINITION).toString() == "TCube")
+    {
+        strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord), strFindWord.count(), "checked");
+    }
+    // reason for test
+    strFindWord = "${PreEmploymentCheck}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(PRE_EMPLOYMENT).toBool() ? "checked" : "");
+    strFindWord = "${RandomCheck}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(RANDOM).toBool() ? "checked" : "");
+    strFindWord = "${ReasonableCheck}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(REASON_SUSPICION).toBool() ? "checked" : "");
+    strFindWord = "${PostAccidentCheck}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(POST_ACCIDENT).toBool() ? "checked" : "");
+    strFindWord = "${ReturnToDutyCheck}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(RETURN_TO_DUTY).toBool() ? "checked" : "");
+    strFindWord = "${FollowUpCheck}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(FOLLW_UP).toBool() ? "checked" : "");
+    strFindWord = "${OtherCheck}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(OTHER_REASON).toBool() ? "checked" : "");
+    // other
+    strFindWord = "${Other}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(COMMENTS).toString());
+    // ProductID
+    strFindWord = "${ProductID}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(PRODUCT_ID).toString());
+    // ProductLot
+    strFindWord = "${ProductLot}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(PRODUCT_LOT).toString());
+    // ExpirationDate
+    strFindWord = "${ExpirationDate}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(EXPIRATION_DATE).toString());
+    // temperature in range
+    strFindWord = "${TemperatureinRangeYesCheck}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(TEMPERATURE_NORMAL).toBool() ? "checked" : "");
+    strFindWord = "${TemperatureinRangeNoCheck}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(TEMPERATURE_NORMAL).toBool() ? "" : "checked");
+    // 测试结果
+    int iTestResultDataListCount = qSqlQuery.value(PROGRAM_NUMBER).toInt();
+    QString strResultDataHtml = "";
+    int iResultIndex = PROGRAM_NAME_BEGIN;
+    for(int i = 0; i < iTestResultDataListCount; ++i)
+    {
+        strResultDataHtml += QString(" <tr style=\"text-align:center\"> <th>&nbsp;</th><td style=\"padding: 2px 0px;\">");
+        strResultDataHtml += QString("Strip") + QString::number(i);// strip的数值,0开始
+        strResultDataHtml += QString("</td> <td>");
+        strResultDataHtml += qSqlQuery.value(iResultIndex).toString();// drug的数值
+        strResultDataHtml += QString("</td> <td>");
+        strResultDataHtml += qSqlQuery.value(iResultIndex+2).toString();// cutoff的数值
+        strResultDataHtml += QString("</td> <td>");
+        strResultDataHtml += qSqlQuery.value(iResultIndex+5).toString();// control Line的数值
+        strResultDataHtml += QString("</td> <td>");
+        strResultDataHtml += qSqlQuery.value(iResultIndex+1).toString();// result的数值
+        strResultDataHtml += QString("</td> <th>&nbsp;</th> </tr> ");
+        iResultIndex  = iResultIndex + m_iResultIndexCount;// 6组数据
+    }
+    strFindWord = "${ResultData}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord), strFindWord.count(), strResultDataHtml);
+    // 图片Image
+    QString strTestPrintImagePath = qSqlQuery.value(PRINT_IMAGE_PATH).toString();
+    QString strImageByte = GetImagePngBase64(QCoreApplication::applicationDirPath()  + strTestPrintImagePath);
+    strFindWord = "${test_image_01}";
+    strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord), strFindWord.count(), strImageByte);
 }
 
-void CHistoryPage::_ReplaceCupHtmlData(QString &strHtml)
+void CHistoryPage::_ReplaceCupHtmlData(QSqlQuery &qSqlQuery, QString &strTCupHtml)
 {
-
+    QString strFindWord = "";
+    // operator id
+    strFindWord = "${OperatorID}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord), strFindWord.count(), qSqlQuery.value(OPERATOR).toString());
+    // test date
+    QDateTime qTestDateTime = QDateTime::fromString(qSqlQuery.value(TEST_TIME).toString());
+    strFindWord = "${TestDate}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qTestDateTime.date().toString("yyyy-MM-dd"));
+    // test time
+    strFindWord = "${TestTime}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qTestDateTime.time().toString());
+    // donor id
+    strFindWord = "${DonorID}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(DONOR_ID).toString());
+    // email address
+    strFindWord = "${EmailAddress}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), "");
+    // Testing Site
+    strFindWord = "${TestingSite}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(TEST_SITE).toString());
+    // Specimen Type
+    strFindWord = "${UrineCheck}";
+    if(qSqlQuery.value(PRODUCT_DEFINITION).toString() == "TCup")
+    {
+        strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord), strFindWord.count(), "checked");
+    }
+    strFindWord = "${SalivaCheck}";
+    if(qSqlQuery.value(PRODUCT_DEFINITION).toString() == "TCube")
+    {
+        strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord), strFindWord.count(), "checked");
+    }
+    // reason for test
+    strFindWord = "${PreEmploymentCheck}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(PRE_EMPLOYMENT).toBool() ? "checked" : "");
+    strFindWord = "${RandomCheck}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(RANDOM).toBool() ? "checked" : "");
+    strFindWord = "${ReasonableCheck}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(REASON_SUSPICION).toBool() ? "checked" : "");
+    strFindWord = "${PostAccidentCheck}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(POST_ACCIDENT).toBool() ? "checked" : "");
+    strFindWord = "${ReturnToDutyCheck}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(RETURN_TO_DUTY).toBool() ? "checked" : "");
+    strFindWord = "${FollowUpCheck}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(FOLLW_UP).toBool() ? "checked" : "");
+    strFindWord = "${OtherCheck}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(OTHER_REASON).toBool() ? "checked" : "");
+    // other
+    strFindWord = "${Other}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(COMMENTS).toString());
+    // ProductID
+    strFindWord = "${ProductID}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(PRODUCT_ID).toString());
+    // ProductLot
+    strFindWord = "${ProductLot}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(PRODUCT_LOT).toString());
+    // ExpirationDate
+    strFindWord = "${ExpirationDate}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(EXPIRATION_DATE).toString());
+    // temperature in range
+    strFindWord = "${TemperatureinRangeYesCheck}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(TEMPERATURE_NORMAL).toBool() ? "checked" : "");
+    strFindWord = "${TemperatureinRangeNoCheck}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(TEMPERATURE_NORMAL).toBool() ? "" : "checked");
+    // 测试结果
+    int iTestResultDataListCount = qSqlQuery.value(PROGRAM_NUMBER).toInt();
+    QString strResultDataHtml = "";
+    int iResultIndex = PROGRAM_NAME_BEGIN;
+    for(int i = 0; i < iTestResultDataListCount; ++i)
+    {
+        strResultDataHtml += QString(" <tr style=\"text-align:center\"> <th>&nbsp;</th><td style=\"padding: 2px 0px;\">");
+        strResultDataHtml += QString("Strip") + QString::number(i);// strip的数值,0开始
+        strResultDataHtml += QString("</td> <td>");
+        strResultDataHtml += qSqlQuery.value(iResultIndex).toString();// drug的数值
+        strResultDataHtml += QString("</td> <td>");
+        strResultDataHtml += qSqlQuery.value(iResultIndex+2).toString();// cutoff的数值
+        strResultDataHtml += QString("</td> <td>");
+        strResultDataHtml += qSqlQuery.value(iResultIndex+5).toString();// control Line的数值
+        strResultDataHtml += QString("</td> <td>");
+        strResultDataHtml += qSqlQuery.value(iResultIndex+1).toString();// result的数值
+        strResultDataHtml += QString("</td> <th>&nbsp;</th> </tr> ");
+        iResultIndex  = iResultIndex + m_iResultIndexCount;// 6组数据
+    }
+    strFindWord = "${ResultData}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord), strFindWord.count(), strResultDataHtml);
+    // 图片Image
+    QString strTestPrintImagePath = qSqlQuery.value(PRINT_IMAGE_PATH).toString();
+    QString strImageByte = GetImagePngBase64(QCoreApplication::applicationDirPath()  + strTestPrintImagePath);
+    strFindWord = "${test_image_01}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord), strFindWord.count(), strImageByte);
 }
 
 
@@ -994,9 +1239,7 @@ void CHistoryPage::_UpdateToPoctServer()
   * @return
   */
 void CHistoryPage::_InitDataBase()
-{
-    m_strDatabaseName = "\\drug.db";
-    m_iDatabaseColumnCount = 103;// 当前列数
+{    
     if (ConnectDataBase(QCoreApplication::applicationDirPath() + m_strDatabaseName))
     {
         QString strCreateTable  = "CREATE TABLE drugdata ("
@@ -1017,6 +1260,7 @@ void CHistoryPage::_InitDataBase()
                                   "OtherReason VARCHAR,"
                                   "Comments VARCHAR,"
                                   "TemperatureNormal VARCHAR,"
+                                  "Email VARCHAR,"
                                   "ProductDefinition VARCHAR,"
                                   "ExpirationDate VARCHAR,"
                                   "ProductLot VARCHAR,"
@@ -1029,6 +1273,7 @@ void CHistoryPage::_InitDataBase()
             strCreateTable += QString("Cutoff") + QString::number(i) + QString(" INT,");
             strCreateTable += QString("T") + QString::number(i) + QString(" INT,");
             strCreateTable += QString("C") + QString::number(i) + QString(" INT,");
+            strCreateTable += QString("ControlLine") + QString::number(i) + QString(" VARCHAR,");
         }
         strCreateTable += "PrintImagePath VARCHAR)";
         //strCreateTable.replace(strCreateTable.count()-1, 1, ")");// 替换最后“,”为“)”

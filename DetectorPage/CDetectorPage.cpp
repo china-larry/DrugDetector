@@ -23,6 +23,10 @@
 #include <QTextBlock>
 #include <QStringList>
 #include <QMessageBox>
+#include <QPrintPreviewDialog>
+#include <QWebEnginePage>
+#include <QPrinter>
+#include <QPrintDialog>
 #include "PublicFunction.h"
 CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
 {
@@ -34,11 +38,13 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
     _InitWidget();
       // 布局
     _InitLayout();
-    //
-    m_pFuseImage = new CFuseImage;
-    connect(m_pFuseImage, &CFuseImage::SignalFuseOk, this, &CDetectorPage::SlotFuseImageOK);
+    // 拼接图片线程
+    m_pFuseImageThread = new CFuseImageThread;
+    connect(m_pFuseImageThread, &CFuseImageThread::SignalFuseOk, this, &CDetectorPage::SlotFuseImageOK);
     m_strTestPrintImagePath = "";
-
+    // 删除图片线程
+    m_pDeleteImageThread = new CDeleteImageThread;
+    connect(m_pDeleteImageThread, &CDeleteImageThread::SignalDeleteOk, this, &CDetectorPage::SlotDeleteImageOK);
     // 初始化摄像头
     m_pVideoThread = new VideoThread;
     m_pVideoThread->start();
@@ -46,6 +52,9 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
     m_bAutoTest = false;
     m_strUserName = "user";
     m_iTestDelayTime = 0;
+    //
+    m_strHtml = "";
+    m_strTestImageDir = QCoreApplication::applicationDirPath() + "/camera/";// 删除临时文件路径
 }
 
 CDetectorPage::~CDetectorPage()
@@ -61,11 +70,17 @@ CDetectorPage::~CDetectorPage()
         delete m_pThreadTesting;
         m_pThreadTesting = NULL;
     }
-    if(m_pFuseImage != NULL)
+    if(m_pFuseImageThread != NULL)
     {
-        m_pFuseImage->terminate();
-        delete m_pFuseImage;
-        m_pFuseImage = NULL;
+        m_pFuseImageThread->terminate();
+        delete m_pFuseImageThread;
+        m_pFuseImageThread = NULL;
+    }
+    if(m_pDeleteImageThread != NULL)
+    {
+        m_pDeleteImageThread->terminate();
+        delete m_pDeleteImageThread;
+        m_pDeleteImageThread = NULL;
     }
     // 初始化线程
     if(m_pVideoThread != NULL)
@@ -217,6 +232,18 @@ void CDetectorPage::SlotFuseImageOK()
 {
     // 可以打印
     m_pPrintPriviewButton->setEnabled(true);
+    // 删除测试图片
+    if(m_pTestResultDataList.count() > 0)
+    {        
+        m_pDeleteImageThread->SetImageDir(m_strTestImageDir);
+        m_pDeleteImageThread->start();
+        qDebug() <<"test image dir " <<m_strTestImageDir;
+    }
+}
+
+void CDetectorPage::SlotDeleteImageOK()
+{
+
 }
 // 用户点击开始测试按钮，开始测试
 void CDetectorPage::_SlotCheckReadTestDevice()
@@ -230,6 +257,7 @@ void CDetectorPage::_SlotCheckReadTestDevice()
     // 控件状态
     m_pReadTestDeviceButton->setEnabled(false);
     m_pPrintPriviewButton->setEnabled(false);
+    m_pTestTimeWidget->SetDateTime(QDateTime::currentDateTime());
     // 发送到main
     emit SignalStartTest();// 更改状态栏
     // 进程开始测试
@@ -279,20 +307,22 @@ void CDetectorPage::_SlotPrintToPDF()
         qDebug() << "open false";
     }
     QTextStream qTextStream(&qFile);
-    QString strHtml = qTextStream.readAll();
+    m_strHtml = qTextStream.readAll();
     qFile.close();
     // 替换数据
     if(m_pProductDefinitionWidget->GetCurrentSelectText() == "TCube")
     {// 方杯
-        _ReplaceCubeHtmlData(strHtml);
+        _ReplaceCubeHtmlData(m_strHtml);
     }
     else
     {// 圆杯
-        _ReplaceCupHtmlData(strHtml);
+        _ReplaceCupHtmlData(m_strHtml);
     }
     // 打印
-    PrintToPage(strHtml);
+    //PrintToPdf(m_strHtml);
+    PrintToPage(m_strHtml);
 }
+
 
 QList<TestResultData *> CDetectorPage::GetTestResultData()
 {
@@ -320,8 +350,10 @@ DetectorPageUserData CDetectorPage::GetUserData()
     m_sDetectorPageUserDataStruct.bFollowUp = m_pFollowUpCBox->isChecked();
     m_sDetectorPageUserDataStruct.bOtherReason = m_pOtherReasonForTestCBox->isChecked();
     m_sDetectorPageUserDataStruct.strOtherReasonComments = m_pOtherReasonCommentsLineEdit->text();
-    // product details
+
     m_sDetectorPageUserDataStruct.bTemperatureNormal = m_pTemperatureNormalCBox->isChecked();
+    m_sDetectorPageUserDataStruct.strEmail = m_pEmailAddressWidget->GetLineText();
+    // product details
     m_sDetectorPageUserDataStruct.strProductDefinition = m_pProductDefinitionWidget->GetCurrentSelectText();
     m_sDetectorPageUserDataStruct.strProductLot = m_pProductLotWidget->GetLineText();
     m_sDetectorPageUserDataStruct.strExpriationDate = m_pExpirationWidget->GetLineText();
@@ -632,11 +664,11 @@ bool CDetectorPage::_GetValidData()
         return false;
     }
     // Email是否包含@
-    if(!m_pEmailAddressWidget->GetLineText().contains(QChar('@')))
-    {
-        QMessageBox::information(NULL, tr("Tip"), tr("Please Input Valid Email Address!"), QMessageBox::Ok , QMessageBox::Ok);
-        return false;
-    }
+//    if(!m_pEmailAddressWidget->GetLineText().contains(QChar('@')))
+//    {
+//        QMessageBox::information(NULL, tr("Tip"), tr("Please Input Valid Email Address!"), QMessageBox::Ok , QMessageBox::Ok);
+//        return false;
+//    }
 
     return true;
 }
@@ -788,9 +820,9 @@ QString CDetectorPage::_GetResultsDataHtml()
     for(int i = 0; i < iTestResultDataListCount; ++i)
     {
         strResultDataHtml += QString(" <tr style=\"text-align:center\"> <th>&nbsp;</th><td style=\"padding: 2px 0px;\">");
-        strResultDataHtml += QString("Strip") +QString::number(i);// strip的数值
+        strResultDataHtml += QString("Strip ") + QString::number(i);// strip的数值
         strResultDataHtml += QString("</td> <td>");
-        strResultDataHtml += QString("Drug") + QString::number(i);// drug的数值
+        strResultDataHtml += m_pTestResultDataList.at(i)->strProgramName;// drug的数值
         strResultDataHtml += QString("</td> <td>");
         strResultDataHtml += QString::number(m_pTestResultDataList.at(i)->iCutoffValue);// cutoff的数值
         strResultDataHtml += QString("</td> <td>");
@@ -800,7 +832,7 @@ QString CDetectorPage::_GetResultsDataHtml()
         strResultDataHtml += QString("</td> <th>&nbsp;</th> </tr> ");
     }
 
-    qDebug() << "reslut data " << strResultDataHtml;
+    //qDebug() << "reslut data " << strResultDataHtml;
     return strResultDataHtml;
 }
 // 方杯拼接
@@ -811,9 +843,9 @@ void CDetectorPage::_FuseTCubeImage()
         m_strTestPrintImagePath = "\\result_image\\print_image_"
                 + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss_z")// 当前时间
                 + ".jpg";
-        m_pFuseImage->SetImagePaths(m_strSCupImagePathList,
+        m_pFuseImageThread->SetImagePaths(m_strSCupImagePathList,
                                     QCoreApplication::applicationDirPath()  + m_strTestPrintImagePath);
-        m_pFuseImage->start();
+        m_pFuseImageThread->start();
     }
     else
     {
@@ -832,8 +864,8 @@ void CDetectorPage::_FuseTCupImage()
     m_strTestPrintImagePath = "\\result_image\\print_image_"
             + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss_z")// 当前时间
             + ".jpg";
-    m_pFuseImage->SetImagePaths(strImagePathList,
+    m_pFuseImageThread->SetImagePaths(strImagePathList,
                                 QCoreApplication::applicationDirPath()  + m_strTestPrintImagePath);
-    m_pFuseImage->start();
+    m_pFuseImageThread->start();
 }
 

@@ -737,7 +737,7 @@ QRCodeInfo QRCodeDetector::PackageQRCodeInfo(QString strBatchNumber,
 {
     QRCodeInfo sQrCodeInfo;
     sQrCodeInfo.iProductLot = strBatchNumber;
-    sQrCodeInfo.qExprationDate = QDate::fromString(strValidityData, "yyMMdd");
+    sQrCodeInfo.qExprationDate = QDate::fromString("20" + strValidityData, "yyyyMMdd");
     sQrCodeInfo.strProductID = strCardNumber;
 
     bool bOk = false;

@@ -115,7 +115,7 @@ private:
     int _GetMinLocation(const int *kpSumLineWidth, int iArrLength);
     int _GetValueTC(const QList<int> &kiHorizontalProjectionList, TestResultData &sResultTestDataStruct);   //获取C线位置
     int _FindCLine(QList<int> iHorizontalProjectionList);
-    int _FindProjectMid(QList<int> iUprightProjectionList, int iPixelLevel, int iPixelSustain);             //定位项目中心点
+    int _FindProjectMid(QList<int> iUprightProjectionList, int iPixelLevel, int iPixelSustain, int &iProjectMid);             //定位项目中心点
 
     void _InitStatus();
     void _ReceivePicPathSCup(QString strPath);      //方杯目标区图片分析

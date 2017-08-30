@@ -19,7 +19,7 @@
 #define SMOOTH_VALUE    8           //滤波系数
 
 #define PIXEL_HALF_OF_WIGHT_TCUP_PRO   110      //圆杯
-#define PIXEL_HALF_OF_WIGHT_SCUP_PRO   480      //方杯 唾液被3
+#define PIXEL_HALF_OF_WIGHT_SCUP_PRO   400/*480*/      //方杯 唾液被3
 
 #define PIXEL_HALF_OF_WIGHT_TCUP_TAR   25      //圆杯
 #define PIXEL_HALF_OF_WIGHT_SCUP_TAR   25      //方杯 唾液被3
@@ -27,9 +27,9 @@
 #define PIXEL_TOP_MARJIN_TCUP      435          //项目区域 距离照片顶部的像素 圆杯
 #define PIXEL_TOP_MARJIN_SCUP      333          //项目区域 距离照片顶部的像素 方杯
 #define PIXEL_BOTTOM_MARJIN_TCUP   320          //项目区域 距离照片底部的像素 圆杯
-#define PIXEL_BOTTOM_MARJIN_SCUP   220          //项目区域 距离照片底部的像素 方杯
+#define PIXEL_BOTTOM_MARJIN_SCUP   270          //项目区域 距离照片底部的像素 方杯
 
-#define PIXEL_SCREEN_ERR           (-85)        //屏幕误差
+#define PIXEL_SCREEN_ERR           (10/*-10*//*-85*/)        //屏幕误差
 
 #define PIXEL_OF_PRO_NAME_TCUP   380            //项目名称色块像素长度 圆杯
 #define PIXEL_OF_PRO_NAME_SCUP   570            //项目名称色块像素长度 方杯
@@ -65,7 +65,9 @@
 
 #define MIN_VALUE_CLINE 1000                    //分量加和 小于1000C线 非法
 
+#define LIMIT 157   //（一个方杯项目距离 + 白条距离  + 1/4方杯项目距离）
 
+#define PIXEL_ITEM_SCUP 100        //一个方杯项目距离
 
 ThreadTesting::ThreadTesting()
 {
@@ -148,6 +150,7 @@ void ThreadTesting::_SLotReceiveQRCodeInfo(QRCodeInfo sInfoQRCodeStruct)
 {
 //    qDebug() << "info.iProgramCount:" << sInfoQRCodeStruct.iProgramCount << sInfoQRCodeStruct.listProject.count();
 
+    qDebug() << "info.strProjectName:" << sInfoQRCodeStruct.listProject.at(0).strProjectName;
     if(m_eCurrentStatus != ENUM_STATUS_TEST::STATUS_NONE)
     {
         return;
@@ -171,6 +174,11 @@ void ThreadTesting::_SLotReceiveQRCodeInfo(QRCodeInfo sInfoQRCodeStruct)
 #endif
 
     m_QRCodeInfo = sInfoQRCodeStruct;
+//    for(int i = 0;i < m_QRCodeInfo.listProject.count();i++)
+//    {
+//        qDebug() << "m_QRCodeInfo.listProject.at(0).strProjectName  = " << m_QRCodeInfo.listProject.at(i).strProjectName;
+//    }
+
     _InitStatus();
     m_iIndexMovement = 0;
 
@@ -491,7 +499,6 @@ TestResultData ThreadTesting::_ReceivePicPathTCup(QString strPath, bool &bExist)
         sResultDataStruct.iIndexProject = iIndexProject;
         sProjectDataStruct = m_QRCodeInfo.listProject.at(iIndexProject);
 
-
         sResultDataStruct.strProgramName = sProjectDataStruct.strProjectName;
         sResultDataStruct.iCutoffValue = sProjectDataStruct.dSensitivityUp;
     }
@@ -522,13 +529,15 @@ TestResultData ThreadTesting::_ReceivePicPathTCup(QString strPath, bool &bExist)
     QList<int> iUprightProjectionList;
     iUprightProjectionList = _UprightProjection(strPathProject);
 
-    int iLocationProjectMid = 0;
+    int iResult = 0;
+    int iProjectMid = -1;
     if(!iUprightProjectionList.isEmpty())
     {
-        iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
-        if(iLocationProjectMid == -1)
+
+        iResult = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP,iProjectMid);
+        if(iResult == -1)
         {
-            qDebug() << "m_iIndexProject:" << m_iIndexMovement<< "No item, Pic Path:"  << strPathProject;
+            //qDebug() << "m_iIndexProject:" << m_iIndexMovement<< "No item, Pic Path:"  << strPathProject;
             sResultDataStruct.strResult = "Error";
             return sResultDataStruct;
         }
@@ -537,13 +546,13 @@ TestResultData ThreadTesting::_ReceivePicPathTCup(QString strPath, bool &bExist)
             bExist = true;
             if(m_iIndexMovement+1 < m_iStepList.count())
             {
-                _ModifNextStep(m_iIndexMovement+1, PIXEL_HALF_OF_WIGHT_TCUP_PRO - iLocationProjectMid);
+                _ModifNextStep(m_iIndexMovement+1, PIXEL_HALF_OF_WIGHT_TCUP_PRO - iProjectMid);
             }
         }
     }
 
     QString strPathTarget = strPath.left(strPath.count() - 4) + "b.bmp";
-    int iXTar = pImg->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP_PRO + iLocationProjectMid - PIXEL_HALF_OF_WIGHT_TCUP_TAR;
+    int iXTar = pImg->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP_PRO + iProjectMid - PIXEL_HALF_OF_WIGHT_TCUP_TAR;
     int iYTar = PIXEL_TOP_MARJIN_TCUP + PIXEL_OF_PRO_NAME_TCUP;
     int iWightTar = PIXEL_HALF_OF_WIGHT_TCUP_TAR*2;
     int iHeightTar = pImg->height()-PIXEL_TOP_MARJIN_TCUP-PIXEL_BOTTOM_MARJIN_TCUP-PIXEL_OF_PRO_NAME_TCUP;
@@ -609,7 +618,8 @@ QList<int> ThreadTesting::GetComponentGreenTCup(QString strPath)
     int iLocationProjectMid =0;
     if(!iUprightProjectionList.isEmpty())
     {
-        iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
+        int iProjectMid = -1;
+        iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP,iProjectMid);
         if(iLocationProjectMid == -1)
         {
             return iHorizontalProjectionList;
@@ -715,11 +725,16 @@ void ThreadTesting::_ReceivePicPathSCup(QString strPath)
         return;
     }
 
+    qDebug() << "pImg->width() = " << pImg->width();
     int iXProject = pImg->width()/2 - PIXEL_HALF_OF_WIGHT_SCUP_PRO + PIXEL_SCREEN_ERR;
     int iYProject = PIXEL_TOP_MARJIN_SCUP;
     int iWidthProject = PIXEL_HALF_OF_WIGHT_SCUP_PRO*2;
     int iHeightProject = pImg->height()-PIXEL_TOP_MARJIN_SCUP-PIXEL_BOTTOM_MARJIN_SCUP;
 
+    qDebug() << "iXProject = " << iXProject;
+    qDebug() << "iYProject = " << iYProject;
+    qDebug() << "iWidthProject = " << iWidthProject;
+    qDebug() << "iHeightProject = " << iHeightProject;
     QString strPathPic = strPath.left(strPath.count() - 4) + "a.bmp";
 
     QPixmap::fromImage(pImg->copy(iXProject, iYProject,iWidthProject, iHeightProject)).save(strPathPic);
@@ -730,6 +745,7 @@ void ThreadTesting::_ReceivePicPathSCup(QString strPath)
     iUprightProjectionList = _UprightProjection(strPathPic);
 
     QList<int> iProjectMidList = _FindProjectSCup(iUprightProjectionList);
+
     if(iProjectMidList.isEmpty())
     {
         qDebug() << "No project had been positioned!";
@@ -742,8 +758,24 @@ void ThreadTesting::_ReceivePicPathSCup(QString strPath)
 
     for(int i=0;i<iProjectMidList.count();i++)
     {
-        sResultDataStruct.iIndexProject = m_iIndexMovement*5 + i;
-        iProjectMidSum += iProjectMidList.at(i);
+        sResultDataStruct.iIndexProject = (m_iIndexMovement - 1)*5 + i;
+
+        qDebug() << "m_iIndexMovement = " << m_iIndexMovement - 1;
+        qDebug() << "sResultDataStruct.iIndexProject = " << sResultDataStruct.iIndexProject;
+        sProjectDataStruct = m_QRCodeInfo.listProject.at(sResultDataStruct.iIndexProject);
+        qDebug() << "sProjectDataStruct.strProjectName = " << sProjectDataStruct.strProjectName;
+        sResultDataStruct.strProgramName = sProjectDataStruct.strProjectName;
+        sResultDataStruct.iCutoffValue = sProjectDataStruct.dSensitivityUp;
+        if(iProjectMidList.at(i) == -1)
+        {
+            iProjectMidSum += LIMIT;
+            sResultDataStruct.strResult = "Error";
+            emit SignalTestResult(sResultDataStruct);
+            continue;
+        }
+        iProjectMidSum += iProjectMidList.at(i) + PIXEL_ITEM_SCUP/2;
+//        sResultDataStruct.iIndexProject = m_iIndexMovement*5 + i;
+//        iProjectMidSum += iProjectMidList.at(i) + PIXEL_ITEM_SCUP/2;
 //        qDebug() << "i:" << i << " ProjectMid:" << iProjectMidSum;
 
         int iXTar = iXProject + iProjectMidSum - PIXEL_HALF_OF_WIGHT_SCUP_TAR;
@@ -799,20 +831,24 @@ QList<int> ThreadTesting::_FindProjectSCup(QList<int> iUprightProjectionList)
     for(int i=0;i<5;i++)
     {
         int iProjectMid = -1;
-        iProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_SCUP,PIXEL_SUSTAIN_SCUP);
-        if(iProjectMid == -1)
+        int iResult = -1;
+        iResult = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_SCUP,PIXEL_SUSTAIN_SCUP,iProjectMid);
+        qDebug() << "i = " << i;
+        qDebug() << "iProjectMid = " << iProjectMid;
+        if(iResult == -1)
         {
             qDebug() << i << "found no Project!";
-            iLocationProjectMidList.clear();
-            return iLocationProjectMidList;
+            iLocationProjectMidList.append(-1);
+            iUprightProjectionList = iUprightProjectionList.mid(iProjectMid);
         }
-//        else
-//        {
-//            qDebug() << i << "found Project!  iProjectMid:" << iProjectMid;
-//        }
+        else
+        {
+            iLocationProjectMidList.append(iProjectMid);
+            iUprightProjectionList = iUprightProjectionList.mid(iProjectMid + PIXEL_ITEM_SCUP / 2);
+        }
 
-        iLocationProjectMidList.append(iProjectMid);
-        iUprightProjectionList = iUprightProjectionList.mid(iProjectMid);
+        //iLocationProjectMidList.append(iProjectMid);
+        //iUprightProjectionList = iUprightProjectionList.mid(iProjectMid + PIXEL_ITEM_SCUP / 2);
     }
 //    qDebug() << "iLocationProjectMidList:" << iLocationProjectMidList;
     return iLocationProjectMidList;
@@ -973,8 +1009,9 @@ void ThreadTesting::_GetTestResult(const InfoProject &ksProjectDataStruct, TestR
  * @param iPixelSustain  项目像素宽度
  * @return 成功返回项目中心坐标，失败返回-1
  */
-int ThreadTesting::_FindProjectMid(QList<int> iUprightProjectionList, int iPixelLevel, int iPixelSustain)
+int ThreadTesting::_FindProjectMid(QList<int> iUprightProjectionList, int iPixelLevel, int iPixelSustain, int &iProjectMid)
 {
+    qDebug() << "count:" << iUprightProjectionList.count();
     int iCount=0;
     int iLocationProjectStart = 0;
 
@@ -985,6 +1022,11 @@ int ThreadTesting::_FindProjectMid(QList<int> iUprightProjectionList, int iPixel
     }
     for(int x=0;x<iUprightProjectionList.count();x++)
     {
+        if(x > LIMIT)
+        {
+            iProjectMid = LIMIT;
+            return -1;
+        }
         iUprightProjectionList.at(x) > iPixelLevel ? iCount++ : iCount=0;
 //        qDebug() << __FUNCTION__ << "iUprightProjectionList:" << iUprightProjectionList.at(x) << iCount;
         if(iCount > iPixelSustain)
@@ -995,7 +1037,9 @@ int ThreadTesting::_FindProjectMid(QList<int> iUprightProjectionList, int iPixel
                 if(iUprightProjectionList.at(x)< iPixelLevel)
                 {
                     int iLocationProjectMid = (iLocationProjectStart+x)/2;
-                    return iLocationProjectMid;
+                    //return iLocationProjectMid;
+                    iProjectMid = iLocationProjectMid;
+                    return 0;
                 }
                 x++;
             }
@@ -1331,7 +1375,7 @@ int ThreadTesting::_ErCMethod2(int* pData, int iBackGround1, int iBackGround2, i
  */
 bool ThreadTesting::_GetRealLine(int * pDataArr,int iLineCenterX,int iPicWide)
 {
-//    qDebug() << "lineCenterX:" << iLineCenterX << "PIXEL_LINE:" << PIXEL_LINE << "PicW:" << iPicWide;
+    qDebug() << "lineCenterX:" << iLineCenterX << "PIXEL_LINE:" << PIXEL_LINE << "PicW:" << iPicWide;
     //线性回归，去除背景
 
     //取两倍线宽的位置的10点像素作为背景值
@@ -1580,12 +1624,14 @@ void ThreadTesting::_CheckInValid(QString strPathTarget, QList<int> &iHorizontal
     double dProportion = _UnderLineProportion(strPathTarget, iLocationCLineMid);
     if(sResultDataStruct.iCValue < MIN_VALUE_CLINE)
     {
+        qDebug() << "sResultDataStruct.iCValue = " << sResultDataStruct.iCValue;
         sResultDataStruct.strResult = "Error";
         sResultDataStruct.eInvalidType = INVALID_CLINE;
         return;
     }
     else if(dProportion > VALUE_INCOMPLETE_MIN)
     {
+        qDebug() << "dProportion = " << dProportion;
         sResultDataStruct.strResult = "Error";
         sResultDataStruct.eInvalidType = INCOMPLETE_CLINE;
         return;
@@ -1605,6 +1651,7 @@ void ThreadTesting::_CheckInValid(QString strPathTarget, QList<int> &iHorizontal
         dProportion = _UnderLineProportion(strPathTarget, iLocationCLineMid + iPixelTCDistance);
         if((dProportion > VALUE_INCOMPLETE_MIN)||(dProportion < VALUE_INCOMPLETE_MAX))
         {
+            qDebug() << "dProportion123 = " << dProportion;
             sResultDataStruct.strResult = "Error";
             sResultDataStruct.eInvalidType = INCOMPLETE_TLINE;
             return;
@@ -1640,6 +1687,7 @@ int ThreadTesting::_FindFirstItem(QString strPath, ENUM_LOCATION_TYPE type)
     iUprightProjectionList = _UprightProjection(strPathProject);
 
     int iLocationProjectMid = 0;
+    int iProjectMid = -1;
     if(!iUprightProjectionList.isEmpty())
     {
         switch (type) {
@@ -1647,10 +1695,10 @@ int ThreadTesting::_FindFirstItem(QString strPath, ENUM_LOCATION_TYPE type)
             iLocationProjectMid = _FindFirstWrite(iUprightProjectionList);//,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
             break;
         case TYPE_FIRST_ITEM:
-            iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
+            iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP,iProjectMid);
             break;
         case TYPE_FIRST_LOCATE:
-            iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_LOCATE,PIXEL_SUSTAIN_TCUP);
+            iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_LOCATE,PIXEL_SUSTAIN_TCUP,iProjectMid);
             break;
 
         default:

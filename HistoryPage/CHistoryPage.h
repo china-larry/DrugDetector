@@ -26,12 +26,43 @@
 #include <QTableWidget>
 #include <QTextEdit>
 #include <QAxObject>
+#include <QSqlQuery>
 #include "CommonDataWidget/CLabelLineEditWidget.h"
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
 #include "CommonDataWidget/CLabelCheckBoxWidget.h"
 #include "PublicFunction.h"
 #include "AdjustLight/testing/ThreadTesting.h"
+// 数据库数据列枚举
+enum DrugDataIndex
+{
+    ID_INDEX = 0,
+    DONOR_FIREST_NAME,
+    DONOR_LASE_NAME,
+    TEST_TIME,
+    BIRTH_DATE,
+    DONOR_ID,
+    TEST_SITE,
+    OPERATOR,
+    PRE_EMPLOYMENT,
+    RANDOM,
+    REASON_SUSPICION,
+    POST_ACCIDENT,
+    RETURN_TO_DUTY,
+    FOLLW_UP,
+    OTHER_REASON,
+    COMMENTS,
+    TEMPERATURE_NORMAL,
+    EMAIL,
+    PRODUCT_DEFINITION,
+    EXPIRATION_DATE,
+    PRODUCT_LOT,
+    PRODUCT_ID,
+    PROGRAM_NUMBER = 22,
+    PROGRAM_NAME_BEGIN = 23,// 6组16列，共计96列,23-118，（program_name, result，cutoff, T, C, ControlLine）
+    CONTROL_LINE_END = 118,
+    PRINT_IMAGE_PATH = 119,
+};
 class CHistoryPage : public QWidget
 {
     Q_OBJECT
@@ -87,8 +118,8 @@ private:
     void _SaveExcel(const QString &kstrFileName);
     void _FreeExcel();
     // 打印
-    void _ReplaceCubeHtmlData(QString &strHtml);// 替换html中数据位测试数据, cube杯型，方杯
-    void _ReplaceCupHtmlData(QString &strHtml);// 替换html中数据位测试数据, cup杯型， 圆杯
+    void _ReplaceCubeHtmlData(QSqlQuery &qSqlQuery, QString &strTCubeHtml);// 替换html中数据位测试数据, cube杯型，方杯
+    void _ReplaceCupHtmlData(QSqlQuery &qSqlQuery, QString &strTCupHtml);// 替换html中数据位测试数据, cup杯型， 圆杯
     // 上传服务器
     void _UpdateToPisServer();
     void _UpdateToPoctServer();
@@ -117,7 +148,8 @@ private:
     QPushButton *m_pDeleteButton;
     QPushButton *m_pExportButton;
     QPushButton *m_pPrintButton;
-
+    // 当前支持杯型
+    QStringList m_strCupTypeList;
     // 单次测试数据区
     QList<TestResultData*> m_pTestResultDataList;
     DetectorPageUserData m_sDetectorPageUserDataStruct;
@@ -126,6 +158,8 @@ private:
     // 数据库
     QString m_strDatabaseName;
     int m_iDatabaseColumnCount;// 数据库项列数
+    int m_iResultIndexCount;// 测试结果共计的相（只没个项目结果共计几组，当前为6，name, result,cutoff,t,c, controlline）
+    int m_iMaxTestResult;// 当前允许的最大项目数，当前为16个
     // PIS/POCT服务器
     QString m_strPisServer;
     QString m_strPoctServer;

@@ -22,6 +22,7 @@
 #include <QComboBox>
 #include <QTableWidget>
 #include <QList>
+#include <QPrinter>
 #include "CommonDataWidget/CLabelLineEditWidget.h"
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelDateTimeWidget.h"
@@ -53,6 +54,7 @@ public slots:
     void SlotEndTest();// 流程测试结束
     void SlotReceiveTestError(ENUM_ERR eTestError);// 错误信号
     void SlotFuseImageOK();// 拼接完成
+    void SlotDeleteImageOK();// 删除完成
 private slots:
     // 控件
     void _SlotCheckReadTestDevice();// 开始测试
@@ -140,13 +142,18 @@ private:
     QString m_strUserName;
     QStringList m_strSCupImagePathList;// 方杯的两个图片，单独发送拼接保存
     // 拼接图片
-    CFuseImage *m_pFuseImage;
+    CFuseImageThread *m_pFuseImageThread;
     QString m_strTestPrintImagePath;// 保存打印所需的测试过程图片，拼接合成，为当前时间，保存路径为result_image
+    // 删除测试图片
+    CDeleteImageThread *m_pDeleteImageThread;
+    QString m_strTestImageDir;// 测试图片存放的目录
     // 初始化摄像头
     VideoThread *m_pVideoThread;
     // 自动测试
     bool m_bAutoTest;// 是否不停的测试
     int m_iTestDelayTime;// 测试延迟/孵化时间（秒）
+    // 打印
+    QString m_strHtml;
 };
 
 #endif // CDETECTORPAGE_H

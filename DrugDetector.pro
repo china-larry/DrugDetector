@@ -63,7 +63,8 @@ SOURCES += \
     AdjustLight/UpgradeFile.cpp \
     AdjustLight/UpgradeProgress.cpp \
     AdjustLight/CalculateGreenComponent.cpp \
-    AdjustLight/VideoThread.cpp
+    AdjustLight/VideoThread.cpp \
+    AdjustLight/testing/ThreadStandardTesting.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -105,7 +106,8 @@ HEADERS += \
     AdjustLight/UpgradeFile.h \
     AdjustLight/UpgradeProgress.h \
     AdjustLight/CalculateGreenComponent.h \
-    AdjustLight/VideoThread.h
+    AdjustLight/VideoThread.h \
+    AdjustLight/testing/ThreadStandardTesting.h
 
 FORMS += \
         mainwindow.ui \

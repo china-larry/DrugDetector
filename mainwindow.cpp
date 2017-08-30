@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_iProgramCount = 0;
     // 读取配置文件
     _ReadConfigFile();
+    m_bLeftButtonCheck = false;
 }
 
 MainWindow::~MainWindow()
@@ -214,6 +215,7 @@ void MainWindow::SlotHaveQRCodeInfo(int iProgramCount)
 
 void MainWindow::SlotTestProgramIndex(int iProgramIndex)
 {
+    qDebug() <<"iProgramIndex : "  << iProgramIndex << m_iProgramCount;
     if(m_iProgramCount == iProgramIndex)
     {
         m_pDetectorPageStatusBar->SetProgressValue(100);

@@ -253,27 +253,27 @@ void TipErrorInfomation(EnumTypeErr eTypeError)
     {
         case ErrNoFoundQR:
         {
-            QMessageBox::information(NULL, "Error", "QR Code Error!", QMessageBox::Ok, QMessageBox::Ok);
+            QMessageBox::critical(NULL, "Error", "QR Code Error!", QMessageBox::Ok, QMessageBox::Ok);
             break;
         }
         case ErrDecodeQR:
         {
-            QMessageBox::information(NULL, "Error", "QR Decode Failure!", QMessageBox::Ok, QMessageBox::Ok);
+            QMessageBox::critical(NULL, "Error", "QR Decode Failure!", QMessageBox::Ok, QMessageBox::Ok);
             break;
         }
         case ErrNoConnectUSB:
         {
-            QMessageBox::information(NULL, "Error", "USB Connect Failure!", QMessageBox::Ok, QMessageBox::Ok);
+            QMessageBox::critical(NULL, "Error", "USB Connect Failure!", QMessageBox::Ok, QMessageBox::Ok);
             break;
         }
         case ErrNoOpenVideo:
         {
-            QMessageBox::information(NULL, "Error", "Video Open Failure!", QMessageBox::Ok, QMessageBox::Ok);
+            QMessageBox::critical(NULL, "Error", "Video Open Failure!", QMessageBox::Ok, QMessageBox::Ok);
             break;
         }
         default:
         {
-            QMessageBox::information(NULL, "Error", "Other Error!", QMessageBox::Ok, QMessageBox::Ok);
+            QMessageBox::critical(NULL, "Error", "Other Error!", QMessageBox::Ok, QMessageBox::Ok);
             break;
         }
     }
@@ -332,14 +332,14 @@ void TipErrorInfomation(ENUM_ERR eTestError)
     }
 }
 
-CFuseImage::CFuseImage()
+CFuseImageThread::CFuseImageThread()
 {
     m_iImageWidth = 600;
     m_iImageHeigth = 180;
     m_pPixmap = new QPixmap(m_iImageWidth, m_iImageHeigth);
 }
 
-CFuseImage::~CFuseImage()
+CFuseImageThread::~CFuseImageThread()
 {
     if(m_pPixmap != NULL)
     {
@@ -348,7 +348,7 @@ CFuseImage::~CFuseImage()
     }
 }
 
-void CFuseImage::run()
+void CFuseImageThread::run()
 {
     QPainter painter;
     painter.begin(m_pPixmap);
@@ -365,11 +365,87 @@ void CFuseImage::run()
 }
 
 
-void CFuseImage::SetImagePaths(QStringList strImagePathList, QString strSaveImagePath)
+void CFuseImageThread::SetImagePaths(QStringList strImagePathList, QString strSaveImagePath)
 {
     m_strImagePathList = strImagePathList;
     m_strSaveImagePath = strSaveImagePath;
     qDebug() << "fuse image  " << m_strImagePathList;
+}
+CDeleteImageThread::CDeleteImageThread()
+{
+    m_strImageDir = "";
+}
+
+void CDeleteImageThread::run()
+{
+    if(!m_strImageDir.isEmpty())
+    {
+        if(_RemoveFolderContent())
+        {
+            emit SignalDeleteOk();
+        }
+        else
+        {
+            qDebug() << "delete image failure";
+        }
+    }
+}
+
+void CDeleteImageThread::SetImageDir(QString strImageDir)
+{
+    m_strImageDir = strImageDir;
+    qDebug() << "delete dir " << m_strImageDir;
+}
+
+bool CDeleteImageThread::_RemoveFolderContent()
+{
+    QDir qDir(m_strImageDir);
+    QFileInfoList qFileList;
+    QFileInfo qCurrentFileInfo;
+    if(!qDir.exists())
+    {
+        return false;
+    }//文件不存，则返回false
+    qFileList = qDir.entryInfoList(QDir::Dirs|QDir::Files
+                               |QDir::Readable|QDir::Writable
+                               |QDir::Hidden|QDir::NoDotAndDotDot
+                               ,QDir::Name);
+    while(qFileList.size() > 0)
+    {
+        int iInfoNum = qFileList.size();
+        for(int i = iInfoNum-1;i >= 0; i--)
+        {
+            qCurrentFileInfo = qFileList[i];
+            if(qCurrentFileInfo.isFile())//如果是文件，删除文件
+            {
+                QFile qFileTemp(qCurrentFileInfo.filePath());
+                qFileTemp.remove();
+                qFileList.removeAt(i);
+            }
+            if(qCurrentFileInfo.isDir())//如果是文件夹
+            {
+                QDir qDirTemp(qCurrentFileInfo.filePath());
+                QFileInfoList fileList1 = qDirTemp.entryInfoList(QDir::Dirs|QDir::Files
+                                                              |QDir::Readable|QDir::Writable
+                                                              |QDir::Hidden|QDir::NoDotAndDotDot
+                                                              ,QDir::Name);
+                if(fileList1.size() == 0)//下层没有文件或文件夹
+                {
+                    qDirTemp.rmdir(".");
+                    qFileList.removeAt(i);
+                }
+                else//下层有文件夹或文件
+                {
+                    for(int j = 0;j < fileList1.size(); j++)
+                    {
+                        if(!(qFileList.contains(fileList1[j])))
+                            qFileList.append(fileList1[j]);
+                    }
+                }
+            }
+        }
+    }
+    return true;
 }
 
 /**
@@ -382,14 +458,11 @@ bool PrintToPage(QString strHtml)
     QPrinter * qPrinter = new QPrinter();
     qPrinter->setPageSize(QPrinter::A4);
     qPrinter->setFullPage(true);
-    // 输出到PDF
-    qPrinter->setOutputFormat(QPrinter::PdfFormat);
-    qPrinter->setOutputFileName("E:/b.pdf");
     // 连接打印机
-//    QPrintDialog qPrintDialog(qPrinter, this);
-//    if (qPrintDialog.exec() != QDialog::Accepted) {
-//        return false;
-//    }
+    QPrintDialog qPrintDialog(qPrinter, NULL);
+    if (qPrintDialog.exec() != QDialog::Accepted) {
+        return false;
+    }
     QWebEnginePage * pWebEnginePage = new QWebEnginePage;
     pWebEnginePage->setHtml(strHtml);
 
@@ -423,4 +496,65 @@ bool PrintToPage(QString strHtml)
         return false;
     });
     return false;
+}
+
+bool PrintToPdf(QString strHtml)
+{
+    QPrinter * qPrinter = new QPrinter();
+    qPrinter->setPageSize(QPrinter::A4);
+    qPrinter->setFullPage(true);
+    // 输出到PDF
+    qPrinter->setOutputFormat(QPrinter::PdfFormat);
+    qPrinter->setOutputFileName("E:/b.pdf");
+    //
+    QWebEnginePage * pWebEnginePage = new QWebEnginePage;
+    pWebEnginePage->setHtml(strHtml);
+
+    QObject::connect(pWebEnginePage, &QWebEnginePage::loadFinished, [pWebEnginePage, qPrinter] (bool bOk)
+    {
+        if (!bOk)
+        {
+            qDebug() << "连接失败";
+            delete pWebEnginePage;
+            delete qPrinter;
+            return false;
+        }
+        pWebEnginePage->print(qPrinter, [pWebEnginePage, qPrinter](bool bPrintok)
+        {
+            if (bPrintok)
+            {
+                qDebug() << "print ok";
+                delete pWebEnginePage;// lambda 不可赋值为null
+                delete qPrinter;
+                return true;
+            }
+            else
+            {
+                qDebug() << "print error.";
+                delete pWebEnginePage;
+                delete qPrinter;
+                return false;
+            }
+
+        });
+        return false;
+    });
+    return false;
+}
+/**
+  * @brief 获取Cup的HTML源文件
+  * @param
+  * @return html数据流
+  */
+QString GetHtmlStream(QString strHtmlFilePath)
+{
+    QFile qFile(strHtmlFilePath);
+    if(!qFile.open(QFile::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "open  html false";
+    }
+    QTextStream qTextStream(&qFile);
+    QString strHtml = qTextStream.readAll();
+    qFile.close();
+    return strHtml;
 }

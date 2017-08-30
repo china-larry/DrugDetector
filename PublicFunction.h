@@ -42,6 +42,7 @@ struct DetectorPageUserData
     bool bFollowUp;
     bool bOtherReason;
     QString strOtherReasonComments;
+    QString strEmail;
     // product details
     bool bTemperatureNormal;
     QString strProductDefinition;
@@ -131,13 +132,13 @@ void TipErrorInfomation(ENUM_ERR eTestError);
   * @param
   * @return
   */
-class CFuseImage:public  QThread
+class CFuseImageThread:public  QThread
 {
     Q_OBJECT
 
 public :
-    explicit CFuseImage();
-    virtual ~CFuseImage();
+    explicit CFuseImageThread();
+    virtual ~CFuseImageThread();
 protected:
     virtual void run();
 signals:
@@ -153,9 +154,50 @@ private:
     int m_iImageHeigth;
 };
 /**
+  * @brief 删除图片线程，删除测试过程中产生的临时图片
+  * @param
+  * @return
+  */
+class CDeleteImageThread:public  QThread
+{
+    Q_OBJECT
+
+public :
+    explicit CDeleteImageThread();
+protected:
+    virtual void run();
+signals:
+    void SignalDeleteOk();// 删除完成
+
+public:
+    void SetImageDir(QString strImageDir);// 待删除的图片的路径
+private:
+    bool _RemoveFolderContent();
+private:
+    QString m_strImageDir;
+};
+/**
   * @brief 打印报告
   * @param
   * @return
   */
 bool PrintToPage(QString strHtml);
+/**
+  * @brief 保存报告PDF
+  * @param
+  * @return
+  */
+bool PrintToPdf(QString strHtml);
+/**
+  * @brief 获取TCube的HTML源文件
+  * @param
+  * @return
+  */
+QString GetTCubeHtmlStream();
+/**
+  * @brief 获取Cup的HTML源文件
+  * @param
+  * @return
+  */
+QString GetHtmlStream(QString strHtmlFilePath);
 #endif // PUBLICFUNCTION_H

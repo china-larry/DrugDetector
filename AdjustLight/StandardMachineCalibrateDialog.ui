@@ -6,52 +6,23 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>575</width>
-    <height>447</height>
+    <width>1030</width>
+    <height>526</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QDialogButtonBox" name="buttonBox">
-   <property name="geometry">
-    <rect>
-     <x>50</x>
-     <y>390</y>
-     <width>341</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="orientation">
-    <enum>Qt::Horizontal</enum>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
-  </widget>
   <widget class="QWidget" name="gridLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>11</x>
+     <x>110</x>
      <y>40</y>
-     <width>511</width>
-     <height>242</height>
+     <width>811</width>
+     <height>271</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="4" column="3">
-     <widget class="QLabel" name="TValueType">
-      <property name="minimumSize">
-       <size>
-        <width>60</width>
-        <height>35</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>T值类型：</string>
-      </property>
-     </widget>
-    </item>
     <item row="3" column="5">
      <widget class="QLineEdit" name="rightAdditionStepLineEdit">
       <property name="minimumSize">
@@ -60,13 +31,19 @@
         <height>35</height>
        </size>
       </property>
+      <property name="text">
+       <string>20000</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="4" column="1">
      <widget class="QComboBox" name="CapTypeComboBox">
       <property name="maximumSize">
        <size>
-        <width>80</width>
+        <width>800</width>
         <height>35</height>
        </size>
       </property>
@@ -90,6 +67,12 @@
         <height>35</height>
        </size>
       </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="2" column="2">
@@ -106,6 +89,12 @@
         <width>80</width>
         <height>35</height>
        </size>
+      </property>
+      <property name="text">
+       <string>25000</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -150,6 +139,12 @@
         <height>35</height>
        </size>
       </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="2" column="3">
@@ -159,6 +154,12 @@
         <width>80</width>
         <height>35</height>
        </size>
+      </property>
+      <property name="text">
+       <string>25000</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -170,26 +171,12 @@
         <height>35</height>
        </size>
       </property>
-     </widget>
-    </item>
-    <item row="4" column="4">
-     <widget class="QComboBox" name="TValueTypeComboBox">
-      <property name="maximumSize">
-       <size>
-        <width>80</width>
-        <height>35</height>
-       </size>
+      <property name="text">
+       <string>25000</string>
       </property>
-      <item>
-       <property name="text">
-        <string>C6</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>C8</string>
-       </property>
-      </item>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="1" column="5">
@@ -199,6 +186,12 @@
         <width>80</width>
         <height>35</height>
        </size>
+      </property>
+      <property name="text">
+       <string>20000</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -210,6 +203,12 @@
         <height>35</height>
        </size>
       </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="2" column="5">
@@ -219,6 +218,12 @@
         <width>80</width>
         <height>35</height>
        </size>
+      </property>
+      <property name="text">
+       <string>20000</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -242,6 +247,12 @@
         <width>80</width>
         <height>35</height>
        </size>
+      </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -285,6 +296,12 @@
         <width>80</width>
         <height>35</height>
        </size>
+      </property>
+      <property name="text">
+       <string>20000</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -342,6 +359,12 @@
         <height>35</height>
        </size>
       </property>
+      <property name="text">
+       <string>25000</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="3" column="4">
@@ -378,44 +401,43 @@
         <height>35</height>
        </size>
       </property>
+      <property name="text">
+       <string>30</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
    </layout>
   </widget>
+  <widget class="QPushButton" name="ConfirmButton">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>440</y>
+     <width>75</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Confirm</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="StopButton">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>440</y>
+     <width>75</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Stop</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>StandardMachineCalibrateDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>StandardMachineCalibrateDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
