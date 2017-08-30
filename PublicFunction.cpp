@@ -455,40 +455,40 @@ bool CDeleteImageThread::_RemoveFolderContent()
   */
 bool PrintToPage(QString strHtml)
 {
-    QPrinter * qPrinter = new QPrinter();
-    qPrinter->setPageSize(QPrinter::A4);
-    qPrinter->setFullPage(true);
+    QPrinter * pPrinter = new QPrinter();
+    pPrinter->setPageSize(QPrinter::A4);
+    pPrinter->setFullPage(true);
     // 连接打印机
-    QPrintDialog qPrintDialog(qPrinter, NULL);
+    QPrintDialog qPrintDialog(pPrinter, NULL);
     if (qPrintDialog.exec() != QDialog::Accepted) {
         return false;
     }
     QWebEnginePage * pWebEnginePage = new QWebEnginePage;
     pWebEnginePage->setHtml(strHtml);
 
-    QObject::connect(pWebEnginePage, &QWebEnginePage::loadFinished, [pWebEnginePage, qPrinter] (bool bOk)
+    QObject::connect(pWebEnginePage, &QWebEnginePage::loadFinished, [pWebEnginePage, pPrinter] (bool bOk)
     {
         if (!bOk)
         {
             qDebug() << "连接失败";
             delete pWebEnginePage;
-            delete qPrinter;
+            delete pPrinter;
             return false;
         }
-        pWebEnginePage->print(qPrinter, [pWebEnginePage, qPrinter](bool bPrintok)
+        pWebEnginePage->print(pPrinter, [pWebEnginePage, pPrinter](bool bPrintok)
         {
             if (bPrintok)
             {
                 qDebug() << "print ok";
                 delete pWebEnginePage;// lambda 不可赋值为null
-                delete qPrinter;
+                delete pPrinter;
                 return true;
             }
             else
             {
                 qDebug() << "print error.";
                 delete pWebEnginePage;
-                delete qPrinter;
+                delete pPrinter;
                 return false;
             }
 

@@ -26,6 +26,7 @@
 #include <QSqlQuery>
 #include <QFileDialog>
 #include <QDesktopServices>
+#include "CommonDataWidget/CPrintPreviewWidget.h"
 #include "PublicFunction.h"
 CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
 {
@@ -284,11 +285,13 @@ void CHistoryPage::_SlotCheckPrint()
                 {// 圆杯
                     _ReplaceCupHtmlData(qSqlQuery, strTCupHtml);
                     qDebug() << "print to pdf";
-                    PrintToPdf(strTCupHtml);
+                    //PrintToPdf(strTCupHtml);
                     //PrintToPage(strTCupHtml);
+                    // 测试打印预览
+                    CPrintPreviewWidget *pPrintPreviewWidget = new CPrintPreviewWidget(strTCupHtml, this);
+                    pPrintPreviewWidget->show();
                 }
             }
-
         }
     }
 

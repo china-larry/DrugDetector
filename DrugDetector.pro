@@ -64,7 +64,8 @@ SOURCES += \
     AdjustLight/UpgradeProgress.cpp \
     AdjustLight/CalculateGreenComponent.cpp \
     AdjustLight/VideoThread.cpp \
-    AdjustLight/testing/ThreadStandardTesting.cpp
+    AdjustLight/testing/ThreadStandardTesting.cpp \
+    CommonDataWidget/CPrintPreviewWidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -107,7 +108,8 @@ HEADERS += \
     AdjustLight/UpgradeProgress.h \
     AdjustLight/CalculateGreenComponent.h \
     AdjustLight/VideoThread.h \
-    AdjustLight/testing/ThreadStandardTesting.h
+    AdjustLight/testing/ThreadStandardTesting.h \
+    CommonDataWidget/CPrintPreviewWidget.h
 
 FORMS += \
         mainwindow.ui \
