@@ -125,8 +125,10 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 void MainWindow::SlotReceiveLogin(int iUserPower, QString strUserName)
 {
     this->show();
+    m_strUserName = strUserName;
     // 权限判定和显示
     m_pDetectorPage->SetUserName(strUserName);
+    m_pHistoryPage->SetUserName(strUserName);
     m_pDetectorPageTitleWidget->SetUserName(strUserName);
     m_pHistoryPageTitleWidget->SetUserName(strUserName);
     qDebug() << " user power" <<iUserPower;

@@ -96,7 +96,6 @@ private:
     bool m_bLeftButtonCheck;
     QPoint m_qPressPoint;
     QPoint m_qMovePoint;
-
     //
     int m_kiTitleHeight;// 标题栏高度
     int m_kiStatusBarHeight;
@@ -105,6 +104,7 @@ private:
     // 数据区
     QList<TestResultData*> m_pTestResultDataList;// 测试结果数据
     DetectorPageUserData m_sDetectorPageUserDataStruct;// 测试页面被测者信息数据
+    QString m_strUserName;// 登陆用户名
 };
 
 #endif // MAINWINDOW_H

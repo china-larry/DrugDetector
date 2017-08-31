@@ -112,21 +112,21 @@ void SetLabelBackImageEx(QLabel *pLabel, QString strImagePath, QRect qRedRect)
     painter.setPen(QPen(QBrush(QColor(255, 0, 0)), 5));
     //painter.setBrush(QColor(255, 255, 0));
    // painter.drawRect(qRedRect);
-    QPainterPath qPath;
-     // 暂时固定，不固定重绘时候线宽不一致
-     qPath.moveTo(80, 380);
-     qPath.lineTo(130, 380);
-     qPath.lineTo(130, 780);
-     qPath.lineTo(80, 780);
-     qPath.closeSubpath();
-     painter.drawPath(qPath);
-//     QPainterPath path;
-//      path.moveTo(qRedRect.topLeft());
-//      path.lineTo(qRedRect.topRight());
-//      path.lineTo(qRedRect.bottomRight());
-//      path.lineTo(qRedRect.bottomLeft());
-//      path.closeSubpath();
-//      painter.drawPath(path);
+//    QPainterPath qPath;
+//     // 暂时固定，不固定重绘时候线宽不一致
+//     qPath.moveTo(80, 380);
+//     qPath.lineTo(130, 380);
+//     qPath.lineTo(130, 780);
+//     qPath.lineTo(80, 780);
+//     qPath.closeSubpath();
+//     painter.drawPath(qPath);
+     QPainterPath path;
+      path.moveTo(qRedRect.topLeft());
+      path.lineTo(qRedRect.topRight());
+      path.lineTo(qRedRect.bottomRight());
+      path.lineTo(qRedRect.bottomLeft());
+      path.closeSubpath();
+      painter.drawPath(path);
 //    qDebug() <<"width " << qRedRect.topLeft() <<  qRedRect.topRight()
 //            << qRedRect.bottomRight()  << qRedRect.bottomLeft() <<"rect " <<qRedRect;
 //    pPixmap->save("E:\\s9.png");

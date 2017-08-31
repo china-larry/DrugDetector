@@ -31,8 +31,10 @@
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
 #include "CommonDataWidget/CLabelCheckBoxWidget.h"
+#include "CommonDataWidget/CPrintPreviewWidget.h"
 #include "PublicFunction.h"
 #include "AdjustLight/testing/ThreadTesting.h"
+
 // 数据库数据列枚举
 enum DrugDataIndex
 {
@@ -96,6 +98,7 @@ public:
     // 服务器
     void SetPisServer(QString strPisServer);
     void SetPoctServer(QString strPoctServer);
+    void SetUserName(QString strUserName);
 
 private:
     void _LoadQss();
@@ -148,6 +151,8 @@ private:
     QPushButton *m_pDeleteButton;
     QPushButton *m_pExportButton;
     QPushButton *m_pPrintButton;
+    // 打印预览
+    CPrintPreviewWidget *m_pPrintPreviewWidget;
     // 当前支持杯型
     QStringList m_strCupTypeList;
     // 单次测试数据区
@@ -173,6 +178,10 @@ private:
     QAxObject *m_pSheet;
     QStringList m_strCharNumberList;
     QStringList m_strTitleNameList;
+    // 打印预览
+
+    //
+    QString m_strUserName;// 登陆用户名
 };
 
 #endif // CHISTORYPAGE_H

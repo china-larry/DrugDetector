@@ -27,9 +27,11 @@
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelDateTimeWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
+#include "CommonDataWidget/CPrintPreviewWidget.h"
 #include "AdjustLight/testing/ThreadTesting.h"
 #include "PublicFunction.h"
 #include "AdjustLight/VideoThread.h"
+
 //
 class CDetectorPage : public QWidget
 {
@@ -139,7 +141,7 @@ private:
     QRCodeInfo m_sQRCodeInfoStruct;       // 二维码数据，项目总数
     QList<TestResultData*> m_pTestResultDataList;// 下位机的测试结果列表
     DetectorPageUserData m_sDetectorPageUserDataStruct;// 用户列表数据
-    QString m_strUserName;
+    QString m_strUserName;// 登陆用户名
     QStringList m_strSCupImagePathList;// 方杯的两个图片，单独发送拼接保存
     // 拼接图片
     CFuseImageThread *m_pFuseImageThread;
@@ -154,6 +156,7 @@ private:
     int m_iTestDelayTime;// 测试延迟/孵化时间（秒）
     // 打印
     QString m_strHtml;
+    CPrintPreviewWidget *m_pPrintPreviewWidget;
 };
 
 #endif // CDETECTORPAGE_H

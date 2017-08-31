@@ -44,11 +44,18 @@ CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
     _InitDataBase();
     // 初始化excel
     _InitExcel();    
+    // 打印预览
+    m_pPrintPreviewWidget = new CPrintPreviewWidget;
 }
 
 CHistoryPage::~CHistoryPage()
 {
     _FreeExcel();// 是否excel
+    if(m_pPrintPreviewWidget != NULL)
+    {
+        delete m_pPrintPreviewWidget;
+        m_pPrintPreviewWidget = NULL;
+    }
 }
 /**
   * @brief 条件数据查找
@@ -233,16 +240,23 @@ void CHistoryPage::_SlotCheckPrint()
         QMessageBox::critical(NULL, "Error", "Please Select Item!", QMessageBox::Ok, QMessageBox::Ok);
         return;
     }
-
+    // 打印HTML数据流
+    QString strPrintHtml = "";
+    bool bFirstAddHtml = false;
     // 资源文件
     QString strTCubeHtml = GetHtmlStream(QCoreApplication::applicationDirPath() + "/Resources/TCube.html");
+    QString strTCubeHtmlSrc = strTCubeHtml;
     QString strTCupHtml = GetHtmlStream(QCoreApplication::applicationDirPath() + "/Resources/TCup.html");
+    QString strTCupHtmlSrc = strTCupHtml;
     // 杯型
     QString strCupType = "";
     // 遍历
     QSetIterator<int> qIter(iCurrentSelectRowSet);
     while (qIter.hasNext())
     {
+        // 数据还原替换
+        strTCubeHtml = strTCubeHtmlSrc;
+        strTCupHtml = strTCupHtmlSrc;
         int iRow = qIter.next();
         // 获取杯型
         QTableWidgetItem *pItem = m_pHistoryDataTableWidget->item(iRow, 5);
@@ -274,12 +288,19 @@ void CHistoryPage::_SlotCheckPrint()
             if(qSqlQuery.next())
             {
                 // 替换数据
+                if(bFirstAddHtml)
+                {
+                    strPrintHtml += QString("</br> <table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" "
+                                            "style=\"width:98%;height:100%;border:5px solid #008cd6;margin-top:180px;\"> "
+                                            "<tr><td></td></tr></table>");
+                }
                 if(strCupType == "TCube")
                 {// 方杯
                     _ReplaceCubeHtmlData(qSqlQuery, strTCubeHtml);
                     qDebug() << "print to pdf";
-                    PrintToPdf(strTCubeHtml);
+                   // PrintToPdf(strTCubeHtml);
                     //PrintToPage(strTCubeHtml);
+                    strPrintHtml += strTCubeHtml;
                 }
                 else
                 {// 圆杯
@@ -288,13 +309,15 @@ void CHistoryPage::_SlotCheckPrint()
                     //PrintToPdf(strTCupHtml);
                     //PrintToPage(strTCupHtml);
                     // 测试打印预览
-                    CPrintPreviewWidget *pPrintPreviewWidget = new CPrintPreviewWidget(strTCupHtml, this);
-                    pPrintPreviewWidget->show();
+                    strPrintHtml += strTCupHtml;
                 }
+                bFirstAddHtml = true;
             }
         }
     }
-
+    //
+    m_pPrintPreviewWidget->SetHtml(strPrintHtml);
+    m_pPrintPreviewWidget->show();
 }
 /**
   * @brief 当前选择cell改变，只处理行改变
@@ -631,6 +654,12 @@ void CHistoryPage::SetPisServer(QString strPisServer)
 void CHistoryPage::SetPoctServer(QString strPoctServer)
 {
     m_strPoctServer = strPoctServer;
+}
+
+void CHistoryPage::SetUserName(QString strUserName)
+{
+    m_strUserName = strUserName;
+    m_pPrintPreviewWidget->SetUserName(strUserName);
 }
 
 void CHistoryPage::_LoadQss()
@@ -1024,7 +1053,7 @@ void CHistoryPage::_ReplaceCubeHtmlData(QSqlQuery &qSqlQuery, QString &strTCubeH
     // email address
     strFindWord = "${EmailAddress}";
     strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
-                              strFindWord.count(), "");
+                              strFindWord.count(), qSqlQuery.value(EMAIL).toString());
     // Testing Site
     strFindWord = "${TestingSite}";
     strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
@@ -1135,7 +1164,7 @@ void CHistoryPage::_ReplaceCupHtmlData(QSqlQuery &qSqlQuery, QString &strTCupHtm
     // email address
     strFindWord = "${EmailAddress}";
     strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
-                              strFindWord.count(), "");
+                              strFindWord.count(), qSqlQuery.value(EMAIL).toString());
     // Testing Site
     strFindWord = "${TestingSite}";
     strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),

@@ -54,7 +54,9 @@ CDetectorPage::CDetectorPage(QWidget *parent) : QWidget(parent)
     m_iTestDelayTime = 0;
     //
     m_strHtml = "";
+    m_pPrintPreviewWidget = new CPrintPreviewWidget;
     m_strTestImageDir = QCoreApplication::applicationDirPath() + "/camera/";// 删除临时文件路径
+    //
 }
 
 CDetectorPage::~CDetectorPage()
@@ -69,6 +71,11 @@ CDetectorPage::~CDetectorPage()
     {
         delete m_pThreadTesting;
         m_pThreadTesting = NULL;
+    }
+    if(m_pPrintPreviewWidget != NULL)
+    {
+        delete m_pPrintPreviewWidget;
+        m_pPrintPreviewWidget = NULL;
     }
     if(m_pFuseImageThread != NULL)
     {
@@ -319,8 +326,8 @@ void CDetectorPage::_SlotPrintToPDF()
         _ReplaceCupHtmlData(m_strHtml);
     }
     // 打印
-    //PrintToPdf(m_strHtml);
-    PrintToPage(m_strHtml);
+    m_pPrintPreviewWidget->SetHtml(m_strHtml);
+    m_pPrintPreviewWidget->show();
 }
 
 
