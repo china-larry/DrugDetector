@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql webenginewidgets printsupport axcontainer
+QT       += core gui sql webenginewidgets printsupport axcontainer network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -130,6 +130,7 @@ INCLUDEPATH   += $$PWD/AdjustLight/opencv/include
                  $$PWD/AdjustLight/opencv/include/opencv
                  $$PWD/AdjustLight/opencv/include/opencv2
 
+
 INCLUDEPATH += $$PWD/AdjustLight/opencv/x86/vc14
 DEPENDPATH += $$PWD/AdjustLight/opencv/x86/vc14
 
@@ -138,8 +139,11 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/AdjustLight/opencv/x86/
 
 LIBS += -L$$PWD/AdjustLight/QZXingDLL/ -lQZXing2
 LIBS += -L$$PWD/AdjustLight/hidtest_lib/ -lIP_HID
+LIBS += -L$$PWD/lib/ -lHL7Engine
 
 INCLUDEPATH += $$PWD/AdjustLight/QZXingDLL
 INCLUDEPATH += $$PWD/AdjustLight/hidtest_lib
+INCLUDEPATH += $$PWD/include/hl7Interface
 DEPENDPATH += $$PWD/AdjustLight/QZXingDLL
 DEPENDPATH += $$PWD/AdjustLight/hidtest_lib
+DEPENDPATH += $$PWD/include/hl7Interface

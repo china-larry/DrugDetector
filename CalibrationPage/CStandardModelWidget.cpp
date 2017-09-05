@@ -80,13 +80,21 @@ QGroupBox *CStandardModelWidget::_CreateBrightnessValueGroup()
     pGroupBox->setFixedSize(940, 116);
     //
     m_pNo1LineEditWidget = new CHLabelLineEditWidget(tr("NO.1"), "", this);
+    m_pNo1LineEditWidget->SetLineValidator(0, 65535);
     m_pNo2LineEditWidget = new CHLabelLineEditWidget(tr("NO.2"), "", this);
+    m_pNo2LineEditWidget->SetLineValidator(0, 65535);
     m_pNo3LineEditWidget = new CHLabelLineEditWidget(tr("NO.3"), "", this);
+    m_pNo3LineEditWidget->SetLineValidator(0, 65535);
     m_pNo4LineEditWidget = new CHLabelLineEditWidget(tr("NO.4"), "", this);
+    m_pNo4LineEditWidget->SetLineValidator(0, 65535);
     m_pNo5LineEditWidget = new CHLabelLineEditWidget(tr("NO.5"), "", this);
+    m_pNo5LineEditWidget->SetLineValidator(0, 65535);
     m_pNo6LineEditWidget = new CHLabelLineEditWidget(tr("NO.6"), "", this);
+    m_pNo6LineEditWidget->SetLineValidator(0, 65535);
     m_pNo7LineEditWidget = new CHLabelLineEditWidget(tr("NO.7"), "", this);
+    m_pNo7LineEditWidget->SetLineValidator(0, 65535);
     m_pNo8LineEditWidget = new CHLabelLineEditWidget(tr("NO.8"), "", this);
+    m_pNo8LineEditWidget->SetLineValidator(0, 65535);
     //
     m_pNo1LineEditWidget->SetLineEditFixSize(120, 20);
     m_pNo2LineEditWidget->SetLineEditFixSize(120, 20);

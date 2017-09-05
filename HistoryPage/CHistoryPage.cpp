@@ -28,6 +28,17 @@
 #include <QDesktopServices>
 #include "CommonDataWidget/CPrintPreviewWidget.h"
 #include "PublicFunction.h"
+
+#include "include/hl7Interface/IMSH.h"
+#include "include/hl7Interface/IHL7Message.h"
+#include "include/hl7Interface/IHL7Segment.h"
+#include "include/hl7Interface/helper.h"
+#include "include/hl7Interface/base.h"
+#include "include/hl7Interface/HL7Parser.h"
+
+static int sg_iLisMessageCtrlID = 0;
+static int sg_iPidIDIndex = 0;
+
 CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
 {
     m_strDatabaseName = "\\drug.db";
@@ -46,6 +57,11 @@ CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
     _InitExcel();    
     // 打印预览
     m_pPrintPreviewWidget = new CPrintPreviewWidget;
+    // 上传
+    m_pTcpSocket = new QTcpSocket(this);
+    connect(m_pTcpSocket, &QTcpSocket::readyRead, this, &CHistoryPage::_SlotPoctReadMesg);
+    m_pTcpSocket->abort();
+    m_pTcpSocket->connectToHost("192.168.8.60",8004);
 }
 
 CHistoryPage::~CHistoryPage()
@@ -320,6 +336,48 @@ void CHistoryPage::_SlotCheckPrint()
     m_pPrintPreviewWidget->show();
 }
 /**
+  * @brief 上传到POCT服务器
+  * @param
+  * @return
+  */
+void CHistoryPage::_SlotCheckPoct()
+{
+    // 遍历选择行，逐行上传
+    QSet<int> iCurrentSelectRowSet;
+    _GetCurrentSelectRows(iCurrentSelectRowSet);
+    qDebug() << "select row count_" << iCurrentSelectRowSet.count();
+    if(iCurrentSelectRowSet.count() < 1)
+    {
+        QMessageBox::critical(NULL, "Error", "Please Select Item!", QMessageBox::Ok, QMessageBox::Ok);
+        return;
+    }
+    // 遍历
+    QSetIterator<int> qIter(iCurrentSelectRowSet);
+    while (qIter.hasNext())
+    {
+        int iRow = qIter.next();
+        QTableWidgetItem *pItem = m_pHistoryDataTableWidget->item(iRow, 0);
+        if(pItem == NULL)
+        {// 无选择行
+            return;
+        }
+        QString strID = pItem->text();
+        bool bOk = false;
+        int iCurrentID = strID.toInt(&bOk, 10);
+        if(bOk && iCurrentID >= 0)// 有效ID判断
+        {
+            QString strSelect = QString("SELECT * FROM drugdata WHERE id = ");
+            strSelect += strID;
+            qDebug() << "slel " << strSelect;
+            QSqlQuery qSqlQuery(strSelect);// 数据库中存放103列(id)
+            if(qSqlQuery.next())
+            {
+                _UpdateToPoctServer(_ORUR01SampleResult(qSqlQuery));// 上传数据
+            }
+        }
+    }
+}
+/**
   * @brief 当前选择cell改变，只处理行改变
   * @param
   * @return
@@ -455,6 +513,13 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
     }
     m_pTestDataTextEdit->update();
     m_pCurrentTestDataTableWidget->update();
+}
+
+void CHistoryPage::_SlotPoctReadMesg()
+{
+    QByteArray qPoctTcpReadMsg =   m_pTcpSocket->readAll();
+
+    qDebug()  << "tcp read" << qPoctTcpReadMsg;
 }
 
 void CHistoryPage::SetTestResultDataList(QList<TestResultData *> pTestResultDataList, QString strPrintImagePath)
@@ -824,6 +889,9 @@ void CHistoryPage::_InitButtonWidget()
     connect(m_pExportButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckExport()));
     m_pPrintButton = new QPushButton(tr("Print"), this);
     connect(m_pPrintButton, &QPushButton::clicked, this, &CHistoryPage::_SlotCheckPrint);
+    m_pPoctButton = new QPushButton(tr("Poct"), this);
+    connect(m_pPoctButton, &QPushButton::clicked, this, &CHistoryPage::_SlotCheckPoct);
+
 }
 
 void CHistoryPage::_InitLayout()
@@ -852,16 +920,18 @@ void CHistoryPage::_InitLayout()
     QHBoxLayout *pButtonLayout = new QHBoxLayout;
     pButtonLayout->addStretch(10);
     pButtonLayout->addWidget(m_pQueryButton);
-    pButtonLayout->addSpacing(30);
+    pButtonLayout->addSpacing(10);
     pButtonLayout->addWidget(m_pSelectAllButton);
-    pButtonLayout->addSpacing(30);
+    pButtonLayout->addSpacing(10);
     pButtonLayout->addWidget(m_pDeselectAllButton);
-    pButtonLayout->addSpacing(30);
+    pButtonLayout->addSpacing(10);
     pButtonLayout->addWidget(m_pDeleteButton);
-    pButtonLayout->addSpacing(30);
+    pButtonLayout->addSpacing(10);
     pButtonLayout->addWidget(m_pExportButton);
-    pButtonLayout->addSpacing(30);
+    pButtonLayout->addSpacing(10);
     pButtonLayout->addWidget(m_pPrintButton);
+    pButtonLayout->addSpacing(10);
+    pButtonLayout->addWidget(m_pPoctButton);
     pButtonLayout->addStretch(10);
     //
     pLayout->addLayout(pButtonLayout);
@@ -1123,7 +1193,7 @@ void CHistoryPage::_ReplaceCubeHtmlData(QSqlQuery &qSqlQuery, QString &strTCubeH
         strResultDataHtml += QString(" <tr style=\"text-align:center\"> <th>&nbsp;</th><td style=\"padding: 2px 0px;\">");
         strResultDataHtml += QString("Strip") + QString::number(i);// strip的数值,0开始
         strResultDataHtml += QString("</td> <td>");
-        strResultDataHtml += qSqlQuery.value(iResultIndex).toString();// drug的数值
+        strResultDataHtml += qSqlQuery.value(iResultIndex).toString();// drug的数值项目名称
         strResultDataHtml += QString("</td> <td>");
         strResultDataHtml += qSqlQuery.value(iResultIndex+2).toString();// cutoff的数值
         strResultDataHtml += QString("</td> <td>");
@@ -1255,14 +1325,176 @@ void CHistoryPage::_ReplaceCupHtmlData(QSqlQuery &qSqlQuery, QString &strTCupHtm
 
 
 
-void CHistoryPage::_UpdateToPisServer()
+void CHistoryPage::_UpdateToPisServer(string strUpdateData)
 {
 
 }
 
-void CHistoryPage::_UpdateToPoctServer()
+void CHistoryPage::_UpdateToPoctServer(string strUpdateData)
 {
+    QByteArray qSendDataByteArray;
+    qSendDataByteArray[0]=0x0B;
+    m_pTcpSocket->write(qSendDataByteArray);
+    m_pTcpSocket->write(strUpdateData.c_str());
+    qSendDataByteArray[0]=0x1c;
+    m_pTcpSocket->write(qSendDataByteArray);
+    qSendDataByteArray[0]=0x0d;
+    m_pTcpSocket->write(qSendDataByteArray);
+}
 
+void inline  PrintMessageStr(IHL7Message* message, std::string& messageStr)
+{
+    if (message)
+    {
+        char* str = NULL;
+        message->GetMessageString(&str);
+        messageStr = str;
+        //printf("%s", messageStr.c_str());
+        FreeMemory(str);//由DLL内部申请的内存记得调用FreeMemory释放
+    }
+}
+
+string CHistoryPage::_ORUR01SampleResult(QSqlQuery qSqlQuery)
+{
+    // 创建信息头数据
+    ORUR01ScopedPtr oruR01ScopedPtr;
+    oruR01ScopedPtr.Reset(CreateOruR01());
+
+    MSHScopedPtr mshPtr;
+    mshPtr.Reset(CreateMSH());
+
+    PIDScopedPtr pidPtr;
+    pidPtr.Reset(CreatePID());
+
+    OBRScopedPtr obrScopedPtr;
+    obrScopedPtr.Reset(CreateOBR());
+
+    ORUR01PatientResultScopedPtr patientResultScopedPtr;
+    patientResultScopedPtr.Reset(CreateOruR01PatientResult());
+
+    ORUR01OrderObrScopedPtr orderObrScopedPtr;
+    orderObrScopedPtr.Reset(CreateOruR01OrderObservation());
+    //////////////////////////各字段数据填充/////////////////////////////
+    mshPtr.Get()->SetSendApp("DrugDetector");
+    mshPtr.Get()->SetSendFacilityID("");//
+    mshPtr.Get()->SetSendFacilityName("毒检分析仪");
+    mshPtr.Get()->SetSendFacilityType("FS-301");
+    mshPtr.Get()->SetRecvApp("");
+    mshPtr.Get()->SetRecvFacilityID("");
+    mshPtr.Get()->SetRecvFacilityName("");
+    mshPtr.Get()->SetRecvFacilityType("");
+    mshPtr.Get()->SetDate(QDateTime::currentDateTime().
+                          toString("yyyyMMddhhmmss").toUtf8());//信息的日期时间
+    mshPtr.Get()->SetMessageType("ORU");
+    mshPtr.Get()->SetTriggerEvent("R01");
+    mshPtr.Get()->SetMessageStructure("ORU_R01");
+    mshPtr.Get()->SetMsgCtrlID(_GetMsgCtrlID().c_str());
+    mshPtr.Get()->SetProcessingID("P");
+    mshPtr.Get()->SetVersionID("2.4");
+    mshPtr.Get()->SetApplicationAckType("0");
+    mshPtr.Get()->SetCountryCode("CHN");
+    mshPtr.Get()->SetCharacterSet("Unicode");
+
+    // PID用户标识信息
+    pidPtr->SetPIDIndex(_GetIncIDIndex(sg_iPidIDIndex).c_str());
+    //    pidPtr->SetID("");// 身份证
+        pidPtr->SetCardNum(qSqlQuery.value(DONOR_ID).toString().toUtf8());// 病例号
+//        pidPtr->SetAdmissionNum("");// 住院号
+//        pidPtr->SetBed("");// 床号
+    QString strName = qSqlQuery.value(DONOR_FIREST_NAME).toString()
+            + qSqlQuery.value(DONOR_LASE_NAME).toString();
+    pidPtr->SetName(strName.toUtf8());
+    QDate qBirthDate = QDate::fromString(qSqlQuery.value(BIRTH_DATE).toString(), "yyyy-MM-dd");
+    pidPtr->SetBirthDate(qBirthDate.toString("yyyy/MM/dd").toUtf8());
+
+//        pidPtr->SetBloodType("");
+//        pidPtr->SetAddress("");
+//        pidPtr->SetHomePhoneNum("");
+//        pidPtr->SetTelephoneNum("");
+//        pidPtr->SetSSNNum("");
+//        pidPtr->SetNation("");
+//        pidPtr->SetNativePlace("");
+
+
+    // OBR样本信息
+    QDateTime qTestDateTime = QDateTime::fromString(qSqlQuery.value(TEST_TIME).toString());
+    QString strTestDateTime = qTestDateTime.toString("yyyyMMddhhmmss");
+    QString strObrIndexStr = qSqlQuery.value(PRODUCT_LOT).toString()
+            + "_" + strTestDateTime;
+    obrScopedPtr->SetOBRIndex(strObrIndexStr.toUtf8());
+    obrScopedPtr->SetSampleBarcode(qSqlQuery.value(PRODUCT_LOT).toString().toUtf8());// 样本条码
+    obrScopedPtr->SetSampleID(qSqlQuery.value(PRODUCT_ID).toString().toUtf8());// 样本编号
+    obrScopedPtr->SetTestTime(strTestDateTime.toUtf8());
+    obrScopedPtr->SetDiagnosticMessage("");
+    obrScopedPtr->SetSubmitSampleTime("");
+    // 样本类型
+    obrScopedPtr->SetSampleType(qSqlQuery.value(PRODUCT_DEFINITION).toString().toUtf8());
+
+    obrScopedPtr->SetSubmittingPhysician("");
+    obrScopedPtr->SetSubmittingDepartment("");
+    obrScopedPtr->SetAttendingPhysician("");
+    obrScopedPtr->SetTreatDepartment("");
+
+    int iResultCount = qSqlQuery.value(PROGRAM_NUMBER).toInt();
+    int iResultIndex = PROGRAM_NAME_BEGIN;
+// OBX 结果信息
+    for(int i = 0; i< iResultCount; i++)
+    {
+        OBXScopedPtr obxScopedPtr;
+        obxScopedPtr.Reset(CreateOBX());
+        QString obxIndexStr = strObrIndexStr + QString::number(i);
+
+        obxScopedPtr->SetOBXIndex(obxIndexStr.toUtf8());
+        obxScopedPtr->SetValueType("NM");
+    //        obxScopedPtr->SetItemID("");
+
+        obxScopedPtr->SetItemName(qSqlQuery.value(iResultIndex).toString().toUtf8());
+        obxScopedPtr->SetItemResult(qSqlQuery.value(iResultIndex+1).toString().toUtf8());
+        obxScopedPtr->SetTestTime(strTestDateTime.toUtf8());
+    //        obxScopedPtr->SetTestPhysician("");
+        orderObrScopedPtr->AddOBX(obxScopedPtr.Get());
+    }
+
+    ////////////////////////////////////填充消息内容///////////////////////
+    orderObrScopedPtr->SetOBR(obrScopedPtr.Get());
+
+    patientResultScopedPtr->SetPatient(pidPtr.Get());
+    patientResultScopedPtr->Add_ORU_R01_ORDER_OBSERVATION(orderObrScopedPtr.Get());
+    oruR01ScopedPtr->SetMSH(mshPtr.Get());
+    oruR01ScopedPtr->Add_Patient_Result(patientResultScopedPtr.Get());
+    /////////////////////////////////////查询oruR01ScopedPtr指针是否是实现了IHLMessage接口////////////////
+    IHL7Message* message = QueryInterface<IHL7Message, IObjectBase>(oruR01ScopedPtr.Get(), IF_HL7MESSAGE);
+    std::string messageStr = "";
+    PrintMessageStr(message, messageStr);
+    oruR01ScopedPtr->Release();//调用QueryInterface 会调用oruR01ScopedPtr的AddRef,这里需要释放
+
+   QString strTmp = QString::fromStdString(messageStr);
+
+    qDebug() << " poct message" << strTmp;
+
+
+    return messageStr;
+
+}
+
+string CHistoryPage::_GetMsgCtrlID()
+{
+    std::string strMsgCtrlID= "";
+    std::stringstream strStream;
+    strStream << sg_iLisMessageCtrlID;
+    strStream >> strMsgCtrlID;
+    sg_iLisMessageCtrlID++;
+    return strMsgCtrlID;
+}
+
+string CHistoryPage::_GetIncIDIndex(int &iIndex)
+{
+    std::string strIndexStr= "";
+    std::stringstream strSteam;
+    strSteam << sg_iLisMessageCtrlID;
+    strSteam >> strIndexStr;
+    iIndex++;
+    return strIndexStr;
 }
 
 /**

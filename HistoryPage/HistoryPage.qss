@@ -91,7 +91,7 @@ QTextEdit
 }
 QPushButton
 {
-    min-width: 135px;
+    min-width: 115px;
     min-height: 35px;
     font-size: 16px;
     font-family:"MicrosoftYaHei";

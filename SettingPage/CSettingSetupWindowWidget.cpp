@@ -45,14 +45,19 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     //
     m_pPisIP01LineEdit = new QLineEdit(this);
     m_pPisIP01LineEdit->setMaximumSize(60, 21);
+    m_pPisIP01LineEdit->setValidator(new QIntValidator(0, 255, this));
     m_pPisIP02LineEdit = new QLineEdit(this);
     m_pPisIP02LineEdit->setMaximumSize(60, 21);
+    m_pPisIP02LineEdit->setValidator(new QIntValidator(0, 255, this));
     m_pPisIP03LineEdit = new QLineEdit(this);
     m_pPisIP03LineEdit->setMaximumSize(60, 21);
+    m_pPisIP03LineEdit->setValidator(new QIntValidator(0, 255, this));
     m_pPisIP04LineEdit = new QLineEdit(this);
     m_pPisIP04LineEdit->setMaximumSize(60, 21);
+    m_pPisIP04LineEdit->setValidator(new QIntValidator(0, 255, this));
     m_pPisServerPortLineEdit = new QLineEdit(this);
     m_pPisServerPortLineEdit->setFixedSize(120, 21);
+    m_pPisServerPortLineEdit->setValidator(new QIntValidator(0, 100000, this));
     m_pPisAutoConnectCBox = new QCheckBox(tr("PIS Auto Connected"), this);
     //
     // POCT
@@ -63,14 +68,19 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     //
     m_pPoctIP01LineEdit = new QLineEdit(this);
     m_pPoctIP01LineEdit->setFixedSize(60, 21);
+    m_pPoctIP01LineEdit->setValidator(new QIntValidator(0, 255, this));
     m_pPoctIP02LineEdit = new QLineEdit(this);
     m_pPoctIP02LineEdit->setFixedSize(60, 21);
+    m_pPoctIP02LineEdit->setValidator(new QIntValidator(0, 255, this));
     m_pPoctIP03LineEdit = new QLineEdit(this);
     m_pPoctIP03LineEdit->setFixedSize(60, 21);
+    m_pPoctIP03LineEdit->setValidator(new QIntValidator(0, 255, this));
     m_pPoctIP04LineEdit = new QLineEdit(this);
     m_pPoctIP04LineEdit->setFixedSize(60, 21);
+    m_pPoctIP04LineEdit->setValidator(new QIntValidator(0, 255, this));
     m_pPoctServerPortLineEdit = new QLineEdit(this);
     m_pPoctServerPortLineEdit->setFixedSize(120, 21);
+    m_pPoctServerPortLineEdit->setValidator(new QIntValidator(0, 100000, this));
     m_pPoctAutoConnectCBox = new QCheckBox(tr("POCT Auto Connected"), this);
     //
     QVBoxLayout *pLayout = new QVBoxLayout;

@@ -76,7 +76,7 @@ QGroupBox *CTestModeWidget::_CreateModeGroup()
     m_pIncubatingTimeLineEditWidget =
             new CHLabelLineEditWidget(tr("Incubating time "), "", this);
     m_pIncubatingTimeLineEditWidget->SetLineEditFixSize(50, 20);
-    m_pIncubatingTimeLineEditWidget->SetLineValidator(1, 30);
+    m_pIncubatingTimeLineEditWidget->SetLineValidator(1, 100);
     m_pIncubatingTimeLineEditWidget->SetLineText("5");// 默认5分钟
     m_pMinutesLabel = new QLabel(tr("Minutes"));
     //

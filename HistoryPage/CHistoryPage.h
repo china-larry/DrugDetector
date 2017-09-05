@@ -27,6 +27,9 @@
 #include <QTextEdit>
 #include <QAxObject>
 #include <QSqlQuery>
+#include <string>
+#include <QTcpSocket>
+
 #include "CommonDataWidget/CLabelLineEditWidget.h"
 #include "CommonDataWidget/CLabelDateWidget.h"
 #include "CommonDataWidget/CLabelCommoBoxWidget.h"
@@ -35,6 +38,7 @@
 #include "PublicFunction.h"
 #include "AdjustLight/testing/ThreadTesting.h"
 
+using namespace std;
 // 数据库数据列枚举
 enum DrugDataIndex
 {
@@ -83,9 +87,12 @@ private slots:
     void _SlotCheckDelete();// 删除选中
     void _SlotCheckExport();// 导出
     void _SlotCheckPrint();// 打印
+    void _SlotCheckPoct();// poct上传
     // Table选择改变
     void _SlotHistoryDataSelectChange(
             int iCurrentRow, int iCurrentColumn, int iPreviousRow, int iPreviousColumn);
+    // 上传结果获取
+    void _SlotPoctReadMesg();
 public:
     // Main窗口设置测试结果
     void SetTestResultDataList(QList<TestResultData*> pTestResultDataList, QString strPrintImagePath);
@@ -124,8 +131,12 @@ private:
     void _ReplaceCubeHtmlData(QSqlQuery &qSqlQuery, QString &strTCubeHtml);// 替换html中数据位测试数据, cube杯型，方杯
     void _ReplaceCupHtmlData(QSqlQuery &qSqlQuery, QString &strTCupHtml);// 替换html中数据位测试数据, cup杯型， 圆杯
     // 上传服务器
-    void _UpdateToPisServer();
-    void _UpdateToPoctServer();
+    void _UpdateToPisServer(string strUpdateData);
+    void _UpdateToPoctServer(string strUpdateData);
+    // 获取上传数据流
+    string _ORUR01SampleResult(QSqlQuery qSqlQuery);
+    string _GetMsgCtrlID();
+    string _GetIncIDIndex(int& iIndex);// 用户标识自增ID
 
 private:
     QTableWidget *m_pHistoryDataTableWidget;// 历史数据表控件
@@ -151,6 +162,7 @@ private:
     QPushButton *m_pDeleteButton;
     QPushButton *m_pExportButton;
     QPushButton *m_pPrintButton;
+    QPushButton *m_pPoctButton;
     // 打印预览
     CPrintPreviewWidget *m_pPrintPreviewWidget;
     // 当前支持杯型
@@ -178,10 +190,10 @@ private:
     QAxObject *m_pSheet;
     QStringList m_strCharNumberList;
     QStringList m_strTitleNameList;
-    // 打印预览
-
     //
     QString m_strUserName;// 登陆用户名
+    // 上传
+    QTcpSocket *m_pTcpSocket;
 };
 
 #endif // CHISTORYPAGE_H
