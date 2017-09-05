@@ -62,6 +62,10 @@ CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
     connect(m_pTcpSocket, &QTcpSocket::readyRead, this, &CHistoryPage::_SlotPoctReadMesg);
     m_pTcpSocket->abort();
     m_pTcpSocket->connectToHost("192.168.8.60",8004);
+
+    m_bPisHaveConnect = false;
+    m_bPoctHaveConnect = false;
+    qDebug() <<"poct conn" << m_bPoctHaveConnect;
 }
 
 CHistoryPage::~CHistoryPage()
@@ -342,6 +346,15 @@ void CHistoryPage::_SlotCheckPrint()
   */
 void CHistoryPage::_SlotCheckPoct()
 {
+    qDebug() << "m_bPoctHaveConnect " << m_bPoctHaveConnect;
+    if(!m_bPoctHaveConnect)
+    {// 还没有自动连接
+        //m_pTcpSocket->abort();
+        //m_pTcpSocket->connectToHost("192.168.8.60",8004);
+        QMessageBox::critical(NULL, "Error", "Please Set POCT Server IP and Auto Connect!",
+                              QMessageBox::Ok, QMessageBox::Ok);
+        return;
+    }
     // 遍历选择行，逐行上传
     QSet<int> iCurrentSelectRowSet;
     _GetCurrentSelectRows(iCurrentSelectRowSet);
@@ -725,6 +738,37 @@ void CHistoryPage::SetUserName(QString strUserName)
 {
     m_strUserName = strUserName;
     m_pPrintPreviewWidget->SetUserName(strUserName);
+}
+
+void CHistoryPage::AutoConnectPisServer(QString strServer, int iPort, bool bAuto)
+{
+    qDebug() << "history auto " << strServer << iPort;
+    m_bPisHaveConnect = true;
+    if(m_bPisHaveConnect)
+    {
+        m_pTcpSocket->abort();
+        m_pTcpSocket->connectToHost(strServer, iPort);
+    }
+    else
+    {
+
+    }
+}
+
+void CHistoryPage::AutoConnectPoctServer(QString strServer, int iPort, bool bAuto)
+{
+    m_bPoctHaveConnect = bAuto;
+    qDebug() << "history auto " << strServer << iPort << m_bPoctHaveConnect;
+    if(m_bPoctHaveConnect)
+    {
+        m_pTcpSocket->abort();
+        m_pTcpSocket->connectToHost(strServer, iPort);
+    }
+    else
+    {
+        // 断开链接
+    }
+
 }
 
 void CHistoryPage::_LoadQss()
@@ -1438,13 +1482,13 @@ string CHistoryPage::_ORUR01SampleResult(QSqlQuery qSqlQuery)
     int iResultCount = qSqlQuery.value(PROGRAM_NUMBER).toInt();
     int iResultIndex = PROGRAM_NAME_BEGIN;
 // OBX 结果信息
-    for(int i = 0; i< iResultCount; i++)
+    for(int i = 0; i< iResultCount; ++i)
     {
         OBXScopedPtr obxScopedPtr;
         obxScopedPtr.Reset(CreateOBX());
-        QString obxIndexStr = strObrIndexStr + QString::number(i);
+        QString strObxIndexTmp = strObrIndexStr + QString::number(i);
 
-        obxScopedPtr->SetOBXIndex(obxIndexStr.toUtf8());
+        obxScopedPtr->SetOBXIndex(strObxIndexTmp.toUtf8());
         obxScopedPtr->SetValueType("NM");
     //        obxScopedPtr->SetItemID("");
 
@@ -1463,18 +1507,14 @@ string CHistoryPage::_ORUR01SampleResult(QSqlQuery qSqlQuery)
     oruR01ScopedPtr->SetMSH(mshPtr.Get());
     oruR01ScopedPtr->Add_Patient_Result(patientResultScopedPtr.Get());
     /////////////////////////////////////查询oruR01ScopedPtr指针是否是实现了IHLMessage接口////////////////
-    IHL7Message* message = QueryInterface<IHL7Message, IObjectBase>(oruR01ScopedPtr.Get(), IF_HL7MESSAGE);
-    std::string messageStr = "";
-    PrintMessageStr(message, messageStr);
+    IHL7Message* pIHL7Message = QueryInterface<IHL7Message, IObjectBase>(oruR01ScopedPtr.Get(), IF_HL7MESSAGE);
+    std::string strMessage = "";
+    PrintMessageStr(pIHL7Message, strMessage);
     oruR01ScopedPtr->Release();//调用QueryInterface 会调用oruR01ScopedPtr的AddRef,这里需要释放
-
-   QString strTmp = QString::fromStdString(messageStr);
-
+    //
+   QString strTmp = QString::fromStdString(strMessage);
     qDebug() << " poct message" << strTmp;
-
-
-    return messageStr;
-
+    return strMessage;
 }
 
 string CHistoryPage::_GetMsgCtrlID()

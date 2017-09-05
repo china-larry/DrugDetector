@@ -31,13 +31,21 @@ public:
 signals:
     void SignalReadFirmwareVersion();// 发送读取硬件版本信号
     void SignalReadUserTimes();// 发送仪器使用次数信号
+    //
+    void SignalAutoConnetPis(bool bAuto);
+    void SignalAutoConnetPoct(bool bAuto);
 public slots:
-    void SlotGetFirmwareVersion();// 获得硬件版本信息
-    void SlotGetUserTimes();// 获得仪器使用次数信号
+    void SlotGetFirmwareVersion(QString);// 获得硬件版本信息
+    void SlotGetUserTimes(int);// 获得仪器使用次数信号
+
+protected slots:
+    void showEvent(QShowEvent *);
 public:
     //
     QString GetPisServer(); // 返回PIS服务器
+    int GetPisPort();// 获取端口
     QString GetPoctServer();// 返回POCT服务器
+    int GetPoctPort();//
 private:
     QGroupBox *_CreateServerGroup();
     QGroupBox *_CreateLanguageGroup();
@@ -78,6 +86,11 @@ private:
     QLabel *m_pSoftwareFullLabel;
     QLabel *m_pFirmewareLabel;
     QLabel *m_pUserTimesLabel;
+
+    QLabel *m_pSoftwareReleaseLabelValue;
+    QLabel *m_pSoftwareFullLabelValue;
+    QLabel *m_pFirmewareLabelValue;
+    QLabel *m_pUserTimesLabelValue;
     //
     QPushButton *m_pOKButton;
     QPushButton *m_pCancleButton;

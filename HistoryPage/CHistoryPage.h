@@ -106,7 +106,8 @@ public:
     void SetPisServer(QString strPisServer);
     void SetPoctServer(QString strPoctServer);
     void SetUserName(QString strUserName);
-
+    void AutoConnectPisServer(QString strServer, int iPort, bool bAuto);
+    void AutoConnectPoctServer(QString strServer, int iPort, bool bAuto);
 private:
     void _LoadQss();
     QGroupBox *_CreateQueryConditionGroup();
@@ -194,6 +195,8 @@ private:
     QString m_strUserName;// 登陆用户名
     // 上传
     QTcpSocket *m_pTcpSocket;
+    bool m_bPisHaveConnect;
+    bool m_bPoctHaveConnect;
 };
 
 #endif // CHISTORYPAGE_H

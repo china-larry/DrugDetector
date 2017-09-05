@@ -66,7 +66,8 @@ SOURCES += \
     AdjustLight/VideoThread.cpp \
     AdjustLight/testing/ThreadStandardTesting.cpp \
     CommonDataWidget/CPrintPreviewWidget.cpp \
-    CommonDataWidget/CPrintPreviewTitleWidget.cpp
+    CommonDataWidget/CPrintPreviewTitleWidget.cpp \
+    SettingPage/CUpdateSettingWidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -111,7 +112,8 @@ HEADERS += \
     AdjustLight/VideoThread.h \
     AdjustLight/testing/ThreadStandardTesting.h \
     CommonDataWidget/CPrintPreviewWidget.h \
-    CommonDataWidget/CPrintPreviewTitleWidget.h
+    CommonDataWidget/CPrintPreviewTitleWidget.h \
+    SettingPage/CUpdateSettingWidget.h
 
 FORMS += \
         mainwindow.ui \

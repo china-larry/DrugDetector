@@ -63,6 +63,9 @@ public slots:
     void SlotDetectorPageEndTest();
     // 孵化时间确认，延迟测试
     void SlotConfirmTestMode(int iDelayTime);
+    // 自动连接服务器
+    void SlotAutoConnectPis(bool bAuto);
+    void SlotAutoConnectPoct(bool bAuto);
 
 private:
     void _InitWidget();

@@ -16,6 +16,7 @@
 #include <QTextStream>
 #include <QDebug>
 #include "PublicFunction.h"
+
 CSettingPage::CSettingPage(QWidget *parent) : QWidget(parent)
 {
     _InitWidget();
@@ -23,6 +24,8 @@ CSettingPage::CSettingPage(QWidget *parent) : QWidget(parent)
     //应用样式 apply the qss style
     _LoadQss();
 }
+
+
 
 bool CSettingPage::GetAutoTestFalg()
 {
@@ -41,6 +44,27 @@ int CSettingPage::GetTestDelayTime()
     return m_pTestModeWidget->GetIncubatingTime();
 }
 
+QString CSettingPage::GetPisServerIP()
+{
+    return m_pSetupWindowsWidget->GetPisServer();
+}
+
+QString CSettingPage::GetPoctServerIP()
+{
+    return m_pSetupWindowsWidget->GetPoctServer();
+}
+
+int CSettingPage::GetPisPort()
+{
+    return m_pSetupWindowsWidget->GetPisPort();
+}
+
+int CSettingPage::GetPoctPort()
+{
+    return m_pSetupWindowsWidget->GetPoctPort();
+}
+
+
 void CSettingPage::_LoadQss()
 {
     LoadQss(this, ":/qss/SettingPage/SettingPage.qss");
@@ -53,18 +77,27 @@ void CSettingPage::_LoadQss()
 void CSettingPage::_InitWidget()
 {
     // test
-    m_pSetupWindosWidget = new CSettingSetupWindowWidget;
-    SetWidgetBackColor(m_pSetupWindosWidget, QColor(240, 240, 240));
+    m_pSetupWindowsWidget = new CSettingSetupWindowWidget;
+    SetWidgetBackColor(m_pSetupWindowsWidget, QColor(240, 240, 240));
+    connect(m_pSetupWindowsWidget, &CSettingSetupWindowWidget::SignalAutoConnetPis,
+            this, &CSettingPage::SignalAutoConnectPis);
+    connect(m_pSetupWindowsWidget, &CSettingSetupWindowWidget::SignalAutoConnetPoct,
+            this, &CSettingPage::SignalAutoConnectPoct);
     m_pAccountManagementWidget = new CAccountManagementWidget;
     SetWidgetBackColor(m_pAccountManagementWidget, QColor(240, 240, 240));
     m_pTestModeWidget = new CTestModeWidget;
     SetWidgetBackColor(m_pTestModeWidget, QColor(240, 240, 240));
-    connect(m_pTestModeWidget, &CTestModeWidget::SigConfirmTestMode, this, &CSettingPage::SingalTestMode);
+    connect(m_pTestModeWidget, &CTestModeWidget::SigConfirmTestMode, this, &CSettingPage::SignalTestMode);
     m_pSetTabWidget = new QTabWidget(this);
     SetWidgetBackColor(m_pSetTabWidget, QColor(240, 240, 240));
-    m_pSetTabWidget->addTab(m_pSetupWindosWidget, tr("Setup Window"));
+
+    m_pCUpdateSettingWidget = new CUpdateSettingWidget;
+    SetWidgetBackColor(m_pCUpdateSettingWidget, QColor(240, 240, 240));
+
+    m_pSetTabWidget->addTab(m_pSetupWindowsWidget, tr("Setup Window"));
     m_pSetTabWidget->addTab(m_pAccountManagementWidget, tr("Account Management"));
     m_pSetTabWidget->addTab(m_pTestModeWidget, tr("Test Mode"));
+    m_pSetTabWidget->addTab(m_pCUpdateSettingWidget, tr("Update"));
 }
 
 void CSettingPage::_InitLayout()
@@ -75,5 +108,4 @@ void CSettingPage::_InitLayout()
     pLayout->addWidget(m_pSetTabWidget);
     this->setLayout(pLayout);
 }
-
 

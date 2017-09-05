@@ -257,6 +257,19 @@ void MainWindow::SlotConfirmTestMode(int iDelayTime)
     qDebug() <<"tset main"  << iDelayTime;
     m_pDetectorPage->SetTestDelayTime(iDelayTime);
 }
+
+void MainWindow::SlotAutoConnectPis(bool bAuto)
+{
+    m_pHistoryPage->AutoConnectPisServer(m_pSettingPage->GetPisServerIP(),
+                                             m_pSettingPage->GetPisPort(), bAuto);
+}
+
+void MainWindow::SlotAutoConnectPoct(bool bAuto)
+{
+    qDebug() << " auto conn " << bAuto;
+    m_pHistoryPage->AutoConnectPoctServer(m_pSettingPage->GetPoctServerIP(),
+                                             m_pSettingPage->GetPoctPort(), bAuto);
+}
 /**
   * @brief 初始化控件
   * @param
@@ -297,7 +310,9 @@ void MainWindow::_InitWidget()
     m_pHistoryPage = new CHistoryPage(this);
     // 设置页
     m_pSettingPage = new CSettingPage(this);
-    connect(m_pSettingPage, &CSettingPage::SingalTestMode, this, &MainWindow::SlotConfirmTestMode);
+    connect(m_pSettingPage, &CSettingPage::SignalTestMode, this, &MainWindow::SlotConfirmTestMode);
+    connect(m_pSettingPage, &CSettingPage::SignalAutoConnectPis, this, &MainWindow::SlotAutoConnectPis);
+    connect(m_pSettingPage, &CSettingPage::SignalAutoConnectPoct, this, &MainWindow::SlotAutoConnectPoct);
     // 布局
     m_pStackedWidget->addWidget(m_pDetectorPage);
     m_pStackedWidget->addWidget(m_pCalibrationPage);
