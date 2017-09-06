@@ -102,6 +102,12 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     m_pPoctServerPortLineEdit->setFixedSize(120, 21);
     m_pPoctAutoConnectCBox = new QCheckBox(tr("POCT Auto Connected"), this);
     connect(m_pPoctAutoConnectCBox, &QCheckBox::clicked, this, &CSettingSetupWindowWidget::SignalAutoConnetPoct);
+    // 方便测试
+    m_pPoctIP01LineEdit->setText("192");
+    m_pPoctIP02LineEdit->setText("168");
+    m_pPoctIP03LineEdit->setText("8");
+    m_pPoctIP04LineEdit->setText("60");
+    m_pPoctServerPortLineEdit->setText("8004");
     //
     QVBoxLayout *pLayout = new QVBoxLayout;
     pLayout->setMargin(0);

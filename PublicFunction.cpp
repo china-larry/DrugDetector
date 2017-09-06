@@ -27,6 +27,7 @@
 #include <QWebEnginePage>
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QNetworkInterface>
 /**
   * @brief 设置控件背景图片
   * @param pWidget：控件名称
@@ -557,4 +558,27 @@ QString GetHtmlStream(QString strHtmlFilePath)
     QString strHtml = qTextStream.readAll();
     qFile.close();
     return strHtml;
+}
+/**
+  * @brief 获取本机MAC
+  * @param
+  * @return
+  */
+QString GetHostMacAddress()
+{
+    QList<QNetworkInterface> qNetworkInterfaceList = QNetworkInterface::allInterfaces();// 获取所有网络接口列表
+    int iNetworkListCount = qNetworkInterfaceList.count();
+    QString strMacAddr = "";
+    for(int i = 0; i < iNetworkListCount; i ++)
+    {
+        // 如果此网络接口被激活并且正在运行并且不是回环地址，则就是我们需要找的Mac地址
+        if(qNetworkInterfaceList[i].flags().testFlag(QNetworkInterface::IsUp)
+                && qNetworkInterfaceList[i].flags().testFlag(QNetworkInterface::IsRunning)
+                && !qNetworkInterfaceList[i].flags().testFlag(QNetworkInterface::IsLoopBack))
+        {
+            strMacAddr = qNetworkInterfaceList[i].hardwareAddress();
+            break;
+        }
+    }
+    return strMacAddr;
 }

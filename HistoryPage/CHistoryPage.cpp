@@ -1420,9 +1420,11 @@ string CHistoryPage::_ORUR01SampleResult(QSqlQuery qSqlQuery)
     orderObrScopedPtr.Reset(CreateOruR01OrderObservation());
     //////////////////////////各字段数据填充/////////////////////////////
     mshPtr.Get()->SetSendApp("DrugDetector");
-    mshPtr.Get()->SetSendFacilityID("");//
+    //QString strFacilityID = "毒检分析仪^" + GetHostMacAddress() + "^IP-201";
+    QString strFacilityID =  GetHostMacAddress();
+    mshPtr.Get()->SetSendFacilityID(strFacilityID.toUtf8());//
     mshPtr.Get()->SetSendFacilityName("毒检分析仪");
-    mshPtr.Get()->SetSendFacilityType("FS-301");
+    mshPtr.Get()->SetSendFacilityType("IP-201");
     mshPtr.Get()->SetRecvApp("");
     mshPtr.Get()->SetRecvFacilityID("");
     mshPtr.Get()->SetRecvFacilityName("");
@@ -1463,16 +1465,18 @@ string CHistoryPage::_ORUR01SampleResult(QSqlQuery qSqlQuery)
     // OBR样本信息
     QDateTime qTestDateTime = QDateTime::fromString(qSqlQuery.value(TEST_TIME).toString());
     QString strTestDateTime = qTestDateTime.toString("yyyyMMddhhmmss");
-    QString strObrIndexStr = qSqlQuery.value(PRODUCT_LOT).toString()
+    QString strObrIndexStr = qSqlQuery.value(DONOR_ID).toString()// 使用donorID作为样本编号
             + "_" + strTestDateTime;
     obrScopedPtr->SetOBRIndex(strObrIndexStr.toUtf8());
-    obrScopedPtr->SetSampleBarcode(qSqlQuery.value(PRODUCT_LOT).toString().toUtf8());// 样本条码
-    obrScopedPtr->SetSampleID(qSqlQuery.value(PRODUCT_ID).toString().toUtf8());// 样本编号
+    obrScopedPtr->SetProjectID(qSqlQuery.value(PRODUCT_LOT).toString().toUtf8());// 试剂批号/项目编号
+    obrScopedPtr->SetSampleBarcode(qSqlQuery.value(PRODUCT_ID).toString().toUtf8());// 样本条码， productID
+    obrScopedPtr->SetSampleID(qSqlQuery.value(DONOR_ID).toString().toUtf8());// 样本编号,使用DonorID
     obrScopedPtr->SetTestTime(strTestDateTime.toUtf8());
     obrScopedPtr->SetDiagnosticMessage("");
     obrScopedPtr->SetSubmitSampleTime("");
     // 样本类型
-    obrScopedPtr->SetSampleType(qSqlQuery.value(PRODUCT_DEFINITION).toString().toUtf8());
+    QString strSampleType = "唾液";
+    obrScopedPtr->SetSampleType(strSampleType.toUtf8());
 
     obrScopedPtr->SetSubmittingPhysician("");
     obrScopedPtr->SetSubmittingDepartment("");
@@ -1489,7 +1493,7 @@ string CHistoryPage::_ORUR01SampleResult(QSqlQuery qSqlQuery)
         QString strObxIndexTmp = strObrIndexStr + QString::number(i);
 
         obxScopedPtr->SetOBXIndex(strObxIndexTmp.toUtf8());
-        obxScopedPtr->SetValueType("NM");
+        obxScopedPtr->SetValueType("ST");
     //        obxScopedPtr->SetItemID("");
 
         obxScopedPtr->SetItemName(qSqlQuery.value(iResultIndex).toString().toUtf8());

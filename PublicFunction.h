@@ -200,4 +200,10 @@ QString GetTCubeHtmlStream();
   * @return
   */
 QString GetHtmlStream(QString strHtmlFilePath);
+/**
+  * @brief 获取本机MAC
+  * @param
+  * @return
+  */
+QString GetHostMacAddress();
 #endif // PUBLICFUNCTION_H
