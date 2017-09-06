@@ -18,6 +18,7 @@
 #include <QLabel>
 #include "CStandardModelWidget.h"
 #include "COrdinaryModelWidget.h"
+#include "AdjustLight/StandardMachineCalibrateDialog.h"
 class CCalibrationPage : public QWidget
 {
     Q_OBJECT
@@ -39,6 +40,7 @@ private:
     //
     CStandardModelWidget *m_pStandardModelWidget;
     COrdinaryModelWidget *m_pOrdinaryModelWidget;
+    StandardMachineCalibrateDialog *m_pStandardMachineCalibrateDialog;
 };
 
 #endif // CCALIBRATIONPAGE_H

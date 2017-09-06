@@ -186,6 +186,7 @@ QByteArray ProtocolUtility::GetReadVersionCmd()
 
 }
 
+
 QByteArray ProtocolUtility::GetAddTestCountCmd()
 {
     //仪器测量次数加一 独有部分
@@ -210,6 +211,24 @@ QByteArray ProtocolUtility::GetClearTestCountCmd()
     //命令类型(2byte)		命令参数(2byte)    数据(2byte)
     //0x000B            0x0001              无
     return GetCmdByteArrayWithoutCmdData(sm_kiCmdClearTestCount);
+}
+
+QByteArray ProtocolUtility::GetUpgradeAppFlagCmd()
+{
+    //仪器下位机程序升级开始 独有部分
+    //命令类型(2byte)		命令参数(2byte)    数据(4byte)
+    //0x000C            0x0001              0XABAB5AA5
+    QByteArray dataByteArray;
+    QDataStream qOutDataStream(&dataByteArray,QIODevice::ReadWrite);
+    DealWithCmdHead(qOutDataStream);//填充头部公共部分 设备地址+临时帧长度
+
+    //填充 仪器下位机程序升级开始 特殊内容
+    qOutDataStream<<quint8(sm_kiCmdUpgradeAppFlag/256)<<quint8(sm_kiCmdUpgradeAppFlag)//命令类型
+      <<quint8(0x00)<<quint8(0x01)//命令参数
+      <<quint8(0xAB)<<quint8(0xAB)<<quint8(0x5A)<<quint8(0xA5);//数据
+
+    DealWithCmdEnding(dataByteArray, qOutDataStream);//填充命令公共尾部 更新命令长度、填充CRC、头部最前位置添加'0x00'
+    return dataByteArray;
 }
 
 QByteArray ProtocolUtility::GetUpgradeAppStartCmd()
@@ -275,7 +294,8 @@ QVector<QByteArray> ProtocolUtility::GetUpgradeAppCmd(QString strFilePath)
                     }
                     else
                     {
-                        break;
+                        qOutDataStream << "0";//固定数据字节为50，最后数据包不足够用零补足
+                        //break;
                     }
                 }
                 DealWithCmdEnding(qDataByteArray, qOutDataStream);//填充命令公共尾部 更新命令长度、填充CRC、头部最前位置添加'0x00'

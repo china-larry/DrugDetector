@@ -177,6 +177,13 @@ void CHidCmdThread::AddCmdWithoutCmdData(quint16 iCmdType)
             AddCmd(sHidCmdData);
             break;
         }
+        case ProtocolUtility::sm_kiCmdUpgradeAppFlag: //仪器下位机程序升级标志
+        {
+            sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdUpgradeAppFlag;
+            sHidCmdData.byteArrayVect.push_back(ProtocolUtility::GetUpgradeAppFlagCmd());
+            AddCmd(sHidCmdData);
+            break;
+        }
 
         default:
             break;

@@ -9,8 +9,7 @@
 
 #include "ProtocolUtility.h"
 
-//Q_DECLARE_METATYPE(DevConfigParams)
-#define ACK_TIME_OUT_SECOND 20
+#define ACK_TIME_OUT_SECOND 5
 HIDOpertaionUtility* HIDOpertaionUtility::instance = NULL;
 
 HIDOpertaionUtility *HIDOpertaionUtility::GetInstance()
@@ -45,6 +44,7 @@ HIDOpertaionUtility::HIDOpertaionUtility()
     m_WorkThread.start();
     m_DevVersion = "";
     m_pDevConfigParamsByte = new quint8[sizeof(DevConfigParams)];
+    m_bIsUpdateFlag = false;
 }
 
 HIDOpertaionUtility::~HIDOpertaionUtility()
@@ -136,6 +136,7 @@ bool HIDOpertaionUtility::IsDeviceOpen()
 bool HIDOpertaionUtility::_SlotOpen()
 {
     //打开设备,开启设备读线程
+    _SetWaitForAck(false);
     bool bIsOpen = false;
     if(m_HidHandle > 0)
     {
@@ -247,6 +248,11 @@ bool HIDOpertaionUtility::_SlotWrite(QByteArray qWriteByteArray)
                 bResult = _ExecuteCmdWithReturn(qWriteByteArray,10);
                 break;
             }
+            case ProtocolUtility::sm_kiCmdUpgradeAppFlag:
+            {
+                bResult = _ExecuteCmdWithReturn(qWriteByteArray,100);
+                break;
+            }
             default:
                 break;
         }
@@ -262,6 +268,7 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray qDataByteArray)
     //毒检设备所有消息统一在这里处理，消息有两种类型ACK和结果，
     //因为有命令需要等待ACK和结果，因而这里使用类的成员变量mIsWaitForAck
     // /mIsWaitForReturn/mAckResult/mReturnResult进行状态同步
+    //qDebug() << "m_IsWaitForAck = " << m_IsWaitForAck;
     if(m_IsWaitForAck)
     {
         if(static_cast <quint8> (qDataByteArray.at(1)) == static_cast <quint8> (m_iCmdType))
@@ -321,10 +328,11 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray qDataByteArray)
             }
             case ProtocolUtility::sm_kiCmdReadDevVersion:             //读取仪器下位机软件版本
             {
-                if(qDataByteArray.at(5) == (m_iCmdType/256)
-                        && (qDataByteArray.at(6) == static_cast <quint8> (m_iCmdType))
-                        && qDataByteArray.at(1) == 0x01
-                        && qDataByteArray.at(2) == 0x01)
+            //qDebug()<<"qDataByteArray:" << qDataByteArray;
+                if((quint8)qDataByteArray.at(5) == (m_iCmdType/256)
+                        && ((quint8)qDataByteArray.at(6) == static_cast <quint8> (m_iCmdType))
+                        && (quint8)qDataByteArray.at(1) == 0x01
+                        && (quint8)qDataByteArray.at(2) == 0x01)
                 {
                     _SetReturnResult(true);
                     quint8 iCmdLen = qDataByteArray.at(3);
@@ -345,9 +353,9 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray qDataByteArray)
             case ProtocolUtility::sm_kiCmdReadTestCount:              //仪器测量次数读取
             {
                 if(qDataByteArray.at(5) == (m_iCmdType/256)
-                        && (qDataByteArray.at(6) == static_cast <quint8> (m_iCmdType))
-                        && qDataByteArray.at(1) == 0x01
-                        && qDataByteArray.at(2) == 0x01)
+                        && ((quint8)qDataByteArray.at(6) == static_cast <quint8> (m_iCmdType))
+                        && (quint8)qDataByteArray.at(1) == 0x01
+                        && (quint8)qDataByteArray.at(2) == 0x01)
                 {
                     _SetReturnResult(true);
                     quint8 iCmdLen = qDataByteArray.at(3);
@@ -382,8 +390,8 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray qDataByteArray)
                         && (qDataByteArray.at(6) == static_cast <quint8> (m_iCmdType))
                         && (qDataByteArray.at(1) == 0x01)
                         && (qDataByteArray.at(2) == 0x01)
-                        && (qDataByteArray.at(kiDataStartIndex) == 0x5A)
-                        && (qDataByteArray.at(kiDataStartIndex+1) == 0x5A ))
+                        && ((quint8)qDataByteArray.at(kiDataStartIndex) == 0xA5/*0x5A*/)
+                        && ((quint8)qDataByteArray.at(kiDataStartIndex+1) == 0xA5/*0x5A*/ ))
                 {
                     _SetReturnResult(true);
                 }
@@ -391,13 +399,30 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray qDataByteArray)
             }
             case ProtocolUtility::sm_kiCmdUpgradeAppData:              //仪器下位机程序升级数据
             {
-                if(qDataByteArray.at(5) == (m_iCmdType/256)
-                        && (qDataByteArray.at(6) == static_cast <quint8> (m_iCmdType))
-                        && (qDataByteArray.at(1) == 0x01)
-                        && (qDataByteArray.at(2)) == 0x01
-                        && (qDataByteArray.at(kiDataStartIndex) == 0xAB)
-                        && (qDataByteArray.at(kiDataStartIndex+1) == 0xAB) )
+                if((quint8)qDataByteArray.at(5) == (m_iCmdType/256)
+                        && ((quint8)qDataByteArray.at(6) == static_cast <quint8> (m_iCmdType))
+                        && ((quint8)qDataByteArray.at(1) == 0x01)
+                        && ((quint8)qDataByteArray.at(2)) == 0x01
+                        && ((quint8)qDataByteArray.at(kiDataStartIndex) == 0xAB)
+                        && ((quint8)qDataByteArray.at(kiDataStartIndex+1) == 0xAB) )
                 {
+                    _SetReturnResult(true);
+                }
+                break;
+            }
+            case ProtocolUtility::sm_kiCmdUpgradeAppFlag:         //仪器下位机升级标志
+            {
+                qDebug() << "m_iCmdType = " << m_iCmdType;
+                if((quint8)qDataByteArray.at(5) == (m_iCmdType/256)
+                        && ((quint8)qDataByteArray.at(6) == static_cast <quint8> (m_iCmdType))
+                        && ((quint8)qDataByteArray.at(1) == 0x01)
+                        && ((quint8)qDataByteArray.at(2) == 0x01)
+                        && ((quint8)qDataByteArray.at(kiDataStartIndex) == 0xAB)
+                        && ((quint8)qDataByteArray.at(kiDataStartIndex+1) == 0xAB)
+                        && ((quint8)qDataByteArray.at(kiDataStartIndex+2) == 0x5A)
+                        && ((quint8)qDataByteArray.at(kiDataStartIndex+3) == 0xA5))
+                {
+                    m_bIsUpdateFlag = true;
                     _SetReturnResult(true);
                 }
                 break;
@@ -485,7 +510,7 @@ bool HIDOpertaionUtility::_GetCmdACK()
             break;
         }
     }
-//    qDebug()<<"ACK result:"<<m_AckResult;
+    //qDebug()<<"ACK result:"<<m_AckResult;
     return m_AckResult;
 }
 
@@ -554,12 +579,14 @@ bool HIDOpertaionUtility::_ExecuteCmdWithReturn(QByteArray writeByteArray,int iD
     //发送命令到设备
     if(!_SendCmdToDev(writeByteArray))
     {
+        qDebug() << "_SendCmdToDev = " << bResult;
         return bResult;
     }
 
      //获取命令返回时间
     if(!_GetCmdReturn(iDelaySeconds))
     {
+        qDebug() << "_GetCmdReturn = " << bResult;
         return bResult;
     }
 
@@ -673,6 +700,7 @@ bool HIDOpertaionUtility::_SlotUpgradeSubControl(QString strFilePath)
     //升级步骤1 升级开始命令发送
     m_iCmdType = ProtocolUtility::sm_kiCmdUpgradeAppStart;
     QByteArray qCmdByteArray = ProtocolUtility::GetUpgradeAppStartCmd();
+    qDebug() << "qCmdByteArray = " << qCmdByteArray;
     if(_ExecuteCmdWithReturn(qCmdByteArray, 50))
     {
         emit SignalUpgradeValue(5);//升级开始和升级结束命令各占5%的进度
@@ -718,6 +746,16 @@ void HIDOpertaionUtility::SetDeviceOperate(bool bIsOperate)
     m_DeviceOperateMutex.unlock();
 }
 
+bool HIDOpertaionUtility::GetUpdateFlag()
+{
+    return m_bIsUpdateFlag;
+}
+
+void HIDOpertaionUtility::SetUpdateFlag(bool bIsUpdate)
+{
+    m_bIsUpdateFlag = bIsUpdate;
+}
+
 bool HIDOpertaionUtility::GetDeviceOperateStates()
 {
     //DeviceOperateMutex.lock();
@@ -735,6 +773,34 @@ void HIDOpertaionUtility::HIDUpgradeSubControl(QString strFilePath)
     else
     {
         emit SignalHIDUpgradeSubControl(strFilePath);
+    }
+
+}
+
+bool HIDOpertaionUtility::CheckDeviceConnection()
+{
+    HANDLE ReadHidHandle = NULL;
+    quint8 *Readbyte = new quint8[100];
+    ReadHidHandle = OpenMyHIDDevice(kiUsbPid, kiUsbVid);
+    if (ReadHidHandle < 0)
+    {
+        CloseDev(ReadHidHandle);
+        return false;
+    }
+    if (ReadHidHandle > 0)
+    {
+        int recl = -1;
+        recl = ReadHidData(ReadHidHandle,Readbyte,-1);
+        if (recl < 0)
+        {
+            //qDebug() << "USB pull out";
+            CloseDev(ReadHidHandle);
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
 }
@@ -760,15 +826,18 @@ void HIDReadThread::run()
 
         //ReadHidDataFunc最后一个参数负1则读线程堵塞直到数据读取成功
         int iReadRetVal = HIDOpertaionUtility::GetInstance()->HIDRead((quint8*)(&iReadByte), -1);
-        //qDebug() << "readRetVal = " << readRetVal;
+        //qDebug() << "iReadRetVal = " << iReadRetVal;
+
         if(iReadRetVal > 0)
         {
             //QMutexLocker locker(&mDataMutex);
             QByteArray bDataByteArray;
             for(int i = 0; i < kiCmdLen; i++)
             {
+                //qDebug() << "iReadByte[i] = " << iReadByte[i];
                 bDataByteArray.push_back(iReadByte[i]);
             }
+            //qDebug()<<"ReadByte:"<< bDataByteArray;
             HIDOpertaionUtility::GetInstance()->ReceiveNewCmdFromDev(bDataByteArray);
             //                emit SignalReceiveNewCmd(data);
             //emit SignalReceiveNewCmd();

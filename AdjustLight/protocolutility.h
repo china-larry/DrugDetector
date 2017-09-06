@@ -132,7 +132,16 @@ public:
      * 仪器测量次数清零
      * @return
      */
+
     static QByteArray GetClearTestCountCmd();
+
+
+    /**
+     * @brief GetUpgradeAppFlagCmd
+     * 仪器下位机程序升级标志命令
+     * @return
+     */
+    static QByteArray GetUpgradeAppFlagCmd();
 
     /**
      * @brief GetUpgradeAppStartCmd
@@ -199,7 +208,8 @@ public:
     static const int sm_kiCmdAddTestCount = 0x0009;//仪器测量次数加1
     static const int sm_kiCmdReadTestCount = 0x000A;//仪器测量次数读取
     static const int sm_kiCmdClearTestCount = 0x000B;//仪器测量次数清零
-    static const int sm_kiCmdUpgradeAppStart = 0x000C;//仪器下位机程序升级开始
+    static const int sm_kiCmdUpgradeAppFlag = 0x000C;//仪器下位机程序升级开始
+    static const int sm_kiCmdUpgradeAppStart = 0x00C1;//仪器下位机程序升级开始
     static const int sm_kiCmdUpgradeAppData = 0x000D;//仪器下位机程序升级数据
     static const int sm_kiCmdUpgradeAppEnd = 0x000E;//仪器下位机程序升级结束
     //命令参数

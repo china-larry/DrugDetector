@@ -113,7 +113,7 @@ signals:
     void SignalOperationComplete(quint16 iCmdType,bool bResult);
 
     //读取仪器测试次数
-    void SignalReceiveTestCount(quint32 iTestCount);
+    void SignalReceiveTestCount(int iTestCount);
 
     //升级下位机信号，以把执行放置到后台线程，filePath为升级文件路径
     void SignalHIDUpgradeSubControl(QString strFilePath);
@@ -262,6 +262,16 @@ public:
      */
     void HIDUpgradeSubControl(QString strFilePath);
 
+    /**
+     * @brief GetUpdateFlag
+     * 获取设备升级标志
+     * @return
+     */
+    bool GetUpdateFlag();
+    void SetUpdateFlag(bool);
+
+    bool CheckDeviceConnection();
+
 private:
 
     //---------------------各命令只跑在后台线程-----------------------------//
@@ -312,6 +322,7 @@ private:
     quint32 m_qTestCount;//仪器测试次数
     QMutex m_DeviceOperateMutex;
     bool m_bIsDeviceOperate;//仪器是否在操作
+    bool m_bIsUpdateFlag;
 };
 
 

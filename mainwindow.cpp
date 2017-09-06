@@ -25,7 +25,14 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonValue>
+#include <windows.h>
+#include <dbt.h>
+#include <devguid.h>
+#include <SetupAPI.h>
+#include <InitGuid.h>
+
 #include "AdjustLight/CHidCmdThread.h"
+#include "AdjustLight/HidOpertaionUtility.h"
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -47,6 +54,44 @@ MainWindow::MainWindow(QWidget *parent) :
     // 读取配置文件
     _ReadConfigFile();
     m_bLeftButtonCheck = false;
+    //
+    static const GUID GUID_DEVINTERFACE_LIST[] =
+        {
+        // GUID_DEVINTERFACE_USB_DEVICE
+        //{ 0xA5DCBF10, 0x6530, 0x11D2, { 0x90, 0x1F, 0x00, 0xC0, 0x4F, 0xB9, 0x51, 0xED } },
+        // GUID_DEVINTERFACE_DISK
+        //{ 0x53f56307, 0xb6bf, 0x11d0, { 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b } },
+        // GUID_DEVINTERFACE_HID,
+        { 0x4D1E55B2, 0xF16F, 0x11CF, { 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } },
+        // GUID_NDIS_LAN_CLASS
+        //{ 0xad498944, 0x762f, 0x11d0, { 0x8d, 0xcb, 0x00, 0xc0, 0x4f, 0xc3, 0x35, 0x8c } }
+        //// GUID_DEVINTERFACE_COMPORT
+        //{ 0x86e0d1e0, 0x8089, 0x11d0, { 0x9c, 0xe4, 0x08, 0x00, 0x3e, 0x30, 0x1f, 0x73 } },
+        //// GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR
+        //{ 0x4D36E978, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } },
+        //// GUID_DEVINTERFACE_PARALLEL
+        //{ 0x97F76EF0, 0xF883, 0x11D0, { 0xAF, 0x1F, 0x00, 0x00, 0xF8, 0x00, 0x84, 0x5C } },
+        //// GUID_DEVINTERFACE_PARCLASS
+        //{ 0x811FC6A5, 0xF728, 0x11D0, { 0xA5, 0x37, 0x00, 0x00, 0xF8, 0x75, 0x3E, 0xD1 } }
+        };
+
+        //注册插拔事件
+        HDEVNOTIFY hDevNotify;
+        DEV_BROADCAST_DEVICEINTERFACE NotifacationFiler;
+        ZeroMemory(&NotifacationFiler,sizeof(DEV_BROADCAST_DEVICEINTERFACE));
+        NotifacationFiler.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
+        NotifacationFiler.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+
+        for(int i=0;i<sizeof(GUID_DEVINTERFACE_LIST)/sizeof(GUID);i++)
+        {
+            NotifacationFiler.dbcc_classguid = GUID_DEVINTERFACE_LIST[i];
+            hDevNotify = RegisterDeviceNotification((HANDLE)this->winId(),
+                                                    &NotifacationFiler,DEVICE_NOTIFY_WINDOW_HANDLE);
+            if(!hDevNotify)
+            {
+                qDebug() << "register error!";
+            }
+        }
 }
 
 MainWindow::~MainWindow()
@@ -120,6 +165,55 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         m_qPressPoint = m_qMovePoint;
     }
     event->ignore();
+}
+
+bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, long *result)
+{
+    if (eventType == "windows_generic_MSG")
+        {
+            bool bResult = false;
+
+            MSG* msg = reinterpret_cast<MSG*>(message);
+            if(msg->message == WM_DEVICECHANGE && msg->wParam >= DBT_DEVICEARRIVAL)
+            {
+                switch (msg->wParam)
+                {
+                case DBT_DEVICEARRIVAL:
+                    /*TODO*/
+                    qDebug() << "USB add " << endl;
+                    bResult = true;
+                    break;
+
+                case DBT_DEVICEREMOVECOMPLETE:
+                    /*TODO*/
+                    qDebug() << "USB gone " << endl;
+                    if(HIDOpertaionUtility::GetInstance()->CheckDeviceConnection() == false)
+                    {
+                        qDebug() << "USB pull out! ";
+                        QMessageBox::warning(NULL, "Warning", "USB pull out!",
+                                             QMessageBox::Ok, QMessageBox::Ok);
+                    }
+                    bResult = true;
+                    break;
+
+                case DBT_DEVNODES_CHANGED:
+                    /*TODO*/
+                    bResult = true;
+                    break;
+
+                default:
+                    /*TODO*/
+                    bResult = false;
+                    break;
+                }
+            }
+            return bResult;
+        }
+        else
+        {
+            bool bTmp = QWidget::nativeEvent(eventType, message, result);
+            return bTmp;
+        }
 }
 // 登陆信号
 void MainWindow::SlotReceiveLogin(int iUserPower, QString strUserName)

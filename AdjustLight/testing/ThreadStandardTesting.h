@@ -78,6 +78,14 @@
 
 //Q_DECLARE_METATYPE(TestResultData1)
 
+struct StandardMachineLight
+{
+    int iUpGreenLightValue;
+    int iDownGreenLightValue;
+    int iLeftGreenLightValue;
+    int iRightGreenLightValue;
+};
+
 class ThreadStandardTesting : public QObject
 {
     Q_OBJECT
@@ -88,6 +96,7 @@ signals:
     void SignalTestErr(ENUM_ERR eErr);                      //报错 错误信息
     void SignalTestResult(TestResultData sResultTestData);  //每条测试结果
     void SignalTestComplete(double dZvalue);                              //测试完成
+    void SignalTestComplete();
     void SignalSendQRCodePic(QString strPath);              //定位二维码过程中，二维码照片路径
     void SignalSendCodeInfo(QRCodeInfo sInfoQRCodeStruct);  //收到二维码信息
     void SignalStartQRCode();                               //开始获取二维码
@@ -102,7 +111,7 @@ private slots:
     void _SlotReceiveErr(EnumTypeErr eErr);
     void _SlotReceiveQRcodePic(QString strPath);
 public:
-    void StartTest(int iSeconds);                                   //启动测试
+    void StartTest(int isec,StandardMachineLight standardMachineLight);                                   //启动测试
     void StopTest();                                    //停止测试
     QList<int> GetComponentGreenTCup(QString strPath);  //获取目标区域绿色分量数据 圆杯
     QList<int> GetComponentGreenSCup(QString strPath);  //获取目标区域绿色分量数据 方杯
@@ -116,10 +125,10 @@ private:
     int _GetMinLocation(const int *kpSumLineWidth, int iArrLength);
     int _GetValueTC(const QList<int> &kiHorizontalProjectionList, TestResultData &sResultTestDataStruct);   //获取C线位置
     int _FindCLine(QList<int> iHorizontalProjectionList);
-    int _FindProjectMid(QList<int> iUprightProjectionList, int iPixelLevel, int iPixelSustain);             //定位项目中心点
+    int _FindProjectMid(QList<int> iUprightProjectionList, int iPixelLevel, int iPixelSustain, int &iProjectMid);             //定位项目中心点
 
     void _InitStatus();
-    void _ReceivePicPathSCup(QString strPath);      //方杯目标区图片分析
+    void _ReceivePicPathSCup(QString strPath,int iPos);      //方杯目标区图片分析
     TestResultData _ReceivePicPathTCup(QString strPath, bool &bExist,bool bFixSept);          //圆杯目标区图片分析
     void _ModifNextStep(int iStep, int iPixel);         //校准电机步数
     void _StatusHandler(bool bResult, ENUM_STATUS_TEST eTestStatus);
@@ -136,6 +145,9 @@ private:
 
     double GetRatioValue(QVector<double> C6Value,QVector<double> T6Value,QVector<double> C8Value,
                        QVector<double> T8Value);
+
+    //初始化设备位置和灯光
+    bool InitDevice();
 
 private:
     int                 m_MsecToTest;
@@ -155,7 +167,7 @@ private:
     QVector<double>     m_dPerC8Value;
     QVector<double>     m_dPerT8Value;
 
-
+    StandardMachineLight sStandardMachineLight;
 
     void test();
     int _FindFirstItem(QString strPath, ENUM_LOCATION_TYPE type);

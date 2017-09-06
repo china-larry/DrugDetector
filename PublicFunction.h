@@ -21,6 +21,14 @@
 #include <QLabel>
 #include "AdjustLight/common.h"
 #include "AdjustLight/testing/ThreadTesting.h"
+// 版本设定
+enum Version_Config
+{
+    WONDFO_VERSION = 0, // 万孚版本
+    MD_VERSION = 1,// MD版本
+    PIS_VERSION = 2,// PIS版本
+};
+int const gk_iVersionConfig = MD_VERSION;
 // 测试页所有非结果数据(用户)结构体，便于数据传送
 struct DetectorPageUserData
 {

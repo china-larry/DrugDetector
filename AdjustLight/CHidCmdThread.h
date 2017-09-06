@@ -64,6 +64,8 @@ public:
     //添加升级命令
     void AddUpgradeSubControlCmd(QString strFilePath);
 
+    void AddUpgradeSubControlFlagCmd();
+
     void SetStopped(bool bStopped);
 
     bool GetStopped();

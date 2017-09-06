@@ -26,7 +26,18 @@ CLoginInWidget::CLoginInWidget(QWidget *parent) : QWidget(parent)
     this->setFixedSize(1030, 680);
     this->setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
     // 设置b背景图片
-    SetWidgetBackImage(this, ":/image/ico/login/wondfo_login_bgr.png");
+    if(gk_iVersionConfig == PIS_VERSION)
+    {
+        SetWidgetBackImage(this, ":/image/ico/login/PIS_login_bgr.png");
+    }
+    else if(gk_iVersionConfig == MD_VERSION)
+    {
+        SetWidgetBackImage(this, ":/image/ico/login/MD_login_bgr.png");
+    }
+    else
+    {
+        SetWidgetBackImage(this, ":/image/ico/login/wondfo_login_bgr.png");
+    }
     //
     LoadQss(this, ":/qss/LoginPage/LoginPage.qss");
     //

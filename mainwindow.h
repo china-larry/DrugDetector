@@ -39,6 +39,7 @@ public:
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    bool nativeEvent(const QByteArray &eventType, void *message, long *result);
 public slots:
     // 标题栏
     void SlotReceiveLogin(int iUserPower, QString strUserName);// 登陆界面跳转

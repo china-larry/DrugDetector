@@ -10,15 +10,18 @@
 #include <QApplication>
 #include <QLabel>
 #include <QProgressBar>
+#include <QFileDialog>
 
 #include "UpgradeProgress.h"
 #include "ui_upgradeprogress.h"
 
 #include "crc16/crc16.h"
-#include "messagebox/messagebox2.h"
-#include "messagebox/messagebox.h"
+//#include "messagebox/KMessageBox2.h"
+//#include "messagebox/KMessageBox.h"
 #include "HidOpertaionUtility.h"
 #include "CHidCmdThread.h"
+#include "UpgradeFile.h"
+#include "ProtocolUtility.h"
 
 #define DATA_COUNT_TIME (36)
 
@@ -34,17 +37,17 @@ UpgradeProgress::UpgradeProgress(QWidget *parent) :
     ui->setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_DeleteOnClose);  //关闭时自动销毁内存
-    QDesktopWidget *pDesk = QApplication::desktop();
-    int iWidth = pDesk->width();
-    int iHeight = pDesk->height();
-    move((iWidth-this->width()) / 2,(iHeight-this->height()) / 2);
+//    QDesktopWidget *pDesk = QApplication::desktop();
+//    int iWidth = pDesk->width();
+//    int iHeight = pDesk->height();
+//    move((iWidth-this->width()) / 2,(iHeight-this->height()) / 2);
     this->setAutoFillBackground(true);
     QPalette qBgPallte;
     qBgPallte.setColor(QPalette::Background,QColor(255,255,255));
     setPalette(qBgPallte);
 
-    ui->label_2->setText(tr("升级"));
-    ui->messageLabel->setText(tr("确定升级软件?"));
+    ui->label_2->setText(tr("Upgrade"));
+    ui->messageLabel->setText(tr("Confirm Upgrade?"));
     ui->progressBar->hide();
     connect(HIDOpertaionUtility::GetInstance(),SIGNAL(SignalUpgradeValue(int)),
             this,SLOT(_SlotSetProcessValue(int)));
@@ -73,19 +76,47 @@ void UpgradeProgress::SetUpgradeFilePath(QString strUpgradeFilePath)
 }
 
 
+void UpgradeProgress::SetMachineUpdateFlag()
+{
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdUpgradeAppFlag);
+}
+
 /**
  * @brief UpgradeProgress::on_okButton_clicked  执行升级流程
  */
 void UpgradeProgress::_SlotOkButtonClick()
 {
+
+    HIDOpertaionUtility::GetInstance()->SetUpdateFlag(false);
+    SetMachineUpdateFlag();
+    QThread::sleep(2);
+    int i = 0;
+    bool bUpdateFlag = HIDOpertaionUtility::GetInstance()->GetUpdateFlag();
+    while(i < 3 && (bUpdateFlag == false))
+    {
+        QThread::sleep(2);
+        bUpdateFlag =  HIDOpertaionUtility::GetInstance()->GetUpdateFlag();
+        i++;
+    }
+    qDebug() << "bUpdateFlag = " << bUpdateFlag;
+    if(bUpdateFlag == true)
+    {
+        QMessageBox *pMsgBox = new QMessageBox;
+        if(pMsgBox)
+        {
+            pMsgBox->information(this,tr("Tips"),tr("Please turn off the power,and go on!"),QMessageBox::Ok);
+
+            pMsgBox->show();
+        }
+    }
+
     ui->okButton->hide();
     ui->cancelButton->hide();
     ui->progressBar->show();
-    ui->messageLabel->setText(tr("升级软件中，请勿断电！"));
+    ui->messageLabel->setText(tr("Updating,Not Power Off!"));
     ui->progressBar->setValue(0);
     CHidCmdThread::GetInstance()->AddUpgradeSubControlCmd(m_qUpgradeFilePathStr);
 }
-
 
 void UpgradeProgress::_SlotCancelButton()
 {

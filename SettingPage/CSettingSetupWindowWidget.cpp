@@ -83,6 +83,11 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     m_pPisServerPortLineEdit->setFixedSize(120, 21);
     m_pPisAutoConnectCBox = new QCheckBox(tr("PIS Auto Connected"), this);
     connect(m_pPisAutoConnectCBox, &QCheckBox::clicked, this, &CSettingSetupWindowWidget::SignalAutoConnetPis);
+    m_pPisIP01LineEdit->setValidator(new QIntValidator(0, 255, this));
+    m_pPisIP02LineEdit->setValidator(new QIntValidator(0, 255, this));
+    m_pPisIP03LineEdit->setValidator(new QIntValidator(0, 255, this));
+    m_pPisIP04LineEdit->setValidator(new QIntValidator(0, 255, this));
+    m_pPisServerPortLineEdit->setValidator(new QIntValidator(0, 65535, this));
     //
     // POCT
     m_pPoctLabel = new QLabel(tr("POCT"), this);
@@ -91,7 +96,7 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     m_pPoctServerPortLabel = new QLabel(tr("POCT Server Port"), this);
     //
     m_pPoctIP01LineEdit = new QLineEdit(this);
-    m_pPoctIP01LineEdit->setFixedSize(60, 21);
+    m_pPoctIP01LineEdit->setFixedSize(60, 21);    
     m_pPoctIP02LineEdit = new QLineEdit(this);
     m_pPoctIP02LineEdit->setFixedSize(60, 21);
     m_pPoctIP03LineEdit = new QLineEdit(this);
@@ -102,6 +107,12 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     m_pPoctServerPortLineEdit->setFixedSize(120, 21);
     m_pPoctAutoConnectCBox = new QCheckBox(tr("POCT Auto Connected"), this);
     connect(m_pPoctAutoConnectCBox, &QCheckBox::clicked, this, &CSettingSetupWindowWidget::SignalAutoConnetPoct);
+    //
+    m_pPoctIP01LineEdit->setValidator(new QIntValidator(0, 255, this));
+    m_pPoctIP02LineEdit->setValidator(new QIntValidator(0, 255, this));
+    m_pPoctIP03LineEdit->setValidator(new QIntValidator(0, 255, this));
+    m_pPoctIP04LineEdit->setValidator(new QIntValidator(0, 255, this));
+    m_pPoctServerPortLineEdit->setValidator(new QIntValidator(0, 65535, this));
     // 方便测试
     m_pPoctIP01LineEdit->setText("192");
     m_pPoctIP02LineEdit->setText("168");

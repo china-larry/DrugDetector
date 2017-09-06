@@ -51,8 +51,6 @@ SOURCES += \
     AdjustLight/StandardBrightness.cpp \
     AdjustLight/StandardMachineCalibrateDialog.cpp \
     AdjustLight/crc16/crc16.cpp \
-    AdjustLight/messagebox/messagebox.cpp \
-    AdjustLight/messagebox/messagebox2.cpp \
     HistoryPage/CHistoryPageTitleWidget.cpp \
     AdjustLight/OrdinaryBrightmess.cpp \
     AdjustLight/OpencvUtility.cpp \
@@ -96,8 +94,6 @@ HEADERS += \
     AdjustLight/StandardBrightness.h \
     AdjustLight/StandardMachineCalibrateDialog.h \
     AdjustLight/crc16/crc16.h \
-    AdjustLight/messagebox/messagebox.h \
-    AdjustLight/messagebox/messagebox2.h \
     HistoryPage/CHistoryPageTitleWidget.h \
     AdjustLight/Common.h \
     AdjustLight/HidOpertaionUtility.h \
@@ -118,9 +114,7 @@ HEADERS += \
 FORMS += \
         mainwindow.ui \
     AdjustLight/StandardMachineCalibrateDialog.ui \
-    AdjustLight/upgradeprogress.ui \
-    AdjustLight/messagebox/messagebox.ui \
-    AdjustLight/messagebox/messagebox2.ui
+    AdjustLight/upgradeprogress.ui
 
 DISTFILES +=
 

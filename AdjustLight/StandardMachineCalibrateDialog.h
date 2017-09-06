@@ -39,6 +39,8 @@ struct StandardMachineCalibrateParams
     qint16  iSignalLightValueTestCount; //单个灯光测试次数
 };
 
+
+
 class StandardMachineCalibrateDialog : public QDialog
 {
     Q_OBJECT
@@ -72,28 +74,38 @@ public:
 
     void TraverseLedLight(StandardMachineCalibrateParams sParams);
 
-    //初始化设备位置和灯光
-    bool InitDevice();
+//    //初始化设备位置和灯光
+//    bool InitDevice();
 
     void AddBrightness(StandardMachineCalibrateParams sParams);
+
+
+    bool _RemoveFolderContent(QString strPath);
+
+protected:
 
 private:
     Ui::StandardMachineCalibrateDialog *ui;
 
     ThreadStandardTesting *m_threadStandardTesting;
-    QVector<double>     m_dZValueVector;
+    //QVector<double>     m_dZValueVector;
+    QMap<double,int> m_qZValueMap;
     const int m_iMaxLightValue = 25000;
     bool m_bIsStop;
     bool m_bIsFinish;
 
-    int iUpGreenLightValue;
-    int iDownGreenLightValue;
-    int iLeftGreenLightValue;
-    int iRightGreenLightValue;
+//    int iUpGreenLightValue;
+//    int iDownGreenLightValue;
+//    int iLeftGreenLightValue;
+//    int iRightGreenLightValue;
+
+    StandardMachineLight sStandardMachineLight;
 
     QTextStream qTextOutStream;
     QFile qFileName;
     StandardMachineCalibrateParams sParams;
+
+    const QString kstrDir = QCoreApplication::applicationDirPath() + "/camera";
 };
 
 #endif // STANDARDMACHINECALIBRATEDIALOG_H

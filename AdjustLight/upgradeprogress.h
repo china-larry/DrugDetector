@@ -23,6 +23,8 @@ public:
     //设置升级文件路径
     void SetUpgradeFilePath(QString strUpgradeFilePath);
 
+    void SetMachineUpdateFlag();
+
 private slots:
     // Ok按钮槽
     void _SlotOkButtonClick();

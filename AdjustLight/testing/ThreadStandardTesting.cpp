@@ -19,7 +19,7 @@
 #define SMOOTH_VALUE    8           //滤波系数
 
 #define PIXEL_HALF_OF_WIGHT_TCUP_PRO   110      //圆杯
-#define PIXEL_HALF_OF_WIGHT_SCUP_PRO   480      //方杯 唾液被3
+#define PIXEL_HALF_OF_WIGHT_SCUP_PRO   400/*480*/      //方杯 唾液被3
 
 #define PIXEL_HALF_OF_WIGHT_TCUP_TAR   25      //圆杯
 #define PIXEL_HALF_OF_WIGHT_SCUP_TAR   25      //方杯 唾液被3
@@ -27,9 +27,9 @@
 #define PIXEL_TOP_MARJIN_TCUP      435          //项目区域 距离照片顶部的像素 圆杯
 #define PIXEL_TOP_MARJIN_SCUP      333          //项目区域 距离照片顶部的像素 方杯
 #define PIXEL_BOTTOM_MARJIN_TCUP   320          //项目区域 距离照片底部的像素 圆杯
-#define PIXEL_BOTTOM_MARJIN_SCUP   220          //项目区域 距离照片底部的像素 方杯
+#define PIXEL_BOTTOM_MARJIN_SCUP   270          //项目区域 距离照片底部的像素 方杯
 
-#define PIXEL_SCREEN_ERR           (-85)        //屏幕误差
+#define PIXEL_SCREEN_ERR           (10/*-10*//*-85*/)        //屏幕误差
 
 #define PIXEL_OF_PRO_NAME_TCUP   380            //项目名称色块像素长度 圆杯
 #define PIXEL_OF_PRO_NAME_SCUP   570            //项目名称色块像素长度 方杯
@@ -65,7 +65,9 @@
 
 #define MIN_VALUE_CLINE 1000                    //分量加和 小于1000C线 非法
 
+#define LIMIT 157   //（一个方杯项目距离 + 白条距离  + 1/4方杯项目距离）
 
+#define PIXEL_ITEM_SCUP 100        //一个方杯项目距离
 
 ThreadStandardTesting::ThreadStandardTesting()
 {
@@ -102,12 +104,13 @@ ThreadStandardTesting::~ThreadStandardTesting()
  * @brief ThreadTesting::StartTest 启动测试
  */
 
-void ThreadStandardTesting::StartTest(int iSeconds)
+void ThreadStandardTesting::StartTest(int iSeconds,StandardMachineLight standardMachineLight)
 {
 #if 1
 //    test();
 //    m_CodeDetoector.TestGetQRCode();
     m_MsecToTest = iSeconds*1000;
+    sStandardMachineLight = standardMachineLight;
     m_CodeDetoector.start();
 #else
     QRCodeInfo info;
@@ -148,32 +151,92 @@ void ThreadStandardTesting::StopTest()
 
 void ThreadStandardTesting::_SLotReceiveQRCodeInfo(QRCodeInfo sInfoQRCodeStruct)
 {
-    qDebug() << "info.iProgramCount:" << sInfoQRCodeStruct.iProgramCount << sInfoQRCodeStruct.listProject.count();
+//    qDebug() << "info.iProgramCount:" << sInfoQRCodeStruct.iProgramCount << sInfoQRCodeStruct.listProject.count();
 
+    qDebug() << "info.strProjectName:" << sInfoQRCodeStruct.listProject.at(0).strProjectName;
     if(m_eCurrentStatus != ENUM_STATUS_TEST::STATUS_NONE)
     {
         return;
     }
     emit SignalSendCodeInfo(sInfoQRCodeStruct);
-//#if 0
-//    for(int i=1;i<5;i++)
+
+
+    InitDevice();
+#if 1
+//    for(int i=1;i<9;i++)
 //    {
-//        CHidCmdThread::GetInstance()->AddOpenLedCmd(i, 1000);
+//        CHidCmdThread::GetInstance()->AddOpenLedCmd(i, 10000);
+//        HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+//        while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+//        {
+//            QApplication::processEvents();
+//        }
 //    }
-//#else
-//    BrightnessOrdinaryValue sBrightnessOrdinaryValue = m_CodeDetoector.GetOrdinaryBrightmess();
-//    CHidCmdThread::GetInstance()->AddOpenLedCmd(1,sBrightnessOrdinaryValue.iBrightNo1);
-//    CHidCmdThread::GetInstance()->AddOpenLedCmd(2,sBrightnessOrdinaryValue.iBrightNo2);
-//    CHidCmdThread::GetInstance()->AddOpenLedCmd(3,sBrightnessOrdinaryValue.iBrightNo3);
-//    CHidCmdThread::GetInstance()->AddOpenLedCmd(4,sBrightnessOrdinaryValue.iBrightNo4);
-//    CHidCmdThread::GetInstance()->AddOpenLedCmd(5,sBrightnessOrdinaryValue.iBrightNo5);
-//    CHidCmdThread::GetInstance()->AddOpenLedCmd(6,sBrightnessOrdinaryValue.iBrightNo6);
-//    CHidCmdThread::GetInstance()->AddOpenLedCmd(7,sBrightnessOrdinaryValue.iBrightNo7);
-//    CHidCmdThread::GetInstance()->AddOpenLedCmd(8,sBrightnessOrdinaryValue.iBrightNo8);
-//#endif
+#else
+    BrightnessOrdinaryValue sBrightnessOrdinaryValue = m_CodeDetoector.GetOrdinaryBrightmess();
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(1,sBrightnessOrdinaryValue.iBrightNo1);
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(2,sBrightnessOrdinaryValue.iBrightNo2);
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(3,sBrightnessOrdinaryValue.iBrightNo3);
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(4,sBrightnessOrdinaryValue.iBrightNo4);
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(5,sBrightnessOrdinaryValue.iBrightNo5);
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(6,sBrightnessOrdinaryValue.iBrightNo6);
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(7,sBrightnessOrdinaryValue.iBrightNo7);
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(8,sBrightnessOrdinaryValue.iBrightNo8);
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+#endif
 
     m_QRCodeInfo = sInfoQRCodeStruct;
+//    for(int i = 0;i < m_QRCodeInfo.listProject.count();i++)
+//    {
+//        qDebug() << "m_QRCodeInfo.listProject.at(0).strProjectName  = " << m_QRCodeInfo.listProject.at(i).strProjectName;
+//    }
+
     _InitStatus();
+//    CHidCmdThread::GetInstance()->AddResetMotorCmd(RESET_MOTOR);
+//    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+//    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+//    {
+//        QApplication::processEvents();
+//    }
     m_iIndexMovement = 0;
 }
 
@@ -282,22 +345,16 @@ void ThreadStandardTesting::_StatusHandler(bool bResult, ENUM_STATUS_TEST eTestS
             QTimer::singleShot(1000,this,SLOT(_SlotTakePhoto()));
             break;
         case TAKE_PHOTO:
+
             if(m_iIndexMovement < m_iStepsMoveMotor)
             {
-//                m_iTestCount++;
-//                qDebug() << "Test m_iTestCount = " << m_iTestCount;
-//                if(m_iTestCount < 3)
-//                {
-//                    break;
-//                }
                 m_eCurrentStatus = MOVE_THE_MORTOR;
                 _SlotMoveStepperMotor();
-                //m_iTestCount = 0;
             }
             else
             {
                 qDebug() << "Test Complete!";
-                CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLedAndStopMotor);
+                CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
                 _InitStatus();
                 m_eCurrentStatus = ENUM_STATUS_TEST::STATUS_NONE;
                 if(m_CodeDetoector.isRunning())
@@ -307,7 +364,8 @@ void ThreadStandardTesting::_StatusHandler(bool bResult, ENUM_STATUS_TEST eTestS
 
                 double dZvalue = GetRatioValue(m_dPerC6Value,m_dPerT6Value,m_dPerC8Value,m_dPerT8Value);
                 emit SignalTestComplete(dZvalue);
-
+                emit SignalTestComplete();
+                CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdAddTestCount);
             }
             break;
         default:
@@ -336,6 +394,10 @@ void ThreadStandardTesting::_StatusHandler(bool bResult, ENUM_STATUS_TEST eTestS
 
 void ThreadStandardTesting::_SlotTakePhoto()
 {
+    if(m_eCurrentStatus == ENUM_STATUS_TEST::STATUS_NONE)
+    {
+        return;
+    }
     if(OpencvUtility::GetInstance()->OpenVideo())
     {
 //        qDebug() << __FUNCTION__ << m_iIndexMovement;
@@ -379,20 +441,22 @@ void ThreadStandardTesting::_SlotTakePhoto()
                                 m_dPerT6Value.append(sResultDataStruct.iTValue);
                                 m_dPerC6Value.append(sResultDataStruct.iCValue);
 
-                            }
-                            for(int iPos = 0;iPos < 30;iPos++)
-                            {
-                                bExist = false;
-                                strPath = "";
-                                OpencvUtility::GetInstance()->GetVideoCapture(&strPath);
-                                sResultDataStruct = _ReceivePicPathTCup(strPath, bExist,false);
-                                if(bExist)
+                                for(int iPos = 0;iPos < 5;iPos++)
                                 {
+                                    bExist = false;
+                                    strPath = "";
+                                    OpencvUtility::GetInstance()->GetVideoCapture(&strPath);
+                                    sResultDataStruct = _ReceivePicPathTCup(strPath, bExist,false);
+                                    if(bExist)
+                                    {
 
-                                    m_dPerT6Value.append(sResultDataStruct.iTValue);
-                                    m_dPerC6Value.append(sResultDataStruct.iCValue);
+                                        m_dPerT6Value.append(sResultDataStruct.iTValue);
+                                        m_dPerC6Value.append(sResultDataStruct.iCValue);
+                                    }
                                 }
+
                             }
+
                             ++m_iIndexMovement;
                         }
                     }
@@ -423,7 +487,7 @@ void ThreadStandardTesting::_SlotTakePhoto()
                         m_dPerC8Value.append(sResultDataStruct.iCValue);
                     }
 
-                    for(int iPos = 0;iPos < 30;iPos++)
+                    for(int iPos = 1;iPos < 5;iPos++)
                     {
                         bExist = false;
                         strPath = "";
@@ -453,7 +517,24 @@ void ThreadStandardTesting::_SlotTakePhoto()
         else
         {
             ++m_iIndexMovement;
-            _ReceivePicPathSCup(strPath);
+
+            if(m_iIndexMovement == 1)
+            {
+                m_dPerC6Value.clear();
+                m_dPerT6Value.clear();
+                m_dPerC8Value.clear();
+                m_dPerT8Value.clear();
+            }
+
+            _ReceivePicPathSCup(strPath,0);
+
+            for(int iPos = 1;iPos < 5;iPos++)
+            {
+                OpencvUtility::GetInstance()->GetVideoCapture(&strPath);
+                _ReceivePicPathSCup(strPath,iPos);
+            }
+//            ++m_iIndexMovement;
+            _StatusHandler(true ,m_eCurrentStatus);
         }
     }
     else
@@ -502,7 +583,7 @@ void ThreadStandardTesting::_InitStatus()
 
     if(m_QRCodeInfo.eTypeCup == TypeTCup)
     {
-        iDataList << 20 << STEP_BETWEEN_PRIJECT << STEP_BETWEEN_PRIJECT
+        iDataList << 10 << STEP_BETWEEN_PRIJECT << STEP_BETWEEN_PRIJECT
                     << STEP_BETWEEN_PRIJECT << STEP_BETWEEN_PRIJECT << STEP_BETWEEN_PRIJECT
                     << STEP_BETWEEN_PRIJECT << STEP_BETWEEN_PRIJECT << STEP_BETWEEN_PRIJECT
                     << STEP_BETWEEN_PRIJECT << STEP_BETWEEN_PRIJECT << STEP_BETWEEN_PRIJECT
@@ -520,12 +601,14 @@ void ThreadStandardTesting::_InitStatus()
         m_iStepList.append( iDataList.at(i));
     }
 
+
     CHidCmdThread::GetInstance()->AddResetMotorCmd(RESET_MOTOR);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
     while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
     {
         QApplication::processEvents();
     }
+
 }
 
 /**
@@ -590,13 +673,15 @@ TestResultData ThreadStandardTesting::_ReceivePicPathTCup(QString strPath, bool 
     QList<int> iUprightProjectionList;
     iUprightProjectionList = _UprightProjection(strPathProject);
 
-    int iLocationProjectMid = 0;
+    int iResult = 0;
+    int iProjectMid = -1;
     if(!iUprightProjectionList.isEmpty())
     {
-        iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
-        if(iLocationProjectMid == -1)
+
+        iResult = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP,iProjectMid);
+        if(iResult == -1)
         {
-            qDebug() << "m_iIndexProject:" << m_iIndexMovement<< "No item, Pic Path:"  << strPathProject;
+            //qDebug() << "m_iIndexProject:" << m_iIndexMovement<< "No item, Pic Path:"  << strPathProject;
             sResultDataStruct.strResult = "Error";
             return sResultDataStruct;
         }
@@ -607,15 +692,14 @@ TestResultData ThreadStandardTesting::_ReceivePicPathTCup(QString strPath, bool 
             {
                 if(m_iIndexMovement+1 < m_iStepList.count())
                 {
-                    _ModifNextStep(m_iIndexMovement+1, PIXEL_HALF_OF_WIGHT_TCUP_PRO - iLocationProjectMid);
+                    _ModifNextStep(m_iIndexMovement+1, PIXEL_HALF_OF_WIGHT_TCUP_PRO - iProjectMid);
                 }
             }
-
         }
     }
 
     QString strPathTarget = strPath.left(strPath.count() - 4) + "b.bmp";
-    int iXTar = pImg->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP_PRO + iLocationProjectMid - PIXEL_HALF_OF_WIGHT_TCUP_TAR;
+    int iXTar = pImg->width()/2 - PIXEL_HALF_OF_WIGHT_TCUP_PRO + iProjectMid - PIXEL_HALF_OF_WIGHT_TCUP_TAR;
     int iYTar = PIXEL_TOP_MARJIN_TCUP + PIXEL_OF_PRO_NAME_TCUP;
     int iWightTar = PIXEL_HALF_OF_WIGHT_TCUP_TAR*2;
     int iHeightTar = pImg->height()-PIXEL_TOP_MARJIN_TCUP-PIXEL_BOTTOM_MARJIN_TCUP-PIXEL_OF_PRO_NAME_TCUP;
@@ -681,7 +765,8 @@ QList<int> ThreadStandardTesting::GetComponentGreenTCup(QString strPath)
     int iLocationProjectMid =0;
     if(!iUprightProjectionList.isEmpty())
     {
-        iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
+        int iProjectMid = -1;
+        iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP,iProjectMid);
         if(iLocationProjectMid == -1)
         {
             return iHorizontalProjectionList;
@@ -761,7 +846,7 @@ QList<int> ThreadStandardTesting::GetComponentGreenSCup(QString strPath)
  * @return 返回测试结果
  */
 
-void ThreadStandardTesting::_ReceivePicPathSCup(QString strPath)
+void ThreadStandardTesting::_ReceivePicPathSCup(QString strPath,int iPos)
 {
     QImage* pImg = new QImage;
     TestResultData sResultDataStruct;
@@ -807,6 +892,7 @@ void ThreadStandardTesting::_ReceivePicPathSCup(QString strPath)
         qDebug() << "No project had been positioned!";
         sResultDataStruct.strResult = "Error";
         emit SignalTestResult(sResultDataStruct);
+
         _StatusHandler(true ,m_eCurrentStatus);
         return;
     }
@@ -814,8 +900,37 @@ void ThreadStandardTesting::_ReceivePicPathSCup(QString strPath)
 
     for(int i=0;i<iProjectMidList.count();i++)
     {
-        sResultDataStruct.iIndexProject = m_iIndexMovement*5 + i;
-        iProjectMidSum += iProjectMidList.at(i);
+        qDebug() << "i = " << i;
+        sResultDataStruct.iIndexProject = (m_iIndexMovement - 1)*5 + i;
+
+//        qDebug() << "m_iIndexMovement = " << m_iIndexMovement - 1;
+//        qDebug() << "sResultDataStruct.iIndexProject = " << sResultDataStruct.iIndexProject;
+        sProjectDataStruct = m_QRCodeInfo.listProject.at(sResultDataStruct.iIndexProject);
+//        qDebug() << "sProjectDataStruct.strProjectName = " << sProjectDataStruct.strProjectName;
+        sResultDataStruct.strProgramName = sProjectDataStruct.strProjectName;
+        sResultDataStruct.iCutoffValue = sProjectDataStruct.dSensitivityUp;
+        if(iProjectMidList.at(i) == -1)
+        {
+            iProjectMidSum += LIMIT;
+            sResultDataStruct.strResult = "Error";
+            emit SignalTestResult(sResultDataStruct);
+            qDebug() << "iii = " << i;
+
+            if(i == 0 || i == 1)
+            {
+                m_dPerT6Value.append(0);
+                m_dPerC6Value.append(0);
+            }
+            else if(i == 3 || i == 4)
+            {
+                m_dPerT8Value.append(0);
+                m_dPerC8Value.append(0);
+            }
+            continue;
+        }
+        iProjectMidSum += iProjectMidList.at(i) + PIXEL_ITEM_SCUP/2;
+//        sResultDataStruct.iIndexProject = m_iIndexMovement*5 + i;
+//        iProjectMidSum += iProjectMidList.at(i) + PIXEL_ITEM_SCUP/2;
 //        qDebug() << "i:" << i << " ProjectMid:" << iProjectMidSum;
 
         int iXTar = iXProject + iProjectMidSum - PIXEL_HALF_OF_WIGHT_SCUP_TAR;
@@ -831,13 +946,37 @@ void ThreadStandardTesting::_ReceivePicPathSCup(QString strPath)
         QList<int> iHorizontalProjectionList;
         iHorizontalProjectionList = _HorizontalProjection(strPathTar);
 
+        sResultDataStruct.strPicturePath = strPathTar;
+
         if(_GetValueTC(iHorizontalProjectionList,sResultDataStruct) != 0)
         {
 //            return sResultDataStruct;
             qDebug() << "T/C获取失败";
             sResultDataStruct.strResult = "Error";
             emit SignalTestResult(sResultDataStruct);
+
+            if(i == 0 || i == 1)
+            {
+                m_dPerT6Value.append(0);
+                m_dPerC6Value.append(0);
+            }
+            else if(i == 3 || i == 4)
+            {
+                m_dPerT8Value.append(0);
+                m_dPerC8Value.append(0);
+            }
             continue;
+        }
+
+        if(i == 0 || i == 1)
+        {
+            m_dPerT6Value.append(sResultDataStruct.iTValue);
+            m_dPerC6Value.append(sResultDataStruct.iCValue);
+        }
+        else if(i == 3 || i == 4)
+        {
+            m_dPerT8Value.append(sResultDataStruct.iTValue);
+            m_dPerC8Value.append(sResultDataStruct.iCValue);
         }
 
 
@@ -850,7 +989,7 @@ void ThreadStandardTesting::_ReceivePicPathSCup(QString strPath)
         emit SignalTestResult(sResultDataStruct);
 
     }
-    _StatusHandler(true ,m_eCurrentStatus);
+    //_StatusHandler(true ,m_eCurrentStatus);
     delete pImg;
 }
 
@@ -871,20 +1010,26 @@ QList<int> ThreadStandardTesting::_FindProjectSCup(QList<int> iUprightProjection
     for(int i=0;i<5;i++)
     {
         int iProjectMid = -1;
-        iProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_SCUP,PIXEL_SUSTAIN_SCUP);
-        if(iProjectMid == -1)
+        int iResult = -1;
+        iResult = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_SCUP,PIXEL_SUSTAIN_SCUP,iProjectMid);
+//        qDebug() << "i = " << i;
+//        qDebug() << "iProjectMid = " << iProjectMid;
+        if(iResult == -1)
         {
             qDebug() << i << "found no Project!";
-            iLocationProjectMidList.clear();
-            return iLocationProjectMidList;
+            iLocationProjectMidList.append(-1);
+            qDebug() << "iUprightProjectionList.count() = " << iUprightProjectionList.count();
+            qDebug() << "iProjectMid = " << iProjectMid;
+            iUprightProjectionList = iUprightProjectionList.mid(iProjectMid);
         }
-//        else
-//        {
-//            qDebug() << i << "found Project!  iProjectMid:" << iProjectMid;
-//        }
+        else
+        {
+            iLocationProjectMidList.append(iProjectMid);
+            iUprightProjectionList = iUprightProjectionList.mid(iProjectMid + PIXEL_ITEM_SCUP / 2);
+        }
 
-        iLocationProjectMidList.append(iProjectMid);
-        iUprightProjectionList = iUprightProjectionList.mid(iProjectMid);
+        //iLocationProjectMidList.append(iProjectMid);
+        //iUprightProjectionList = iUprightProjectionList.mid(iProjectMid + PIXEL_ITEM_SCUP / 2);
     }
 //    qDebug() << "iLocationProjectMidList:" << iLocationProjectMidList;
     return iLocationProjectMidList;
@@ -1045,7 +1190,7 @@ void ThreadStandardTesting::_GetTestResult(const InfoProject &ksProjectDataStruc
  * @param iPixelSustain  项目像素宽度
  * @return 成功返回项目中心坐标，失败返回-1
  */
-int ThreadStandardTesting::_FindProjectMid(QList<int> iUprightProjectionList, int iPixelLevel, int iPixelSustain)
+int ThreadStandardTesting::_FindProjectMid(QList<int> iUprightProjectionList, int iPixelLevel, int iPixelSustain, int &iProjectMid)
 {
     int iCount=0;
     int iLocationProjectStart = 0;
@@ -1057,6 +1202,11 @@ int ThreadStandardTesting::_FindProjectMid(QList<int> iUprightProjectionList, in
     }
     for(int x=0;x<iUprightProjectionList.count();x++)
     {
+        if(x > LIMIT)
+        {
+            iProjectMid = LIMIT;
+            return -1;
+        }
         iUprightProjectionList.at(x) > iPixelLevel ? iCount++ : iCount=0;
 //        qDebug() << __FUNCTION__ << "iUprightProjectionList:" << iUprightProjectionList.at(x) << iCount;
         if(iCount > iPixelSustain)
@@ -1067,7 +1217,9 @@ int ThreadStandardTesting::_FindProjectMid(QList<int> iUprightProjectionList, in
                 if(iUprightProjectionList.at(x)< iPixelLevel)
                 {
                     int iLocationProjectMid = (iLocationProjectStart+x)/2;
-                    return iLocationProjectMid;
+                    //return iLocationProjectMid;
+                    iProjectMid = iLocationProjectMid;
+                    return 0;
                 }
                 x++;
             }
@@ -1403,7 +1555,7 @@ int ThreadStandardTesting::_ErCMethod2(int* pData, int iBackGround1, int iBackGr
  */
 bool ThreadStandardTesting::_GetRealLine(int * pDataArr,int iLineCenterX,int iPicWide)
 {
-    qDebug() << "lineCenterX:" << iLineCenterX << "PIXEL_LINE:" << PIXEL_LINE << "PicW:" << iPicWide;
+    //qDebug() << "lineCenterX:" << iLineCenterX << "PIXEL_LINE:" << PIXEL_LINE << "PicW:" << iPicWide;
     //线性回归，去除背景
 
     //取两倍线宽的位置的10点像素作为背景值
@@ -1504,7 +1656,7 @@ void ThreadStandardTesting::_SlotReceiveErr(EnumTypeErr eErr)
         emit SignalTestErr(ERR_DISCONNECT_USB);
         break;
     case ErrNoOpenVideo:
-        emit SignalTestErr(ERR_DECODE);
+        //emit SignalTestErr(ERR_DECODE);
         break;
     default:
         break;
@@ -1712,6 +1864,7 @@ int ThreadStandardTesting::_FindFirstItem(QString strPath, ENUM_LOCATION_TYPE ty
     iUprightProjectionList = _UprightProjection(strPathProject);
 
     int iLocationProjectMid = 0;
+    int iProjectMid = -1;
     if(!iUprightProjectionList.isEmpty())
     {
         switch (type) {
@@ -1719,10 +1872,10 @@ int ThreadStandardTesting::_FindFirstItem(QString strPath, ENUM_LOCATION_TYPE ty
             iLocationProjectMid = _FindFirstWrite(iUprightProjectionList);//,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
             break;
         case TYPE_FIRST_ITEM:
-            iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP);
+            iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_TCUP,PIXEL_SUSTAIN_TCUP,iProjectMid);
             break;
         case TYPE_FIRST_LOCATE:
-            iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_LOCATE,PIXEL_SUSTAIN_TCUP);
+            iLocationProjectMid = _FindProjectMid(iUprightProjectionList,PIXEL_HEIGHT_LEVEL_LOCATE,PIXEL_SUSTAIN_TCUP,iProjectMid);
             break;
 
         default:
@@ -1859,4 +2012,49 @@ double ThreadStandardTesting::GetRatioValue(QVector<double> C6Value,QVector<doub
 
     return dZValue;
 
+}
+
+bool ThreadStandardTesting::InitDevice()
+{
+    //关所有灯
+    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(1,sStandardMachineLight.iUpGreenLightValue);
+
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(3,sStandardMachineLight.iDownGreenLightValue);
+
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(5,sStandardMachineLight.iLeftGreenLightValue);
+
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+
+    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+    CHidCmdThread::GetInstance()->AddOpenLedCmd(7,sStandardMachineLight.iRightGreenLightValue);
+
+    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+    {
+        QApplication::processEvents();
+    }
+
+    return true;
 }

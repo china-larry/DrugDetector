@@ -28,5 +28,7 @@
         <file>ico/title/MD.png</file>
         <file>ico/setting/set_language_checked.png</file>
         <file>ico/setting/set_language_unchecked.png</file>
+        <file>ico/login/MD_login_bgr.png</file>
+        <file>ico/login/PIS_login_bgr.png</file>
     </qresource>
 </RCC>
