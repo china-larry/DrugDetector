@@ -400,17 +400,15 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
 {
     qDebug()<< "cru row " << iCurrentRow << "count " <<m_pHistoryDataTableWidget->rowCount();
     qDebug()<< "cru iCurrentColumn " << iCurrentColumn << iPreviousColumn;
-    // 清空控件
-    m_pTestDataTextEdit->setText("");
-    m_pCurrentTestDataTableWidget->setRowCount(0);
-    //m_pCurrentTestDataTableWidget->clearContents();
-    //
     if(iCurrentRow == iPreviousRow || m_pHistoryDataTableWidget->rowCount() == 0
             || iCurrentRow >= m_pHistoryDataTableWidget->rowCount()
             || iCurrentRow < 0)
     {
         return;// 行未更改，不做处理
     }
+    // 清空控件
+    m_pTestDataTextEdit->setText("");
+    m_pCurrentTestDataTableWidget->setRowCount(0);
     // 获取ID
     QTableWidgetItem *pItem = m_pHistoryDataTableWidget->item(iCurrentRow, 0);
     if(pItem == NULL)
@@ -640,7 +638,9 @@ void CHistoryPage::InsertToDatabase()
 
         qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strDonorFirstName.toLocal8Bit());
         qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strDonorLastName.toLocal8Bit());
-        qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.qTestDateTime);
+        QString strTestDate = m_sDetectorPageUserDataStruct.qTestDateTime.date().toString("yyyy-MM-dd")
+                + m_sDetectorPageUserDataStruct.qTestDateTime.time().toString("-hh-mm-ss");
+        qSqlQuery.addBindValue(strTestDate);
         qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.qBirthDate);
         qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strDonorID);
         qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strTestSite.toLocal8Bit());
@@ -743,7 +743,7 @@ void CHistoryPage::SetUserName(QString strUserName)
 void CHistoryPage::AutoConnectPisServer(QString strServer, int iPort, bool bAuto)
 {
     qDebug() << "history auto " << strServer << iPort;
-    m_bPisHaveConnect = true;
+    m_bPisHaveConnect = bAuto;
     if(m_bPisHaveConnect)
     {
         m_pTcpSocket->abort();
@@ -1152,7 +1152,9 @@ void CHistoryPage::_ReplaceCubeHtmlData(QSqlQuery &qSqlQuery, QString &strTCubeH
     strFindWord = "${OperatorID}";
     strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord), strFindWord.count(), qSqlQuery.value(OPERATOR).toString());
     // test date
-    QDateTime qTestDateTime = QDateTime::fromString(qSqlQuery.value(TEST_TIME).toString());
+    qDebug() << "string time " << qSqlQuery.value(TEST_TIME).toString();
+    QDateTime qTestDateTime = QDateTime::fromString(qSqlQuery.value(TEST_TIME).toString(), "yyyy-MM-dd-hh-mm-ss");
+    qDebug() << "date time " << qTestDateTime << "dd" << qTestDateTime.date().toString("yyyy-MM-dd");
     strFindWord = "${TestDate}";
     strTCubeHtml = strTCubeHtml.replace(strTCubeHtml.indexOf(strFindWord),
                               strFindWord.count(), qTestDateTime.date().toString("yyyy-MM-dd"));
@@ -1263,7 +1265,10 @@ void CHistoryPage::_ReplaceCupHtmlData(QSqlQuery &qSqlQuery, QString &strTCupHtm
     strFindWord = "${OperatorID}";
     strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord), strFindWord.count(), qSqlQuery.value(OPERATOR).toString());
     // test date
-    QDateTime qTestDateTime = QDateTime::fromString(qSqlQuery.value(TEST_TIME).toString());
+    QDateTime qTestDateTime = QDateTime::fromString(qSqlQuery.value(TEST_TIME).toString(), "yyyy-MM-dd-hh-mm-ss");
+    qDebug() << "string time " << qSqlQuery.value(TEST_TIME).toString();
+    qDebug() << "date time " << qTestDateTime << "dd" << qTestDateTime.date().toString("yyyy-MM-dd");
+
     strFindWord = "${TestDate}";
     strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
                               strFindWord.count(), qTestDateTime.date().toString("yyyy-MM-dd"));
@@ -1463,10 +1468,12 @@ string CHistoryPage::_ORUR01SampleResult(QSqlQuery qSqlQuery)
 
 
     // OBR样本信息
-    QDateTime qTestDateTime = QDateTime::fromString(qSqlQuery.value(TEST_TIME).toString());
-    QString strTestDateTime = qTestDateTime.toString("yyyyMMddhhmmss");
-    QString strObrIndexStr = qSqlQuery.value(DONOR_ID).toString()// 使用donorID作为样本编号
+    QDateTime qTestDateTime = QDateTime::fromString(qSqlQuery.value(TEST_TIME).toString(), "yyyy-MM-dd-hh-mm-ss");
+    QString strTestDateTime = qTestDateTime.date().toString("yyyyMMdd") + qTestDateTime.time().toString("hhmmss");
+    // 使用donorID作为样本编号
+    QString strObrIndexStr = strFacilityID + "_" + qSqlQuery.value(DONOR_ID).toString()
             + "_" + strTestDateTime;
+    qDebug() << "obrindex " << strTestDateTime << strObrIndexStr;
     obrScopedPtr->SetOBRIndex(strObrIndexStr.toUtf8());
     obrScopedPtr->SetProjectID(qSqlQuery.value(PRODUCT_LOT).toString().toUtf8());// 试剂批号/项目编号
     obrScopedPtr->SetSampleBarcode(qSqlQuery.value(PRODUCT_ID).toString().toUtf8());// 样本条码， productID
@@ -1475,7 +1482,15 @@ string CHistoryPage::_ORUR01SampleResult(QSqlQuery qSqlQuery)
     obrScopedPtr->SetDiagnosticMessage("");
     obrScopedPtr->SetSubmitSampleTime("");
     // 样本类型
-    QString strSampleType = "唾液";
+    QString strSampleType = "尿液";
+    if(qSqlQuery.value(PRODUCT_DEFINITION).toString() == "TCup")
+    {
+        strSampleType = "尿液";
+    }
+    if(qSqlQuery.value(PRODUCT_DEFINITION).toString() == "TCube")
+    {
+        strSampleType = "唾液";
+    }
     obrScopedPtr->SetSampleType(strSampleType.toUtf8());
 
     obrScopedPtr->SetSubmittingPhysician("");
@@ -1490,7 +1505,7 @@ string CHistoryPage::_ORUR01SampleResult(QSqlQuery qSqlQuery)
     {
         OBXScopedPtr obxScopedPtr;
         obxScopedPtr.Reset(CreateOBX());
-        QString strObxIndexTmp = strObrIndexStr + QString::number(i);
+        QString strObxIndexTmp = strObrIndexStr + "_" + QString::number(i);
 
         obxScopedPtr->SetOBXIndex(strObxIndexTmp.toUtf8());
         obxScopedPtr->SetValueType("ST");
