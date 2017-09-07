@@ -28,7 +28,7 @@ enum Version_Config
     MD_VERSION = 1,// MD版本
     PIS_VERSION = 2,// PIS版本
 };
-int const gk_iVersionConfig = MD_VERSION;
+int const gk_iVersionConfig = WONDFO_VERSION;
 // 测试页所有非结果数据(用户)结构体，便于数据传送
 struct DetectorPageUserData
 {

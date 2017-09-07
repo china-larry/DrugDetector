@@ -17,7 +17,6 @@
         <file>ico/login/login_close_pressed.jpg</file>
         <file>ico/login/login_zoomout_pressed.jpg</file>
         <file>ico/title/close.jpg</file>
-        <file>ico/title/logo.jpg</file>
         <file>ico/title/mini.jpg</file>
         <file>ico/title/titlebackimage.png</file>
         <file>ico/title/Return.jpg</file>
@@ -25,10 +24,13 @@
         <file>ico/title/Histroy.png</file>
         <file>ico/title/Setting.png</file>
         <file>ico/title/Functions.png</file>
-        <file>ico/title/MD.png</file>
         <file>ico/setting/set_language_checked.png</file>
         <file>ico/setting/set_language_unchecked.png</file>
         <file>ico/login/MD_login_bgr.png</file>
         <file>ico/login/PIS_login_bgr.png</file>
+        <file>ico/title/MD_logo.png</file>
+        <file>ico/title/PIS_logo.png</file>
+        <file>ico/title/WONDFO_logo.png</file>
+        <file>ico/title/close02.jpg</file>
     </qresource>
 </RCC>

@@ -42,8 +42,20 @@ void CDetectorPageTitleWidget::_InitWidget()
 {
     // logo
     m_pLogoLabel = new QLabel(this);
-    m_pLogoLabel->setFixedSize(152, 50);
-    m_pLogoLabel->setPixmap(QPixmap(":/image/ico/title/MD.png"));
+    m_pLogoLabel->setFixedSize(172, 50);
+    if(gk_iVersionConfig == PIS_VERSION)
+    {
+        m_pLogoLabel->setPixmap(QPixmap(":/image/ico/title/PIS_logo.png"));
+    }
+    else if(gk_iVersionConfig == MD_VERSION)
+    {
+        m_pLogoLabel->setPixmap(QPixmap(":/image/ico/title/MD_logo.png"));
+    }
+    else
+    {
+        m_pLogoLabel->setPixmap(QPixmap(":/image/ico/title/WONDFO_logo.png"));
+    }
+
     // Operator ID
     m_pOperatorIDLineEdit = new  QLineEdit("Operator ID:", this);
     m_pOperatorIDLineEdit->setFixedSize(182, 30);
@@ -60,7 +72,7 @@ void CDetectorPageTitleWidget::_InitWidget()
     connect(m_pMinWindowButton, SIGNAL(clicked(bool)), this, SIGNAL(SignalMinWindow()));
     m_pCloseWindowButton = new QPushButton(this);
     m_pCloseWindowButton->setFixedSize(60, 50);
-    SetButtonBackImage(m_pCloseWindowButton, ":/image/ico/title/close.jpg");
+    SetButtonBackImage(m_pCloseWindowButton, ":/image/ico/title/close02.jpg");
     connect(m_pCloseWindowButton, SIGNAL(clicked(bool)), this, SIGNAL(SignalCloseWindow()));
 }
 /**
@@ -74,7 +86,7 @@ void CDetectorPageTitleWidget::_InitLayout()
     m_pLayout = new QHBoxLayout;
     m_pLayout->setMargin(0);
     m_pLayout->addWidget(m_pLogoLabel);
-    m_pLayout->addSpacing(22);
+    m_pLayout->addSpacing(2);
     m_pLayout->addWidget(m_pOperatorIDLineEdit);
 
     m_pLayout->addSpacing(278);
