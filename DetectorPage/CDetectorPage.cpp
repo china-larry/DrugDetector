@@ -128,7 +128,7 @@ void CDetectorPage::SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfoStruct)
     m_sQRCodeInfoStruct = sQRCodeInfoStruct;
     qDebug() << "__code info" << m_sQRCodeInfoStruct.strProductID << m_sQRCodeInfoStruct.qExprationDate.toString("yyyy-MM-dd");
     // 检查杯型
-    if(m_pProductDefinitionWidget->GetCurrentSelectText() == "TCup")
+    if(gk_strTCupTypeList.contains(m_pProductDefinitionWidget->GetCurrentSelectText()))
     {// 圆杯
         if(sQRCodeInfoStruct.eTypeCup != EnumTypeCup::TypeTCup)
         {
@@ -137,7 +137,7 @@ void CDetectorPage::SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfoStruct)
             return;
         }
     }
-    else if(m_pProductDefinitionWidget->GetCurrentSelectText() == "TCube")
+    else if(gk_strTCubeTypeList.contains(m_pProductDefinitionWidget->GetCurrentSelectText()))
     {// 方杯
         if(sQRCodeInfoStruct.eTypeCup != EnumTypeCup::TypeSCup10)
         {
@@ -317,7 +317,7 @@ void CDetectorPage::_SlotPrintToPDF()
     m_strHtml = qTextStream.readAll();
     qFile.close();
     // 替换数据
-    if(m_pProductDefinitionWidget->GetCurrentSelectText() == "TCube")
+    if(gk_strTCubeTypeList.contains(m_pProductDefinitionWidget->GetCurrentSelectText()))
     {// 方杯
         _ReplaceCubeHtmlData(m_strHtml);
     }
@@ -417,7 +417,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 {
     //const int kiLineEditWidth = 80;
     QGroupBox *pGroupBox = new QGroupBox(tr("Donor Details"), this);
-    pGroupBox->setFixedSize(445, 377);
+    pGroupBox->setFixedSize(445, 395);
     // donor name
     m_pDonorNameLabel = new QLabel(tr("Donor Name"), this);
     m_pDonorNameLabel->setMargin(0);
@@ -449,7 +449,15 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     m_pOtherReasonForTestCBox = new QCheckBox(tr("Other: "), this);
     m_pOtherReasonCommentsLineEdit = new QLineEdit(this);
     m_pOtherReasonCommentsLineEdit->setObjectName("m_pOtherReasonCommentsLineEdit");
-
+    // PIS版本的Adulterants组件
+    if(gk_iVersionConfig == PIS_VERSION)
+    {
+        m_pAdulterantsLabel = new QLabel(tr("Adulterants"), this);
+        m_pOxidantCBox = new QCheckBox(tr("Oxidant"), this);
+        m_pPHCBox = new QCheckBox(tr("pH"), this);
+        m_pNitriteCBox = new QCheckBox(tr("Nitrite"), this);
+        m_pCreatinineCBox = new QCheckBox(tr("Creatinine"), this);
+    }
     // 布局
     QHBoxLayout *pDonorLayout = new QHBoxLayout;
     pDonorLayout->addSpacing(4);
@@ -476,6 +484,23 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     pTestLayout->addWidget(m_pTestTimeWidget);
     pTestLayout->addSpacing(55);
     pTestLayout->addWidget(m_pTestingSiteWidget);
+    // adulterants
+    QHBoxLayout *pAdulterantsLayout = NULL;
+    QHBoxLayout *pOxidantLayout = NULL;
+    if(gk_iVersionConfig == PIS_VERSION)
+    {
+        pAdulterantsLayout = new QHBoxLayout;
+        pOxidantLayout = new QHBoxLayout;
+        pAdulterantsLayout->addSpacing(9);
+        pAdulterantsLayout->addWidget(m_pAdulterantsLabel);
+        pAdulterantsLayout->addStretch(100);
+        //
+        pOxidantLayout->addSpacing(9);
+        pOxidantLayout->addWidget(m_pOxidantCBox);
+        pOxidantLayout->addWidget(m_pPHCBox);
+        pOxidantLayout->addWidget(m_pNitriteCBox);
+        pOxidantLayout->addWidget(m_pCreatinineCBox);
+    }
     //
     QHBoxLayout *pReasonLayout = new QHBoxLayout;
     pReasonLayout->addSpacing(9);
@@ -502,7 +527,16 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     pLayout->addLayout(pLastLayout);
     pLayout->addLayout(pDateLayout);
     pLayout->addLayout(pTestLayout);
-    pLayout->addSpacing(30);
+    if(gk_iVersionConfig == PIS_VERSION)
+    {
+        pLayout->addLayout(pAdulterantsLayout);
+        pLayout->addLayout(pOxidantLayout);
+    }
+    else
+    {
+        pLayout->addSpacing(40);
+    }
+
     pLayout->addLayout(pReasonLayout);
     pLayout->addLayout(pPreLayout);
     pLayout->addLayout(pOtherLayout);
@@ -518,7 +552,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
 {
     QGroupBox *pGroupBox = new QGroupBox(tr("Product Details"), this);
-    pGroupBox->setFixedSize(445, 152);
+    pGroupBox->setFixedSize(445, 140);
 
     // 杯类型
     m_pProductDefinitionWidget = new CLabelCommoBoxWidget(tr("Product Definition"), m_strCupTypeList, this);
@@ -610,6 +644,7 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
     pGroupBox->setLayout(pVLayout);
     return pGroupBox;
 }
+
 /**
   * @brief 创建页面按钮button组合控件
   * @param
@@ -738,12 +773,12 @@ void CDetectorPage::_ReplaceCubeHtmlData(QString &strHtml)
                               strFindWord.count(), m_pTestingSiteWidget->GetLineText());
     // Specimen Type
     strFindWord = "${UrineCheck}";
-    if(m_pProductDefinitionWidget->GetCurrentSelectText() == "TCup")
+    if(gk_strTCupTypeList.contains(m_pProductDefinitionWidget->GetCurrentSelectText()))
     {
         strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), "checked");
     }
     strFindWord = "${SalivaCheck}";
-    if(m_pProductDefinitionWidget->GetCurrentSelectText() == "TCube")
+    if(gk_strTCubeTypeList.contains(m_pProductDefinitionWidget->GetCurrentSelectText()))
     {
         strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), "checked");
     }

@@ -264,22 +264,19 @@ void CHistoryPage::_SlotCheckPrint()
     QString strPrintHtml = "";
     bool bFirstAddHtml = false;
     // 资源文件
-//    QString strTCubeHtmlSrc = strTCubeHtml;
-    QString strTCupHtml = "";
-//    QString strTCupHtmlSrc = strTCupHtml;
+    QString strTCubeHtml = GetHtmlStream(QCoreApplication::applicationDirPath() + "/Resources/TCube.html");
+    QString strTCubeHtmlSrc = strTCubeHtml;
+    QString strTCupHtml = GetHtmlStream(QCoreApplication::applicationDirPath() + "/Resources/TCup.html");
+    QString strTCupHtmlSrc = strTCupHtml;
     // 杯型
     QString strCupType = "";
     // 遍历
     QSetIterator<int> qIter(iCurrentSelectRowSet);
-    QTableWidgetItem *pItem = NULL;
-    bool bOk = false;
-    QString strID = "";
-    int iCurrentID = 0;
     while (qIter.hasNext())
     {
         int iRow = qIter.next();
         // 获取杯型
-        pItem = m_pHistoryDataTableWidget->item(iRow, 5);
+        QTableWidgetItem *pItem = m_pHistoryDataTableWidget->item(iRow, 5);
         if(pItem != NULL)
         {//
             strCupType = pItem->text();
@@ -290,16 +287,21 @@ void CHistoryPage::_SlotCheckPrint()
                 return;
             }
         }
-        // 资源文件
-        strTCupHtml = GetHtmlStream(QCoreApplication::applicationDirPath() + "/Resources/" + strCupType + ".html");
+
+        // 数据还原替换
+        strTCubeHtml = strTCubeHtmlSrc;
+        strTCupHtml = strTCupHtmlSrc;
+
+
         // 获取ID
         pItem = m_pHistoryDataTableWidget->item(iRow, 0);
         if(pItem == NULL)
         {// 无选择行
             return;
         }
-        strID = pItem->text();
-        iCurrentID = strID.toInt(&bOk, 10);
+        QString strID = pItem->text();
+        bool bOk = false;
+        int iCurrentID = strID.toInt(&bOk, 10);
         if(bOk && iCurrentID >= 0)// 有效ID判断
         {
             QString strSelect = QString("SELECT * FROM drugdata WHERE id = ");
@@ -315,17 +317,23 @@ void CHistoryPage::_SlotCheckPrint()
                                             "style=\"width:98%;height:100%;border:5px solid #008cd6;margin-top:180px;\"> "
                                             "<tr><td></td></tr></table>");
                 }
-                if(gk_strTCubeTypeList.contains(strCupType))
+                if(strCupType == "TCube")
                 {// 方杯
-                    _ReplaceCubeHtmlData(qSqlQuery, strTCupHtml);
-                    qDebug() << "print to pdf";                    
+                    _ReplaceCubeHtmlData(qSqlQuery, strTCubeHtml);
+                    qDebug() << "print to pdf";
+                   // PrintToPdf(strTCubeHtml);
+                    //PrintToPage(strTCubeHtml);
+                    strPrintHtml += strTCubeHtml;
                 }
                 else
                 {// 圆杯
                     _ReplaceCupHtmlData(qSqlQuery, strTCupHtml);
                     qDebug() << "print to pdf";
+                    //PrintToPdf(strTCupHtml);
+                    //PrintToPage(strTCupHtml);
+                    // 测试打印预览
+                    strPrintHtml += strTCupHtml;
                 }
-                strPrintHtml += strTCupHtml;
                 bFirstAddHtml = true;
             }
         }

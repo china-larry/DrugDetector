@@ -120,6 +120,13 @@ private:
     QCheckBox *m_pOtherReasonForTestCBox;
     QLineEdit *m_pOtherReasonCommentsLineEdit;
     //////////////////////////////////////
+    // adulterants
+    QLabel *m_pAdulterantsLabel;
+    QCheckBox *m_pOxidantCBox;
+    QCheckBox *m_pPHCBox;
+    QCheckBox *m_pNitriteCBox;
+    QCheckBox *m_pCreatinineCBox;
+    //////////////////////////////////////
     // Product Details
     QStringList m_strCupTypeList;// 杯类型数据
     CLabelCommoBoxWidget *m_pProductDefinitionWidget;

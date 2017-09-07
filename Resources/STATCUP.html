@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">	 
+</head>
+<style type="text/css"> 
+body{
+	color: rgba(49, 49, 49, 0.94);
+}   
+input,label{ font:14px/18px "Microsoft Yahei", Tahoma, Helvetica, Arial, Verdana, "\5b8b\4f53", sans-serif;  }
+
+.chk_1,.chk_2,.chk_3,.chk_4 {
+    display: none;
+}
+  
+.chk_1 + label {
+	background-color: #FFF;
+	border: 1px solid #000; 
+	padding: 6px; 
+	display: inline-block;
+	position: relative;
+	margin-right: 30px;
+}
+.chk_1 + label:active { 
+}
+
+.chk_1:checked + label { 
+	border: 1px solid #000; 
+	color: #000;
+}
+
+.chk_1:checked + label:after {
+	content: '\2714';
+	position: absolute;
+	top: -5px;
+	left: 0px;
+	color: #000;
+	width: 100%;
+	text-align: center;
+	font-size: 1.3em;
+	padding: 1px 0 0 0;
+	vertical-align: text-top;
+}
+ .chk_1 + label{
+  margin-right:0px;
+ }
+ .table1{
+	height: 370px;
+ }
+ .tableTest tr{
+	height: 16px; 
+ }
+ .table2 tr{
+	height: 18px;
+ }
+ td.checkpad{ 
+	padding-top: 7px;
+ }
+</style> 
+<body style="margin:1px">
+	
+	<table border="0" cellspacing="0" cellpadding="0" style="width:98%;height:100%;border:5px solid #008cd6;padding:0px;margin:0px;">
+		<tr>
+		<td> 		
+		<table border="0" cellspacing="0" cellpadding="0" style="width:98.5%;height:98%;font-family:Tahoma;border:2px solid #008cd6;text-align: center; padding: 0px 20px 30px;margin:6px;">
+			<tr>
+			<td style="padding: 0px 0px;">
+				<img style="width:94%;height:130px;" src="data:image/png;base64,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"/>
+			</td>
+			</tr>
+			<tr>
+			<td> 
+				<div style="width:92%;text-align:left;background-color:#727171;padding:0px;color:#fff;font-family:Tahoma;font-size:17px;font-weight:bold;border-radius: 5px;margin-top: 18px;margin-left: 26px;margin-right: 26px;">&nbsp;&nbsp;&nbsp;Test Information</div>
+			</td>
+			</tr>
+			<tr>
+			<td> 
+				<table border="0" cellspacing="0" cellpadding="0"  style="width:92%;height:100%;font-size:15px;text-align:left;border:1px solid #727171;border-radius: 5px;margin-top:10px;margin-left: 26px;margin-right: 26px;padding: 8px;">
+					 					
+					<tr>
+					<td style="padding: 2px 0px;">
+					<div  style="float: left;width: 33%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:90px;">
+							Operator ID:
+							</td>
+							<td style="border-bottom: 1px solid;">${OperatorID}
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+					</div>
+					<div style="float: left;width: 33.33%;white-space: nowrap;">					
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:75px;">
+							Test Date:
+							</td>
+							<td style="border-bottom: 1px solid;">${TestDate}
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+					</div>
+					<div style="float: left;width: 33.33%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:75px;">
+							Test Time:
+							</td>
+							<td style="border-bottom: 1px solid;">${TestTime}
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+					</div>
+					</td>
+					</tr> 
+					
+					<tr>
+					<td style="padding: 2px 0px;">
+						<div style="float: left;width: 35%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:70px;">
+							Donor ID:
+							</td>
+							<td style="border-bottom: 1px solid;">${DonorID}
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div>
+						<div style="float: left;width: 50%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:100px;">
+							Email Address:
+							</td>
+							<td style="border-bottom: 1px solid;">${EmailAddress}
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div>
+					</td>
+					</tr>
+					<tr>
+					<td style="padding: 2px 0px;">
+						<div>
+						<table border="0" cellspacing="0" cellpadding="0" width="80%">
+							<tr>
+							<td style="width:85px;">
+							Testing Site:
+							</td>
+							<td style="border-bottom: 1px solid;">${TestingSite}
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div> 
+					</td>
+					</tr>
+					<tr>
+					<td style="padding: 2px 0px;">
+						<div>
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:140px;">
+							Specimen Type:
+							</td>
+							<td > 
+								<div style="float: left;width: 20%;white-space: nowrap;"><input type="checkbox" class="chk_1" ${UrineCheck} /><label></label>&nbsp;Urine</div>
+								<div style="float: left;width: 20%;white-space: nowrap;"><input type="checkbox" class="chk_1" ${SalivaCheck} /><label></label>&nbsp;Saliva</div>
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div> 
+					</td>
+					</tr>
+					<tr>
+					<td style="padding: 2px 0px;">
+						<div>
+						<table border="0" cellspacing="0" cellpadding="0" width="100%" >
+							<tr>
+							<td style="width:140px;">
+							Reason for Test:
+							</td>
+							</tr>
+							<tr>
+							<td style="padding: 2px 0px;">
+								<tr>
+								<td style="padding: 2px 0px;">
+								<div>
+									<div style="float: left;width: 30%;white-space: nowrap;"><input type="checkbox" class="chk_1" ${PreEmploymentCheck} /><label></label>&nbsp;Pre Employment</div>
+									<div style="float: left;width: 30%;white-space: nowrap;"><input type="checkbox" class="chk_1" ${RandomCheck} /><label></label>&nbsp;Random</div>
+									<div style="float: left;width: 30%;white-space: nowrap;"><input type="checkbox" class="chk_1" ${ReasonableCheck} /><label></label>&nbsp;Reasonable suspicion/cause</div>
+								</div>
+								</td> 
+								</tr>
+								<tr>
+								<td style="padding: 2px 0px;">
+								<div>
+									<div style="float: left;width: 30%;white-space: nowrap;"><input type="checkbox" class="chk_1" ${PostAccidentCheck} /><label></label>&nbsp;Post Accident</div>
+									<div style="float: left;width: 30%;white-space: nowrap;"><input type="checkbox" class="chk_1" ${ReturnToDutyCheck} /><label></label>&nbsp;Return To Duty</div>
+									<div style="float: left;width: 30%;white-space: nowrap;"><input type="checkbox" class="chk_1" ${FollowUpCheck} /><label></label>&nbsp;Follow Up</div>
+								</div>
+								</td> 
+								</tr>
+								<tr>
+								<td style="padding: 2px 0px;">
+								<div>
+									 <table border="0" cellspacing="0" cellpadding="0" width="80%">
+										<tr >
+										<td style="width:70px;">
+										<input type="checkbox" class="chk_1" ${OtherCheck} /><label></label>&nbsp;Other:
+										</td>
+										<td style="border-bottom: 1px solid;">${Other}
+										</td>
+										<td style="width:10px;">
+										</td>
+										</tr>
+									</table>
+								</div>
+								</td> 
+								</tr>
+							</td> 
+							</tr>
+						</table>
+						</div> 
+					</td>
+					</tr>
+					<tr>
+					<td>
+						<div>
+						<table border="0" cellspacing="0" cellpadding="0" width="80%">
+							<tr>
+							<td style="width:70px;padding: 2px 0px;">
+							Remarks:
+							</td>
+							<td style="border-bottom: 1px solid;">
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div> 
+					</td>
+					</tr>
+				</table>
+			</td>
+			</tr>
+			<tr>
+			<td> 
+				<div style="width:92%;text-align:left;background-color:#727171;padding:0px;color:#fff;font-family:Tahoma;font-size:17px;font-weight:bold;border-radius: 5px;margin-top: 18px;margin-left: 26px;margin-right: 26px;">&nbsp;&nbsp;&nbsp;Product Information</div>
+			</td>
+			</tr>
+			<tr>
+			<td> 
+				<table border="0" cellspacing="0" cellpadding="0"  style="width:92%;height:100%;text-align:left;border:1px solid #727171;border-radius: 5px;margin-top:10px;margin-left: 26px;margin-right: 26px;padding: 8px;">					 					
+					<tr>
+					<td style="padding: 3px 0px;">
+					<div style="float: left;width: 45%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:80px;">
+							Product ID:
+							</td>
+							<td style="border-bottom: 1px solid;">${ProductID}
+							</td>
+							<td style="width:15px;">
+							</td>
+							</tr>
+						</table>
+					</div>
+					<div style="float: left;width: 45%;white-space: nowrap;">					
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:90px;">
+							Product Lot:
+							</td>
+							<td style="border-bottom: 1px solid;">${ProductLot} 
+							</td>
+							<td style="width:15px;">
+							</td>
+							</tr>
+						</table>
+					</div> 
+					</td>
+					</tr> 					
+					<tr>
+					<td style="padding: 3px 0px;">
+						<div style="float: left;width: 45%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:110px;">
+							Expiration Date:
+							</td>
+							<td style="border-bottom: 1px solid;">${ExpirationDate}
+							</td>
+							<td style="width:15px;">
+							</td>
+							</tr>
+						</table>
+						</div>
+						<div style="float: left;width: 55%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:120px;">
+							*Temperature in Range:
+							</td>
+							<td style="width:30px;">
+							</td>
+							<td> 
+								<input type="checkbox" class="chk_1" ${TemperatureinRangeYesCheck} /><label></label>&nbsp;Yes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<input type="checkbox" class="chk_1" ${TemperatureinRangeNoCheck} /><label></label>&nbsp;No
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div>
+					</td>
+					</tr>
+					<tr>
+					<td colspan="5" style="padding: 3px 0px;font-size:9px;font-weight:bold;">
+						<div>
+							*Disclaimer:
+						</div> 						
+					</td>
+					</tr> 
+					<tr>
+					<td colspan="5" style="padding: 3px 0px;font-size:9px;">						
+						<div>
+							Alcohol Saliva Test Strip, Adulteration and Temperature Strips must be read by direct optical observation based on specific instruction in product insert accordingly after specimen is collected.
+						</div> 
+					</td>
+					</tr> 
+				</table>
+			</td>
+			</tr>
+			
+			<tr>
+			<td> 
+				<div style="width:92%;text-align:left;background-color:#727171;padding:0px;color:#fff;font-family:Tahoma;font-size:17px;font-weight:bold;border-radius: 5px;margin-top: 18px;margin-left: 26px;margin-right: 26px;">&nbsp;&nbsp;&nbsp;Test Result</div>
+			</td>
+			</tr>
+			<tr>
+			<td> 
+			<table border="0" cellspacing="0" cellpadding="0" class="table1" style="text-align:center;width:92%;font-size:10px;text-align:left;border:1px solid #727171;border-radius: 5px;padding: 8px;margin-top:10px;margin-left: 26px;margin-right: 26px;">
+				<tr>
+				<td style="width:60px;vertical-align: top;padding-top: 8px;/*顶部对齐*/">
+					<table border="0" cellspacing="0" cellpadding="0" class="tableTest" style="width:100%;border-right: 1px dashed;height: 310px;">
+						<tr>
+						<td rowspan="3" style="font-weight:bold;">
+							Oxidant
+						</td>
+						<td style="padding-right: 50px;"><input type="checkbox" class="chk_1" /><label></label>&nbsp;Normal</td>
+						</tr><tr> 
+						<td><input type="checkbox" class="chk_1" /><label></label>&nbsp;Abnormal</td>
+						</tr><tr> 
+						<td><input type="checkbox" class="chk_1" /><label></label>&nbsp;Not Tested</td>
+						</tr>
+						<tr>
+						<td rowspan="3" style="font-weight:bold;">
+							Specific Gravity
+						</td>
+						<td class="checkpad" ><input type="checkbox" class="chk_1" /><label></label>&nbsp;Normal</td>
+						</tr><tr> 
+						<td><input type="checkbox" class="chk_1" /><label></label>&nbsp;Abnormal</td>
+						</tr><tr> 
+						<td><input type="checkbox" class="chk_1" /><label></label>&nbsp;Not Tested</td>
+						</tr><tr>
+						<td rowspan="3" style="font-weight:bold;">
+							pH
+						</td>
+						<td class="checkpad" ><input type="checkbox" class="chk_1" /><label></label>&nbsp;Normal</td>
+						</tr><tr> 
+						<td><input type="checkbox" class="chk_1" /><label></label>&nbsp;Abnormal</td>
+						</tr><tr> 
+						<td><input type="checkbox" class="chk_1" /><label></label>&nbsp;Not Tested</td>
+						</tr>
+						<tr>
+						<td rowspan="3" style="font-weight:bold;">
+							Nitrite
+						</td>
+						<td class="checkpad" ><input type="checkbox" class="chk_1" /><label></label>&nbsp;Normal</td>
+						</tr><tr> 
+						<td><input type="checkbox" class="chk_1" /><label></label>&nbsp;Abnormal</td>
+						</tr><tr> 
+						<td><input type="checkbox" class="chk_1" /><label></label>&nbsp;Not Tested</td>
+						</tr>
+						<tr>
+						<td rowspan="3" style="font-weight:bold;">
+							Creatinine
+						</td>
+						<td class="checkpad" ><input type="checkbox" class="chk_1" /><label></label>&nbsp;Normal</td>
+						</tr><tr> 
+						<td><input type="checkbox" class="chk_1" /><label></label>&nbsp;Abnormal</td>
+						</tr><tr> 
+						<td><input type="checkbox" class="chk_1" /><label></label>&nbsp;Not Tested</td>
+						</tr> 
+					</table>
+				</td> 
+				<td style="width:200px;vertical-align: top;padding-top: 2px;/*右边表格对齐顶部距离*/">
+					<table border="0" cellspacing="0" cellpadding="0" class="table2" style="text-align:center;width:100%;  text-align:left;5px;">
+											
+						<tr style="margin-left:28px;text-align:center">
+						<th style="width:10%; ">
+						  &nbsp;
+						</th>
+						<th style="width:15%; padding:3px;">
+						  Strip
+						</th>
+						<th style="width:10%;padding:3px;">
+						  Drug
+						</th>
+						<th style="width:20%;padding:3px;">
+						  Cutoff(ng/ml)
+						</th>
+						<th style="width:20%;padding:3px;">
+						  Control Line
+						</th>
+						<th style="width:15%;padding:3px;">
+						  Result
+						</th> 
+						<th style="width:10%; ">
+						  &nbsp;
+						</th>
+						</tr> 			
+						${ResultData}
+					</table>
+				</td>
+				</tr> 				 
+				<tr>
+				<td colspan="7" style="padding: 2px 0px;font-size:9px;font-weight:bold;">
+					<div style=";text-align:left;">
+						*Disclaimer:
+					</div> 						
+				</td>
+				</tr> 
+				<td colspan="7" style="padding: 2px 0px;font-size:9px;">
+					<div>
+						The test provides only a qualitative, preliminary analytical result. For the result that is non-negative, adulterated or substituted should be confirmed by GC/MS at a certified laboratory and then reviewed by an MRO.
+					</div> 
+				</td>
+				</tr> 
+			</table>
+			</td>
+			</tr>
+			
+		</table> 		
+		</td>
+		</tr>		
+	</table>
+	
+	</br>
+	<table border="0" cellspacing="0" cellpadding="0" style="width:98%;height:100%;border:5px solid #008cd6;margin-top:180px;">
+		<tr>
+		<td> 		
+		<table border="0" cellspacing="0" cellpadding="0" style="width:98.5%;height:98%;font-family:Tahoma;border:2px solid #008cd6;text-align: center; padding: 0px 20px 530px;margin:6px;">
+			<tr>
+			<td style="padding: 0px 50px;">
+				<img style="width:94%;height:130px;" src="data:image/png;base64,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"/>
+			</td>
+			</tr>	
+			
+			<tr>
+			<td> 
+				<div style="width:92%;text-align:left;background-color:#727171;padding:0px;color:#fff;font-family:Tahoma;font-size:17px;font-weight:bold;border-radius: 5px;margin-top: 18px;margin-left: 26px;margin-right: 26px;">&nbsp;&nbsp;&nbsp;Test Image</div>
+			</td>
+			</tr>
+			<tr>
+			<td> 		
+				<table border="0" cellspacing="0" cellpadding="0"  style="width:92%;height:100%;text-align:left;border:1px solid #727171;border-radius: 5px;margin-top:10px;margin-left: 26px;margin-right: 26px;padding: 8px;">
+					<tr>
+					<td>  
+					<div style="float: left;width: 50%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td>
+							<image style="width:600px;height:180px;" src="data:image/png;base64,${test_image_01}"/> 
+							</td>
+							</tr>
+						</table>
+					</div>
+	
+					</td>
+					</tr>   
+				</table>
+			</td>
+			</tr>
+			
+			<tr>
+			<td> 
+				<div style="width:92%;text-align:left;background-color:#727171;padding:0px;color:#fff;font-family:Tahoma;font-size:17px;font-weight:bold;border-radius: 5px;margin-top: 18px;margin-left: 26px;margin-right: 26px;">&nbsp;&nbsp;&nbsp;Signature</div>
+			</td>
+			</tr>
+			<tr>
+			<td> 
+				<table border="0" cellspacing="0" cellpadding="0"  style="width:92%;height:100%;font-size:15px;text-align:left;border:1px solid #727171;border-radius: 5px;margin-top:10px;margin-left: 26px;margin-right: 26px;padding: 8px;">			  
+					 				
+					<tr>
+					<td style="padding: 2px 0px;">
+						<div style="float: left;width: 50%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:120px;">
+							Donor Signature:
+							</td>
+							<td style="border-bottom: 1px solid;">
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div>
+						<div style="float: left;width: 50%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:130px;">
+							Operator Signature:
+							</td>
+							<td style="border-bottom: 1px solid;">
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div>
+					</td>
+					</tr> 
+								
+					<tr>
+					<td style="padding: 2px 0px;">
+						<div style="float: left;width: 50%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:45px;">
+							Date:
+							</td>
+							<td style="border-bottom: 1px solid;">
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div>
+						<div style="float: left;width: 50%;white-space: nowrap;">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+							<td style="width:45px;">
+							Date:
+							</td>
+							<td style="border-bottom: 1px solid;"> 
+							</td>
+							<td style="width:10px;">
+							</td>
+							</tr>
+						</table>
+						</div>
+					</td>
+					</tr> 
+				</table>
+			</td>
+			</tr>
+		</table> 		
+		</td>
+		</tr>		
+	</table>
+	
+</body>
+</html>	

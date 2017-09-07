@@ -1536,9 +1536,11 @@ void ThreadTesting::_SlotReceiveErr(EnumTypeErr eErr)
 {
     switch (eErr) {
     case ErrNoFoundQR:
+        StopTest();
         emit SignalTestErr(ERR_NO_FOUND);
         break;
     case ErrDecodeQR:
+        StopTest();
         emit SignalTestErr(ERR_DECODE);
         break;
     case ErrNoConnectUSB:

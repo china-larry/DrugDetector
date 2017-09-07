@@ -28,7 +28,10 @@ enum Version_Config
     MD_VERSION = 1,// MD版本
     PIS_VERSION = 2,// PIS版本
 };
-int const gk_iVersionConfig = WONDFO_VERSION;
+const int gk_iVersionConfig = PIS_VERSION;
+// 杯类型全局变量
+const QStringList gk_strTCupTypeList = (QStringList() << "TCup" << "STATCUP" << "J12");
+const QStringList gk_strTCubeTypeList = (QStringList() << "TCube" << "STATSWAB");
 // 测试页所有非结果数据(用户)结构体，便于数据传送
 struct DetectorPageUserData
 {
