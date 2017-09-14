@@ -42,7 +42,7 @@ static int sg_iPidIDIndex = 0;
 CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
 {
     m_strDatabaseName = "\\drug.db";
-    m_iDatabaseColumnCount = 120;// 当前列数，包括ID
+    m_iDatabaseColumnCount = 125;// 当前列数，包括ID
     m_iResultIndexCount = 6;
     m_iMaxTestResult = 16;
     //
@@ -58,10 +58,16 @@ CHistoryPage::CHistoryPage(QWidget *parent) : QWidget(parent)
     // 打印预览
     m_pPrintPreviewWidget = new CPrintPreviewWidget;
     // 上传
+    m_strPisServer = "192.168.8.60";
+    m_iPisServerPort = 8004;
+    m_strPoctServer = "192.168.8.60";
+    m_iPoctServerPort = 8004;
     m_pTcpSocket = new QTcpSocket(this);
     connect(m_pTcpSocket, &QTcpSocket::readyRead, this, &CHistoryPage::_SlotPoctReadMesg);
+    connect(m_pTcpSocket, SIGNAL(error(QAbstractSocket::SocketError socketError)), this, SLOT(_SlotPoctConnectError(QAbstractSocket::SocketError)));
+    connect(m_pTcpSocket, &QTcpSocket::disconnected, this, &CHistoryPage::_SlotPoctDisConnect);
     m_pTcpSocket->abort();
-    m_pTcpSocket->connectToHost("192.168.8.60",8004);
+    m_pTcpSocket->connectToHost(m_strPoctServer, m_iPoctServerPort);
 
     m_bPisHaveConnect = false;
     m_bPoctHaveConnect = false;
@@ -246,6 +252,7 @@ void CHistoryPage::_SlotCheckExport()
                                                QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
                                                "Excel (*.xls *.xlsx)");
     _SaveExcel(strFile);
+    QMessageBox::information(NULL, "Tip", "Export Excel Sucess!", QMessageBox::Ok, QMessageBox::Ok);
     qDebug() <<"save excel sucess";
 }
 
@@ -318,12 +325,12 @@ void CHistoryPage::_SlotCheckPrint()
                 if(gk_strTCubeTypeList.contains(strCupType))
                 {// 方杯
                     _ReplaceCubeHtmlData(qSqlQuery, strTCupHtml);
-                    qDebug() << "print to pdf";                    
+                    qDebug() << "print to cube pdf";
                 }
                 else
                 {// 圆杯
                     _ReplaceCupHtmlData(qSqlQuery, strTCupHtml);
-                    qDebug() << "print to pdf";
+                    qDebug() << "print to cup pdf";
                 }
                 strPrintHtml += strTCupHtml;
                 bFirstAddHtml = true;
@@ -520,12 +527,25 @@ void CHistoryPage::_SlotHistoryDataSelectChange(
     m_pTestDataTextEdit->update();
     m_pCurrentTestDataTableWidget->update();
 }
-
+// poct上传返回
 void CHistoryPage::_SlotPoctReadMesg()
 {
     QByteArray qPoctTcpReadMsg =   m_pTcpSocket->readAll();
 
     qDebug()  << "tcp read" << qPoctTcpReadMsg;
+    QMessageBox::information(NULL, "Tip", "Update Sucess!", QMessageBox::Ok, QMessageBox::Ok);
+}
+// 链接错误
+void CHistoryPage::_SlotPoctConnectError(QAbstractSocket::SocketError socketError)
+{
+    QMessageBox::information(NULL, "Tip", "Poct Connect Error", QMessageBox::Ok, QMessageBox::Ok);
+}
+// 断开链接，重新链接
+void CHistoryPage::_SlotPoctDisConnect()
+{
+    //QMessageBox::information(NULL, "Tip", "DisConect", QMessageBox::Ok, QMessageBox::Ok);
+    m_pTcpSocket->abort();
+    m_pTcpSocket->connectToHost(m_strPoctServer, m_iPoctServerPort);
 }
 
 void CHistoryPage::SetTestResultDataList(QList<TestResultData *> pTestResultDataList, QString strPrintImagePath)
@@ -609,7 +629,8 @@ void CHistoryPage::InsertToDatabase()
         QString strInsert =
                 "INSERT INTO drugdata (DonorFirstName, DonorLastName, TestTime, BirthDate, DonorID, TestSite, Operator, "
                  "PreEmployment, Random, ReasonSuspicionCause, PostAccident, ReturnToDuty, FollowUp, OtherReason, Comments, "
-                  "TemperatureNormal, Email, ProductDefinition, ExpirationDate, ProductLot, ProductID, ProgramsNumber";
+                 "TemperatureNormal, Oxidant, SpecificGravity, PH, Nitrite, Creatinine, "
+                 "Email, ProductDefinition, ExpirationDate, ProductLot, ProductID, ProgramsNumber";
         for(int i = 0; i < 16; ++i)
         {
             strInsert += QString(", ") + QString("ProgramName") + QString::number(i);
@@ -668,6 +689,17 @@ void CHistoryPage::InsertToDatabase()
         //
         strFlag = m_sDetectorPageUserDataStruct.bTemperatureNormal ? "true" : "false";
         qSqlQuery.addBindValue(strFlag);
+        // PIS
+        strFlag = m_sDetectorPageUserDataStruct.bOxidant ? "true" : "false";
+        qSqlQuery.addBindValue(strFlag);
+        strFlag = m_sDetectorPageUserDataStruct.bSpecificGravity ? "true" : "false";
+        qSqlQuery.addBindValue(strFlag);
+        strFlag = m_sDetectorPageUserDataStruct.bPH ? "true" : "false";
+        qSqlQuery.addBindValue(strFlag);
+        strFlag = m_sDetectorPageUserDataStruct.bNitrite ? "true" : "false";
+        qSqlQuery.addBindValue(strFlag);
+        strFlag = m_sDetectorPageUserDataStruct.bCreatinine ? "true" : "false";
+        qSqlQuery.addBindValue(strFlag);
         // email
         qSqlQuery.addBindValue(m_sDetectorPageUserDataStruct.strEmail.toLocal8Bit());
         // product details
@@ -719,14 +751,16 @@ void CHistoryPage::InsertToDatabase()
     //    }
 }
 
-void CHistoryPage::SetPisServer(QString strPisServer)
+void CHistoryPage::SetPisServer(QString strPisServer, int iPort)
 {
     m_strPisServer = strPisServer;
+    m_iPisServerPort = iPort;
 }
 
-void CHistoryPage::SetPoctServer(QString strPoctServer)
+void CHistoryPage::SetPoctServer(QString strPoctServer, int iPort)
 {
     m_strPoctServer = strPoctServer;
+    m_iPoctServerPort = iPort;
 }
 
 void CHistoryPage::SetUserName(QString strUserName)
@@ -739,6 +773,8 @@ void CHistoryPage::AutoConnectPisServer(QString strServer, int iPort, bool bAuto
 {
     qDebug() << "history auto " << strServer << iPort;
     m_bPisHaveConnect = bAuto;
+    m_strPisServer = strServer;
+    m_iPisServerPort = iPort;
     if(m_bPisHaveConnect)
     {
         m_pTcpSocket->abort();
@@ -753,11 +789,13 @@ void CHistoryPage::AutoConnectPisServer(QString strServer, int iPort, bool bAuto
 void CHistoryPage::AutoConnectPoctServer(QString strServer, int iPort, bool bAuto)
 {
     m_bPoctHaveConnect = bAuto;
+    m_strPoctServer = strServer;
+    m_iPoctServerPort = iPort;
     qDebug() << "history auto " << strServer << iPort << m_bPoctHaveConnect;
     if(m_bPoctHaveConnect)
     {
         m_pTcpSocket->abort();
-        m_pTcpSocket->connectToHost(strServer, iPort);
+        m_pTcpSocket->connectToHost(m_strPoctServer, m_iPoctServerPort);
     }
     else
     {
@@ -1085,7 +1123,8 @@ void CHistoryPage::_InitExcel()
                          << "BirthDate" << "DonorID" << "TestSite" << "Operator"
                          << "PreEmployment" << "Random" << "ReasonSuspicionCause" << "PostAccident"
                          << "ReturnToDuty" << "FollowUp" << "OtherReason" << "Comments"
-                         << "TemperatureNormal" << "ProductDefinition" << "ExpirationDate"
+                         << "TemperatureNormal" << "Oxidant" << "SpecificGravity" << "PH"
+                         << "Nitrite" <<"Creatinine" << "Email" << "ProductDefinition" << "ExpirationDate"
                          << "ProductLot" << "ProductID" << "ProgramsNumber";
 
     for(int i = 0; i < 16; ++i)
@@ -1108,7 +1147,7 @@ void CHistoryPage::_NewExcel()
     m_pSheet = m_pSheets->querySubObject("Item(int)", 1);
     // 设置标题
 
-    qDebug() << "count " << m_iDatabaseColumnCount;
+    qDebug() << "count " << m_iDatabaseColumnCount << m_strCharNumberList.count() << m_strTitleNameList.count();
 
     QAxObject *pTitleAxObject = NULL;
     for(int i = 0; i < m_iDatabaseColumnCount; ++i)
@@ -1339,6 +1378,22 @@ void CHistoryPage::_ReplaceCupHtmlData(QSqlQuery &qSqlQuery, QString &strTCupHtm
     strFindWord = "${TemperatureinRangeNoCheck}";
     strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
                               strFindWord.count(), qSqlQuery.value(TEMPERATURE_NORMAL).toBool() ? "" : "checked");
+    // PIS
+    strFindWord = "${OxidantCheck}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(OXIDANT).toBool() ? "checked" : "");
+    strFindWord = "${SpecificGravityCheck}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(SPECIFIC_GRAVITY).toBool() ? "checked" : "");
+    strFindWord = "${PHCheck}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(PH).toBool() ? "checked" : "");
+    strFindWord = "${NitriteCheck}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(NITRITE).toBool() ? "checked" : "");
+    strFindWord = "${CreatinineCheck}";
+    strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord),
+                              strFindWord.count(), qSqlQuery.value(CREATININE).toBool() ? "checked" : "");
     // 测试结果
     int iTestResultDataListCount = qSqlQuery.value(PROGRAM_NUMBER).toInt();
     QString strResultDataHtml = "";
@@ -1362,6 +1417,7 @@ void CHistoryPage::_ReplaceCupHtmlData(QSqlQuery &qSqlQuery, QString &strTCupHtm
     strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord), strFindWord.count(), strResultDataHtml);
     // 图片Image
     QString strTestPrintImagePath = qSqlQuery.value(PRINT_IMAGE_PATH).toString();
+    qDebug() << "print image path " << strTestPrintImagePath;
     QString strImageByte = GetImagePngBase64(QCoreApplication::applicationDirPath()  + strTestPrintImagePath);
     strFindWord = "${test_image_01}";
     strTCupHtml = strTCupHtml.replace(strTCupHtml.indexOf(strFindWord), strFindWord.count(), strImageByte);
@@ -1578,6 +1634,11 @@ void CHistoryPage::_InitDataBase()
                                   "OtherReason VARCHAR,"
                                   "Comments VARCHAR,"
                                   "TemperatureNormal VARCHAR,"
+                                  "Oxidant VARCHAR,"
+                                  "SpecificGravity VARCHAR,"
+                                  "PH VARCHAR,"
+                                  "Nitrite VARCHAR,"
+                                  "Creatinine VARCHAR,"
                                   "Email VARCHAR,"
                                   "ProductDefinition VARCHAR,"
                                   "ExpirationDate VARCHAR,"

@@ -184,6 +184,20 @@ void CHidCmdThread::AddCmdWithoutCmdData(quint16 iCmdType)
             AddCmd(sHidCmdData);
             break;
         }
+        case ProtocolUtility::sm_kiCmdWriteSerialNumberToDev:
+        {
+            sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdWriteSerialNumberToDev;
+            sHidCmdData.byteArrayVect.push_back(ProtocolUtility::GetWriteSerialNumber(strDevSerialNumber));
+            AddCmd(sHidCmdData);
+            break;
+        }
+    case ProtocolUtility::sm_kiCmdReadSerialNumberFromDev:
+    {
+        sHidCmdData.iCmdType = ProtocolUtility::sm_kiCmdReadSerialNumberFromDev;
+        sHidCmdData.byteArrayVect.push_back(ProtocolUtility::GetReadSerialNumber());
+        AddCmd(sHidCmdData);
+        break;
+    }
 
         default:
             break;
@@ -208,6 +222,21 @@ void CHidCmdThread::SetStopped(bool bStopped)
 bool CHidCmdThread::GetStopped()
 {
     return m_bStopped;
+}
+
+void CHidCmdThread::AddWriteDevSerialNumber(QString strDevSerialNumber)
+{
+    //添加写仪器序列号指令
+    m_qCmdMutex.lock();
+    this->strDevSerialNumber = strDevSerialNumber;
+    m_qCmdMutex.unlock();
+    AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdWriteSerialNumberToDev);
+}
+
+void CHidCmdThread::AddReadDevSerialNumber()
+{
+    //添加读仪器序列号指令
+    AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdReadSerialNumberFromDev);
 }
 
 void CHidCmdThread::run()

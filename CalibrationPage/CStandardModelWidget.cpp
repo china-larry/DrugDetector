@@ -13,6 +13,7 @@
 #include "CStandardModelWidget.h"
 #include <QBoxLayout>
 #include <QDebug>
+#include <QMessageBox>
 #include "PublicFunction.h"
 CStandardModelWidget::CStandardModelWidget(QWidget *parent) : QWidget(parent)
 {
@@ -35,13 +36,14 @@ void CStandardModelWidget::SlotGetPictureToUI(QString strPicturePath, QList<int>
     //
     qDebug() << strPicturePath << "a LIS " << iGreenComponuntList.count() << "  Y value :" << iGreenComponuntList;
     // 画曲线 测试代码
-//    int iGreenComponuntListCount = iGreenComponuntList.count();
-//    for(int i = 0; i < iGreenComponuntListCount - 1; ++i)
-//    {
-//        m_pGraphicsScene->addLine(i, iGreenComponuntList.at(i), i + 1, iGreenComponuntList.at(i + 1));
-//    }
-    m_pGraphicsScene->addLine(0, 0, 100, 100);
-
+    int iGreenComponuntListCount = iGreenComponuntList.count();
+    qreal dHeight = static_cast<qreal>(m_pGraphicsScene->height());
+    // 坐标原点在左上，缩放Y轴最大为20000
+    for(int i = 0; i < iGreenComponuntListCount - 1; ++i)
+    {
+        m_pGraphicsScene->addLine(i, (20000.0 - (qreal)iGreenComponuntList.at(i)) * dHeight / 20000.0,
+                                  i + 1, (20000.0 - (qreal)iGreenComponuntList.at(i + 1)) * dHeight / 20000.0);
+    }
 }
 /**
   * @brief 发送亮度值
@@ -50,6 +52,42 @@ void CStandardModelWidget::SlotGetPictureToUI(QString strPicturePath, QList<int>
   */
 void CStandardModelWidget::_SlotCheckConfirmButton()
 {
+    // 检查数据有效性
+    if(m_pNo1LineEditWidget->GetLineText().isEmpty())
+    {
+        QMessageBox::critical(NULL, "Error", "Please Input No.1 Value!", QMessageBox::Ok, QMessageBox::Ok);
+    }
+    if(m_pNo2LineEditWidget->GetLineText().isEmpty())
+    {
+        QMessageBox::critical(NULL, "Error", "Please Input No.2 Value!", QMessageBox::Ok, QMessageBox::Ok);
+    }
+    if(m_pNo3LineEditWidget->GetLineText().isEmpty())
+    {
+        QMessageBox::critical(NULL, "Error", "Please Input No.3 Value!", QMessageBox::Ok, QMessageBox::Ok);
+    }
+    if(m_pNo4LineEditWidget->GetLineText().isEmpty())
+    {
+        QMessageBox::critical(NULL, "Error", "Please Input No.4 Value!", QMessageBox::Ok, QMessageBox::Ok);
+    }
+    if(m_pNo5LineEditWidget->GetLineText().isEmpty())
+    {
+        QMessageBox::critical(NULL, "Error", "Please Input No.5 Value!", QMessageBox::Ok, QMessageBox::Ok);
+    }
+    if(m_pNo6LineEditWidget->GetLineText().isEmpty())
+    {
+        QMessageBox::critical(NULL, "Error", "Please Input No.6 Value!", QMessageBox::Ok, QMessageBox::Ok);
+    }
+    if(m_pNo7LineEditWidget->GetLineText().isEmpty())
+    {
+        QMessageBox::critical(NULL, "Error", "Please Input No.7 Value!", QMessageBox::Ok, QMessageBox::Ok);
+    }
+    if(m_pNo8LineEditWidget->GetLineText().isEmpty())
+    {
+        QMessageBox::critical(NULL, "Error", "Please Input No.8 Value!", QMessageBox::Ok, QMessageBox::Ok);
+    }
+    // 控件清空
+    m_pGraphicsScene->clear();
+    m_pPhotoShowLabel->clear();
     BrightnessValue brightnessValue;
     brightnessValue.iNo1 = m_pNo1LineEditWidget->GetLineText().toInt();
     brightnessValue.iNo2 = m_pNo2LineEditWidget->GetLineText().toInt();
@@ -142,12 +180,13 @@ void CStandardModelWidget::_InitWidget()
     m_pCurveValuesLabel->setObjectName("m_pPhotoNameLabel");
     m_pCurveGraphicsView = new QGraphicsView(this);
     m_pCurveGraphicsView->setFixedSize(432, 276);
+
     //
     m_pGraphicsScene = new QGraphicsScene(this);
     m_pCurveGraphicsView->setAlignment(Qt::AlignLeft|Qt::AlignBottom);
     m_pCurveGraphicsView->setScene(m_pGraphicsScene);
     //
-    m_pGraphicsScene->setSceneRect(0,0,m_pCurveGraphicsView->width(),m_pCurveGraphicsView->height());
+    m_pGraphicsScene->setSceneRect(0,0,m_pCurveGraphicsView->width()-2,m_pCurveGraphicsView->height()-2);
 //    m_pGraphicsScene->addLine(0,0,100,100);
     m_pDeriveButton = new QPushButton(tr("Derive"), this);
     connect(m_pDeriveButton, SIGNAL(clicked(bool)), this, SLOT(_SlotCheckDeriveButton()));

@@ -28,6 +28,7 @@ public slots:
 public:
     QString GetCurrentSelectText();
     void SetCupType(QStringList strCupList);
+    void SetCurrentIndex(int iIndex);
 private:
     void _InitLayout();
 private:

@@ -50,6 +50,8 @@ CLoginInWidget::CLoginInWidget(QWidget *parent) : QWidget(parent)
     m_strAdminPassWord = "123";
     m_strModifyUserName = "wfip201";
     m_strModifyPassWord = "3688";
+    // 焦点定位
+    m_pUserNameLineEdit->setFocus();
 }
 
 void CLoginInWidget::mousePressEvent(QMouseEvent *event)
@@ -82,6 +84,20 @@ void CLoginInWidget::mouseMoveEvent(QMouseEvent *event)
     event->ignore();
 }
 
+void CLoginInWidget::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Return)
+    {
+        // 检查用户名及权限
+        m_iUserPower = _CheckUserPower();
+        if(m_iUserPower >= 0)
+        {//
+            emit SigShowMainWindow(m_iUserPower, m_pUserNameLineEdit->text());
+            this->hide();
+        }
+    }
+}
+
 void CLoginInWidget::_SlotCheckMinButton()
 {
     this->showMinimized();
@@ -95,12 +111,17 @@ void CLoginInWidget::_SlotCheckCloseButton()
 void CLoginInWidget::_SlotCheckLoginButton()
 {
     // 检查用户名及权限
-    //m_iUserPower = _CheckUserPower();
-   // if(m_iUserPower >= 0)
+//    m_iUserPower = _CheckUserPower();
+//    if(m_iUserPower >= 0)
     {//
         emit SigShowMainWindow(m_iUserPower, m_pUserNameLineEdit->text());
-         this->hide();
+        this->hide();
     }
+}
+
+void CLoginInWidget::_SlotPasswordChange()
+{
+    this->setFocusPolicy(Qt::StrongFocus);
 }
 
 int CLoginInWidget::GetUserPower()
@@ -140,6 +161,7 @@ void CLoginInWidget::_InitWidget()
    // m_pPasswordLabel->setObjectName("m_pUserNameLabel");
     m_pPasswordLineEdit = new QLineEdit(this);
     m_pPasswordLineEdit->setFixedSize(280, 50);
+    connect(m_pPasswordLineEdit, &QLineEdit::textChanged, this, &CLoginInWidget::_SlotPasswordChange);
     //
     m_pLoginButton = new QPushButton("Login", this);
     m_pLoginButton->setFixedSize(160, 35);

@@ -12,6 +12,7 @@
   ****************************************************/
 #include "CDetectorPageTitleWidget.h"
 #include <QPalette>
+#include <QMessageBox>
 #include <QDebug>
 #include "PublicFunction.h"
 CDetectorPageTitleWidget::CDetectorPageTitleWidget(QWidget *parent) : QWidget(parent)
@@ -27,6 +28,15 @@ CDetectorPageTitleWidget::CDetectorPageTitleWidget(QWidget *parent) : QWidget(pa
 void CDetectorPageTitleWidget::_SlotGoToHistoryPage()
 {
     emit SignalGoHistoryPage();
+}
+
+void CDetectorPageTitleWidget::_SLotCloseWindow()
+{
+    if(QMessageBox::warning(NULL, "Warning", "Are You Sure Close!",
+                            QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+    {
+        emit SignalCloseWindow();
+    }
 }
 
 void CDetectorPageTitleWidget::SetUserName(QString strUserName)
@@ -73,7 +83,7 @@ void CDetectorPageTitleWidget::_InitWidget()
     m_pCloseWindowButton = new QPushButton(this);
     m_pCloseWindowButton->setFixedSize(60, 50);
     SetButtonBackImage(m_pCloseWindowButton, ":/image/ico/title/close02.jpg");
-    connect(m_pCloseWindowButton, SIGNAL(clicked(bool)), this, SIGNAL(SignalCloseWindow()));
+    connect(m_pCloseWindowButton, SIGNAL(clicked(bool)), this, SLOT(_SLotCloseWindow()));
 }
 /**
   * @brief 布局

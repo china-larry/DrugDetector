@@ -17,6 +17,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QProgressBar>
+#include <QTimer>
 class CDetectorPageStatusBar : public QWidget
 {
     Q_OBJECT
@@ -26,18 +27,23 @@ public:
 signals:
 
 public slots:
+    void _UpdateTime();
 public:
     void SetLineText(QString strText);
     void SetLineStartColor();
     void SetLineStopColor();
     void SetProgressValue(int iValue);
+    void SetDelayTime(int iDelayTime);// 延迟测试
 private:
     void _InitWidget();
     void _InitLayout();
 
+
 private:
     QLineEdit *m_pTestStatusBarLineEdit;
     QProgressBar *m_pTestProgressBar;
+    QTimer *m_pTimer;
+    int m_iDelayTime;
 };
 
 #endif // CDETECTORPAGESTATUSBAR_H

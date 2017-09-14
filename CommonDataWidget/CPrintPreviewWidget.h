@@ -39,9 +39,12 @@ private slots:
     void _CheckMinButton();
     void _CheckSaveButton();
     void _CheckPrintButton();
+    //
+    void _PrintPageChange();// 滚动条滚动，页面变化
 public:
     void SetUserName(QString strUserName);
     void SetHtml(QString strHtml);
+    void SetPageCount(int iCount);
 
 private:
     void _InitWidget();
@@ -51,6 +54,8 @@ private:
     //QPrintPreviewWidget *m_pPrintPreviewWidget;
     CPrintPreviewTitleWidget *m_pTitelWidget;
     QWebEngineView *m_pWebEngineView;
+    QLabel *m_pCurrentPageInfoLabel;
+    QLabel *m_pTotalPageInfoLabel;
     QPushButton *m_pPrintButton;
     QPushButton *m_pSaveButton;
     // m_Move标题栏移动变量
@@ -59,6 +64,7 @@ private:
     QPoint m_qMovePoint;
 
     QString m_strPrintHtml;// 待打印的html数据流
+    int m_iPageCount;
 
 };
 

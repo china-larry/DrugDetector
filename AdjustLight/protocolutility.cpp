@@ -2,6 +2,7 @@
 #include <QDataStream>
 #include <QVector>
 #include <QFileInfo>
+#include <QDebug>
 
 #include "UpgradeFile.h"
 
@@ -269,32 +270,35 @@ QVector<QByteArray> ProtocolUtility::GetUpgradeAppCmd(QString strFilePath)
     {
         if(ENUM_UPGRADE_ERR_OK == upgradeFile.parseUpgradeFile(strFilePath))
         {
-            quint8 iPkgIndex = 1;
-            quint8 iDataLen = upgradeFile.getDataLen();
-            quint8 iPkgSize = upgradeFile.getDataLen()/kiUpgragePackageDataLen;
-            if(upgradeFile.getDataLen()%kiUpgragePackageDataLen)
+            int iPkgIndex = 1;
+            int iDataLen = upgradeFile.getDataLen();
+            //quint8 iPkgSize = upgradeFile.getDataLen()/kiUpgragePackageDataLen;
+            int iPkgSize = (upgradeFile.getDataLen() * 4) / kiUpgragePackageDataLen;
+            if((upgradeFile.getDataLen() * 4) % kiUpgragePackageDataLen)
             {
                 ++iPkgSize;
+                //iPkgSize = iPkgSize + 4;
             }
             for(; iPkgIndex<=iPkgSize; iPkgIndex++)
             {
                 QByteArray qDataByteArray;
+                qDataByteArray.clear();
                 QDataStream qOutDataStream(&qDataByteArray,QIODevice::ReadWrite);
                 DealWithCmdHead(qOutDataStream);//填充头部公共部分 设备地址+临时帧长度
 
                 //填充 升级下位机数据命令  特殊内容
                 qOutDataStream<<quint8(sm_kiCmdUpgradeAppData/256)<<quint8(sm_kiCmdUpgradeAppData)//命令类型
                   <<quint8(0x00)<<quint8(iPkgIndex);//
-                for(int i=0;i<kiUpgragePackageDataLen;i++)
+                for(int i=0;i<(kiUpgragePackageDataLen / 4);i++)
                 {
-                    int index = (iPkgIndex -1)*kiUpgragePackageDataLen +i;
+                    int index = (iPkgIndex -1)*(kiUpgragePackageDataLen / 4) +i;
                     if(index<iDataLen)
                     {
                         qOutDataStream<<upgradeFile.getRealData().at(index);
                     }
                     else
                     {
-                        qOutDataStream << "0";//固定数据字节为50，最后数据包不足够用零补足
+                        qOutDataStream << "0x00"<< "0x00"<< "0x00"<< "0x00";//固定数据字节为50，最后数据包不足够用零补足
                         //break;
                     }
                 }
@@ -305,6 +309,54 @@ QVector<QByteArray> ProtocolUtility::GetUpgradeAppCmd(QString strFilePath)
         }
     }
     return qByteArrayVect;
+}
+
+QByteArray ProtocolUtility::GetUpgradeAppDataOverCmd()
+{
+    //命令类型(2byte)		命令参数(2byte)    数据(2byte)
+    //0x000E            0x0001              无
+    QByteArray dataByteArray;
+    QDataStream qOutDataStream(&dataByteArray,QIODevice::ReadWrite);
+    DealWithCmdHead(qOutDataStream);//填充头部公共部分 设备地址+临时帧长度
+
+    //填充 仪器下位机程序升级开始 特殊内容
+    qOutDataStream<<quint8(sm_kiCmdUpgradeAppSendDataOver/256)<<quint8(sm_kiCmdUpgradeAppSendDataOver)//命令类型
+      <<quint8(0x00)<<quint8(0x01);//命令参数
+
+    DealWithCmdEnding(dataByteArray, qOutDataStream);//填充命令公共尾部 更新命令长度、填充CRC、头部最前位置添加'0x00'
+    return dataByteArray;
+}
+
+QByteArray ProtocolUtility::GetWriteSerialNumber(QString strSerialNumber)
+{
+    //写仪器序列号
+    //命令类型(2byte)		命令参数(2byte)    数据(6byte)
+    // 0x0011		    0x0001		      strSerialNumber
+    QByteArray dataByteArray;
+    QDataStream qOutDataStream(&dataByteArray,QIODevice::ReadWrite);
+    DealWithCmdHead(qOutDataStream);//填充头部公共部分 设备地址+临时帧长度
+
+    qOutDataStream<<quint8(sm_kiCmdWriteSerialNumberToDev/256)<<quint8(sm_kiCmdWriteSerialNumberToDev)//命令类型
+      <<quint8(0x00)<<quint8(0x01);//
+
+    //QByteArray qSerialNumberArray = strSerialNumber.toLatin1();
+    //qDebug() << "qSerialNumberArray = " << qSerialNumberArray;
+    for(int iPos = 0; iPos < strSerialNumber.count();iPos = iPos+2)
+    {
+        quint8 iValue = strSerialNumber.mid(iPos,2).toInt();
+        qOutDataStream << iValue;
+    }
+
+    DealWithCmdEnding(dataByteArray, qOutDataStream);//填充命令公共尾部 更新命令长度、填充CRC、头部最前位置添加'0x00'
+
+    return dataByteArray;
+}
+
+QByteArray ProtocolUtility::GetReadSerialNumber()
+{
+    //命令类型(2byte)		命令参数(2byte)    数据(2byte)
+    //0x0012            0x0001              无
+    return GetCmdByteArrayWithoutCmdData(sm_kiCmdReadSerialNumberFromDev);
 }
 
 QByteArray ProtocolUtility::GetCmdByteArrayWithoutCmdData(int qCmdType)

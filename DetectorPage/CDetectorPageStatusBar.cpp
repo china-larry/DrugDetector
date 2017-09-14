@@ -22,6 +22,25 @@ CDetectorPageStatusBar::CDetectorPageStatusBar(QWidget *parent) : QWidget(parent
 //    QPalette palette;
 //    palette.setColor(QPalette::Background, QColor("#212121"));
     //    this->setPalette(palette);
+    m_iDelayTime = 0;
+    m_pTimer = new QTimer(this);
+    m_pTimer->setInterval(1000);
+    connect(m_pTimer, &QTimer::timeout, this, &CDetectorPageStatusBar::_UpdateTime);
+}
+
+void CDetectorPageStatusBar::_UpdateTime()
+{
+    if(m_iDelayTime < 0)
+    {
+        m_pTestStatusBarLineEdit->setText(tr("Start Test"));
+        m_pTimer->stop();
+    }
+    else
+    {
+        m_pTestStatusBarLineEdit->setText(tr("Start Test: ") + QString::number(m_iDelayTime));
+    }
+    --m_iDelayTime;
+
 }
 
 void CDetectorPageStatusBar::SetLineText(QString strText)
@@ -42,6 +61,16 @@ void CDetectorPageStatusBar::SetLineStopColor()
 void CDetectorPageStatusBar::SetProgressValue(int iValue)
 {
     m_pTestProgressBar->setValue(iValue);
+}
+
+void CDetectorPageStatusBar::SetDelayTime(int iDelayTime)
+{
+    m_iDelayTime = iDelayTime;
+    qDebug() << "bar dealy" << m_iDelayTime;
+    if(m_iDelayTime > 0)
+    {
+        m_pTimer->start();
+    }
 }
 
 /**

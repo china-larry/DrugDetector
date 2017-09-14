@@ -17,6 +17,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QKeyEvent>
 
 class CLoginInWidget : public QWidget
 {
@@ -27,6 +28,7 @@ public:
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 private slots:
     void _SlotCheckMinButton();
     void _SlotCheckCloseButton();
@@ -34,6 +36,8 @@ private slots:
 signals:
     void SigShowMainWindow(int iUserPower, QString strUserName);// 显示主窗口
 public slots:
+private slots:
+    void _SlotPasswordChange();
 public:
     int GetUserPower();// 获取用户权限，0为普通，1为管理，2为维护人员
 private:

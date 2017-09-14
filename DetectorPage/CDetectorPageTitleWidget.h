@@ -32,6 +32,7 @@ public slots:
 
 private slots:
     void _SlotGoToHistoryPage();
+    void _SLotCloseWindow();
 public:
     void SetUserName(QString strUserName);
 private:

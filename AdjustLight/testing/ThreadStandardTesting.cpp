@@ -161,17 +161,17 @@ void ThreadStandardTesting::_SLotReceiveQRCodeInfo(QRCodeInfo sInfoQRCodeStruct)
     emit SignalSendCodeInfo(sInfoQRCodeStruct);
 
 
-    InitDevice();
+    //InitDevice();
 #if 1
-//    for(int i=1;i<9;i++)
-//    {
-//        CHidCmdThread::GetInstance()->AddOpenLedCmd(i, 10000);
-//        HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
-//        while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
-//        {
-//            QApplication::processEvents();
-//        }
-//    }
+    for(int i=1;i<9;i++)
+    {
+        CHidCmdThread::GetInstance()->AddOpenLedCmd(i, 10000);
+        HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+        while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+        {
+            QApplication::processEvents();
+        }
+    }
 #else
     BrightnessOrdinaryValue sBrightnessOrdinaryValue = m_CodeDetoector.GetOrdinaryBrightmess();
     CHidCmdThread::GetInstance()->AddOpenLedCmd(1,sBrightnessOrdinaryValue.iBrightNo1);
@@ -409,6 +409,11 @@ void ThreadStandardTesting::_SlotTakePhoto()
         {
             if(m_iIndexMovement == 0)               //定位首个项目
             {
+                m_dPerC6Value.clear();
+                m_dPerT6Value.clear();
+                m_dPerC8Value.clear();
+                m_dPerT8Value.clear();
+
                 if(!m_bFoundFirstWrite)             //未找到白色条区域
                 {
                     if(_FindFirstItem(strPath,TYPE_FIRST_WRITE) == 0)   //再次寻找白色条区域
@@ -426,6 +431,7 @@ void ThreadStandardTesting::_SlotTakePhoto()
                         }
                         else                                                    //寻找到首个项目，不是定位条。测试并上报结果
                         {
+                            InitDevice();
                             bool bExist;
                             TestResultData sResultDataStruct = _ReceivePicPathTCup(strPath, bExist,true);
                             if(bExist)
@@ -433,15 +439,11 @@ void ThreadStandardTesting::_SlotTakePhoto()
                                 //emit SignalTestResult(sResultDataStruct);
 
 
-                                m_dPerC6Value.clear();
-                                m_dPerT6Value.clear();
-                                m_dPerC8Value.clear();
-                                m_dPerT8Value.clear();
 
                                 m_dPerT6Value.append(sResultDataStruct.iTValue);
                                 m_dPerC6Value.append(sResultDataStruct.iCValue);
 
-                                for(int iPos = 0;iPos < 5;iPos++)
+                                for(int iPos = 1;iPos < 30;iPos++)
                                 {
                                     bExist = false;
                                     strPath = "";
@@ -449,7 +451,6 @@ void ThreadStandardTesting::_SlotTakePhoto()
                                     sResultDataStruct = _ReceivePicPathTCup(strPath, bExist,false);
                                     if(bExist)
                                     {
-
                                         m_dPerT6Value.append(sResultDataStruct.iTValue);
                                         m_dPerC6Value.append(sResultDataStruct.iCValue);
                                     }
@@ -470,13 +471,14 @@ void ThreadStandardTesting::_SlotTakePhoto()
             }
             else                            //定位条之后项目，发送测试结果
             {
+                InitDevice();
                 bool bExist;
                 TestResultData sResultDataStruct = _ReceivePicPathTCup(strPath, bExist,true);
                 if(bExist)
                 {
                     //emit SignalTestResult(sResultDataStruct);
 
-                    if(m_iIndexMovement < 6)
+                    if(m_iIndexMovement < 8)
                     {
                         m_dPerT6Value.append(sResultDataStruct.iTValue);
                         m_dPerC6Value.append(sResultDataStruct.iCValue);
@@ -487,7 +489,7 @@ void ThreadStandardTesting::_SlotTakePhoto()
                         m_dPerC8Value.append(sResultDataStruct.iCValue);
                     }
 
-                    for(int iPos = 1;iPos < 5;iPos++)
+                    for(int iPos = 1;iPos < 30;iPos++)
                     {
                         bExist = false;
                         strPath = "";
@@ -496,7 +498,7 @@ void ThreadStandardTesting::_SlotTakePhoto()
                         if(bExist)
                         {
 
-                            if(m_iIndexMovement < 6)
+                            if(m_iIndexMovement < 8)
                             {
                                 m_dPerT6Value.append(sResultDataStruct.iTValue);
                                 m_dPerC6Value.append(sResultDataStruct.iCValue);
@@ -520,18 +522,20 @@ void ThreadStandardTesting::_SlotTakePhoto()
 
             if(m_iIndexMovement == 1)
             {
+                InitDevice();
                 m_dPerC6Value.clear();
                 m_dPerT6Value.clear();
                 m_dPerC8Value.clear();
                 m_dPerT8Value.clear();
             }
 
-            _ReceivePicPathSCup(strPath,0);
 
-            for(int iPos = 1;iPos < 5;iPos++)
+            _ReceivePicPathSCup(strPath);
+
+            for(int iPos = 1;iPos < 30;iPos++)
             {
                 OpencvUtility::GetInstance()->GetVideoCapture(&strPath);
-                _ReceivePicPathSCup(strPath,iPos);
+                _ReceivePicPathSCup(strPath);
             }
 //            ++m_iIndexMovement;
             _StatusHandler(true ,m_eCurrentStatus);
@@ -657,6 +661,12 @@ TestResultData ThreadStandardTesting::_ReceivePicPathTCup(QString strPath, bool 
     {
         qDebug() << "Image Load Failed";
         sResultDataStruct.strResult = "Error";
+
+        if(pImg != NULL)
+        {
+            delete pImg;
+            pImg = NULL;
+        }
         return sResultDataStruct;
     }
 
@@ -714,6 +724,11 @@ TestResultData ThreadStandardTesting::_ReceivePicPathTCup(QString strPath, bool 
 
     if(_GetValueTC(iHorizontalProjectionList,sResultDataStruct) != 0)           //获取TC值
     {
+        if(pImg != NULL)
+        {
+            delete pImg;
+            pImg = NULL;
+        }
         return sResultDataStruct;
     }
 
@@ -724,7 +739,11 @@ TestResultData ThreadStandardTesting::_ReceivePicPathTCup(QString strPath, bool 
 
     _CheckInValid(strPathTarget, iHorizontalProjectionList, sResultDataStruct);      //有效性检验
 
-    delete pImg;
+    if(pImg != NULL)
+    {
+        delete pImg;
+        pImg = NULL;
+    }
     return sResultDataStruct;
 }
 
@@ -752,6 +771,11 @@ QList<int> ThreadStandardTesting::GetComponentGreenTCup(QString strPath)
     if(!pImg->load(strPath))
     {
         qDebug() << "Image Load Failed";
+        if(pImg != NULL)
+        {
+            delete pImg;
+            pImg = NULL;
+        }
         return iHorizontalProjectionList;
     }
 
@@ -782,7 +806,11 @@ QList<int> ThreadStandardTesting::GetComponentGreenTCup(QString strPath)
     iHorizontalProjectionList = _HorizontalProjection(strPathTar);
 
 
-    delete pImg;
+    if(pImg != NULL)
+    {
+        delete pImg;
+        pImg = NULL;
+    }
     return iHorizontalProjectionList;
 }
 
@@ -800,6 +828,11 @@ QList<int> ThreadStandardTesting::GetComponentGreenSCup(QString strPath)
     if(!pImg->load(strPath))
     {
         qDebug() << "Image Load Failed";
+        if(pImg != NULL)
+        {
+            delete pImg;
+            pImg = NULL;
+        }
         return iHorizontalProjectionList;
     }
 
@@ -835,7 +868,11 @@ QList<int> ThreadStandardTesting::GetComponentGreenSCup(QString strPath)
 
 
     iHorizontalProjectionList = _HorizontalProjection(strPathTar);
-    delete pImg;
+    if(pImg != NULL)
+    {
+        delete pImg;
+        pImg = NULL;
+    }
 
     return iHorizontalProjectionList;
 }
@@ -846,7 +883,7 @@ QList<int> ThreadStandardTesting::GetComponentGreenSCup(QString strPath)
  * @return 返回测试结果
  */
 
-void ThreadStandardTesting::_ReceivePicPathSCup(QString strPath,int iPos)
+void ThreadStandardTesting::_ReceivePicPathSCup(QString strPath)
 {
     QImage* pImg = new QImage;
     TestResultData sResultDataStruct;
@@ -869,6 +906,11 @@ void ThreadStandardTesting::_ReceivePicPathSCup(QString strPath,int iPos)
         qDebug() << "Image Load Failed";
         emit SignalTestResult(sResultDataStruct);
         _StatusHandler(true ,m_eCurrentStatus);
+        if(pImg != NULL)
+        {
+            delete pImg;
+            pImg = NULL;
+        }
         return;
     }
 
@@ -894,6 +936,11 @@ void ThreadStandardTesting::_ReceivePicPathSCup(QString strPath,int iPos)
         emit SignalTestResult(sResultDataStruct);
 
         _StatusHandler(true ,m_eCurrentStatus);
+        if(pImg != NULL)
+        {
+            delete pImg;
+            pImg = NULL;
+        }
         return;
     }
     int iProjectMidSum =0;
@@ -990,7 +1037,11 @@ void ThreadStandardTesting::_ReceivePicPathSCup(QString strPath,int iPos)
 
     }
     //_StatusHandler(true ,m_eCurrentStatus);
-    delete pImg;
+    if(pImg != NULL)
+    {
+        delete pImg;
+        pImg = NULL;
+    }
 }
 
 /**
@@ -1080,10 +1131,17 @@ int ThreadStandardTesting::_GetValueTC(const QList<int> &kiHorizontalProjectionL
 
     qDebug() << "Movement:" << m_iIndexMovement << "C_SUm:" << sResultTestDataStruct.iCValue << "T_SUm:" << sResultTestDataStruct.iTValue;
 
-    delete pDataArr2;
-    delete pDataArr3;
-    pDataArr2 = NULL;
-    pDataArr3 = NULL;
+    if(pDataArr2 != NULL)
+    {
+        delete pDataArr2;
+        pDataArr2 = NULL;
+    }
+
+    if(pDataArr3 != NULL)
+    {
+        delete pDataArr3;
+        pDataArr3 = NULL;
+    }
 
     return 0;
 }
@@ -1284,16 +1342,33 @@ int ThreadStandardTesting::_FindCLine(QList<int> iHorizontalProjectionList)
  */
 QList<int>  ThreadStandardTesting::_UprightProjection(QString strImgPath)
 {
-    IplImage * pImg = cvLoadImage(strImgPath.toLatin1().data(), 0);
+    QList<int> iResultList;
+    iResultList.clear();
+    //IplImage * pImg = cvLoadImage(strImgPath.toLatin1().data(), 0);
+    IplImage * pImg =  cvLoadImage((const char *)strImgPath.toLocal8Bit(),0);
+    if(pImg == NULL)
+    {
+        return iResultList;
+    }
+
     IplImage* pImg51 = cvCreateImage( cvGetSize(pImg),IPL_DEPTH_8U, 1 );
+    if(pImg51 == NULL)
+    {
+        if(pImg != NULL)
+        {
+            cvReleaseImage(&pImg);
+        }
+
+        return iResultList;
+    }
+
     cvSmooth( pImg, pImg, CV_BLUR, 3, 3, 0, 0 );
     cvAdaptiveThreshold( pImg, pImg51 , 255, CV_THRESH_BINARY , CV_ADAPTIVE_THRESH_GAUSSIAN_C , 51, 5 );
 
 
     cvSaveImage(strImgPath.left(strImgPath.count() - 4).toLatin1() + "51.bmp", pImg51);
 
-    QList<int> iResultList;
-    iResultList.clear();
+
     int iNode;
 
     CvScalar cvScalar;
@@ -1315,6 +1390,16 @@ QList<int>  ThreadStandardTesting::_UprightProjection(QString strImgPath)
     }
 
     _SmoothData(iResultList,SMOOTH_VALUE);
+
+    if(pImg != NULL)
+    {
+        cvReleaseImage(&pImg);
+    }
+
+    if(pImg51 != NULL)
+    {
+        cvReleaseImage(&pImg51);
+    }
 
     return iResultList;
 }
@@ -1353,6 +1438,11 @@ QList<int> ThreadStandardTesting::_HorizontalProjection(QString strImgPath)
     if(!pImg->load(strImgPath))
     {
         qDebug() << "Image Load Failed";
+        if(pImg != NULL)
+        {
+            delete pImg;
+            pImg = NULL;
+        }
         return iResultList;
     }
 
@@ -1387,6 +1477,12 @@ QList<int> ThreadStandardTesting::_HorizontalProjection(QString strImgPath)
     }
     qDebug() << "min:" << min;
 #endif
+
+    if(pImg != NULL)
+    {
+        delete pImg;
+        pImg = NULL;
+    }
     return iResultList;
 }
 
@@ -1459,8 +1555,12 @@ int ThreadStandardTesting::_GetTLineLoction(const int * pDataArr, int iOrgCenter
     //得到最小的值位置+1/2线宽，就是C/T线的中心位置。
 //    MY_DEBUG << "begin:" << begin << "getMinLocation(sumLineWidth,PicW):" << getMinLocation(sumLineWidth,endx-begin) << "PIXEL_LINE:" << PIXEL_LINE;
     int iRes = _GetMinLocation(pSumLineWidth,iEndx-iBegin);
-    delete pSumLineWidth;
-    pSumLineWidth = NULL;
+    if(pSumLineWidth != NULL)
+    {
+        delete pSumLineWidth;
+        pSumLineWidth = NULL;
+    }
+
 
     int iLocation = iBegin + iRes + PIXEL_LINE/2;
 
@@ -1653,7 +1753,7 @@ void ThreadStandardTesting::_SlotReceiveErr(EnumTypeErr eErr)
         emit SignalTestErr(ERR_DECODE);
         break;
     case ErrNoConnectUSB:
-        emit SignalTestErr(ERR_DISCONNECT_USB);
+        //emit SignalTestErr(ERR_DISCONNECT_USB);
         break;
     case ErrNoOpenVideo:
         //emit SignalTestErr(ERR_DECODE);

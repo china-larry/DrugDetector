@@ -41,6 +41,7 @@ public:
     void SetLineEditFixSize(int iWidth, int iHeight);
     void SetLabelObjectName(QString strObjectName);
     void SetLineEditObjectName(QString strObjectName);
+    void SetLineValidator(int iMin, int iMax);// 设置输入范围
 protected:
     void _InitLayout();
 protected:
@@ -67,7 +68,7 @@ signals:
 public slots:
 public:
     void SetLineEditEnable(bool bEnable);
-    void SetLineValidator(int iMin, int iMax);// 设置输入范围
+
 protected:
     void _InitLayout();
 };

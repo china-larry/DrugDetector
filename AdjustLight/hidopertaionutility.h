@@ -268,9 +268,30 @@ public:
      * @return
      */
     bool GetUpdateFlag();
+
     void SetUpdateFlag(bool);
 
     bool CheckDeviceConnection();
+
+    void SetDeviceConnection(bool);
+
+    /**
+    * @brief HIDWriteDevSerialNumber
+    * 写仪器序列号
+    * @param strSerialNumber仪器序列号
+    * @return
+    */
+    void HIDWriteDevSerialNumber(QString strSerialNumber);
+
+    /**
+    * @brief HIDReadDevSerialNumber
+    * 读仪器序列号
+    * @param
+    * @return
+    */
+    void HIDReadDevSerialNumber();
+
+    QString GetDeviceSerialNumber();
 
 private:
 
@@ -323,6 +344,9 @@ private:
     QMutex m_DeviceOperateMutex;
     bool m_bIsDeviceOperate;//仪器是否在操作
     bool m_bIsUpdateFlag;
+    QString m_strDevSerialNumber;
+    bool m_bIsUSBConnect;
+    bool m_bIsUpdateDataSendOver;
 };
 
 

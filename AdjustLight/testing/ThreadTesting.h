@@ -136,6 +136,7 @@ private:
     int                 m_MsecToTest;
     int                 m_iIndexMovement;
     int                 m_iStepsMoveMotor;
+    int                 m_iLocateItemCount;
     QThread             m_qTestThread;
     QList<int>          m_iStepList;
     QRCodeInfo          m_QRCodeInfo;

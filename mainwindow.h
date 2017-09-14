@@ -51,11 +51,11 @@ public slots:
     void SlotCloseWindow();// 关闭
     void SlotCheckHistoryItem();// 前往历史页
     // 测试开始，更改状态栏
-    void SlotDetectorPageStartTest();
+    void SlotDetectorPageStartTest(int iTestDelayTime);
     // 开始获取二维码
     void SlotStartQRCode();
     // 获得二维码数据
-    void SlotHaveQRCodeInfo(int iProgramCount);
+    void SlotHaveQRCodeInfo(int iProgramCount, int iDelayTime);
     // 测试结果Index，状态栏显示
     void SlotTestProgramIndex(int iProgramIndex);
     // 主动停止测试

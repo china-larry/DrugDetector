@@ -44,6 +44,12 @@ struct DetectorPageUserData
     QString strTestSite;
     // operator
     QString strOperator;// 操作者身份
+    // adulterants
+    bool bOxidant = false;
+    bool bSpecificGravity = false;
+    bool bPH = false;
+    bool bNitrite = false;
+    bool bCreatinine = false;
     // reason
     bool bPreEmployment;
     bool bRandom;
@@ -195,10 +201,11 @@ private:
 bool PrintToPage(QString strHtml);
 /**
   * @brief 保存报告PDF
-  * @param
+  * @param strHtml: 待保存的数据流
+  * @param pWidget: 保存对话框父类
   * @return
   */
-bool PrintToPdf(QString strHtml);
+bool PrintToPdf(QString strHtml, QWidget *pWidget);
 /**
   * @brief 获取TCube的HTML源文件
   * @param

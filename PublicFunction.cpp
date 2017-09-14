@@ -498,15 +498,23 @@ bool PrintToPage(QString strHtml)
     });
     return false;
 }
-
-bool PrintToPdf(QString strHtml)
+/**
+  * @brief 保存报告PDF
+  * @param strHtml: 待保存的数据流
+  * @param pWidget: 保存对话框父类
+  * @return
+  */
+bool PrintToPdf(QString strHtml, QWidget *pWidget)
 {
     QPrinter * qPrinter = new QPrinter();
     qPrinter->setPageSize(QPrinter::A4);
     qPrinter->setFullPage(true);
     // 输出到PDF
     qPrinter->setOutputFormat(QPrinter::PdfFormat);
-    qPrinter->setOutputFileName("E:/b.pdf");
+    QString strFile = QFileDialog::getSaveFileName(pWidget, "Save File",
+                                               QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
+                                               "PDF (*.pdf)");
+    qPrinter->setOutputFileName(strFile);
     //
     QWebEnginePage * pWebEnginePage = new QWebEnginePage;
     pWebEnginePage->setHtml(strHtml);
@@ -525,6 +533,7 @@ bool PrintToPdf(QString strHtml)
             if (bPrintok)
             {
                 qDebug() << "print ok";
+                QMessageBox::information(NULL, "Tip", "Save Pdf Sucess!", QMessageBox::Ok, QMessageBox::Ok);
                 delete pWebEnginePage;// lambda 不可赋值为null
                 delete qPrinter;
                 return true;

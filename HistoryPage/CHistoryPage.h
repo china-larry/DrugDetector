@@ -59,15 +59,20 @@ enum DrugDataIndex
     OTHER_REASON,
     COMMENTS,
     TEMPERATURE_NORMAL,
+    OXIDANT,
+    SPECIFIC_GRAVITY,
+    PH,
+    NITRITE,
+    CREATININE,
     EMAIL,
     PRODUCT_DEFINITION,
     EXPIRATION_DATE,
     PRODUCT_LOT,
     PRODUCT_ID,
-    PROGRAM_NUMBER = 22,
-    PROGRAM_NAME_BEGIN = 23,// 6组16列，共计96列,23-118，（program_name, result，cutoff, T, C, ControlLine）
-    CONTROL_LINE_END = 118,
-    PRINT_IMAGE_PATH = 119,
+    PROGRAM_NUMBER = 27,
+    PROGRAM_NAME_BEGIN = 28,// 6组16列，共计96列,28-123，（program_name, result，cutoff, T, C, ControlLine）
+    CONTROL_LINE_END = 123,
+    PRINT_IMAGE_PATH = 124,
 };
 class CHistoryPage : public QWidget
 {
@@ -93,6 +98,8 @@ private slots:
             int iCurrentRow, int iCurrentColumn, int iPreviousRow, int iPreviousColumn);
     // 上传结果获取
     void _SlotPoctReadMesg();
+    void _SlotPoctConnectError(QAbstractSocket::SocketError socketError);
+    void _SlotPoctDisConnect();
 public:
     // Main窗口设置测试结果
     void SetTestResultDataList(QList<TestResultData*> pTestResultDataList, QString strPrintImagePath);
@@ -103,8 +110,8 @@ public:
     // 将测试页获取的数据插入数据库
     void InsertToDatabase();
     // 服务器
-    void SetPisServer(QString strPisServer);
-    void SetPoctServer(QString strPoctServer);
+    void SetPisServer(QString strPisServer, int iPort);
+    void SetPoctServer(QString strPoctServer, int iPort);
     void SetUserName(QString strUserName);
     void AutoConnectPisServer(QString strServer, int iPort, bool bAuto);
     void AutoConnectPoctServer(QString strServer, int iPort, bool bAuto);
@@ -181,6 +188,8 @@ private:
     // PIS/POCT服务器
     QString m_strPisServer;
     QString m_strPoctServer;
+    int m_iPisServerPort;
+    int m_iPoctServerPort;
     // 当前测试结果打印图片保存至数据库
     QString m_strTestPrintImagePath;
     // 导出execl

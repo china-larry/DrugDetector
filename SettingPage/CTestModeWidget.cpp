@@ -72,7 +72,7 @@ QGroupBox *CTestModeWidget::_CreateModeGroup()
     pGroupBox->setFixedSize(570, 251);
     //
     m_pStandardModeRButton = new QRadioButton(tr("Standard Mode"), this);
-    m_pStandardModeRButton->setChecked(true);
+    m_pStandardModeRButton->setChecked(false);
     m_pIncubatingTimeLineEditWidget =
             new CHLabelLineEditWidget(tr("Incubating time "), "", this);
     m_pIncubatingTimeLineEditWidget->SetLineEditFixSize(50, 20);
@@ -81,6 +81,7 @@ QGroupBox *CTestModeWidget::_CreateModeGroup()
     m_pMinutesLabel = new QLabel(tr("Minutes"));
     //
     m_pExpressModeRButton = new QRadioButton(tr("Express Mode"), this);
+    m_pExpressModeRButton->setChecked(true);
     //
     m_pAutoRunTestCButton = new QCheckBox(tr("Auto Test"), this);
 

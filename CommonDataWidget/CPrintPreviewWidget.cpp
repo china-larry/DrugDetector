@@ -71,12 +71,17 @@ void CPrintPreviewWidget::_CheckMinButton()
 
 void CPrintPreviewWidget::_CheckSaveButton()
 {
-    PrintToPdf(m_strPrintHtml);
+    PrintToPdf(m_strPrintHtml, this);
 }
 
 void CPrintPreviewWidget::_CheckPrintButton()
 {
     PrintToPage(m_strPrintHtml);
+}
+
+void CPrintPreviewWidget::_PrintPageChange()
+{
+
 }
 
 void CPrintPreviewWidget::SetUserName(QString strUserName)
@@ -90,6 +95,11 @@ void CPrintPreviewWidget::SetHtml(QString strHtml)
     m_pWebEngineView->setHtml(m_strPrintHtml);
 }
 
+void CPrintPreviewWidget::SetPageCount(int iCount)
+{
+    m_iPageCount = iCount;
+}
+
 void CPrintPreviewWidget::_InitWidget()
 {
     m_pTitelWidget = new CPrintPreviewTitleWidget(this);
@@ -99,7 +109,15 @@ void CPrintPreviewWidget::_InitWidget()
             this, &CPrintPreviewWidget::_CheckCloseButton);
 
     m_pWebEngineView = new QWebEngineView(this);
-    m_pWebEngineView->setFixedSize(930, 550);
+    m_pWebEngineView->setFixedSize(930, 530);
+    // info
+    m_pCurrentPageInfoLabel = new QLabel(tr(""), this);
+    m_pCurrentPageInfoLabel->setFixedSize(200, 20);
+    m_pCurrentPageInfoLabel->setAlignment(Qt::AlignHCenter);
+    //
+    m_pTotalPageInfoLabel = new QLabel(tr(""), this);
+    m_pTotalPageInfoLabel->setFixedSize(200, 20);
+    m_pTotalPageInfoLabel->setAlignment(Qt::AlignHCenter);
     //
     m_pPrintButton = new QPushButton(tr("Print"), this);
     m_pPrintButton->setFixedSize(130, 35);
@@ -117,6 +135,14 @@ void CPrintPreviewWidget::_InitLayout()
     pLayout->addWidget(m_pTitelWidget);
     pLayout->addSpacing(10);
     pLayout->addWidget(m_pWebEngineView, 0, Qt::AlignHCenter);
+    //
+    QHBoxLayout *pPageLayout = new QHBoxLayout;
+    pPageLayout->addSpacing(200);
+    pPageLayout->addWidget(m_pCurrentPageInfoLabel);
+    pPageLayout->addStretch(100);
+    pPageLayout->addWidget(m_pTotalPageInfoLabel);
+    pPageLayout->addSpacing(200);
+    pLayout->addLayout(pPageLayout);
     //
     QHBoxLayout *pHLayout = new QHBoxLayout;
     pHLayout->addStretch(100);

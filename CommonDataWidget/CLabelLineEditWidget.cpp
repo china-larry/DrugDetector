@@ -60,6 +60,10 @@ void CLabelLineEditWidget::SetLineEditObjectName(QString strObjectName)
     m_pLineEdit->setObjectName(strObjectName);
 }
 
+void CLabelLineEditWidget::SetLineValidator(int iMin, int iMax)
+{
+    m_pLineEdit->setValidator(new QIntValidator(iMin, iMax, this));
+}
 
 void CLabelLineEditWidget::_InitLayout()
 {
@@ -85,11 +89,6 @@ void CHLabelLineEditWidget::SetLineEditEnable(bool bEnable)
     m_pLineEdit->setEnabled(bEnable);
 }
 
-void CHLabelLineEditWidget::SetLineValidator(int iMin, int iMax)
-{
-    m_pLineEdit->setValidator(new QIntValidator(iMin, iMax, this));
-}
-
 void CHLabelLineEditWidget::_InitLayout()
 {
     QHBoxLayout *pLayout = new QHBoxLayout;
@@ -98,3 +97,4 @@ void CHLabelLineEditWidget::_InitLayout()
     pLayout->addWidget(m_pLineEdit);
     this->setLayout(pLayout);
 }
+

@@ -70,6 +70,12 @@ public:
 
     bool GetStopped();
 
+    //添加写仪器序列号命令
+    void AddWriteDevSerialNumber(QString strSerialNumber);
+
+    //添加读仪器序列号命令
+    void AddReadDevSerialNumber();
+
 protected:
     virtual void run();
 
@@ -91,6 +97,7 @@ private:
     HIDCmdData m_curHIDCmdData;//目前正在执行的命令数据
     DevConfigParams m_devConfigParams;//仪器参数
     QString m_strFilePath;//升级文件路径
+    QString strDevSerialNumber;
 };
 
 #endif // CHIDCMDTHREAD_H

@@ -40,6 +40,16 @@ public slots:
 
 protected slots:
     void showEvent(QShowEvent *);
+private slots:
+    void _PisIP01TextChange();
+    void _PisIP02TextChange();
+    void _PisIP03TextChange();
+    void _PisIP04TextChange();
+    //
+    void _PoctIP01TextChange();
+    void _PoctIP02TextChange();
+    void _PoctIP03TextChange();
+    void _PoctIP04TextChange();
 public:
     //
     QString GetPisServer(); // 返回PIS服务器

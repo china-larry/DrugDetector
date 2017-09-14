@@ -289,11 +289,14 @@ void MainWindow::SlotCheckHistoryItem()
     m_pStackedWidget->setCurrentIndex(2);
 }
 // 状态栏显示开始
-void MainWindow::SlotDetectorPageStartTest()
+void MainWindow::SlotDetectorPageStartTest(int iTestDelayTime)
 {
     m_pDetectorPageStatusBar->SetLineStartColor();
-    m_pDetectorPageStatusBar->SetLineText(tr("Start Test"));
     m_pDetectorPageStatusBar->SetProgressValue(3);
+    if(iTestDelayTime >= 0)
+    {
+        m_pDetectorPageStatusBar->SetLineText(tr("Start Test"));
+    }
 }
 
 void MainWindow::SlotStartQRCode()
@@ -302,11 +305,16 @@ void MainWindow::SlotStartQRCode()
     m_pDetectorPageStatusBar->SetProgressValue(5);
 }
 
-void MainWindow::SlotHaveQRCodeInfo(int iProgramCount)
+void MainWindow::SlotHaveQRCodeInfo(int iProgramCount, int iDelayTime)
 {
     m_pDetectorPageStatusBar->SetLineText(tr("Get QR Code"));
     m_pDetectorPageStatusBar->SetProgressValue(10);
     m_iProgramCount = iProgramCount;
+    //
+    if(iDelayTime > 0)
+    {
+        m_pDetectorPageStatusBar->SetDelayTime(iDelayTime);
+    }
 }
 
 void MainWindow::SlotTestProgramIndex(int iProgramIndex)
@@ -330,6 +338,7 @@ void MainWindow::SlotDetectorPageStopTest()
 {
     m_pDetectorPageStatusBar->SetLineStopColor();
     m_pDetectorPageStatusBar->SetLineText(tr("Stop"));
+    m_pDetectorPageStatusBar->SetProgressValue(0);
 }
 // 流程测试结束
 void MainWindow::SlotDetectorPageEndTest()
@@ -340,6 +349,7 @@ void MainWindow::SlotDetectorPageEndTest()
     qDebug() << "user data: " << m_sDetectorPageUserDataStruct.strOtherReasonComments;
     //
     m_pDetectorPageStatusBar->SetLineText(tr("Finish Test"));
+    m_pDetectorPageStatusBar->SetProgressValue(100);
     m_pHistoryPage->SetTestResultDataList(m_pTestResultDataList, m_pDetectorPage->GetTestPrintImagePath());
     m_pHistoryPage->SetTestUserData(m_sDetectorPageUserDataStruct);
     m_pHistoryPage->InsertToDatabase();
@@ -391,9 +401,9 @@ void MainWindow::_InitWidget()
     m_pStackedWidget = new QStackedWidget(this);
     // 测试页
     m_pDetectorPage = new CDetectorPage(this);
-    connect(m_pDetectorPage, SIGNAL(SignalStartTest()), this, SLOT(SlotDetectorPageStartTest()));
+    connect(m_pDetectorPage, &CDetectorPage::SignalStartTest, this, &MainWindow::SlotDetectorPageStartTest);
     connect(m_pDetectorPage, SIGNAL(SignalStartQRCode()), this, SLOT(SlotStartQRCode()));
-    connect(m_pDetectorPage, SIGNAL(SignalHaveQRCodeInfo(int)), this, SLOT(SlotHaveQRCodeInfo(int)));
+    connect(m_pDetectorPage, SIGNAL(SignalHaveQRCodeInfo(int, int)), this, SLOT(SlotHaveQRCodeInfo(int, int)));
     connect(m_pDetectorPage, SIGNAL(SignalTestProgramIndex(int)), this, SLOT(SlotTestProgramIndex(int)));
 
     connect(m_pDetectorPage, SIGNAL(SignalStopTest()), this, SLOT(SlotDetectorPageStopTest()));

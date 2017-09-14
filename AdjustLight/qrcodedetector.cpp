@@ -20,7 +20,10 @@ QRCodeDetector::QRCodeDetector()
 
 QRCodeDetector::~QRCodeDetector()
 {
-    delete m_pZxingDecoder;
+    if(m_pZxingDecoder != NULL)
+    {
+        delete m_pZxingDecoder;
+    }
 }
 
 QZXing *QRCodeDetector::GetZxingDecoder()
@@ -100,15 +103,15 @@ bool QRCodeDetector::InitDevice()
     {
         CHidCmdThread::GetInstance()->start();
     }
-    else
-    {
-        CHidCmdThread::GetInstance()->SetStopped(true);
-        while(CHidCmdThread::GetInstance()->isRunning())
-        {
-            continue;
-        }
-        CHidCmdThread::GetInstance()->start();
-    }
+//    else
+//    {
+//        CHidCmdThread::GetInstance()->SetStopped(true);
+//        while(CHidCmdThread::GetInstance()->isRunning())
+//        {
+//            continue;
+//        }
+//        CHidCmdThread::GetInstance()->start();
+//    }
     //关所有灯
     CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
@@ -333,7 +336,6 @@ bool QRCodeDetector::GetQRCodeImageInfo(const QString strImagePath,QString &strQ
                     return true;
                 }
             }
-
         }
     }
     return false;
@@ -348,21 +350,53 @@ bool QRCodeDetector::GetQRCodeImageInfo(const QString strImagePath,QString &strQ
  */
 bool QRCodeDetector::ExtractQRCode(QString strSrcImage,QString &strDesImage)
 {
+    IplImage *pSrcImage = NULL;
+    IplImage *pGrayimage = NULL;
+    IplImage *pSobel = NULL;
+    IplImage *pTemp = NULL;
+    IplImage *pThreshold1 = NULL;
+    IplImage *pErode_dilate = NULL;
+    IplImage *pCopy= NULL;
+    IplImage *pCopy1 = NULL;
+    CvMemStorage *pStorage = NULL;
+    CvSeq *pContoursSeq = NULL;
+    QVector<CvRect> qRECTVector;
+    QVector<CvRect> qRectVector;
     //加载原图
-    IplImage *pSrcImage = cvLoadImage(strSrcImage.toLatin1().data(),1);
+    pSrcImage = cvLoadImage(strSrcImage.toLatin1().data(),1);
+    if(pSrcImage == NULL)
+    {
+        goto RelseaseRes;
+    }
     //转变为灰度图
-    IplImage *pGrayimage = cvCreateImage(cvGetSize(pSrcImage),IPL_DEPTH_8U, 1);
+    pGrayimage = cvCreateImage(cvGetSize(pSrcImage),IPL_DEPTH_8U, 1);
+    if(pGrayimage == NULL)
+    {
+        goto RelseaseRes;
+    }
     cvCvtColor(pSrcImage,pGrayimage,CV_BGR2GRAY);
 
     //通过sobel来对图片进行竖向边缘检测,输入图像是8位时，输出必须是16位，然后再将图像转变成8位深
-    IplImage *pSobel = cvCreateImage(cvGetSize(pGrayimage),IPL_DEPTH_16S,1);
+    pSobel = cvCreateImage(cvGetSize(pGrayimage),IPL_DEPTH_16S,1);
+    if(pSobel == NULL)
+    {
+        goto RelseaseRes;
+    }
     cvSobel(pGrayimage,pSobel,2,0,7);
 
-    IplImage *pTemp = cvCreateImage(cvGetSize(pSobel),IPL_DEPTH_8U,1);
+    pTemp = cvCreateImage(cvGetSize(pSobel),IPL_DEPTH_8U,1);
+    if(pTemp == NULL)
+    {
+        goto RelseaseRes;
+    }
     cvConvertScale(pSobel,pTemp,0.002,0);
 
     //对图像进行二值化处理
-    IplImage *pThreshold1 = cvCreateImage(cvGetSize(pTemp),IPL_DEPTH_8U,1);
+    pThreshold1 = cvCreateImage(cvGetSize(pTemp),IPL_DEPTH_8U,1);
+    if(pThreshold1 == NULL)
+    {
+        goto RelseaseRes;
+    }
     //cvThreshold(temp,threshold1,20,100,CV_THRESH_BINARY/*| CV_THRESH_OTSU*/);
 //    cvThreshold(pTemp,pThreshold1,10,80,CV_THRESH_BINARY/*| CV_THRESH_OTSU*/);
     //自适应阈值方法
@@ -373,8 +407,16 @@ bool QRCodeDetector::ExtractQRCode(QString strSrcImage,QString &strDesImage)
 //    cvWaitKey(0);
 
     //自定义1*3的核进行X方向的膨胀腐蚀
-    IplImage *pErode_dilate=cvCreateImage(cvGetSize(pThreshold1),IPL_DEPTH_8U,1);
+    pErode_dilate = cvCreateImage(cvGetSize(pThreshold1),IPL_DEPTH_8U,1);
+    if(pErode_dilate == NULL)
+    {
+        goto RelseaseRes;
+    }
     IplConvKernel* pKernal = cvCreateStructuringElementEx(3,1, 1, 0, CV_SHAPE_RECT);
+    if(pKernal == NULL)
+    {
+        goto RelseaseRes;
+    }
     cvDilate(pThreshold1, pErode_dilate, pKernal, 18/*15*/);//X方向膨胀连通数字
     cvErode(pErode_dilate, pErode_dilate, pKernal, 2/*6*/);//X方向腐蚀去除碎片
     cvDilate(pErode_dilate, pErode_dilate, pKernal, 1);//X方向膨胀回复形态
@@ -391,14 +433,26 @@ bool QRCodeDetector::ExtractQRCode(QString strSrcImage,QString &strDesImage)
 //    cvWaitKey(0);
 
     //图形检测
-    IplImage *pCopy = cvCloneImage(pErode_dilate);//直接把erode_dilate的数据复制给copy
-    IplImage *pCopy1 = cvCloneImage(pSrcImage);//直接把image的数据复制给copy1
-    CvMemStorage *pStorage = cvCreateMemStorage();
-    CvSeq *pContoursSeq;
+    pCopy = cvCloneImage(pErode_dilate);//直接把erode_dilate的数据复制给copy
+    if(pCopy == NULL)
+    {
+        goto RelseaseRes;
+    }
+    pCopy1 = cvCloneImage(pSrcImage);//直接把image的数据复制给copy1
+    if(pCopy1 == NULL)
+    {
+        goto RelseaseRes;
+    }
+    pStorage = cvCreateMemStorage();
+    if(pStorage == NULL)
+    {
+        goto RelseaseRes;
+    }
+
     cvFindContours(pCopy, pStorage, &pContoursSeq);  //寻找轮廓
 
-    QVector<CvRect> qRECTVector;
-    QVector<CvRect> qRectVector;
+//    QVector<CvRect> qRECTVector;
+//    QVector<CvRect> qRectVector;
     while(pContoursSeq != NULL)
     {
         //绘制轮廓的最小外接矩形
@@ -460,6 +514,10 @@ bool QRCodeDetector::ExtractQRCode(QString strSrcImage,QString &strDesImage)
                                    pSrcImage->depth,
                                    pSrcImage->nChannels);
 
+            if(pDstImg == NULL)
+            {
+                continue;
+            }
             //设置ROI区域
             cvSetImageROI(pSrcImage,qRectVector.at(iPos));
 
@@ -469,10 +527,10 @@ bool QRCodeDetector::ExtractQRCode(QString strSrcImage,QString &strDesImage)
            //取消设置
             cvResetImageROI(pSrcImage);
             //寻找定位矩形
-            if(FindQRcodeLocationRect(pDstImg) == false)
-            {
-                continue;
-            }
+//            if(FindQRcodeLocationRect(pDstImg) == false)
+//            {
+//                continue;
+//            }
 
             qint16 iPos1 = strSrcImage.indexOf(".",1);
             QString strDesImage1 = strSrcImage.insert(iPos1,"QR");
@@ -480,19 +538,70 @@ bool QRCodeDetector::ExtractQRCode(QString strSrcImage,QString &strDesImage)
             strDesImage = strDesImage1;
             break;
         }
-        cvReleaseImage(&pDstImg);
+        if(pDstImg != NULL)
+        {
+            cvReleaseImage(&pDstImg);
+        }
     }
 
-    cvReleaseMemStorage(&pStorage);
-    cvReleaseImage(&pSrcImage);
-    cvReleaseImage(&pGrayimage);
-    cvReleaseImage(&pSobel);
-    cvReleaseImage(&pTemp);
-    cvReleaseImage(&pThreshold1);
-    cvReleaseImage(&pErode_dilate);
-    cvReleaseImage(&pCopy);
-    cvReleaseImage(&pCopy1);
+    goto RelseaseRes;
+    RelseaseRes:
+    {
+        if(pStorage != NULL)
+        {
+           cvReleaseMemStorage(&pStorage);
+           pStorage = NULL;
+        }
 
+        if(pSrcImage != NULL)
+        {
+           cvReleaseImage(&pSrcImage);
+           pSrcImage = NULL;
+        }
+
+        if(pGrayimage != NULL)
+        {
+           cvReleaseImage(&pGrayimage);
+           pGrayimage = NULL;
+        }
+
+        if(pSobel != NULL)
+        {
+           cvReleaseImage(&pSobel);
+           pSobel = NULL;
+        }
+
+        if(pTemp != NULL)
+        {
+           cvReleaseImage(&pTemp);
+           pTemp = NULL;
+        }
+
+        if(pThreshold1 != NULL)
+        {
+           cvReleaseImage(&pThreshold1);
+           pThreshold1 = NULL;
+        }
+
+        if(pErode_dilate != NULL)
+        {
+           cvReleaseImage(&pErode_dilate);
+           pErode_dilate = NULL;
+        }
+
+        if(pCopy != NULL)
+        {
+           cvReleaseImage(&pCopy);
+           pCopy = NULL;
+        }
+
+        if(pCopy1 != NULL)
+        {
+           cvReleaseImage(&pCopy1);
+           pCopy1 = NULL;
+        }
+
+    }
     return true;
 }
 
@@ -559,7 +668,9 @@ bool QRCodeDetector::FindQRcodeLocationRect(IplImage *pDstImg)
 //        drawContours(mMyMat, contoursVector, indexVector[siter], Scalar(0, 0, 255), 2, 8);
 //    }
     QString strPath = QCoreApplication::applicationDirPath() + "/result.png";
-    imwrite(strPath.toLatin1().data(), mMyMat);
+    //imwrite(strPath.toLatin1().data(), mMyMat);
+    imwrite(string((const char *)strPath.toLocal8Bit()),mMyMat);
+
 
     mMyMat.release();
     mImage.release();

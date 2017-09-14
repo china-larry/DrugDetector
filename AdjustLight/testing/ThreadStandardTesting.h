@@ -128,7 +128,7 @@ private:
     int _FindProjectMid(QList<int> iUprightProjectionList, int iPixelLevel, int iPixelSustain, int &iProjectMid);             //定位项目中心点
 
     void _InitStatus();
-    void _ReceivePicPathSCup(QString strPath,int iPos);      //方杯目标区图片分析
+    void _ReceivePicPathSCup(QString strPath);      //方杯目标区图片分析
     TestResultData _ReceivePicPathTCup(QString strPath, bool &bExist,bool bFixSept);          //圆杯目标区图片分析
     void _ModifNextStep(int iStep, int iPixel);         //校准电机步数
     void _StatusHandler(bool bResult, ENUM_STATUS_TEST eTestStatus);

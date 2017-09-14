@@ -109,19 +109,19 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue &sBrightnes
         QApplication::processEvents();
     }
 
-    if(GetBrightnessValue().iBrightNo2 > 0)
-    {
-        GetLightValue(2,qCenterPoint,GetBrightnessValue().iBrightNo2,GetBrightnessValue().iGreenComponentNo2,
-                      sBrightnessValue.iBrightNo2,sBrightnessValue.iGreenComponentNo2);
-    }
+//    if(GetBrightnessValue().iBrightNo2 > 0)
+//    {
+//        GetLightValue(2,qCenterPoint,GetBrightnessValue().iBrightNo2,GetBrightnessValue().iGreenComponentNo2,
+//                      sBrightnessValue.iBrightNo2,sBrightnessValue.iGreenComponentNo2);
+//    }
 
-    //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
-    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
-    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
-    {
-        QApplication::processEvents();
-    }
+//    //关所有灯
+//    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
+//    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+//    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+//    {
+//        QApplication::processEvents();
+//    }
 
     if(GetBrightnessValue().iBrightNo3 > 0)
     {
@@ -137,19 +137,19 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue &sBrightnes
         QApplication::processEvents();
     }
 
-    if(GetBrightnessValue().iBrightNo4 > 0)
-    {
-        GetLightValue(4,qCenterPoint,GetBrightnessValue().iBrightNo4,GetBrightnessValue().iGreenComponentNo4,
-                      sBrightnessValue.iBrightNo4,sBrightnessValue.iGreenComponentNo4);
-    }
+//    if(GetBrightnessValue().iBrightNo4 > 0)
+//    {
+//        GetLightValue(4,qCenterPoint,GetBrightnessValue().iBrightNo4,GetBrightnessValue().iGreenComponentNo4,
+//                      sBrightnessValue.iBrightNo4,sBrightnessValue.iGreenComponentNo4);
+//    }
 
-    //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
-    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
-    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
-    {
-        QApplication::processEvents();
-    }
+//    //关所有灯
+//    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
+//    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+//    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+//    {
+//        QApplication::processEvents();
+//    }
 
     if(GetBrightnessValue().iBrightNo5 > 0)
     {
@@ -165,19 +165,19 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue &sBrightnes
         QApplication::processEvents();
     }
 
-    if(GetBrightnessValue().iBrightNo6 > 0)
-    {
-        GetLightValue(6,qCenterPoint,GetBrightnessValue().iBrightNo6,GetBrightnessValue().iGreenComponentNo6,
-                      sBrightnessValue.iBrightNo6,sBrightnessValue.iGreenComponentNo6);
-    }
+//    if(GetBrightnessValue().iBrightNo6 > 0)
+//    {
+//        GetLightValue(6,qCenterPoint,GetBrightnessValue().iBrightNo6,GetBrightnessValue().iGreenComponentNo6,
+//                      sBrightnessValue.iBrightNo6,sBrightnessValue.iGreenComponentNo6);
+//    }
 
-    //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
-    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
-    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
-    {
-        QApplication::processEvents();
-    }
+//    //关所有灯
+//    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
+//    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+//    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+//    {
+//        QApplication::processEvents();
+//    }
 
     if(GetBrightnessValue().iBrightNo7 > 0)
     {
@@ -193,19 +193,19 @@ void OrdinaryBrightmess::OrdinaryCalibration(BrightnessOrdinaryValue &sBrightnes
         QApplication::processEvents();
     }
 
-    if(GetBrightnessValue().iBrightNo8 > 0)
-    {
-        GetLightValue(8,qCenterPoint,GetBrightnessValue().iBrightNo8,GetBrightnessValue().iGreenComponentNo8,
-                      sBrightnessValue.iBrightNo8,sBrightnessValue.iGreenComponentNo8);
-    }
+//    if(GetBrightnessValue().iBrightNo8 > 0)
+//    {
+//        GetLightValue(8,qCenterPoint,GetBrightnessValue().iBrightNo8,GetBrightnessValue().iGreenComponentNo8,
+//                      sBrightnessValue.iBrightNo8,sBrightnessValue.iGreenComponentNo8);
+//    }
 
-    //关所有灯
-    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
-    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
-    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
-    {
-        QApplication::processEvents();
-    }
+//    //关所有灯
+//    CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
+//    HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);
+//    while (HIDOpertaionUtility::GetInstance()->GetDeviceOperateStates())
+//    {
+//        QApplication::processEvents();
+//    }
 }
 
 /**
@@ -283,9 +283,13 @@ bool OrdinaryBrightmess::InitMachine(QPoint &qCenterPoint)
         {
            calculateGreenComponent.drawRect(matImage,qCenterPoint,30,40,iPos);
         }
+
+#ifdef QT_DEBUG
         cv::namedWindow( "donkeyaime", cv::WINDOW_NORMAL );
         imshow("donkeyaime",matImage);
         waitKey(0);
+#endif
+
     }
 
     return true;
@@ -337,9 +341,9 @@ bool OrdinaryBrightmess::GetLightValue(const int iBrightNo,QPoint qCenterPoint,c
     QMap<double,double> qGreenComponentMap;
     qGreenComponentMap.clear();
 
-    const int kiMaxCount = 200;
-    int iSeptCount = 40000 / kiMaxCount;
-    const int kiStartLightValue = 500;
+    const int kiMaxCount = 50;
+    int iSeptCount = 25000 / kiMaxCount;
+    const int kiStartLightValue = 0;
     int iPosLightValue = 0;
 
     double dAvgSum = 0.0;

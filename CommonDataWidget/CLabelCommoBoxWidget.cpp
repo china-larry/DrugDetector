@@ -53,6 +53,11 @@ void CLabelCommoBoxWidget::SetCupType(QStringList strCupList)
 
 }
 
+void CLabelCommoBoxWidget::SetCurrentIndex(int iIndex)
+{
+  m_pComboBox->setCurrentIndex(0);
+}
+
 void CLabelCommoBoxWidget::_InitLayout()
 {
     QVBoxLayout *pLayout = new QVBoxLayout;

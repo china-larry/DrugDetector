@@ -157,7 +157,7 @@ void CDetectorPage::SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfoStruct)
     m_pExpirationWidget->SetLineText(m_sQRCodeInfoStruct.qExprationDate.toString("yyyy-MM-dd"));
     m_pProductIDWidget->SetLineText(m_sQRCodeInfoStruct.strProductID);
     // 发送主界面
-    emit SignalHaveQRCodeInfo(m_sQRCodeInfoStruct.iProgramCount);
+    emit SignalHaveQRCodeInfo(m_sQRCodeInfoStruct.iProgramCount, m_iTestDelayTime);
 }
 /**
   * @brief 接收每次测试结果数据
@@ -230,6 +230,7 @@ void CDetectorPage::SlotEndTest()
 void CDetectorPage::SlotReceiveTestError(ENUM_ERR eTestError)
 {
        TipErrorInfomation(eTestError);
+       //_SlotStopTest();
        // 控件状态
        m_pReadTestDeviceButton->setEnabled(true);
        m_pPrintPriviewButton->setEnabled(true);
@@ -241,7 +242,7 @@ void CDetectorPage::SlotFuseImageOK()
     m_pPrintPriviewButton->setEnabled(true);
     // 删除测试图片
     if(m_pTestResultDataList.count() > 0)
-    {        
+    {
         m_pDeleteImageThread->SetImageDir(m_strTestImageDir);
         m_pDeleteImageThread->start();
         qDebug() <<"test image dir " <<m_strTestImageDir;
@@ -256,17 +257,17 @@ void CDetectorPage::SlotDeleteImageOK()
 void CDetectorPage::_SlotCheckReadTestDevice()
 {
     // 判定输入数据是否满足要求
-//    if(!_GetValidData())
-//    {
-//        return;
-//    }
+    if(!_GetValidData())
+    {
+        return;
+    }
     qDebug() <<"_SlotCheckReadTestDevice"  << m_iTestDelayTime;
     // 控件状态
     m_pReadTestDeviceButton->setEnabled(false);
     m_pPrintPriviewButton->setEnabled(false);
     m_pTestTimeWidget->SetDateTime(QDateTime::currentDateTime());
     // 发送到main
-    emit SignalStartTest();// 更改状态栏
+    emit SignalStartTest(m_iTestDelayTime);// 更改状态栏
     // 进程开始测试
     m_pThreadTesting->StartTest(m_iTestDelayTime);
     // 清空数据区
@@ -291,6 +292,40 @@ void CDetectorPage::_SlotStopTest()
     m_pReadTestDeviceButton->setEnabled(true);
     m_pPrintPriviewButton->setEnabled(true);
     m_pCamaraLabel->clear();
+}
+
+void CDetectorPage::_SlotClearData()
+{
+    m_pTemperatureNormalCBox->setChecked(false);
+    m_pLastNameWidget->SetLineText("");
+    m_pFirstNameWidget->SetLineText("");
+    m_pDonorIDWidget->SetLineText("");
+    m_pBirthDateWidget->SetDate(QDate::currentDate());
+    m_pEmailAddressWidget->SetLineText("");
+    m_pTestTimeWidget->SetDateTime(QDateTime::currentDateTime());
+    m_pTestingSiteWidget->SetLineText("");
+    //
+    if(gk_iVersionConfig == PIS_VERSION)
+    {
+        m_pOxidantCBox->setChecked(false);
+        m_pPHCBox->setChecked(false);
+        m_pNitriteCBox->setChecked(false);
+        m_pCreatinineCBox->setChecked(false);
+    }
+    //
+    m_pPreEmploymentCBox->setChecked(false);
+    m_pRandomCBox->setChecked(false);
+    m_pReasonableSuspicionCauseCBox->setChecked(false);
+    m_pPostAccidentCBox->setChecked(false);
+    m_pReturnToDutyCBox->setChecked(false);
+    m_pFollowUpCBox->setChecked(false);
+    m_pOtherReasonForTestCBox->setChecked(false);
+    m_pOtherReasonCommentsLineEdit->setText("");
+    //
+    m_pProductDefinitionWidget->SetCurrentIndex(0);
+    m_pProductLotWidget->SetLineText("");
+    m_pExpirationWidget->SetLineText("");
+    m_pProductIDWidget->SetLineText("");
 }
 /**
   * @brief 连接打印机打印
@@ -330,7 +365,6 @@ void CDetectorPage::_SlotPrintToPDF()
     m_pPrintPreviewWidget->show();
 }
 
-
 QList<TestResultData *> CDetectorPage::GetTestResultData()
 {
     return m_pTestResultDataList;
@@ -357,6 +391,15 @@ DetectorPageUserData CDetectorPage::GetUserData()
     m_sDetectorPageUserDataStruct.bFollowUp = m_pFollowUpCBox->isChecked();
     m_sDetectorPageUserDataStruct.bOtherReason = m_pOtherReasonForTestCBox->isChecked();
     m_sDetectorPageUserDataStruct.strOtherReasonComments = m_pOtherReasonCommentsLineEdit->text();
+    // PIS
+    if(gk_iVersionConfig == PIS_VERSION)
+    {
+        m_sDetectorPageUserDataStruct.bOxidant = m_pOxidantCBox->isChecked();
+        //m_sDetectorPageUserDataStruct.bSpecificGravity = m_pSpecificCBox->isChecked();
+        m_sDetectorPageUserDataStruct.bPH = m_pPHCBox->isChecked();
+        m_sDetectorPageUserDataStruct.bNitrite = m_pNitriteCBox->isChecked();
+        m_sDetectorPageUserDataStruct.bCreatinine = m_pCreatinineCBox->isChecked();
+    }
 
     m_sDetectorPageUserDataStruct.bTemperatureNormal = m_pTemperatureNormalCBox->isChecked();
     m_sDetectorPageUserDataStruct.strEmail = m_pEmailAddressWidget->GetLineText();
@@ -417,7 +460,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 {
     //const int kiLineEditWidth = 80;
     QGroupBox *pGroupBox = new QGroupBox(tr("Donor Details"), this);
-    pGroupBox->setFixedSize(445, 395);
+    pGroupBox->setFixedSize(450, 395);
     // donor name
     m_pDonorNameLabel = new QLabel(tr("Donor Name"), this);
     m_pDonorNameLabel->setMargin(0);
@@ -431,6 +474,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     m_pFirstNameWidget->SetLineEditObjectName("LastFirstName");
 
     m_pDonorIDWidget = new CLabelLineEditWidget(tr("Donor ID#"), "", this);
+    //m_pDonorIDWidget->SetLineValidator(0, 999999999);
     // date of birth email
     m_pBirthDateWidget = new CLabelDateWidget(tr("Date of Birth"), QDate::currentDate(), this);
     m_pEmailAddressWidget = new CLabelLineEditWidget(tr("Email Address"), "", this);
@@ -454,6 +498,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
     {
         m_pAdulterantsLabel = new QLabel(tr("Adulterants"), this);
         m_pOxidantCBox = new QCheckBox(tr("Oxidant"), this);
+        //m_pSpecificCBox = new QCheckBox(tr("SpecificGravity"), this);
         m_pPHCBox = new QCheckBox(tr("pH"), this);
         m_pNitriteCBox = new QCheckBox(tr("Nitrite"), this);
         m_pCreatinineCBox = new QCheckBox(tr("Creatinine"), this);
@@ -497,6 +542,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
         //
         pOxidantLayout->addSpacing(9);
         pOxidantLayout->addWidget(m_pOxidantCBox);
+        //pOxidantLayout->addWidget(m_pSpecificCBox);
         pOxidantLayout->addWidget(m_pPHCBox);
         pOxidantLayout->addWidget(m_pNitriteCBox);
         pOxidantLayout->addWidget(m_pCreatinineCBox);
@@ -552,7 +598,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 QGroupBox *CDetectorPage::_CreateProductDetailsGroup()
 {
     QGroupBox *pGroupBox = new QGroupBox(tr("Product Details"), this);
-    pGroupBox->setFixedSize(445, 140);
+    pGroupBox->setFixedSize(450, 140);
 
     // 杯类型
     m_pProductDefinitionWidget = new CLabelCommoBoxWidget(tr("Product Definition"), m_strCupTypeList, this);
@@ -653,11 +699,14 @@ QGroupBox *CDetectorPage::_CreateResultsGroup()
 void CDetectorPage::_InitWidget()
 {
     m_pReadTestDeviceButton = new QPushButton(tr("Read Test Device"));
-    m_pReadTestDeviceButton->setFixedSize(140, 35);
+    m_pReadTestDeviceButton->setFixedSize(135, 35);
     connect(m_pReadTestDeviceButton,SIGNAL(clicked(bool)), this, SLOT(_SlotCheckReadTestDevice()));
     m_pStopTestButton = new QPushButton(tr("Stop Test"));
-    m_pStopTestButton->setFixedSize(135, 35);
+    m_pStopTestButton->setFixedSize(100, 35);
     connect(m_pStopTestButton, SIGNAL(clicked(bool)), this, SLOT(_SlotStopTest()));
+    m_pClearDataButton = new QPushButton(tr("Clear Data"));
+    m_pClearDataButton->setFixedSize(100, 35);
+    connect(m_pClearDataButton,SIGNAL(clicked(bool)), this, SLOT(_SlotClearData()));
 }
 /**
   * @brief 初始化布局
@@ -675,10 +724,13 @@ void CDetectorPage::_InitLayout()
     pLeftLayout->addSpacing(1);
     //
     QHBoxLayout *pLeftButtonLayout = new QHBoxLayout;
-    pLeftButtonLayout->addSpacing(20);
+    pLeftButtonLayout->addSpacing(10);
     pLeftButtonLayout->addWidget(m_pReadTestDeviceButton);
-    pLeftButtonLayout->addSpacing(20);
+    pLeftButtonLayout->addSpacing(10);
     pLeftButtonLayout->addWidget(m_pStopTestButton);
+    pLeftButtonLayout->addSpacing(10);
+    pLeftButtonLayout->addWidget(m_pClearDataButton);
+//    pLeftButtonLayout->addStretch(1);
     pLeftLayout->addLayout(pLeftButtonLayout);
     //
     QHBoxLayout *pTestLayout = new QHBoxLayout;
@@ -711,6 +763,46 @@ bool CDetectorPage::_GetValidData()
 //        QMessageBox::information(NULL, tr("Tip"), tr("Please Input Valid Email Address!"), QMessageBox::Ok , QMessageBox::Ok);
 //        return false;
 //    }
+    // birth date
+    if(!m_pBirthDateWidget->GetDate().isValid())
+    {
+        QMessageBox::information(NULL, tr("Tip"), tr("Please Input Valid Birth Date!"), QMessageBox::Ok , QMessageBox::Ok);
+        return false;
+    }
+    // PIS
+    if(gk_iVersionConfig == PIS_VERSION)
+    {
+        if(!m_pOxidantCBox->isChecked())
+        {
+            QMessageBox::information(NULL, tr("Tip"), tr("Please Check Oxidant!"),
+                                     QMessageBox::Ok , QMessageBox::Ok);
+            return false;
+        }
+//        if(!m_pSpecificCBox->isChecked())
+//        {
+//            QMessageBox::information(NULL, tr("Tip"), tr("Please Check SpecificGravity!"),
+//                                     QMessageBox::Ok , QMessageBox::Ok);
+//            return false;
+//        }
+        if(!m_pPHCBox->isChecked())
+        {
+            QMessageBox::information(NULL, tr("Tip"), tr("Please Check pH!"),
+                                     QMessageBox::Ok , QMessageBox::Ok);
+            return false;
+        }
+        if(!m_pNitriteCBox->isChecked())
+        {
+            QMessageBox::information(NULL, tr("Tip"), tr("Please Check Nitrite!"),
+                                     QMessageBox::Ok , QMessageBox::Ok);
+            return false;
+        }
+        if(!m_pCreatinineCBox->isChecked())
+        {
+            QMessageBox::information(NULL, tr("Tip"), tr("Please Check Creatinine!"),
+                                     QMessageBox::Ok , QMessageBox::Ok);
+            return false;
+        }
+    }
 
     return true;
 }
@@ -827,6 +919,22 @@ void CDetectorPage::_ReplaceCubeHtmlData(QString &strHtml)
     strFindWord = "${TemperatureinRangeNoCheck}";
     strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
                               strFindWord.count(), m_pTemperatureNormalCBox->isChecked() ? "" : "checked");
+    // PIS
+    strFindWord = "${OxidantCheck}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pOxidantCBox->isChecked() ? "checked" : "");
+//    strFindWord = "${SpecificGravityCheck}";
+//    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+//                              strFindWord.count(), m_pSpecificCBox->isChecked() ? "checked" : "");
+    strFindWord = "${PHCheck}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pPHCBox->isChecked() ? "checked" : "");
+    strFindWord = "${NitriteCheck}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pNitriteCBox->isChecked() ? "checked" : "");
+    strFindWord = "${CreatinineCheck}";
+    strHtml = strHtml.replace(strHtml.indexOf(strFindWord),
+                              strFindWord.count(), m_pCreatinineCBox->isChecked() ? "checked" : "");
     // 测试结果
     strFindWord = "${ResultData}";
     strHtml = strHtml.replace(strHtml.indexOf(strFindWord), strFindWord.count(), _GetResultsDataHtml());

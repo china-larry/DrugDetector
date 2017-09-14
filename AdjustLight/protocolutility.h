@@ -34,7 +34,7 @@
 static const quint8 kiDataStartIndex = 9;
 static const quint8 kiParamPackageDataLen = 50;//根据之前代码定的,具体原因不明
 static const quint8 kiParamPackageSize = 10;//目前确定是把设备配置参数分为10个包传输
-static const quint8 kiUpgragePackageDataLen = 50;//
+static const int kiUpgragePackageDataLen = 50;//
 enum Direction
 {
     DIRECTION_FORWARD = 0,//正转
@@ -163,6 +163,29 @@ public:
      */
     static QVector<QByteArray> GetUpgradeAppCmd(QString strFilePath);
 
+    /**
+     * @brief GetUpgradeAppDataOverCmd
+     * 仪器下位机程序升级数据发送完成命令
+     * @return
+     */
+    static QByteArray GetUpgradeAppDataOverCmd();
+
+
+    /**
+    * @brief  GetWriteSerialNumber
+    * 写仪器序列号命令
+    * @param  strSerialNumber仪器序列号
+    * @return
+    */
+    static QByteArray GetWriteSerialNumber(QString strSerialNumber);
+
+    /**
+    * @brief  GetReadSerialNumber
+    * 读仪器序列号命令
+    * @return
+    */
+    static QByteArray GetReadSerialNumber();
+
 private:
     static void SetCmdLength(QByteArray& dataByteArray);
     /**
@@ -211,7 +234,10 @@ public:
     static const int sm_kiCmdUpgradeAppFlag = 0x000C;//仪器下位机程序升级开始
     static const int sm_kiCmdUpgradeAppStart = 0x00C1;//仪器下位机程序升级开始
     static const int sm_kiCmdUpgradeAppData = 0x000D;//仪器下位机程序升级数据
-    static const int sm_kiCmdUpgradeAppEnd = 0x000E;//仪器下位机程序升级结束
+    static const int sm_kiCmdUpgradeAppSendDataOver = 0x000E;//以下下位机升级数据接收完成
+    static const int sm_kiCmdUpgradeAppEnd = 0x000F;//仪器下位机程序升级结束
+    static const int sm_kiCmdWriteSerialNumberToDev = 0x0011;//写仪器序列号到下位机
+    static const int sm_kiCmdReadSerialNumberFromDev = 0x0012;//写仪器序列号到下位机
     //命令参数
     static const int sm_kiCommonParamHigh = 0x00;
     static const int sm_kiCommonParamLow = 0x01;

@@ -106,10 +106,19 @@ void UpgradeProgress::_SlotOkButtonClick()
         {
             pMsgBox->information(this,tr("Tips"),tr("Please turn off the power,and go on!"),QMessageBox::Ok);
 
-            pMsgBox->show();
+            pMsgBox->exec();
         }
+        delete pMsgBox;
+        pMsgBox = NULL;
     }
 
+//    qDebug() << "113  !!!!!!! ";
+    if(HIDOpertaionUtility::GetInstance()->CheckDeviceConnection() == false)
+    {
+        qDebug() << "USB pull out!!!!!!! ";
+    }
+    HIDOpertaionUtility::GetInstance()->SetDeviceConnection(true);
+//    qDebug() << "117  !!!!!!! ";
     ui->okButton->hide();
     ui->cancelButton->hide();
     ui->progressBar->show();
@@ -142,6 +151,6 @@ void UpgradeProgress::_SlotUpgradeError(QString strError)
 void UpgradeProgress::_SlotUpdataFinish()
 {
     //MessageBox::warning("升级成功");
-    QMessageBox::warning(this, tr("warning"), tr("upgrade error"));
+    QMessageBox::warning(this, tr("Tips"), tr("upgrade success"));
     this->close();
 }

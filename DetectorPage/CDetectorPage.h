@@ -41,9 +41,9 @@ public:
     ~CDetectorPage();
 
 signals:
-    void SignalStartTest();// 开始测试
+    void SignalStartTest(int iTestDelayTime);// 开始测试
     void SignalStartQRCode();// 开始获取二维码
-    void SignalHaveQRCodeInfo(int iProgramCount);// 获得二维码，告知主界面，项目总数，进度条进度
+    void SignalHaveQRCodeInfo(int iProgramCount, int iTestDelayTime);// 获得二维码，告知主界面，项目总数，进度条进度
     void SignalTestProgramIndex(int iProgramIndex);// 测试结果Index，用于主界面状态栏显示
     void SignalEndTest();// 流程测试结束，数据传输main
     void SignalStopTest();// 主动停止测试
@@ -61,6 +61,7 @@ private slots:
     // 控件
     void _SlotCheckReadTestDevice();// 开始测试
     void _SlotStopTest();// 主动停止测试
+    void _SlotClearData();// 清空数据
     // 打印PDF
     void _SlotPrintToPDF();
 public:
@@ -123,6 +124,7 @@ private:
     // adulterants
     QLabel *m_pAdulterantsLabel;
     QCheckBox *m_pOxidantCBox;
+    //QCheckBox *m_pSpecificCBox;
     QCheckBox *m_pPHCBox;
     QCheckBox *m_pNitriteCBox;
     QCheckBox *m_pCreatinineCBox;
@@ -138,6 +140,7 @@ private:
     // push button
     QPushButton *m_pReadTestDeviceButton;
     QPushButton *m_pStopTestButton;
+    QPushButton *m_pClearDataButton;
     QPushButton *m_pPrintPriviewButton;
     //////////////////////////////////////
     // results

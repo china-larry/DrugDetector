@@ -56,6 +56,70 @@ void CSettingSetupWindowWidget::showEvent(QShowEvent *)
     CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdReadDevVersion);
     CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdReadTestCount);
 }
+
+void CSettingSetupWindowWidget::_PisIP01TextChange()
+{
+    if(m_pPisIP01LineEdit->text().toInt() > 25)
+    {
+        m_pPisIP02LineEdit->setFocus();
+    }
+}
+
+void CSettingSetupWindowWidget::_PisIP02TextChange()
+{
+    if(m_pPisIP02LineEdit->text().toInt() > 25)
+    {
+        m_pPisIP03LineEdit->setFocus();
+    }
+}
+
+void CSettingSetupWindowWidget::_PisIP03TextChange()
+{
+    if(m_pPisIP03LineEdit->text().toInt() > 25)
+    {
+        m_pPisIP04LineEdit->setFocus();
+    }
+}
+
+void CSettingSetupWindowWidget::_PisIP04TextChange()
+{
+    if(m_pPisIP04LineEdit->text().toInt() > 25)
+    {
+        m_pPisServerPortLineEdit->setFocus();
+    }
+}
+
+void CSettingSetupWindowWidget::_PoctIP01TextChange()
+{
+    if(m_pPoctIP01LineEdit->text().toInt() > 25)
+    {
+        m_pPoctIP02LineEdit->setFocus();
+    }
+}
+
+void CSettingSetupWindowWidget::_PoctIP02TextChange()
+{
+    if(m_pPoctIP02LineEdit->text().toInt() > 25)
+    {
+        m_pPoctIP03LineEdit->setFocus();
+    }
+}
+
+void CSettingSetupWindowWidget::_PoctIP03TextChange()
+{
+    if(m_pPoctIP03LineEdit->text().toInt() > 25)
+    {
+        m_pPoctIP04LineEdit->setFocus();
+    }
+}
+
+void CSettingSetupWindowWidget::_PoctIP04TextChange()
+{
+    if(m_pPoctIP04LineEdit->text().toInt() > 25)
+    {
+        m_pPoctServerPortLineEdit->setFocus();
+    }
+}
 /**
   * @brief 创建server组
   * @param
@@ -89,6 +153,11 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     m_pPisIP04LineEdit->setValidator(new QIntValidator(0, 255, this));
     m_pPisServerPortLineEdit->setValidator(new QIntValidator(0, 65535, this));
     //
+    connect(m_pPisIP01LineEdit, &QLineEdit::textChanged, this, &CSettingSetupWindowWidget::_PisIP01TextChange);
+    connect(m_pPisIP02LineEdit, &QLineEdit::textChanged, this, &CSettingSetupWindowWidget::_PisIP02TextChange);
+    connect(m_pPisIP03LineEdit, &QLineEdit::textChanged, this, &CSettingSetupWindowWidget::_PisIP03TextChange);
+    connect(m_pPisIP04LineEdit, &QLineEdit::textChanged, this, &CSettingSetupWindowWidget::_PisIP04TextChange);
+    //
     // POCT
     m_pPoctLabel = new QLabel(tr("POCT"), this);
     m_pPoctLabel->setObjectName("PISTitle");
@@ -113,6 +182,10 @@ QGroupBox *CSettingSetupWindowWidget::_CreateServerGroup()
     m_pPoctIP03LineEdit->setValidator(new QIntValidator(0, 255, this));
     m_pPoctIP04LineEdit->setValidator(new QIntValidator(0, 255, this));
     m_pPoctServerPortLineEdit->setValidator(new QIntValidator(0, 65535, this));
+    connect(m_pPoctIP01LineEdit, &QLineEdit::textChanged, this, &CSettingSetupWindowWidget::_PoctIP01TextChange);
+    connect(m_pPoctIP02LineEdit, &QLineEdit::textChanged, this, &CSettingSetupWindowWidget::_PoctIP02TextChange);
+    connect(m_pPoctIP03LineEdit, &QLineEdit::textChanged, this, &CSettingSetupWindowWidget::_PoctIP03TextChange);
+    connect(m_pPoctIP04LineEdit, &QLineEdit::textChanged, this, &CSettingSetupWindowWidget::_PoctIP04TextChange);
     // 方便测试
     m_pPoctIP01LineEdit->setText("192");
     m_pPoctIP02LineEdit->setText("168");
@@ -238,6 +311,7 @@ QGroupBox *CSettingSetupWindowWidget::_CreateLanguageGroup()
     m_pEnglishRButton = new QRadioButton(tr("English"), this);
     m_pEnglishRButton->setChecked(true);
     m_pSpainRButton = new QRadioButton(tr("Spain"), this);
+    m_pSpainRButton->hide();
 
     QHBoxLayout *pLayout = new QHBoxLayout;
     pLayout->addSpacing(70);

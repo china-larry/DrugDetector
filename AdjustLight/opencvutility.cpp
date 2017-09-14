@@ -1,8 +1,10 @@
 ﻿#include "OpencvUtility.h"
 #include <QDir>
 #include <QApplication>
+#include <string>
 #include "QZXingDLL/QZXing.h"
 
+using namespace std;
 
 OpencvUtility* OpencvUtility::pInstance = NULL;
 
@@ -174,7 +176,8 @@ bool OpencvUtility::GetVideoCapture(QString *pImagePath)
             //imshow( "Capture",frame);
             //cvWaitKey(10);
             *pImagePath = (*pImagePath).arg(s_iImgIndex);
-            imwrite((*pImagePath).toLatin1().data(),mframe,compression_params);
+            //imwrite((*pImagePath).toLatin1().data(),mframe,compression_params);
+            imwrite(string((const char *)(*pImagePath).toLocal8Bit()),mframe,compression_params);
             s_iImgIndex++;
             return true;
         }
