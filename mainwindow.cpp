@@ -33,6 +33,9 @@
 
 #include "AdjustLight/CHidCmdThread.h"
 #include "AdjustLight/HidOpertaionUtility.h"
+#include "AdjustLight/VideoThread.h"
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -181,19 +184,38 @@ bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, long *r
                 case DBT_DEVICEARRIVAL:
                     /*TODO*/
                     qDebug() << "USB add " << endl;
+                    //打开设备
+                    if(CHidCmdThread::GetInstance()->GetStopped())
+                    {
+                        CHidCmdThread::GetInstance()->start();
+                    }
+                    else
+                    {
+                        CHidCmdThread::GetInstance()->SetStopped(true);
+                        while(CHidCmdThread::GetInstance()->isRunning())
+                        {
+                            continue;
+                        }
+                        CHidCmdThread::GetInstance()->start();
+                    }
                     bResult = true;
                     break;
 
                 case DBT_DEVICEREMOVECOMPLETE:
+                {
                     /*TODO*/
                     qDebug() << "USB gone " << endl;
                     if(HIDOpertaionUtility::GetInstance()->CheckDeviceConnection() == false)
                     {
                         qDebug() << "USB pull out! ";
-                        QMessageBox::warning(NULL, "Warning", "USB pull out!",
+                        QMessageBox::warning(NULL, "Warning", "USB drive removed!",
                                              QMessageBox::Ok, QMessageBox::Ok);
                     }
+                    VideoThread videoThread;
+                    videoThread.CloseVideo();
+
                     bResult = true;
+                }
                     break;
 
                 case DBT_DEVNODES_CHANGED:
@@ -478,7 +500,7 @@ void MainWindow::_ReadConfigFile()
     QFile qFile(QApplication::applicationDirPath() + "/Resources/config.json");
     if(!qFile.open(QFile::ReadOnly))
     {
-        QMessageBox::critical(this, tr("Error"), tr("Open Config File Failure"));
+        QMessageBox::critical(this, tr("Error"), tr("Critical Data lost"));
         return;
     }
     QByteArray qFileByte = qFile.readAll();

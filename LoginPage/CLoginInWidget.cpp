@@ -235,7 +235,7 @@ int CLoginInWidget::_CheckUserPower()
     if(strUserName.isEmpty() || strPassWord.isEmpty())
     {
         QMessageBox::critical(0, QObject::tr("Error!"),
-                         QObject::tr("Please Input Your UserName and Password!"));
+                         QObject::tr("Please input Username and Password!"));
         return -1;
     }
     // 数据库查询
@@ -270,15 +270,15 @@ int CLoginInWidget::_CheckUserPower()
             else
             {// 密码错误
                 QMessageBox::critical(0, QObject::tr("Error!"),
-                                 QObject::tr("Please Input Valid Password!"));
+                                 QObject::tr("Incorrect Password!"));
                 return -1;
             }
         }
     }
     else
     {
-        QMessageBox::critical(0, QObject::tr("Database Error!"),
-                         QObject::tr("Open Database File Error!"));
+        QMessageBox::critical(0, QObject::tr("Data base error!"),
+                         QObject::tr("Critical Data lostr!"));
         return -1;
     }
     return -1;

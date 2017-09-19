@@ -38,20 +38,10 @@ void CSettingSetupWindowWidget::SlotGetUserTimes(int iTestCount)
 void CSettingSetupWindowWidget::showEvent(QShowEvent *)
 {
     //打开设备
-    if(CHidCmdThread::GetInstance()->GetStopped())
+    if(CHidCmdThread::GetInstance()->GetStopped() || CHidCmdThread::GetInstance()->isRunning())
     {
         CHidCmdThread::GetInstance()->start();
     }
-    else
-    {
-        CHidCmdThread::GetInstance()->SetStopped(true);
-        while(CHidCmdThread::GetInstance()->isRunning())
-        {
-            continue;
-        }
-        CHidCmdThread::GetInstance()->start();
-    }
-
 
     CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdReadDevVersion);
     CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdReadTestCount);

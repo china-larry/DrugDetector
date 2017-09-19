@@ -128,6 +128,10 @@ signals:
 
     //发送HID状态信号
     void SignalErrInfo(EnumTypeErr qErrorMsg);
+
+    //发送仪器序列号
+    void SignalReceiveDevSerialNumber(QString strSerialNumner);
+
 private slots:
     //------------------以下几个槽只在后台线程执行---------------------//
     /**
@@ -183,6 +187,8 @@ private slots:
      * @return
      */
     bool _SlotUpgradeSubControl(QString strFilePath);
+
+    void _SlotmWriteHidTimeOut();
 
 public:
     //类对象
@@ -347,6 +353,8 @@ private:
     QString m_strDevSerialNumber;
     bool m_bIsUSBConnect;
     bool m_bIsUpdateDataSendOver;
+    QTimer *m_WriteHidTimer;
+    bool m_bWriteHidTimeOut;
 };
 
 

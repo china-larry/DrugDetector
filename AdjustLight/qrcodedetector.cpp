@@ -99,19 +99,11 @@ void QRCodeDetector::_SlotGetQRcode()
 bool QRCodeDetector::InitDevice()
 {
     //打开设备
-    if(CHidCmdThread::GetInstance()->GetStopped())
+    if(CHidCmdThread::GetInstance()->GetStopped() || CHidCmdThread::GetInstance()->isRunning() == false)
     {
         CHidCmdThread::GetInstance()->start();
     }
-//    else
-//    {
-//        CHidCmdThread::GetInstance()->SetStopped(true);
-//        while(CHidCmdThread::GetInstance()->isRunning())
-//        {
-//            continue;
-//        }
-//        CHidCmdThread::GetInstance()->start();
-//    }
+
     //关所有灯
     CHidCmdThread::GetInstance()->AddCmdWithoutCmdData(ProtocolUtility::sm_kiCmdCloseAllLed);
     HIDOpertaionUtility::GetInstance()->SetDeviceOperate(true);

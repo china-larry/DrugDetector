@@ -133,7 +133,7 @@ void CDetectorPage::SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfoStruct)
         if(sQRCodeInfoStruct.eTypeCup != EnumTypeCup::TypeTCup)
         {
             _SlotStopTest();
-            QMessageBox::warning(NULL, "warning", tr("Not TCup"), QMessageBox::Ok, QMessageBox::Ok);
+            QMessageBox::warning(NULL, "warning", tr("Please select the correct Product Definition"), QMessageBox::Ok, QMessageBox::Ok);
             return;
         }
     }
@@ -142,14 +142,14 @@ void CDetectorPage::SlotReceiveQRCodeInfo(QRCodeInfo sQRCodeInfoStruct)
         if(sQRCodeInfoStruct.eTypeCup != EnumTypeCup::TypeSCup10)
         {
             _SlotStopTest();
-             QMessageBox::warning(NULL, "warning", tr("Not TCube"), QMessageBox::Ok, QMessageBox::Ok);
+             QMessageBox::warning(NULL, "warning", tr("Please select the correct Product Definition"), QMessageBox::Ok, QMessageBox::Ok);
              return;
         }
     }
     else
     {
         _SlotStopTest();
-         QMessageBox::warning(NULL, "warning", tr("Error Cup"), QMessageBox::Ok, QMessageBox::Ok);
+         QMessageBox::warning(NULL, "warning", tr("Please select the correct Product Definition"), QMessageBox::Ok, QMessageBox::Ok);
          return;
     }
     // 更新控件
@@ -336,7 +336,7 @@ void CDetectorPage::_SlotPrintToPDF()
 {
     if(m_strTestPrintImagePath.isEmpty())
     {
-        QMessageBox::information(NULL, tr("Tip"), tr("Please Wait Print Image!"), QMessageBox::Ok , QMessageBox::Ok);
+        QMessageBox::information(NULL, tr("Tip"), tr("Test Image missing!"), QMessageBox::Ok , QMessageBox::Ok);
         return;
     }
     // 资源文件
@@ -748,13 +748,13 @@ bool CDetectorPage::_GetValidData()
     // 是否勾选temperature
     if(!m_pTemperatureNormalCBox->isChecked())
     {
-        QMessageBox::information(NULL, tr("Tip"), tr("Please Check Temperature!"), QMessageBox::Ok , QMessageBox::Ok);
+        QMessageBox::information(NULL, tr("Tip"), tr("Please confirm temperature is normal!"), QMessageBox::Ok , QMessageBox::Ok);
         return false;
     }
     // DonorID
     if(m_pDonorIDWidget->GetLineText().isEmpty())
     {
-        QMessageBox::information(NULL, tr("Tip"), tr("Please Input DonorID!"), QMessageBox::Ok , QMessageBox::Ok);
+        QMessageBox::information(NULL, tr("Tip"), tr("Please input Donor ID!"), QMessageBox::Ok , QMessageBox::Ok);
         return false;
     }
     // Email是否包含@
@@ -774,7 +774,7 @@ bool CDetectorPage::_GetValidData()
     {
         if(!m_pOxidantCBox->isChecked())
         {
-            QMessageBox::information(NULL, tr("Tip"), tr("Please Check Oxidant!"),
+            QMessageBox::information(NULL, tr("Tip"), tr("Please confirm Oxidant!"),
                                      QMessageBox::Ok , QMessageBox::Ok);
             return false;
         }
@@ -786,19 +786,19 @@ bool CDetectorPage::_GetValidData()
 //        }
         if(!m_pPHCBox->isChecked())
         {
-            QMessageBox::information(NULL, tr("Tip"), tr("Please Check pH!"),
+            QMessageBox::information(NULL, tr("Tip"), tr("Please confirm pH!"),
                                      QMessageBox::Ok , QMessageBox::Ok);
             return false;
         }
         if(!m_pNitriteCBox->isChecked())
         {
-            QMessageBox::information(NULL, tr("Tip"), tr("Please Check Nitrite!"),
+            QMessageBox::information(NULL, tr("Tip"), tr("Please confirm Nitrite!"),
                                      QMessageBox::Ok , QMessageBox::Ok);
             return false;
         }
         if(!m_pCreatinineCBox->isChecked())
         {
-            QMessageBox::information(NULL, tr("Tip"), tr("Please Check Creatinine!"),
+            QMessageBox::information(NULL, tr("Tip"), tr("Please confirm Creatinine!"),
                                      QMessageBox::Ok , QMessageBox::Ok);
             return false;
         }
@@ -999,7 +999,7 @@ void CDetectorPage::_FuseTCubeImage()
     }
     else
     {
-        QMessageBox::warning(NULL, "warning", tr("Not TCup Print Image"), QMessageBox::Ok, QMessageBox::Ok);
+        QMessageBox::warning(NULL, "warning", tr("Test Image missing"), QMessageBox::Ok, QMessageBox::Ok);
     }
 }
 // 圆杯拼接数据

@@ -96,7 +96,7 @@ void CHistoryPage::_SlotCheckQuery()
     QDate qEndDate = m_pEndDataWidget->GetDate();
     if(qBeginDate > qEndDate)
     {
-        QMessageBox::about(this, tr("Warning"), tr("Wrong Time"));
+        QMessageBox::about(this, tr("Warning"), tr("Date error"));
         return;// 时间错误
     }
     QString strSelect = QString("SELECT * FROM drugdata WHERE ");
@@ -178,12 +178,12 @@ void CHistoryPage::_SlotCheckDelete()
     int iCurrentSelectSetCount = iCurrentSelectSet.count();
     if(iCurrentSelectSetCount <= 0)
     {
-        QMessageBox::information(NULL, tr("Tip"), tr("Please Select Item!"),
+        QMessageBox::information(NULL, tr("Tip"), tr("Please select the item first!"),
                                  QMessageBox::Ok , QMessageBox::Ok);
         return;
     }
     // 删除提示
-    int iRet = QMessageBox::question(NULL, tr("Tip"), tr("Are You sure Delete!"),
+    int iRet = QMessageBox::question(NULL, tr("Tip"), tr("Are you sure to delete this?"),
                                      QMessageBox::Yes | QMessageBox::No , QMessageBox::Yes);
     if(iRet == QMessageBox::No)
     {
@@ -206,7 +206,7 @@ void CHistoryPage::_SlotCheckExport()
     _GetCurrentSelectRows(iCurrentSelectRowSet);
     if(iCurrentSelectRowSet.count() < 1)
     {
-        QMessageBox::critical(NULL, "Error", "Please Select Item!", QMessageBox::Ok, QMessageBox::Ok);
+        QMessageBox::critical(NULL, "Error", "Please select the item first!", QMessageBox::Ok, QMessageBox::Ok);
         return;
     }
     //遍历
@@ -251,9 +251,12 @@ void CHistoryPage::_SlotCheckExport()
     QString strFile = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
                                                "Excel (*.xls *.xlsx)");
-    _SaveExcel(strFile);
-    QMessageBox::information(NULL, "Tip", "Export Excel Sucess!", QMessageBox::Ok, QMessageBox::Ok);
-    qDebug() <<"save excel sucess";
+    if(!strFile.isEmpty())
+    {
+        _SaveExcel(strFile);
+        QMessageBox::information(NULL, "Tip", "Export to Excel successful!", QMessageBox::Ok, QMessageBox::Ok);
+        qDebug() <<"save excel sucess";
+    }
 }
 
 void CHistoryPage::_SlotCheckPrint()
@@ -264,7 +267,7 @@ void CHistoryPage::_SlotCheckPrint()
     qDebug() << "select row count_" << iCurrentSelectRowSet.count();
     if(iCurrentSelectRowSet.count() < 1)
     {
-        QMessageBox::critical(NULL, "Error", "Please Select Item!", QMessageBox::Ok, QMessageBox::Ok);
+        QMessageBox::critical(NULL, "Error", "Please select the item first!", QMessageBox::Ok, QMessageBox::Ok);
         return;
     }
     // 打印HTML数据流
@@ -293,7 +296,7 @@ void CHistoryPage::_SlotCheckPrint()
             qDebug() << "cup type" << strCupType;
             if(strCupType.isEmpty())// 此处杯型判定，根据杯型选择不同的打印模板，目前只简单判定是否为空，后面模板详细判定
             {
-                QMessageBox::critical(NULL, "Error", "Wrong Cup Type!", QMessageBox::Ok, QMessageBox::Ok);
+                QMessageBox::critical(NULL, "Error", "Critical data lost!", QMessageBox::Ok, QMessageBox::Ok);
                 return;
             }
         }
@@ -353,7 +356,7 @@ void CHistoryPage::_SlotCheckPoct()
     {// 还没有自动连接
         //m_pTcpSocket->abort();
         //m_pTcpSocket->connectToHost("192.168.8.60",8004);
-        QMessageBox::critical(NULL, "Error", "Please Set POCT Server IP and Auto Connect!",
+        QMessageBox::critical(NULL, "Error", "No connection to POCT/PIS Server!",
                               QMessageBox::Ok, QMessageBox::Ok);
         return;
     }
@@ -363,7 +366,7 @@ void CHistoryPage::_SlotCheckPoct()
     qDebug() << "select row count_" << iCurrentSelectRowSet.count();
     if(iCurrentSelectRowSet.count() < 1)
     {
-        QMessageBox::critical(NULL, "Error", "Please Select Item!", QMessageBox::Ok, QMessageBox::Ok);
+        QMessageBox::critical(NULL, "Error", "Please select the item first!", QMessageBox::Ok, QMessageBox::Ok);
         return;
     }
     // 遍历
@@ -533,7 +536,7 @@ void CHistoryPage::_SlotPoctReadMesg()
     QByteArray qPoctTcpReadMsg =   m_pTcpSocket->readAll();
 
     qDebug()  << "tcp read" << qPoctTcpReadMsg;
-    QMessageBox::information(NULL, "Tip", "Update Sucess!", QMessageBox::Ok, QMessageBox::Ok);
+    QMessageBox::information(NULL, "Tip", "Export to POCT Server Sucess!", QMessageBox::Ok, QMessageBox::Ok);
 }
 // 链接错误
 void CHistoryPage::_SlotPoctConnectError(QAbstractSocket::SocketError socketError)
@@ -733,7 +736,7 @@ void CHistoryPage::InsertToDatabase()
         if (!qSqlQuery.exec())
         {
             qDebug() << qSqlQuery.lastError();
-            QMessageBox::warning(0, QObject::tr("Database Error"),
+            QMessageBox::warning(0, QObject::tr("Data base error!"),
                                   qSqlQuery.lastError().text());
         }
         qSqlQuery.finish();
@@ -1082,7 +1085,7 @@ bool CHistoryPage::_DeleteDatabase(QString strID)
         if (!qSqlQuery.exec(strDelete))
         {
             qDebug() << qSqlQuery.lastError();
-            QMessageBox::warning(0, QObject::tr("Delete Database Error"),
+            QMessageBox::warning(0, QObject::tr("Delete Data base error!"),
                                   qSqlQuery.lastError().text());
             qSqlQuery.finish();
             return false;

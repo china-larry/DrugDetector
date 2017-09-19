@@ -143,7 +143,7 @@ void UpgradeProgress::_SlotUpgradeError(QString strError)
 {
     qDebug()<< strError;
     //MessageBox::warning("升级失败");
-    QMessageBox::warning(this, tr("warning"), tr("upgrade error"));
+    QMessageBox::warning(this, tr("warning"), tr("Update failed"));
     this->close();
 }
 
@@ -151,6 +151,6 @@ void UpgradeProgress::_SlotUpgradeError(QString strError)
 void UpgradeProgress::_SlotUpdataFinish()
 {
     //MessageBox::warning("升级成功");
-    QMessageBox::warning(this, tr("Tips"), tr("upgrade success"));
+    QMessageBox::warning(this, tr("Tips"), tr("Update successful"));
     this->close();
 }

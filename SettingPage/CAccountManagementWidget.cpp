@@ -113,7 +113,7 @@ void CAccountManagementWidget::SlotDeleteUserWidget()
     int iRow = m_pUserTableWidget->currentRow();
     if(iRow < 0 || iRow >= m_pUserTableWidget->rowCount())
     {
-        QMessageBox::information(NULL, tr("Tip"), tr("Please Select Item!"), QMessageBox::Ok , QMessageBox::Ok);
+        QMessageBox::information(NULL, tr("Tip"), tr("Please select the item first!"), QMessageBox::Ok , QMessageBox::Ok);
         return;
     }
     QTableWidgetItem *pIDItem = m_pUserTableWidget->item(iRow, 0);
@@ -181,7 +181,7 @@ void CAccountManagementWidget::_SlotModifyUser()
     int iRow = m_pUserTableWidget->currentRow();
     if(iRow < 0 || iRow >= m_pUserTableWidget->rowCount())
     {
-        QMessageBox::information(NULL, tr("Tip"), tr("Please Select Item!"), QMessageBox::Ok , QMessageBox::Ok);
+        QMessageBox::information(NULL, tr("Tip"), tr("Please select the item first!"), QMessageBox::Ok , QMessageBox::Ok);
         return;
     }
     // id
@@ -525,7 +525,7 @@ void CUserModifyWidget::_SlotCheckOkButton()
 {
     if(m_pOldPassWordLineEditWidget->GetLineText() != m_strOldPassWord)
     {
-        QMessageBox::critical(NULL, tr("Error"), tr("Please Input Right Old Password!"), QMessageBox::Ok , QMessageBox::Ok);
+        QMessageBox::critical(NULL, tr("Error"), tr("Incorrect Password!"), QMessageBox::Ok , QMessageBox::Ok);
         return;
     }
     if(m_pPassWordLineEditWidget->GetLineText().isEmpty())

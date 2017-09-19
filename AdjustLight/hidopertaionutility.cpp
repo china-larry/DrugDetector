@@ -42,6 +42,8 @@ HIDOpertaionUtility::HIDOpertaionUtility()
     connect(&m_WorkThread, SIGNAL(started()), this, SLOT(_SlotLoadDll()));
     connect(&m_WorkThread, SIGNAL(finished()), this, SLOT(_SlotUnloadDll()));
 
+    m_WriteHidTimer = new QTimer;
+    connect(m_WriteHidTimer,SIGNAL(timeout()),this,SLOT(_SlotmWriteHidTimeOut()));
     m_WorkThread.start();
     m_DevVersion = "";
     m_pDevConfigParamsByte = new quint8[sizeof(DevConfigParams)];
@@ -216,6 +218,11 @@ bool HIDOpertaionUtility::_SendCmdToDev(QByteArray writeByteArray)
 
 }
 
+void HIDOpertaionUtility::_SlotmWriteHidTimeOut()
+{
+    m_bWriteHidTimeOut = true;
+    _SlotOpen();
+}
 bool HIDOpertaionUtility::_SlotWrite(QByteArray qWriteByteArray)
 {
     bool bResult = false;
@@ -321,10 +328,10 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray qDataByteArray)
             }
             case ProtocolUtility::sm_kiCmdReadParamFromDev:           //读取仪器参数
             {
-                if(qDataByteArray.at(5) == (m_iCmdType / 256)
-                        && (qDataByteArray.at(6) == static_cast <quint8> (m_iCmdType))
-                        && qDataByteArray.at(1) == 0x01
-                        && qDataByteArray.at(2) == 0x01)
+                if((quint8)qDataByteArray.at(5) == (m_iCmdType / 256)
+                        && ((quint8)qDataByteArray.at(6) == static_cast <quint8> (m_iCmdType))
+                        && (quint8)qDataByteArray.at(1) == 0x01
+                        && (quint8)qDataByteArray.at(2) == 0x01)
                 {
                     _SetReturnResult(true);
                     quint8 iCmdLen = qDataByteArray.at(3);
@@ -373,7 +380,7 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray qDataByteArray)
             case ProtocolUtility::sm_kiCmdAddTestCount:               //仪器测量次数加1
             case ProtocolUtility::sm_kiCmdReadTestCount:              //仪器测量次数读取
             {
-                if(qDataByteArray.at(5) == (m_iCmdType/256)
+                if((quint8)qDataByteArray.at(5) == (m_iCmdType/256)
                         && ((quint8)qDataByteArray.at(6) == static_cast <quint8> (m_iCmdType))
                         && (quint8)qDataByteArray.at(1) == 0x01
                         && (quint8)qDataByteArray.at(2) == 0x01)
@@ -454,7 +461,7 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray qDataByteArray)
                 if((quint8)qDataByteArray.at(5) == static_cast <quint8> (m_iCmdType/256)
                         && ((quint8)qDataByteArray.at(6) == static_cast <quint8> (m_iCmdType))
                         && ((quint8)qDataByteArray.at(1) == 0x01)
-                        && ((quint8)qDataByteArray.at(2) == 0x01))
+                        && ((quint8)qDataByteArray.at(2) == 0x00))
 
                 {
                     m_bIsUpdateDataSendOver = true;
@@ -478,7 +485,14 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray qDataByteArray)
                     m_strDevSerialNumber.clear();
                     for (int i = 0; i < iCmdLen; i++)
                     {
-                        m_strDevSerialNumber.push_back(qDataByteArray.at(kiDataStartIndex + i));
+                        quint8 iData = qDataByteArray.at(kiDataStartIndex + i);
+                        QString strData = QString::number(iData,16);
+                        if(strData.length() == 1)
+                        {
+                            strData = "0" + strData;    //补 0
+                        }
+                        //m_strDevSerialNumber.push_back(strData);
+                        m_strDevSerialNumber.insert(0,strData);
                     }
                     qDebug() << "m_strDevSerialNumber = " << m_strDevSerialNumber;
                 }
@@ -487,19 +501,28 @@ void HIDOpertaionUtility::ReceiveNewCmdFromDev(QByteArray qDataByteArray)
             case ProtocolUtility::sm_kiCmdReadSerialNumberFromDev:
             {
                 qDebug() << "sm_kiCmdReadSerialNumberFromDev = " << ProtocolUtility::sm_kiCmdReadSerialNumberFromDev;
-                if(qDataByteArray.at(5) == (m_iCmdType / 256)
-                    && (qDataByteArray.at(6) == static_cast <quint8> (m_iCmdType))
-                    && qDataByteArray.at(1) == 0x01
-                    && qDataByteArray.at(2) == 0x01)
+                if((quint8)qDataByteArray.at(5) == (m_iCmdType / 256)
+                    && ((quint8)qDataByteArray.at(6) == static_cast <quint8> (m_iCmdType))
+                    && (quint8)qDataByteArray.at(1) == 0x01
+                    && (quint8)qDataByteArray.at(2) == 0x01)
                 {
                     _SetReturnResult(true);
                     quint8 iCmdLen = qDataByteArray.at(3);
                     iCmdLen = iCmdLen * 256 + qDataByteArray.at(4);
                     iCmdLen -= kiDataStartIndex;
                     m_strDevSerialNumber.clear();
+                    m_strDevSerialNumber.clear();
                     for (int i = 0; i < iCmdLen; i++)
                     {
-                        m_strDevSerialNumber.push_back(qDataByteArray.at(kiDataStartIndex + i));
+                        quint8 iData = qDataByteArray.at(kiDataStartIndex + i);
+                        QString strData = QString::number(iData,16);
+                        if(strData.length() == 1)
+                        {
+                            strData = "0" + strData;    //补 0
+                        }
+                        //m_strDevSerialNumber.push_back(strData);
+                        m_strDevSerialNumber.insert(0,strData);
+                        SignalReceiveDevSerialNumber(m_strDevSerialNumber);
                     }
                     qDebug() << "m_strDevSerialNumber = " << m_strDevSerialNumber;
                 }
@@ -784,53 +807,89 @@ bool HIDOpertaionUtility::_SlotUpgradeSubControl(QString strFilePath)
         emit SignalUpgradeValue(5);//升级开始和升级结束命令各占5%的进度
         //升级步骤2 升级文件数据传输
         m_bIsUpdateDataSendOver = false;
+
         m_iCmdType = ProtocolUtility::sm_kiCmdUpgradeAppData;
         QVector<QByteArray> upgradeDataCmdVect = ProtocolUtility::GetUpgradeAppCmd(strFilePath);
-        for(int iPkgNum = 1; iPkgNum <= 1/*upgradeDataCmdVect.size()*/; iPkgNum++)
+        for(int iPkgNum = 1; iPkgNum <= upgradeDataCmdVect.size(); iPkgNum++)
         {
             qDebug() << "iPkgNum =" << iPkgNum;
             qDebug() << "upgradeDataCmdVect[iPkgNum - 1] =" << upgradeDataCmdVect[iPkgNum - 1];
-            if(!_ExecuteCmdWithReturn(upgradeDataCmdVect[iPkgNum - 1], 30))
+//            if(!_ExecuteCmdWithReturn(upgradeDataCmdVect[iPkgNum - 1], 3))
+//            {
+//                QThread::msleep(1000);
+//                qDebug() << "iPkgNum =" << iPkgNum;
+//                qDebug() << "upgradeDataCmdVect[iPkgNum - 1] =" << upgradeDataCmdVect[iPkgNum - 1];
+//                if(!_ExecuteCmdWithReturn(upgradeDataCmdVect[iPkgNum - 1], 3))
+//                {
+//                    _EmitUpgradeErrorSignal(bResult);
+//                    return bResult;
+//                }
+//                else
+//                {
+//                    emit SignalUpgradeValue(5 + iPkgNum * 90 / upgradeDataCmdVect.size());
+//                }
+//            }
+
+            for(int iPos = 0; iPos < 10; iPos++)
             {
-                QThread::msleep(1000);
-                if(!_ExecuteCmdWithReturn(upgradeDataCmdVect[iPkgNum - 1], 20))
+                qDebug() << "iPkgNum =" << iPkgNum;
+                qDebug() << "upgradeDataCmdVect[iPkgNum - 1] =" << upgradeDataCmdVect[iPkgNum - 1];
+                if(_ExecuteCmdWithReturn(upgradeDataCmdVect[iPkgNum - 1], 3))
+                {
+                    break;
+                }
+                if(iPos >= 9)
                 {
                     _EmitUpgradeErrorSignal(bResult);
                     return bResult;
                 }
-                else
-                {
-                    emit SignalUpgradeValue(5 + iPkgNum * 90 / upgradeDataCmdVect.size());
-                }
+                QThread::msleep(100);
             }
+//            while(!_ExecuteCmdWithReturn(upgradeDataCmdVect[iPkgNum - 1], 3))
+//            {
+//                qDebug() << "iPkgNum =" << iPkgNum;
+//                qDebug() << "upgradeDataCmdVect[iPkgNum - 1] =" << upgradeDataCmdVect[iPkgNum - 1];
+//                iPos++;
+//                if(iPos >= 10)
+//                {
+//                    _EmitUpgradeErrorSignal(bResult);
+//                    return bResult;
+//                }
+//            }
             emit SignalUpgradeValue(5 + iPkgNum * 90 / upgradeDataCmdVect.size());
-            QThread::msleep(1000);
+            QThread::msleep(50);
         }
 
         m_iCmdType = ProtocolUtility::sm_kiCmdUpgradeAppSendDataOver;
         QByteArray qCmdByteArray = ProtocolUtility::GetUpgradeAppDataOverCmd();
         qDebug() << "qCmdByteArray = " << qCmdByteArray;
-        if(_ExecuteCmdWithReturn(qCmdByteArray, 20))
+        if(!_ExecuteCmdWithReturn(qCmdByteArray, 20))
         {
-            while(!m_bIsUpdateDataSendOver)
-            {
-                 QApplication::processEvents();
-                 QThread::msleep(50);
-            }
-            //升级步骤3 升级结束命令发送
-            m_iCmdType = ProtocolUtility::sm_kiCmdUpgradeAppEnd;
-            qCmdByteArray = ProtocolUtility::GetUpgradeAppEndCmd();
-            if(!_ExecuteCmdWithReturn(qCmdByteArray, 50))
+            QThread::msleep(1000);
+            if(!_ExecuteCmdWithReturn(qCmdByteArray, 20))
             {
                 _EmitUpgradeErrorSignal(bResult);
                 return bResult;
             }
-            bResult = true;
-            emit SignalOperationComplete(m_iCmdType, bResult);
-            emit SignalUpgradeFinish();
-            emit SignalUpgradeValue(100);//升级完成，进度100%
+//            while(!m_bIsUpdateDataSendOver)
+//            {
+//                 QApplication::processEvents();
+//                 QThread::msleep(50);
+//            }
         }
 
+        //升级步骤3 升级结束命令发送
+        m_iCmdType = ProtocolUtility::sm_kiCmdUpgradeAppEnd;
+        qCmdByteArray = ProtocolUtility::GetUpgradeAppEndCmd();
+        if(!_ExecuteCmdWithReturn(qCmdByteArray, 50))
+        {
+            _EmitUpgradeErrorSignal(bResult);
+            return bResult;
+        }
+        bResult = true;
+        emit SignalOperationComplete(m_iCmdType, bResult);
+        emit SignalUpgradeFinish();
+        emit SignalUpgradeValue(100);//升级完成，进度100%
     }
     else
     {
@@ -892,17 +951,17 @@ bool HIDOpertaionUtility::CheckDeviceConnection()
     }
     if (m_HidHandle > 0)
     {
-//        int recl = -1;
-//        recl = ReadHidData(m_HidHandle,Readbyte,-1);
-//        if (recl < 0)
-//        {
-//            //qDebug() << "USB pull out";
-//            CloseDev(m_HidHandle);
-//            delete Readbyte;
-//            m_bIsUSBConnect = false;
-//            return false;
-//        }
-//        else
+        int recl = -1;
+        recl = ReadHidData(m_HidHandle,Readbyte,-1);
+        if (recl < 0)
+        {
+            //qDebug() << "USB pull out";
+            CloseDev(m_HidHandle);
+            delete Readbyte;
+            m_bIsUSBConnect = false;
+            return false;
+        }
+        else
         {
             delete Readbyte;
             m_bIsUSBConnect = true;
@@ -915,15 +974,6 @@ bool HIDOpertaionUtility::CheckDeviceConnection()
 void HIDOpertaionUtility::SetDeviceConnection(bool)
 {
     m_bIsUSBConnect = true;
-}
-
-void HIDOpertaionUtility::HIDWriteDevSerialNumber(QString strSerialNumber)
-{
-
-}
-
-void HIDOpertaionUtility::HIDReadDevSerialNumber()
-{
 
 }
 
@@ -952,12 +1002,13 @@ void HIDReadThread::run()
     {
 
         //ReadHidDataFunc最后一个参数负1则读线程堵塞直到数据读取成功
-        int iReadRetVal = HIDOpertaionUtility::GetInstance()->HIDRead((quint8*)(&iReadByte), -1);
+        bool iReadRetVal = HIDOpertaionUtility::GetInstance()->HIDRead((quint8*)(&iReadByte), -1);
         //qDebug() << "iReadRetVal = " << iReadRetVal;
 
-        if(iReadRetVal > 0)
+        if(iReadRetVal == true)
         {
             //QMutexLocker locker(&mDataMutex);
+            m_DataMutex.lock();
             QByteArray bDataByteArray;
             for(int i = 0; i < kiCmdLen; i++)
             {
@@ -969,8 +1020,12 @@ void HIDReadThread::run()
             //                emit SignalReceiveNewCmd(data);
             //emit SignalReceiveNewCmd();
             //qDebug()<<"ReadByte:"<<bDataByteArray.toHex();
+            //msleep(200);
+            m_DataMutex.unlock();
         }
         //else
+        {
             msleep(500);
+        }
     }
 }

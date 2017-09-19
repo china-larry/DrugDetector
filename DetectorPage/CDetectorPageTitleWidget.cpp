@@ -32,7 +32,7 @@ void CDetectorPageTitleWidget::_SlotGoToHistoryPage()
 
 void CDetectorPageTitleWidget::_SLotCloseWindow()
 {
-    if(QMessageBox::warning(NULL, "Warning", "Are You Sure Close!",
+    if(QMessageBox::warning(NULL, "Warning", "Are you sure to quit?",
                             QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
     {
         emit SignalCloseWindow();

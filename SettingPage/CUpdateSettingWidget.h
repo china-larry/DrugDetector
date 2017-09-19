@@ -15,6 +15,8 @@
 
 #include <QWidget>
 #include <QPushButton>
+#include <QLineEdit>
+#include <QLabel>
 #include "AdjustLight/UpgradeProgress.h"
 
 class CUpdateSettingWidget : public QWidget
@@ -28,12 +30,19 @@ public:
 
 private slots:
     void _SlotMachineUpdate();
+    void _SlotSetSerialNum();
+    void _SlotReadSerialNum();
+    void SlotReceiveSerialNum(QString strSerialNum);
 
 private:
     void _InitWiget();
 
 private:
     QPushButton *m_pUpdateButton;
+    QPushButton *m_pSetDevSerialNumberButton;
+    QPushButton *m_pReadDevSerialNumberButton;
+    QLineEdit *m_pDevSerialNumberLineEdit;
+    QLabel *m_pDevSerialNumberLabel;
     UpgradeProgress *m_pUpgradeProgress;
 };
 

@@ -259,22 +259,22 @@ void TipErrorInfomation(EnumTypeErr eTypeError)
         }
         case ErrDecodeQR:
         {
-            QMessageBox::critical(NULL, "Error", "QR Decode Failure!", QMessageBox::Ok, QMessageBox::Ok);
+            QMessageBox::critical(NULL, "Error", "QR Code error!", QMessageBox::Ok, QMessageBox::Ok);
             break;
         }
         case ErrNoConnectUSB:
         {
-            QMessageBox::critical(NULL, "Error", "USB Connect Failure!", QMessageBox::Ok, QMessageBox::Ok);
+            QMessageBox::critical(NULL, "Error", "Hardware error!", QMessageBox::Ok, QMessageBox::Ok);
             break;
         }
         case ErrNoOpenVideo:
         {
-            QMessageBox::critical(NULL, "Error", "Video Open Failure!", QMessageBox::Ok, QMessageBox::Ok);
+            QMessageBox::critical(NULL, "Error", "Hardware error!", QMessageBox::Ok, QMessageBox::Ok);
             break;
         }
         default:
         {
-            QMessageBox::critical(NULL, "Error", "Other Error!", QMessageBox::Ok, QMessageBox::Ok);
+            QMessageBox::critical(NULL, "Error", "Hardware error!", QMessageBox::Ok, QMessageBox::Ok);
             break;
         }
     }
@@ -287,22 +287,22 @@ void TipErrorInfomation(ENUM_ERR eTestError)
     {
     case ERR_VIDEO_CAPTURE:
     {
-        QMessageBox::critical(NULL, "Error", "Get Video Capture Failure", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        QMessageBox::critical(NULL, "Error", "Hardware error", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         break;
     }
     case ERR_STEP_MOTOR:
     {
-        QMessageBox::critical(NULL, "Error", "Step Motor Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        QMessageBox::critical(NULL, "Error", "Hardware error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         break;
     }
     case ERR_LIGHT:
     {
-        QMessageBox::critical(NULL, "Error", "Open Light Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        QMessageBox::critical(NULL, "Error", "Hardware error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         break;
     }
     case ERR_DATA:
     {
-        QMessageBox::critical(NULL, "Error", "Get Data Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        QMessageBox::critical(NULL, "Error", "Hardware error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         break;
     }
     case ERR_NO_FOUND:
@@ -312,22 +312,22 @@ void TipErrorInfomation(ENUM_ERR eTestError)
     }
     case ERR_DECODE:
     {
-        QMessageBox::critical(NULL, "Error", "QR Decode Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        QMessageBox::critical(NULL, "Error", "QR Code Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         break;
     }
     case ERR_DISCONNECT_USB:
     {
-        QMessageBox::critical(NULL, "Error", "USB Connect Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        QMessageBox::critical(NULL, "Error", "Hardware error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         break;
     }
     case ERR_VIDEOOPENFAILED:
     {
-        QMessageBox::critical(NULL, "Error", "Video Open Failure!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        QMessageBox::critical(NULL, "Error", "Hardware error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         break;
     }
     default:
     {
-        QMessageBox::critical(NULL, "Error", "Other Error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        QMessageBox::critical(NULL, "Error", "Hardware error!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         break;
     }
     }

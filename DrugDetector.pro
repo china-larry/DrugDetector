@@ -8,6 +8,8 @@ QT       += core gui sql webenginewidgets printsupport axcontainer network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+include(./QZXing2.4/QZXing.pri)
+
 TARGET = DrugDetector
 TEMPLATE = app
 

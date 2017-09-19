@@ -341,9 +341,10 @@ QByteArray ProtocolUtility::GetWriteSerialNumber(QString strSerialNumber)
 
     //QByteArray qSerialNumberArray = strSerialNumber.toLatin1();
     //qDebug() << "qSerialNumberArray = " << qSerialNumberArray;
+    bool bIsok = false;
     for(int iPos = 0; iPos < strSerialNumber.count();iPos = iPos+2)
     {
-        quint8 iValue = strSerialNumber.mid(iPos,2).toInt();
+        qint8 iValue = strSerialNumber.mid(iPos,2).toShort(&bIsok,16);
         qOutDataStream << iValue;
     }
 
