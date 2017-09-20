@@ -562,6 +562,7 @@ QString GetHtmlStream(QString strHtmlFilePath)
     if(!qFile.open(QFile::ReadOnly | QIODevice::Text))
     {
         qDebug() << "open  html false";
+        return "";
     }
     QTextStream qTextStream(&qFile);
     QString strHtml = qTextStream.readAll();

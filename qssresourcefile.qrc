@@ -11,9 +11,7 @@
     </qresource>
     <qresource prefix="/image">
         <file>ico/login/wondfo_login_bgr.png</file>
-        <file>ico/test/checked.png</file>
         <file>ico/test/history_37.png</file>
-        <file>ico/test/unchecked.png</file>
         <file>ico/login/login_close_pressed.jpg</file>
         <file>ico/login/login_zoomout_pressed.jpg</file>
         <file>ico/title/close.jpg</file>
@@ -32,5 +30,7 @@
         <file>ico/title/PIS_logo.png</file>
         <file>ico/title/WONDFO_logo.png</file>
         <file>ico/title/close02.jpg</file>
+        <file>ico/test/checked.png</file>
+        <file>ico/test/unchecked.png</file>
     </qresource>
 </RCC>

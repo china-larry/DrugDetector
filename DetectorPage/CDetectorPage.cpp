@@ -460,7 +460,7 @@ QGroupBox *CDetectorPage::_CreateDonorDetailsGroup()
 {
     //const int kiLineEditWidth = 80;
     QGroupBox *pGroupBox = new QGroupBox(tr("Donor Details"), this);
-    pGroupBox->setFixedSize(450, 395);
+    pGroupBox->setFixedSize(450, 400);
     // donor name
     m_pDonorNameLabel = new QLabel(tr("Donor Name"), this);
     m_pDonorNameLabel->setMargin(0);
